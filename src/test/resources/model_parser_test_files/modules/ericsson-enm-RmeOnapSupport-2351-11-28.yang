@@ -1,0 +1,560 @@
+module ericsson-enm-RmeOnapSupport {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeOnapSupport;
+  prefix erienmnrmrmeonapsupport;
+  yexte:ecim-name RmeOnapSupport;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-VesClientType {
+    description "Type of VES client.";
+    type enumeration {
+      enum FM_VES_CLIENT {
+        description "FM alarm VES client.";
+        value 1;
+      }
+      enum PM_VES_CLIENT {
+        description "PM statistics VES client.";
+        value 2;
+      }
+      enum PNF_REG_VES_CLIENT {
+        description "PNF registration VES client.";
+        value 3;
+      }
+      enum CELL_TRACE_VES_CLIENT {
+        description "Cell trace VES client.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-BasicAdmState {
+    description "Basic administrative states for a resource.";
+    type enumeration {
+      enum LOCKED {
+        description " The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef enum-ConfigLevelOnap {
+    description "The stages of ONAP auto provisioning.";
+    type enumeration {
+      enum NOT_INTEGRATED {
+        description "Integration into ONAP not performed.";
+        status current {
+          yexte:preliminary;
+        }
+        value 1;
+      }
+      enum INTEGRATION_COMPLETE {
+        description "Integration into ONAP completed.";
+        status current {
+          yexte:preliminary;
+        }
+        value 2;
+      }
+      enum INTEGRATION_FAILED {
+        description "Integration into ONAP failed.";
+        status current {
+          yexte:preliminary;
+        }
+        value 3;
+      }
+    }
+  }
+  typedef ddt-RmeOnapSupport_OnapAutoProvisioning_pnfRegStopTimer {
+    type uint16 {
+      range 0..8760;
+    }
+  }
+  typedef ddt-RmeOnapSupport_OnapAutoProvisioning_pnfRegPeriodicity {
+    type uint32 {
+      range 1..86400;
+    }
+  }
+  typedef ddt-EcimEmpty {
+    description "Represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping struct-EcimPassword {
+    description "Stores the password.";
+    leaf password {
+      description "Holds the password or passphrase text.";
+      type string;
+      mandatory true;
+    }
+    leaf cleartext {
+      description "Indicates whether or not the password is entered in cleartext.";
+      type erienmnrmrmeonapsupport:ddt-EcimEmpty;
+    }
+  } // end 'grouping struct-EcimPassword'
+  grouping moc-NetconfYangTls-keys {
+    description "Key(s) for MOC NetconfYangTls";
+    leaf id {
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:no-notification;
+      description "The value component of the RDN. ";
+      mandatory true;
+      yexte:ecim-name netconfYangTlsId;
+      type string;
+    }
+  } // end 'grouping moc-NetconfYangTls-keys'
+  grouping moc-NetconfYangTls {
+    description "Netconf Yang configuration management service over Transport Layer Security.";
+    leaf administrativeState {
+      status current {
+        yexte:preliminary;
+      }
+      description "The administrative state for Netconf Yang target.\nIf set to LOCKED, all ongoing Netconf Yang connections are immediately terminated.";
+      type erienmnrmrmeonapsupport:enum-BasicAdmState;
+      default LOCKED;
+    }
+    leaf port {
+      status current {
+        yexte:preliminary;
+      }
+      description "Netconf Yang port for TLS.";
+      type uint16;
+      default 844;
+    }
+    leaf nodeCredential {
+      status current {
+        yexte:preliminary;
+      }
+      description "Credential used for Netconf Yang service. \nSpecifies the DN of a NodeCredential MO in Certificate Management.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustCategory {
+      status current {
+        yexte:preliminary;
+      }
+      description "Set of certificates trusted by the Netconf Yang service. \nSpecifies the DN of a TrustCategory MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "The availability status. It contains details about operationalState.\nSpecification: ITU-T Rec. X.731";
+      notife:notifiable-state-data true;
+      type erienmnrmrmeonapsupport:enum-AvailStatus;
+    }
+    leaf operationalState {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "The operational state.\nSpecification: ITU-T Rec. X.731\n";
+      notife:notifiable-state-data true;
+      type erienmnrmrmeonapsupport:enum-OperState;
+    }
+  } // end 'grouping moc-NetconfYangTls'
+  grouping moc-VesClient-keys {
+    description "Key(s) for MOC VesClient";
+    leaf id {
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name vesClientId;
+      type string;
+    }
+  } // end 'grouping moc-VesClient-keys'
+  grouping moc-VesClient {
+    description "Configuration data for the VES (Network Function Event Stream) Client. ";
+    container primaryPassword {
+      description "Password for the primary VES Listener, required when using HTTP Basic Authentication RFC2617.";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmeonapsupport:struct-EcimPassword;
+    } // end 'container primaryPassword'
+    leaf secondaryAddress {
+      status current {
+        yexte:preliminary;
+      }
+      description "Secondary VES Event Listener server URL.\nThe URL takes the form http, an IP or DNS address and an optional port number and optional path. Specify the optional port designation by appending a colon followed by the port number to the host part, for example, 192.168.33.27:8080. If no port number is provided, the default port is used.\nExamples:\nhttps://ves.onap.cloud1.us:8443/ves\nhttps://110.112.111.102:8080/ves";
+      type string;
+    }
+    leaf primaryUsername {
+      status current {
+        yexte:preliminary;
+      }
+      description "Username for the primary VES Listener, required when using HTTP Basic Authentication RFC2617.";
+      type string;
+    }
+    leaf secondaryUsername {
+      status current {
+        yexte:preliminary;
+      }
+      description "Username for the secondary VES Listener, required when using HTTP Basic Authentication RFC2617.";
+      type string;
+    }
+    container secondaryPassword {
+      description "Password for the secondary VES Listener, required when using HTTP Basic Authentication RFC2617.";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmeonapsupport:struct-EcimPassword;
+    } // end 'container secondaryPassword'
+    leaf nodeCredential {
+      status current {
+        yexte:preliminary;
+      }
+      description "Credential used for VES Event Listener server.\nSpecifies the DN of a NodeCredential MO in Certificate Management.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustCategory {
+      status current {
+        yexte:preliminary;
+      }
+      description "Trust category to be used when authenticating the certificate provided by the VES Event Listener server.\nSpecifies the DN of a TrustCategory MO in Certificate Management.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list clientType {
+      min-elements 1;
+      status current {
+        yexte:preliminary;
+      }
+      description "List of VES client types handled by this client.";
+      type erienmnrmrmeonapsupport:enum-VesClientType;
+    }
+    leaf administrativeState {
+      status current {
+        yexte:preliminary;
+      }
+      description "The administrative state for the VES client.\nIf set to LOCKED, sending of events for the VES client is immediately stopped.\n";
+      type erienmnrmrmeonapsupport:enum-BasicAdmState;
+      default UNLOCKED;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "The availability status. It contains details about operationalState.\nSpecification: ITU-T Rec. X.731";
+      notife:notifiable-state-data true;
+      type erienmnrmrmeonapsupport:enum-AvailStatus;
+    }
+    leaf operationalState {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "The operational state.\nSpecification: ITU-T Rec. X.731";
+      notife:notifiable-state-data true;
+      type erienmnrmrmeonapsupport:enum-OperState;
+    }
+    leaf primaryAddress {
+      status current {
+        yexte:preliminary;
+      }
+      description "Primary VES Event Listener server URL.\nThe URL takes the form http, an IP or DNS address and an optional port number and optional path. Specify the optional port designation by appending a colon followed by the port number to the host part, for example, 192.168.33.27:8080. If no port number is provided, the default port is used.\nExamples:\nhttps://ves.onap.cloud1.us:8443/ves\nhttps://110.112.111.102:8080/ves\n";
+      mandatory true;
+      type string;
+    }
+  } // end 'grouping moc-VesClient'
+  grouping moc-OnapAutoProvisioning-keys {
+    description "Key(s) for MOC OnapAutoProvisioning";
+    leaf id {
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name onapAutoProvisioningId;
+      type string;
+    }
+  } // end 'grouping moc-OnapAutoProvisioning-keys'
+  grouping moc-OnapAutoProvisioning {
+    description "This MO class contains configuration items for PNF activation, the Auto provisioning service using ONAP.\n";
+    leaf pnfRegPeriodicity {
+      status current {
+        yexte:preliminary;
+      }
+      description "The periodicity for sending the PNF registration VES event to ONAP.\n\n";
+      yexte:takes-effect Immediately;
+      type erienmnrmrmeonapsupport:ddt-RmeOnapSupport_OnapAutoProvisioning_pnfRegPeriodicity;
+      default 60;
+    }
+    leaf onapConfigLevel {
+      status current {
+        yexte:preliminary;
+      }
+      description "Shows the current stage of ONAP auto provisioning for this managed element.";
+      type erienmnrmrmeonapsupport:enum-ConfigLevelOnap;
+      default NOT_INTEGRATED;
+    }
+    leaf pnfRegStopTimer {
+      status current {
+        yexte:preliminary;
+      }
+      description "The time for when to stop sending the PNF registration event to ONAP if integration has not been completed.\nValue 0 means that the sending will go on infinitely until ONAP integration has been completed.\n";
+      yexte:takes-effect Immediately;
+      type erienmnrmrmeonapsupport:ddt-RmeOnapSupport_OnapAutoProvisioning_pnfRegStopTimer;
+      default 48;
+    }
+  } // end 'grouping moc-OnapAutoProvisioning'
+  grouping moc-NetconfYangSsh-keys {
+    description "Key(s) for MOC NetconfYangSsh";
+    leaf id {
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name netconfYangSshId;
+      type string;
+    }
+  } // end 'grouping moc-NetconfYangSsh-keys'
+  grouping moc-NetconfYangSsh {
+    description "Netconf Yang configuration management service over Secure Shell.";
+    leaf administrativeState {
+      status current {
+        yexte:preliminary;
+      }
+      description "The administrative state for Netconf Yang target.\nIf set to LOCKED, all ongoing Netconf Yang connections are immediately terminated.\n";
+      type erienmnrmrmeonapsupport:enum-BasicAdmState;
+      default LOCKED;
+    }
+    leaf port {
+      status current {
+        yexte:preliminary;
+      }
+      description "Netconf Yang port for SSH.";
+      type uint16;
+      default 840;
+    }
+    leaf operationalState {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "The operational state.\nSpecification: ITU-T Rec. X.731\n";
+      notife:notifiable-state-data true;
+      type erienmnrmrmeonapsupport:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "The availability status. It contains details about operationalState.\nSpecification: ITU-T Rec. X.731";
+      notife:notifiable-state-data true;
+      type erienmnrmrmeonapsupport:enum-AvailStatus;
+    }
+  } // end 'grouping moc-NetconfYangSsh'
+  grouping moc-OnapSupport-keys {
+    description "Key(s) for MOC OnapSupport";
+    leaf id {
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name onapSupportId;
+      type string;
+    }
+  } // end 'grouping moc-OnapSupport-keys'
+  grouping moc-OnapSupport {
+    description "The root MOC of the ONAP Support branch.";
+    action getAlarmList {
+      description "Orders sending of active alarm list towards destination specified in VesClient MO of type FM_VES_CLIENT.\n\nReturns immediately after invocation. Returned value indicates number of alarms that will be sent. Value zero means no alarms will be sent.\n\nIf there is communication failure towards the destination, alarms are buffered and retransmission attempts are made for up to one hour. If a second action is made while retransmission of first alarm list is ongoing, the buffered alarm list is replaced by a new one.\n\nVES interface status can be checked in VesClient MO of clientType FM_VES_CLIENT.";
+      output {
+        leaf result {
+          type uint16;
+        }
+      }
+    }
+  } // end 'grouping moc-OnapSupport'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport/erienmnrmrmeonapsupport:OnapSupport {
+    list NetconfYangTls {
+      key id;
+      max-elements 1;
+      description "Netconf Yang configuration management service over Transport Layer Security.";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type MOC;
+      uses moc-NetconfYangTls-keys;
+      container attributes {
+        description "Attributes for NetconfYangTls";
+        uses moc-NetconfYangTls;
+      } // end 'container attributes'
+    } // end 'list NetconfYangTls'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport/erienmnrmrmeonapsupport:OnapSupport {
+    list VesClient {
+      key id;
+      description "Configuration data for the VES (Network Function Event Stream) Client. ";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type MOC;
+      uses moc-VesClient-keys;
+      container attributes {
+        description "Attributes for VesClient";
+        uses moc-VesClient;
+      } // end 'container attributes'
+    } // end 'list VesClient'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport/erienmnrmrmeonapsupport:OnapSupport {
+    list OnapAutoProvisioning {
+      key id;
+      max-elements 1;
+      description "This MO class contains configuration items for PNF activation, the Auto provisioning service using ONAP.\n";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type MOC;
+      uses moc-OnapAutoProvisioning-keys;
+      container attributes {
+        description "Attributes for OnapAutoProvisioning";
+        uses moc-OnapAutoProvisioning;
+      } // end 'container attributes'
+    } // end 'list OnapAutoProvisioning'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport/erienmnrmrmeonapsupport:OnapSupport {
+    list NetconfYangSsh {
+      key id;
+      max-elements 1;
+      description "Netconf Yang configuration management service over Secure Shell.";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type MOC;
+      uses moc-NetconfYangSsh-keys;
+      container attributes {
+        description "Attributes for NetconfYangSsh";
+        uses moc-NetconfYangSsh;
+      } // end 'container attributes'
+    } // end 'list NetconfYangSsh'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list OnapSupport {
+      key id;
+      max-elements 1;
+      description "The root MOC of the ONAP Support branch.";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type MOC;
+      uses moc-OnapSupport-keys;
+    } // end 'list OnapSupport'
+  }
+}

@@ -1,0 +1,69 @@
+module ericsson-enm-ReqSfpChannel {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqSfpChannel;
+  prefix erienmnrmreqsfpchannel;
+  yexte:ecim-name ReqSfpChannel;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqSfpModule {
+    prefix erienmnrmreqsfpmodule;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  grouping moc-SfpChannel-keys {
+    description "Key(s) for MOC SfpChannel";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name sfpChannelId;
+      type string;
+    }
+  } // end 'grouping moc-SfpChannel-keys'
+  grouping moc-SfpChannel {
+    description "SFP channel. PM counters are applicable for RI, DI and RDI ports.\n\nThe RDNs of this MOs are SfpChannel=1 to SfpChannel=4.";
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-SfpChannel'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqsfpmodule:SfpModule {
+    list SfpChannel {
+      key id;
+      description "SFP channel. PM counters are applicable for RI, DI and RDI ports.\n\nThe RDNs of this MOs are SfpChannel=1 to SfpChannel=4.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SfpChannel-keys;
+      container attributes {
+        description "Attributes for SfpChannel";
+        uses moc-SfpChannel;
+      } // end 'container attributes'
+    } // end 'list SfpChannel'
+  }
+}

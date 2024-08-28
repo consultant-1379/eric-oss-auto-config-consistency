@@ -1,0 +1,284 @@
+module ericsson-enm-RtnTwampInitiator {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnTwampInitiator;
+  prefix erienmnrmrtntwampinitiator;
+  yexte:ecim-name RtnTwampInitiator;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 4;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-ProfileType {
+    description "Profile type.";
+    type enumeration {
+      enum FULL_RESOLUTION_50 {
+        description "Interval 1 min, active during 1 min, sending 3000 samples, at frequency 50 PPS.";
+        value 1;
+      }
+      enum FULL_RESOLUTION_10 {
+        description "Interval 1 min, active during 1 min, sending 600 samples, at frequency 10 PPS.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "The administrative state of a resource. ";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-ResponderType {
+    description "Responder type.";
+    type enumeration {
+      enum LIGHT {
+        description "TWAMP light stateful.\n\nLight (stateful) : the sequence number in the reflected packet is generated by the responder, which enables measurement of packet loss in forward and reverse direction.";
+        value 1;
+      }
+      enum LIGHT_SL {
+        description "TWAMP light stateless.\n\nLight-SL (stateless) : the sequence number is copied from the sender's test packet to the reflected packet, thus it is only possible to measure round trip packet loss.";
+        value 2;
+      }
+    }
+  }
+  typedef ddt-RtnTwampInitiator_TwampTestSession_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-IpAddress {
+    description "Regular expression pattern for IP assigned address, covering both IPv4 and IPv6.\n\nThe type is ((IPv4 address)|(IPv6 address)), without leading 0s.\n\nIpV4 address = ((22[0-3]|2[01][0-9]|1[013456789][0-9]|12[012345689]|1[0-9][0-9]|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))\n\nIPv6 address = (\\s*((((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){7}(([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){6}(:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){5}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,2})|:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){4}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,3})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0))?:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){3}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,4})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,2}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){2}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,5})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,3}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){1}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,6})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,4}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(:(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,7})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,5}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:)))(%.+)?\\s*)\n\nMatching example is: 192.168.21.3\nAnother matching example is: 2001:db8:85a3:8d3:1319:8a2e:370:7348";
+    type string;
+  }
+  typedef ddt-RtnTwampInitiator_TwampTestSession_srcUdpPort {
+    type uint16 {
+      range 4032..4063;
+    }
+  }
+  typedef ddt-RtnTwampInitiator_TwampTestSession_dscp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnTwampInitiator_TwampTestSession_payload {
+    type uint32 {
+      range 41..1472;
+    }
+  }
+  grouping moc-TwampInitiator-keys {
+    description "Key(s) for MOC TwampInitiator";
+    leaf id {
+      erienmyext:no-notification;
+      description "Value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name twampInitiatorId;
+      type string;
+    }
+  } // end 'grouping moc-TwampInitiator-keys'
+  grouping moc-TwampInitiator {
+    description "Two-Way Active Measurement Protocol (TWAMP) Initiator.\n\nGrouping all defined TwampTestSession MOs on a specific Router MO to make it possible to lock or unlock all TwampTestSession MOs.";
+    leaf administrativeState {
+      description "The administrative state.\nIf set to LOCKED, all TwampTestSession MOs are immediately stopped.";
+      type erienmnrmrtntwampinitiator:enum-AdmState;
+      default LOCKED;
+    }
+  } // end 'grouping moc-TwampInitiator'
+  grouping moc-TwampTestSession-keys {
+    description "Key(s) for MOC TwampTestSession";
+    leaf id {
+      erienmyext:no-notification;
+      description "Value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name twampTestSessionId;
+      type string;
+    }
+  } // end 'grouping moc-TwampTestSession-keys'
+  grouping moc-TwampTestSession {
+    description "Two-Way Active Measurement Protocol (TWAMP) session sender in a TWAMP light architecture, according to RFC 5357.\n\nWhen activated, the TWAMP test packets will send towards a specified TWAMP session responder IP address and UDP port.\n\nDependencies: The combination of srcUdpPort, srcIpAddress, dstUdpPort and dstIpAddress for TwampTestSession must be unique in the same router.";
+    leaf dstUdpPort {
+      description "Destination UDP port of the TWAMP responder.";
+      mandatory true;
+      type uint16;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtntwampinitiator:ddt-RtnTwampInitiator_TwampTestSession_userLabel;
+    }
+    leaf srcIpAddress {
+      description "Source IP address.\nValid reference is an AddressIpv4 MO or an AddressIpv6 MO.";
+      mandatory true;
+      yexte:dependencies "This attribute can only refer to an AddressIPv4 MO or an AddressIPv6 MO in the same router.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf srcUdpPort {
+      description "Source of the UDP port to send and receive TWAMP test packets.";
+      mandatory true;
+      type erienmnrmrtntwampinitiator:ddt-RtnTwampInitiator_TwampTestSession_srcUdpPort;
+    }
+    leaf mode {
+      description "Type of responder mode of the measurement done in the towards direction.";
+      yexte:dependencies "Only LIGHT mode supported in this release.";
+      type erienmnrmrtntwampinitiator:enum-ResponderType;
+      default LIGHT;
+    }
+    leaf dscp {
+      description "DSCP value of TWAMP IP test packet.";
+      type erienmnrmrtntwampinitiator:ddt-RtnTwampInitiator_TwampTestSession_dscp;
+      default 0;
+    }
+    leaf profileType {
+      description "TWAMP profile type.\n";
+      type erienmnrmrtntwampinitiator:enum-ProfileType;
+      default FULL_RESOLUTION_10;
+    }
+    leaf administrativeState {
+      description "The administrative state.\nIf set to LOCKED, TwampTestSession MO is immediately stopped.";
+      type erienmnrmrtntwampinitiator:enum-AdmState;
+      default LOCKED;
+    }
+    leaf payload {
+      description "TWAMP test packet payload length.\nExample:\nIf ethernet interface IPv4 traffic is tagged and the payload is set to 50, the IP packet size =78 and ethernet frame size =100.\nIf ethernet interface IPv6 traffic is tagged and the payload is set to 50, the IP packet size =98 and ethernet frame size =120.";
+      type erienmnrmrtntwampinitiator:ddt-RtnTwampInitiator_TwampTestSession_payload;
+      default 50;
+    }
+    leaf dstIpAddress {
+      description "Destination IP address of the TWAMP responder.";
+      mandatory true;
+      type erienmnrmrtntwampinitiator:ddt-IpAddress;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmrtntwampinitiator:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmrtntwampinitiator:enum-OperState;
+    }
+  } // end 'grouping moc-TwampTestSession'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list TwampInitiator {
+      key id;
+      max-elements 1;
+      description "Two-Way Active Measurement Protocol (TWAMP) Initiator.\n\nGrouping all defined TwampTestSession MOs on a specific Router MO to make it possible to lock or unlock all TwampTestSession MOs.";
+      erienmyext:enm-type MOC;
+      uses moc-TwampInitiator-keys;
+      container attributes {
+        description "Attributes for TwampInitiator";
+        uses moc-TwampInitiator;
+      } // end 'container attributes'
+    } // end 'list TwampInitiator'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtntwampinitiator:TwampInitiator {
+    list TwampTestSession {
+      key id;
+      max-elements 500;
+      description "Two-Way Active Measurement Protocol (TWAMP) session sender in a TWAMP light architecture, according to RFC 5357.\n\nWhen activated, the TWAMP test packets will send towards a specified TWAMP session responder IP address and UDP port.\n\nDependencies: The combination of srcUdpPort, srcIpAddress, dstUdpPort and dstIpAddress for TwampTestSession must be unique in the same router.";
+      erienmyext:enm-type MOC;
+      uses moc-TwampTestSession-keys;
+      container attributes {
+        description "Attributes for TwampTestSession";
+        uses moc-TwampTestSession;
+      } // end 'container attributes'
+    } // end 'list TwampTestSession'
+  }
+}

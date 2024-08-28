@@ -1,0 +1,4 @@
+moType,attributeName,attributeValue,conditions,priority
+EUtranCellFDD,upperLayerAutoConfEnabled,true,,
+EUtranCellFDD,outOfCoverageThreshold,20,,
+ENodeBFunction,timePhaseMaxDeviationOtdoa,10,,

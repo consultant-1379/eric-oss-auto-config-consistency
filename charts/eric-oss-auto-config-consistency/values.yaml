@@ -1,0 +1,348 @@
+#
+# COPYRIGHT Ericsson 2021 - 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+# Default values for eric-oss-auto-config-consistency.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  hosts:
+    gas:
+  #  timezone: UTC
+  #  registry:
+  #    url: armdocker.rnd.ericsson.se
+  #    pullPolicy: IfNotPresent
+  #  #Secret must be manually created in the namespace, no default value
+  #  pullSecret: eric-adp-example-secret
+  #  fsGroup:
+  #    manual: 10000
+  #    namespace: true
+  #  # The IP family the service belongs to when service.type is set to ClusterIP.
+  #  # Options are: IPv4, IPv6
+  #  internalIPFamily:
+  #  security:
+  #    policyBinding:
+  #      create: true
+  #    policyReferenceMap:
+  #      default-restricted-security-policy: "<restricted security policy at customer deployment>"
+  #    tls:
+  #      enabled: true
+  ## add for dr DR-D470222-010
+  log:
+    streamingMethod: indirect
+
+replicaCount: 1
+
+podDisruptionBudget:
+  # Minimum number/percentage of Pods that must remain available during the planned disruption.
+  # Value can be expressed as an integer or as a percentage. When specified as a percentage of the Pods,
+  # if it does not map to an exact number, Kubernetes rounds up to the nearest integer.
+  # minAvailable: 2 # example value for 2 pods defined as integer
+  minAvailable: "40%"
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+#Empty labels list for application deployment engineer to add more labels (In Compliance with DR-D1121-068).
+labels: { }
+
+imageCredentials:
+  eric-oss-auto-config-consistency:
+    repoPath: # see default in eric-product-info.yaml
+    registry: { }
+    # overrides global registry url
+    # url:
+    #- Secret must be manually created in the namespace, no default value
+    # pullSecret: REPO_SECRET
+  eric-oss-auto-config-consistency-ui:
+    repoPath: # see default in eric-product-info.yaml
+    registry: { }
+    # overrides global registry url
+    # url:
+    #- Secret must be manually created in the namespace, no default value
+    # pullSecret: REPO_SECRET
+
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: ""
+
+networkPolicy:
+  enabled: true
+
+apiGateway:
+  name: eric-eo-api-gateway
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: { }
+
+annotations: { }
+
+service:
+  type: ClusterIP
+  port: 8080    # Changed from 80 to 8080 and spring application is hosted on 8080
+  endpoints:
+    chassisapi:
+      tls:
+        enforced: required
+        verifyClientCertificate: required
+
+ingress:
+  enabled: false
+  ingressClass: OAM-IngressClass
+  hosts:
+    - host: chart-example.local
+      paths: [ / ]
+
+  tls: [ ]
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+eric-pm-server:
+  rbac:
+    appMonitoring:
+      enabled: true
+
+pmserver:
+  name: eric-pm-server
+
+prometheus:
+  path: /actuator/prometheus
+  scrape: true
+
+terminationGracePeriodSeconds: 30
+
+resources:
+  eric-oss-auto-config-consistency:
+    requests:
+      memory: 2Gi
+      cpu: 1
+      ephemeral-storage: ""
+    limits:
+      memory: 2Gi
+      cpu: 1
+      ephemeral-storage: ""
+    jvm:
+      initialMemoryAllocationPercentage: 50
+      smallMemoryAllocationMaxPercentage: 70
+      largeMemoryAllocationMaxPercentage: 50
+  eric-oss-auto-config-consistency-ui:
+    requests:
+      memory: 320Mi
+      cpu: 125m
+      ephemeral-storage: ""
+    limits:
+      memory: 976Mi
+      cpu: 500m
+      ephemeral-storage: ""
+
+autoScaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: { }
+topologySpreadConstraints:
+  deployment: [ ]
+  test: [ ]
+
+tolerations:
+  - key: node.kubernetes.io/not-ready
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 0
+  - key: node.kubernetes.io/unreachable
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 0
+
+affinity:
+  podAntiAffinity: "soft"
+  topologyKey: "kubernetes.io/hostname"
+
+probes:
+  eric-oss-auto-config-consistency:
+    livenessProbe:
+      failureThreshold: 3
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 10
+    readinessProbe:
+      failureThreshold: 3
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 10
+  eric-oss-auto-config-consistency-ui:
+    livenessProbe:
+      initialDelaySeconds: 90
+      failureThreshold: 3
+      periodSeconds: 15
+      successThreshold: 3
+      timeoutSeconds: 10
+    readinessProbe:
+      failureThreshold: 3
+      initialDelaySeconds: 90
+      periodSeconds: 15
+      successThreshold: 3
+      timeoutSeconds: 10
+
+podPriority:
+  eric-oss-auto-config-consistency:
+    priorityClassName: ""
+# choice='unconfined, runtime/default, localhost' [ default= runtime/default ]
+# Configuration of AppArmor profile type. The following values are possible:
+# unconfined  - Indicates that there is no profile loaded.
+# runtime/default - Applies the default profile of the container engine.
+# localhost   - Applies a specific profile loaded on the host
+appArmorProfile:
+  type: runtime/default
+seccompProfile:
+  type: RuntimeDefault
+
+# IAM BaseUrl, Client ID and Secret (This is the level at which the app-lcm supplies these values to the CSAR)
+baseUrl: ""
+clientId: ""
+clientSecret: ""
+
+iam:
+  host:
+  basePath: /auth/realms/master
+  tokenEndpointPath: /protocol/openid-connect/token
+
+ncmp:
+  basePath: "/ncmp"
+  host:
+
+log:
+  # Comply with DR DR-D470222-010 set to default local streamingMethod
+  # Can be one of the following:
+  # direct: Direct streaming to the Log Aggregator (Log Transformer).
+  # indirect: Stdout to infrastructure logging framework.
+  # dual: Stdout to infrastructure logging framework and direct streaming to Log Aggregator.
+  # null: for null or absent parameter the streaming method is determined by global.log.streamingMethod.
+  streamingMethod:
+    direct
+  streamingDestination:
+
+# Log level settings. Possible values ERROR, WARN, INFO, DEBUG
+logging:
+  logLevel: INFO
+  enableAuditLogOfReads: false
+
+# tls certificate settings
+tls:
+  enabled: true
+  clientProtocol: TLSv1.3
+  platformCaCert:
+    secretName:
+  appTrustStorePass:
+  appCert:
+    secretName:
+  appKeyStorePass:
+
+#configurable database credentials
+h2:
+  password:
+  username:
+
+frontend:
+  labels:
+    ui.ericsson.com/part-of: "workspace-gui"
+  annotations:
+    ui.ericsson.com/protocol: "http"
+    ui.ericsson.com/port: "4200"
+  port: 4200
+
+audit:
+  ncmpReadMos:
+    threadPoolSize: 3
+  threadPoolSize: 1
+  moQueueSize: 50000
+  revertThreadPoolSize: 2
+
+# Model Discovery Service Scheduling Default: Weekly
+modelDiscovery:
+  scheduling:
+    cronExpression: "0 0 0 * * 0"
+  threadPoolSize: 4
+
+eric-oss-auto-config-consistency-pg:
+  networkPolicy:
+    enabled: true
+  enabled: true
+  driver: org.postgresql.Driver
+  host: eric-oss-auto-config-consistency-pg
+  port: 5432
+  resources:
+    postgres:
+      requests:
+        memory: 2560Mi
+        cpu: 1
+      limits:
+        memory: 2560Mi
+        cpu: 1
+  postgresUser: eacc-user
+  postgresDatabase: eacc
+  credentials:
+    kubernetesSecretName: eric-oss-auto-config-consistency-postgres-secret
+  service:
+    port: 5432
+    endpoints:
+      postgres:
+        tls:
+          enforced: optional
+  metrics:
+    enabled: true
+  brAgent:
+    enabled: true
+    backupTypeList:
+      - "EACC"
+    logicalDBBackupEnable: true
+    backupDataModelConfig: eric-oss-auto-config-consistency-backup
+  global:
+    networkPolicy:
+      enabled: true
+    security:
+      tls:
+        enabled: true
+  security:
+    tls:
+      brAgent:
+        enabled: true
+
+database:
+  retention:
+    executionRetentionSchedule: "0 0 1 ? * *"
+    executionExpirationPeriodInDays: 90
+    maxExecutionsToBeRetained: 180
+  retries:
+    userInitiated:
+      maxRetryAttempts: 2
+    scheduleInitiated:
+      maxRetryAttempts: 5
+      delay: 8000
+      maxDelay: 64000
+      multiplier: 2

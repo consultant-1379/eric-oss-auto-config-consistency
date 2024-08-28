@@ -1,0 +1,60 @@
+module ericsson-enm-RmeOamIpSupport {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeOamIpSupport;
+  prefix erienmnrmrmeoamipsupport;
+  yexte:ecim-name RmeOamIpSupport;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  grouping moc-OamIpSupport-keys {
+    description "Key(s) for MOC OamIpSupport";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the value identifying this MO.";
+      mandatory true;
+      yexte:ecim-name oamIpSupportId;
+      type string;
+    }
+  } // end 'grouping moc-OamIpSupport-keys'
+  grouping moc-OamIpSupport {
+    description "This MO class contains an attribute set by a management system to acknowledge successful setting of the IP address used for OaM access to a node.\nThe IP address is received by a management system via an SNMP trap eriChangeAddressEvent.\n";
+    leaf ipAddressChangeStatus {
+      description "Used to acknowledge successful setting of OaM IP address in management system.\nSet to value eriChangeIPAddressAckAttributeValue sent in SNMP trap eriChangeIPAddressEvent to acknowledge setting of OaM IP address in management system.\n";
+      type int32;
+    }
+  } // end 'grouping moc-OamIpSupport'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list OamIpSupport {
+      key id;
+      max-elements 1;
+      description "This MO class contains an attribute set by a management system to acknowledge successful setting of the IP address used for OaM access to a node.\nThe IP address is received by a management system via an SNMP trap eriChangeAddressEvent.\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-OamIpSupport-keys;
+      container attributes {
+        description "Attributes for OamIpSupport";
+        uses moc-OamIpSupport;
+      } // end 'container attributes'
+    } // end 'list OamIpSupport'
+  }
+}

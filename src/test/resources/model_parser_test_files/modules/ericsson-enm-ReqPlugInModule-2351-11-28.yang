@@ -1,0 +1,276 @@
+module ericsson-enm-ReqPlugInModule {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqPlugInModule;
+  prefix erienmnrmreqpluginmodule;
+  yexte:ecim-name ReqPlugInModule;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6. ";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-ApcIndicatorStatus {
+    description "Possible states for green, yellow and red indicators. Since the semantics of the different indicator states depend on the color of the indicator, the semantics is described as part of the corresponding indicator status attribute description.";
+    type enumeration {
+      enum NOT_APPLICABLE {
+        description "The indicator is not supported. ";
+        value 0;
+      }
+      enum NOT_AVAILABLE {
+        description "The indicator state is currently not available.";
+        value 1;
+      }
+      enum OFF {
+        description "The indicator is off.";
+        value 2;
+      }
+      enum STEADY_ON {
+        description "The indicator is on continuously.";
+        value 3;
+      }
+      enum SLOW_BLINK {
+        description "The indicator blinks slowly.";
+        value 4;
+      }
+      enum FAST_BLINK {
+        description "The indicator blinks quickly.";
+        value 6;
+      }
+      enum DOUBLE_FLASH_AND_STEADY_ON {
+        description "The indicator blinks twice and is then on for a short time. This cycle is then repeated. ";
+        value 7;
+      }
+      enum DOUBLE_FLASH_AND_OFF {
+        description "The indicator blinks twice and is then off for a short time. This cycle is then repeated.";
+        value 8;
+      }
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productionDate {
+    type string {
+      length 5..8;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_serialNumber {
+    type string {
+      length 1..13;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productRevision {
+    type string {
+      length 1..7;
+    }
+  }
+  typedef ddt-ReqPlugInModule_PlugInModule_moduleType {
+    type string {
+      length 0..128;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productName {
+    type string {
+      length 1..32;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productNumber {
+    type string {
+      length 1..24;
+    }
+  }
+  grouping struct-ApcProductData {
+    description ".\n";
+    leaf productionDate {
+      description "The production date is represented in two ways:\n\n- the preferred syntax is four-digits for the year, two digits for the month, and two digits for the day.\nExample: 19991231\n\n- the date is also be represented by two digits for the year, followed by the letter W for week, and two digits for the number of the week.\nExample: 99W52";
+      type erienmnrmreqpluginmodule:ddt-ReqCabinet_ApcProductData_productionDate;
+      mandatory true;
+    }
+    leaf serialNumber {
+      description "The serial number of the product. ";
+      type erienmnrmreqpluginmodule:ddt-ReqCabinet_ApcProductData_serialNumber;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "The product number of the product.\n\nExamples: ABC 101 001, CXC 123 456, 1/BFD 101 999\n";
+      type erienmnrmreqpluginmodule:ddt-ReqCabinet_ApcProductData_productNumber;
+      mandatory true;
+    }
+    leaf productName {
+      description "The name of the product.";
+      type erienmnrmreqpluginmodule:ddt-ReqCabinet_ApcProductData_productName;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "The revision state of the product.\n\nExamples: R1, R1A, R1A02, P7B ";
+      type erienmnrmreqpluginmodule:ddt-ReqCabinet_ApcProductData_productRevision;
+      mandatory true;
+    }
+  } // end 'grouping struct-ApcProductData'
+  grouping moc-PlugInModule-keys {
+    description "Key(s) for MOC PlugInModule";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name plugInModuleId;
+      type string;
+    }
+  } // end 'grouping moc-PlugInModule-keys'
+  grouping moc-PlugInModule {
+    description "This MO represents a module that is inserted into a unit that has a modular building practise.";
+    leaf moduleType {
+      erienmyext:no-notification;
+      yexte:restricted;
+      description "A description or identifier of the type of plugin module. ";
+      mandatory true;
+      type erienmnrmreqpluginmodule:ddt-ReqPlugInModule_PlugInModule_moduleType;
+    }
+    leaf faultIndicator {
+      erienmyext:no-notification;
+      config false;
+      description "The fault status of the module as shown by the optical fault indicator on the module.\n\nValid values:\n\n• NOT_APPLICABLE = This indicator is not supported.\n• NOT_AVAILABLE = The indicator state is currently not available.\n• OFF = No HW fault.\n• STEADY_ON = HW Fault.\n";
+      type erienmnrmreqpluginmodule:enum-ApcIndicatorStatus;
+    }
+    leaf administrativeState {
+      description "Defines the administrative state.\n\nIf set to SHUTTINGDOWN, the state is immediately brought to LOCKED.";
+      yexte:takes-effect IMMEDIATELY;
+      type erienmnrmreqpluginmodule:enum-AdmState;
+      default UNLOCKED;
+    }
+    container productData {
+      description "Product data of installed unit.\nIf corresponding HHW unit is not installed, struct contains empty strings.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqpluginmodule:struct-ApcProductData;
+    } // end 'container productData'
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmreqpluginmodule:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmreqpluginmodule:enum-OperState;
+    }
+    action delete {
+      description "This action deletes the PlugInModule MO.";
+    }
+  } // end 'grouping moc-PlugInModule'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list PlugInModule {
+      key id;
+      description "This MO represents a module that is inserted into a unit that has a modular building practise.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PlugInModule-keys;
+      container attributes {
+        description "Attributes for PlugInModule";
+        uses moc-PlugInModule;
+      } // end 'container attributes'
+    } // end 'list PlugInModule'
+  }
+}

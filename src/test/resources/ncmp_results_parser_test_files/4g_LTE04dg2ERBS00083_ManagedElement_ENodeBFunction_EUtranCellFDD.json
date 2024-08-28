@@ -1,0 +1,33 @@
+{
+  "ManagedElement":
+  [
+    {
+      "id": "LTE04dg2ERBS00083",
+      "attributes":
+      {
+        "dnPrefix": "test"
+      },
+      "ENodeBFunction":
+      [
+        {
+          "id": "1",
+          "attributes":
+          {
+            "timeAndPhaseSynchAlignment": "true",
+            "rrcConnReestActive": "false"
+          },
+          "EUtranCellFDD":
+          [
+            {
+              "id": "LTE04dg2ERBS00083-1",
+              "attributes":
+              {
+                "ulVolteCovMobThr": "5"
+              }
+            }
+        ]
+      }
+    ]
+  }
+]
+}

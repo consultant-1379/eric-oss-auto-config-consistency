@@ -1,0 +1,234 @@
+module ericsson-enm-RsyncTimeSyncIO {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RsyncTimeSyncIO;
+  prefix erienmnrmrsynctimesyncio;
+  yexte:ecim-name RsyncTimeSyncIO;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-RsyncSynchronization {
+    prefix erienmnrmrsyncsynchronization;
+  }
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-PortDirection {
+    description "The direction of the synchronization interface.";
+    type enumeration {
+      enum INPUT_ONLY {
+        description "The port can only input signals.\n\nIt cannot output any signals. ";
+        value 1;
+      }
+      enum OUTPUT_ONLY {
+        description "The port can only output signals.\n\nIt cannot input any signals. \n";
+        value 2;
+      }
+    }
+  }
+  typedef enum-TimeSyncIOStatus {
+    description "Status of time synchronization IO.";
+    type enumeration {
+      enum NO_FAULT {
+        description "No faults detected.";
+        value 0;
+      }
+      enum LOSS_OF_SIGNAL {
+        description "No signals received.";
+        value 1;
+      }
+      enum HW_FAULT {
+        description "Hardware fault reported from the reference.";
+        value 2;
+      }
+      enum NO_MESSAGES {
+        description "No messages received.";
+        value 3;
+      }
+      enum PROTOCOL_NOT_RECOGNIZED {
+        description "The protocol used by the reference is not recognized.";
+        value 4;
+      }
+      enum LOSS_OF_1PPS_SIGNAL {
+        description "1PPS synchronization signal lost.";
+        value 5;
+      }
+      enum NO_SYNC_TO_SATELLITES {
+        description "GNSS receiver not synchronized to satellites.";
+        value 6;
+      }
+      enum DEGRADED {
+        description "The stability of the 1PPS is considered degraded.";
+        value 7;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-RsyncTimeSyncIO_TimeSyncIO_filterTime {
+    type uint16 {
+      range 1..12;
+    }
+  }
+  typedef ddt-RsyncTimeSyncIO_TimeSyncIO_compensationDelay {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  grouping moc-TimeSyncIO-keys {
+    description "Key(s) for MOC TimeSyncIO";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name timeSyncIOId;
+      type string;
+    }
+  } // end 'grouping moc-TimeSyncIO-keys'
+  grouping moc-TimeSyncIO {
+    description "The TimeSyncIO is used to indicate that a physical synchronization port is used for time synchronization.";
+    leaf encapsulation {
+      description "Reference to the underlying encapsulation.\nThe underlying encapsulation must be a SyncPort MO.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Two or more FrequencySyncIO/TimeSyncIO cannot refer to the same SyncPort in attribute encapsulation.\nAttribute encapsulation of a TimeSyncIO can only refer to a SyncPort.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf timeSyncIOStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Status of TimeSyncIO MO as reference.";
+      type erienmnrmrsynctimesyncio:enum-TimeSyncIOStatus;
+    }
+    leaf compensationDelay {
+      description "The delay of the input signal.\nThe delay is calculated using the documentation of the GPS receiver System for RBS 6000.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrsynctimesyncio:ddt-RsyncTimeSyncIO_TimeSyncIO_compensationDelay;
+      default 0;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmrsynctimesyncio:enum-AvailStatus;
+    }
+    leaf filterTime {
+      description "Filter time for alarm TimeSyncIO Reference Failed.";
+      type erienmnrmrsynctimesyncio:ddt-RsyncTimeSyncIO_TimeSyncIO_filterTime;
+      default 12;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmrsynctimesyncio:enum-OperState;
+    }
+    leaf adminPortDirection {
+      status deprecated;
+      description "Specifies the direction of the time synchronization I/O port\n";
+      yexte:dependencies "Attribute adminPortDirection of a TimeSyncIO can only support INPUT_ONLY.";
+      type erienmnrmrsynctimesyncio:enum-PortDirection;
+      default INPUT_ONLY;
+    }
+  } // end 'grouping moc-TimeSyncIO'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrsyncsynchronization:Synchronization {
+    list TimeSyncIO {
+      key id;
+      max-elements 8;
+      description "The TimeSyncIO is used to indicate that a physical synchronization port is used for time synchronization.";
+      erienmyext:enm-type MOC;
+      uses moc-TimeSyncIO-keys;
+      container attributes {
+        description "Attributes for TimeSyncIO";
+        uses moc-TimeSyncIO;
+      } // end 'container attributes'
+    } // end 'list TimeSyncIO'
+  }
+}

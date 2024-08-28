@@ -1,0 +1,403 @@
+#
+# COPYRIGHT Ericsson 2021 - 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "eric-oss-auto-config-consistency.fullname" . }}
+  labels:
+  {{- include "eric-oss-auto-config-consistency.labels" . | nindent 4 }}
+  annotations:
+  {{- include "eric-oss-auto-config-consistency.annotations" . | nindent 4 }}
+spec:
+
+{{- if not .Values.autoScaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "eric-oss-auto-config-consistency.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  strategy:
+    type: {{ .Values.updateStrategy.type | quote }}
+    {{- if and (eq .Values.updateStrategy.type "RollingUpdate") .Values.updateStrategy.rollingUpdate }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.updateStrategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.updateStrategy.rollingUpdate.maxSurge }}
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "eric-oss-auto-config-consistency.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ include "eric-oss-auto-config-consistency.version" . }}
+{{- include "eric-oss-auto-config-consistency.pgAccessLabel" . | nindent 8 }}
+{{- include "eric-oss-auto-config-consistency.directStreamingLabel" . | nindent 8 }}
+{{- include "eric-oss-auto-config-consistency.pmMetricsScraping" . | nindent 8 }}
+      annotations:
+{{- include "eric-oss-auto-config-consistency.container-annotations" . | nindent 8 }}
+    spec:
+      {{- if include "eric-oss-auto-config-consistency.pullSecret" . }}
+      imagePullSecrets:
+        - name: {{ include "eric-oss-auto-config-consistency.pullSecret" . | quote}}
+      {{- end }}
+      serviceAccountName: {{ template "eric-oss-auto-config-consistency.fullname" . }}
+      securityContext:
+        fsGroup: {{ include "eric-oss-auto-config-consistency.fsGroup.coordinated" . }}
+        {{- include "eric-oss-auto-config-consistency.seccomp-profile" . | indent 8 }}
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+        - name: heap-dumps
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            defaultMode: 493
+            name: {{ include "eric-oss-auto-config-consistency.name" . }}-configmap
+        - name: log-control-configmap-volume
+          configMap:
+            name: {{ include "eric-oss-auto-config-consistency.name" . }}-log-control-configmap
+        - name: ui-home
+          emptyDir: {}
+        - name: apache2
+          emptyDir: {}
+        - name: application
+          emptyDir: {}
+        - name: varlog
+          emptyDir: {}
+          {{- if .Values.tls.enabled }}
+        - name: truststore-certificates
+          secret:
+            secretName: {{ .Values.tls.platformCaCert.secretName }}
+          {{- if or (eq .Values.log.streamingMethod "direct") (eq .Values.log.streamingMethod "dual") }}
+        - name: keystore-certificates
+          secret:
+            secretName: {{ .Values.tls.appCert.secretName }}
+          {{- end }}
+          {{- end }}
+      containers:
+        - name: eric-oss-auto-config-consistency
+          image: {{ template "eric-oss-auto-config-consistency.mainImagePath" . }}
+          imagePullPolicy: {{ template "eric-oss-auto-config-consistency.registryImagePullPolicy" . }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+            - mountPath: /heap-dumps/
+              name: heap-dumps
+            - name: config-volume
+              mountPath: /config
+            - name: log-control-configmap-volume
+              mountPath: /logcontrol
+              {{- if .Values.tls.enabled }}
+            - name: truststore-certificates
+              mountPath: /tls/certs
+              readOnly: true
+              {{- if or (eq .Values.log.streamingMethod "direct") (eq .Values.log.streamingMethod "dual") }}
+            - name: keystore-certificates
+              mountPath: /mtls/certs
+              readOnly: true
+              {{- end }}
+              {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+          {{- if (index .Values "probes" "eric-oss-auto-config-consistency" "livenessProbe" "initialDelaySeconds") }}
+            {{ print "initialDelaySeconds: " (index .Values "probes" "eric-oss-auto-config-consistency" "livenessProbe" "initialDelaySeconds") }}
+          {{- end }}
+          {{- if (index .Values "probes" "eric-oss-auto-config-consistency" "livenessProbe" "failureThreshold") }}
+            {{ print "failureThreshold: " (index .Values "probes" "eric-oss-auto-config-consistency" "livenessProbe" "failureThreshold") }}
+          {{- end }}
+          {{- if (index .Values "probes" "eric-oss-auto-config-consistency" "livenessProbe" "periodSeconds") }}
+            {{ print "periodSeconds: " (index .Values "probes" "eric-oss-auto-config-consistency" "livenessProbe" "periodSeconds") }}
+          {{- end }}
+          {{- if (index .Values "probes" "eric-oss-auto-config-consistency" "livenessProbe" "timeoutSeconds") }}
+            {{ print "timeoutSeconds: " (index .Values "probes" "eric-oss-auto-config-consistency" "livenessProbe" "timeoutSeconds") }}
+          {{- end }}
+            httpGet:
+              path: /actuator/health
+              port: http
+          readinessProbe:
+          {{- if (index .Values "probes" "eric-oss-auto-config-consistency" "readinessProbe" "initialDelaySeconds") }}
+            {{ print "initialDelaySeconds: " (index .Values "probes" "eric-oss-auto-config-consistency" "readinessProbe" "initialDelaySeconds") }}
+          {{- end }}
+          {{- if (index .Values "probes" "eric-oss-auto-config-consistency" "readinessProbe" "failureThreshold") }}
+            {{ print "failureThreshold: " (index .Values "probes" "eric-oss-auto-config-consistency" "readinessProbe" "failureThreshold") }}
+          {{- end }}
+          {{- if (index .Values "probes" "eric-oss-auto-config-consistency" "readinessProbe" "periodSeconds") }}
+            {{ print "periodSeconds: " (index .Values "probes" "eric-oss-auto-config-consistency" "readinessProbe" "periodSeconds") }}
+          {{- end }}
+          {{- if (index .Values "probes" "eric-oss-auto-config-consistency" "readinessProbe" "timeoutSeconds") }}
+            {{ print "timeoutSeconds: " (index .Values "probes" "eric-oss-auto-config-consistency" "readinessProbe" "timeoutSeconds") }}
+          {{- end }}
+            httpGet:
+              path: /actuator/health
+              port: http
+          env:
+          - name: JAVA_OPTS
+            value: {{ include "eric-oss-auto-config-consistency.jvmHeapSettings" . }}
+          - name: TLS_JAVA_OPTS
+            value: {{ include "eric-oss-auto-config-consistency.clientProtocol" . }}
+          - name: GATEWAY_HOST
+            value: {{ include "eric-oss-auto-config-consistency.ncmpHost" . | quote }}
+          - name: NCMP_URL
+            value: {{ include "eric-oss-auto-config-consistency.ncmpUrl" . | quote }}
+          - name: NCMP_BASE_PATH
+            value: {{ .Values.ncmp.basePath }}
+          - name: LOG_CTRL_FILE
+            value: "/logcontrol/logcontrol.json"
+          - name: ENABLE_AUDIT_LOG_OF_READS
+            value: {{ .Values.logging.enableAuditLogOfReads | quote }}
+          - name: SERVICE_ID
+            value: {{ include "eric-oss-auto-config-consistency.serviceId" . | quote }}
+          - name: IAM_URL
+            value: {{ include "eric-oss-auto-config-consistency.iamUrl" . | quote }}
+          - name: IAM_BASE_PATH
+            value: {{ .Values.iam.basePath | quote }}
+          - name: IAM_CLIENT_ID
+            value: {{ .Values.clientId | quote }}
+          - name: IAM_CLIENT_SECRET
+            value: {{ .Values.clientSecret | quote }}
+          - name: IAM_TOKEN_ENDPOINT_PATH
+            value: {{ .Values.iam.tokenEndpointPath | quote }}
+          - name: CORS_VALUE_GAS_URL
+            valueFrom:
+              configMapKeyRef:
+                name: {{include "eric-oss-auto-config-consistency.name" . }}-frontend-configmap
+                key: corsValueGasUrl
+          - name: DATA_RETENTION_MAX_COUNT
+            value: {{ .Values.database.retention.maxExecutionsToBeRetained | quote }}
+          - name: TLS_ENABLED
+            value: {{ .Values.tls.enabled | quote }}
+            {{- if .Values.tls.enabled }}
+          - name: TRUSTSTORE_CERTIFICATE_MOUNT_PATH
+            value:  /tls/certs
+          - name: APP_TRUST_STORE_PASS
+            value: {{ default (randAlphaNum 16) .Values.tls.appTrustStorePass | quote }}
+          - name: CLIENT_PROTOCOL
+            value: {{ .Values.tls.clientProtocol | quote }}
+          - name: KEYSTORE_CERTIFICATE_MOUNT_PATH
+            value: /mtls/certs
+          - name: ERIC_LOG_TRANSFORMER_KEYSTORE_PW
+            value: {{ default (randAlphaNum 16) .Values.tls.appKeyStorePass | quote }}
+          - name: LOGSTASH_DESTINATION
+            value: {{ .Values.log.streamingDestination | quote }}
+          - name: LOGSTASH_PORT
+            value: "443"
+            {{- end }}
+          - name: TZ
+            value: {{ template "eric-oss-auto-config-consistency.timezone" . }}
+          - name: DB_HOST
+            value: {{ index .Values "eric-oss-auto-config-consistency-pg" "host" }}
+          - name: DB_PORT
+            value: {{ index .Values "eric-oss-auto-config-consistency-pg" "port" | quote }}
+          - name: DB_NAME
+            value: {{ index .Values "eric-oss-auto-config-consistency-pg" "postgresDatabase" }}
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "eric-oss-auto-config-consistency.pgSecretName" . }}
+                key: custom-user
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "eric-oss-auto-config-consistency.pgSecretName" . }}
+                key: custom-pwd
+          - name: SHORT_DB_RETRY_ATTEMPTS
+            value: {{ .Values.database.retries.userInitiated.maxRetryAttempts | quote }}
+          - name: LONG_DB_RETRY_ATTEMPTS
+            value: {{ .Values.database.retries.scheduleInitiated.maxRetryAttempts | quote }}
+          - name: LONG_DB_RETRY_DELAY
+            value: {{ .Values.database.retries.scheduleInitiated.delay | quote }}
+          - name: LONG_DB_RETRY_MAX_DELAY
+            value: {{ .Values.database.retries.scheduleInitiated.maxDelay | quote }}
+          - name: LONG_DB_RETRY_DELAY_MULTIPLIER
+            value: {{ .Values.database.retries.scheduleInitiated.multiplier | quote }}
+          - name: EXECUTION_RETENTION_SCHEDULE
+            value: {{ .Values.database.retention.executionRetentionSchedule | quote }}
+          - name: EXECUTION_EXPIRATION_DAYS
+            value: {{ .Values.database.retention.executionExpirationPeriodInDays | quote }}
+          - name: MODEL_DISCOVERY_SCHEDULE
+            value: {{ .Values.modelDiscovery.scheduling.cronExpression | quote }}
+          - name: MODEL_DISCOVERY_THREAD_POOL_SIZE
+            value: {{ .Values.modelDiscovery.threadPoolSize | quote }}
+          - name: NCMP_READ_MOS_THREAD_POOL_SIZE
+            value: {{ .Values.audit.ncmpReadMos.threadPoolSize | quote }}
+          - name: CONSISTENCY_CHECKER_THREAD_POOL_SIZE
+            value: {{ .Values.audit.threadPoolSize | quote }}
+          - name: REVERSION_EXECUTOR_THREAD_POOL_SIZE
+            value: {{ .Values.audit.revertThreadPoolSize | quote }}
+          - name: AUDIT_MO_QUEUE_SIZE
+            value: {{ .Values.audit.moQueueSize | quote }}
+        {{- include "eric-oss-auto-config-consistency.loggingEnv" . | indent 10 }}
+      {{- if .Values.global }}
+        {{- if .Values.global.security }}
+          {{- if .Values.global.security.tls }}
+            {{- if .Values.global.security.tls.enabled }}
+          - name: CONNECT_MODE
+            value: "tls"
+            {{- if (eq .Values.service.endpoints.chassisapi.tls.enforced "required") }}
+          - name: TLS_MODE
+            value: "only_tls"
+            {{- if (eq .Values.service.endpoints.chassisapi.tls.verifyClientCertificate "required") }}
+          - name: TLS_CA
+            value: "ca_path"
+            {{- end }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+          resources:
+            requests:
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency" "requests" "cpu") }}
+              cpu: {{ (index .Values "resources" "eric-oss-auto-config-consistency" "requests" "cpu" | quote) }}
+            {{- end }}
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency" "requests" "memory") }}
+              memory: {{ (index .Values "resources" "eric-oss-auto-config-consistency" "requests" "memory" | quote) }}
+            {{- end }}
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency" "requests" "ephemeral-storage") }}
+            {{ println "  ephemeral-storage:" (index .Values "resources" "eric-oss-auto-config-consistency" "requests" "ephemeral-storage" | quote) }}
+            {{- end }}
+            limits:
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency" "limits" "cpu") }}
+              cpu: {{ (index .Values "resources" "eric-oss-auto-config-consistency" "limits" "cpu" | quote) }}
+            {{- end }}
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency" "limits" "memory") }}
+              memory: {{ (index .Values "resources" "eric-oss-auto-config-consistency" "limits" "memory" | quote) }}
+            {{- end }}
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency" "limits" "ephemeral-storage") }}
+            {{ println "  ephemeral-storage:" (index .Values "resources" "eric-oss-auto-config-consistency" "limits" "ephemeral-storage" | quote) }}
+            {{- end }}
+        - name: eric-oss-auto-config-consistency-ui
+          image: {{ template "eric-oss-auto-config-consistency-ui.mainImagePath" . }}
+          imagePullPolicy: {{ template "eric-oss-auto-config-consistency-ui.registryImagePullPolicy" . }}
+          env:
+          - name: TZ
+            value: {{ template "eric-oss-auto-config-consistency.timezone" . }}
+          volumeMounts:
+            - name: ui-home
+              mountPath: /home/node
+            - name: apache2
+              mountPath: /etc/apache2
+            - name: application
+              mountPath: /app
+            - name: varlog
+              mountPath: /var/log/apache2
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
+          ports:
+            - name: frontend-http
+              containerPort: {{index .Values.frontend.port}}
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: {{index .Values "probes" "eric-oss-auto-config-consistency-ui" "livenessProbe" "initialDelaySeconds"}}
+            periodSeconds: {{index .Values "probes" "eric-oss-auto-config-consistency-ui" "livenessProbe" "periodSeconds"}}
+            timeoutSeconds: {{index .Values "probes" "eric-oss-auto-config-consistency-ui" "livenessProbe" "timeoutSeconds"}}
+            failureThreshold: {{index .Values "probes" "eric-oss-auto-config-consistency-ui" "livenessProbe" "failureThreshold"}}
+            httpGet:
+              path: /config.json
+              port: frontend-http
+          readinessProbe:
+            initialDelaySeconds: {{index .Values "probes" "eric-oss-auto-config-consistency-ui" "readinessProbe" "initialDelaySeconds"}}
+            periodSeconds: {{index .Values "probes" "eric-oss-auto-config-consistency-ui" "readinessProbe" "periodSeconds"}}
+            timeoutSeconds: {{index .Values "probes" "eric-oss-auto-config-consistency-ui" "readinessProbe" "timeoutSeconds"}}
+            failureThreshold: {{index .Values "probes" "eric-oss-auto-config-consistency-ui" "readinessProbe" "failureThreshold"}}
+            httpGet:
+              path: /config.json
+              port: frontend-http
+          resources:
+            requests:
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency-ui" "requests" "cpu")}}
+              cpu: {{(index .Values "resources" "eric-oss-auto-config-consistency-ui" "requests" "cpu" | quote)}}
+            {{- end}}
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency-ui" "requests" "memory")}}
+              memory: {{(index .Values "resources" "eric-oss-auto-config-consistency-ui" "requests" "memory" | quote)}}
+            {{- end}}
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency-ui" "requests" "ephemeral-storage")}}
+            {{println "  ephemeral-storage:" (index .Values "resources" "eric-oss-auto-config-consistency-ui" "requests" "ephemeral-storage" | quote)}}
+            {{- end}}
+            limits:
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency-ui" "limits" "cpu")}}
+              cpu: {{(index .Values "resources" "eric-oss-auto-config-consistency-ui" "limits" "cpu" | quote)}}
+            {{- end}}
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency-ui" "limits" "memory")}}
+              memory: {{(index .Values "resources" "eric-oss-auto-config-consistency-ui" "limits" "memory" | quote)}}
+            {{- end}}
+            {{- if (index .Values "resources" "eric-oss-auto-config-consistency-ui" "limits" "ephemeral-storage")}}
+            {{println "  ephemeral-storage:" (index .Values "resources" "eric-oss-auto-config-consistency-ui" "limits" "ephemeral-storage" | quote)}}
+            {{- end}}
+
+      nodeSelector: {{ include "eric-oss-auto-config-consistency.nodeSelector" . | nindent 6 -}}
+
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds:
+        {{- include "eric-oss-auto-config-consistency.terminationGracePeriodSeconds" . | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.tolerations }}
+      tolerations:
+        {{- include "eric-oss-auto-config-consistency.tolerations" . | nindent 8 }}
+      {{- end }}
+
+      {{- if (index .Values "podPriority" "eric-oss-auto-config-consistency" "priorityClassName") }}
+      priorityClassName: {{ (index .Values "podPriority" "eric-oss-auto-config-consistency" "priorityClassName") }}
+      {{- end }}
+
+      {{- with .Values.topologySpreadConstraints.deployment }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- if eq .Values.affinity.podAntiAffinity "hard" }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ include "eric-oss-auto-config-consistency.name" . }}
+            topologyKey: {{ .Values.affinity.topologyKey }}
+      {{- else if eq .Values.affinity.podAntiAffinity  "soft" }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - {{ include "eric-oss-auto-config-consistency.name" . }}
+              topologyKey: {{ .Values.affinity.topologyKey }}
+      {{- end }}

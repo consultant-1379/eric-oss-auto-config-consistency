@@ -1,0 +1,4 @@
+moType,attributeName,attributeValue,conditions,priority
+NRCellDU,ailgDlPrbLoadLevel,1,,
+NRCellDU,fddLteCoexistence,false,,
+GNBDUFunction,endpointResDepHEnabled,true,,

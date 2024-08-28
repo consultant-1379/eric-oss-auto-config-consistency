@@ -1,0 +1,915 @@
+module ericsson-enm-RcsLM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsLM;
+  prefix erienmnrmrcslm;
+  yexte:ecim-name RcsLM;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 1;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-LmLicenseState {
+    description "The license state of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "There is no valid license available for the feature or capacity.";
+        value 0;
+      }
+      enum ENABLED {
+        description "There is valid license available for the feature or capacity.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-LmState {
+    description "Operational modes of the License Manager.";
+    type enumeration {
+      enum LOCKED {
+        description "No key file is available for the License Manager, so license requests are rejected.";
+        value 0;
+      }
+      enum NORMAL {
+        description "Key file is available for the License Manager, so license requests are granted accordingly.";
+        value 1;
+      }
+      enum INTEGRATION_UNLOCK {
+        description "All license requests are granted until first key file is delivered.\n\nThe maximum duration the License Manager can function in this operational mode is pre-defined. When maximum duration expires and no other unlock applies, the License Manager goes into LOCKED operational state.";
+        value 2;
+      }
+      enum MAINTENANCE_UNLOCK {
+        description "All license requests are granted for maintenance purposes.\n\nThe maximum duration the License Manager can function in this operational state is pre-defined. When maximum duration expires and no other unlock applies, the License Manager goes into LOCKED operational state.";
+        value 3;
+      }
+      enum EMERGENCY_UNLOCK {
+        description "All license requests are granted due to an emergency situation.\n\nThe maximum duration the License Manager can function in this operational state is pre-defined. When maximum duration expires and no other unlock applies, the License Manager goes into LOCKED operational state.";
+        value 4;
+      }
+      enum AUTONOMOUS_MODE {
+        description "The key file is not accessible and license requests are granted based on cached license information.\n\nThe maximum duration the License Manager can function in this operational state is pre-defined. When maximum duration expires and no unlock state applies, the License Manager goes into LOCKED operational state.";
+        value 5;
+      }
+      enum SYSTEM_TRIGGERED_UNLOCK {
+        description "SYSTEM_TRIGGERED_UNLOCK.\n\nAll license requests are granted due to unlock state being triggered by some event in the License Manager.\n\nThe maximum duration the License Manager can function in this operational state is pre-defined.";
+        value 6;
+      }
+    }
+  }
+  typedef enum-LmServiceState {
+    description "Whether a certain service is operable or not based on license and feature states.";
+    type enumeration {
+      enum INOPERABLE {
+        value 0;
+      }
+      enum OPERABLE {
+        value 1;
+      }
+    }
+  }
+  typedef enum-ActionResultType {
+    description "Lists the different results of an action.";
+    type enumeration {
+      enum SUCCESS {
+        description "The asynchronous action ended with success.";
+        value 1;
+      }
+      enum FAILURE {
+        description "The asynchronous action ended with failure.";
+        value 2;
+      }
+      enum NOT_AVAILABLE {
+        description "No result is available yet.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-LmActivationState {
+    description "Operational modes activation states and License Manager grace period.";
+    type enumeration {
+      enum INACTIVE {
+        description "The operational mode or grace period is inactive.";
+        value 0;
+      }
+      enum ACTIVATED {
+        description "The operational mode or grace period is activated.";
+        value 1;
+      }
+      enum ACTIVATED_EXPIRING {
+        description "The operational mode or grace period is about to expire.";
+        value 2;
+      }
+      enum EXPIRED {
+        description "The operational mode or grace period has expired.\n\nNote: The state is not applicable to all operational modes.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-ActionStateType {
+    description "Lists the action states.";
+    type enumeration {
+      enum CANCELLING {
+        description "Cancellation is in progress.";
+        value 1;
+      }
+      enum RUNNING {
+        description "The execution of the action is currently in progress.";
+        value 2;
+      }
+      enum FINISHED {
+        description "The action is finished.";
+        value 3;
+      }
+      enum CANCELLED {
+        description "The action has been cancelled and cancellation has been done.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-LmFeatureState {
+    description "Indicates whether or not a certain feature is administratively activated.";
+    type enumeration {
+      enum DEACTIVATED {
+        value 0;
+      }
+      enum ACTIVATED {
+        value 1;
+      }
+    }
+  }
+  typedef ddt-ActionInvocationResult {
+    description "This is the datatype for the Asychronous Action Id. ";
+    type uint16;
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC \n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)\n\n";
+    type string {
+      length 19..31;
+    }
+  }
+  typedef ddt-EcimPasswordString {
+    description "This type enables secure handling of passwords.";
+    type string;
+  }
+  grouping struct-AsyncActionProgress {
+    description "Records the progress of an asynchronous action.";
+    leaf result {
+      description "Result state of a completed action.\nThis field has value NOT_AVAILABLE if the action is not finished.";
+      type erienmnrmrcslm:enum-ActionResultType;
+    }
+    leaf timeOfLastStatusUpdate {
+      description "Date and time when the struct member state was last updated.";
+      type erienmnrmrcslm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf timeActionCompleted {
+      description "Date and time when the action was completed (successfully or unsuccessfully).";
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf-list additionalInfo {
+      min-elements 0;
+      description "Used for logging significant messages during execution of an action.";
+      type string;
+    }
+    leaf actionId {
+      description "Uniquely identifies the invocation of an action.\nIdentifies the invocation of an action when the managed object allows invocation of more than one action at a time.";
+      type erienmnrmrcslm:ddt-ActionInvocationResult;
+      mandatory true;
+    }
+    leaf progressPercentage {
+      description "Progress of the action.\nThe range is between 0 and 100.";
+      type uint8;
+    }
+    leaf progressInfo {
+      description "Textual information that describes the actual state of the action execution.";
+      type string;
+    }
+    leaf state {
+      description "Current state of the action.";
+      type erienmnrmrcslm:enum-ActionStateType;
+    }
+    leaf timeActionStarted {
+      description "Date and time when the current action was started.";
+      type erienmnrmrcslm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf resultInfo {
+      description "Textual description of the outcome/result of the action containing useful information for the NMS.\nIf the action failed, it can contain an error message.";
+      type string;
+    }
+    leaf actionName {
+      description "Name of the invoked asynchronous action.";
+      type string;
+    }
+  } // end 'grouping struct-AsyncActionProgress'
+  grouping struct-LmCapacityValue {
+    description "Defines a capacity value.\n\nThe value is invalid if the value of noLimit is 'true'.\nIf the value of 'value' is -1 the capacity key is of type 'Not Contractually Limited'";
+    leaf value {
+      description "The capacity value.\n\nThe value is invalid if \"noLimit=true\".";
+      type int32;
+    }
+    leaf noLimit {
+      description "True if the value is unlimited, false if the value is defined by attribute \"value\".";
+      type boolean;
+      default false;
+    }
+  } // end 'grouping struct-LmCapacityValue'
+  grouping moc-Lm-keys {
+    description "Key(s) for MOC Lm";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name lmId;
+      type string;
+    }
+  } // end 'grouping moc-Lm-keys'
+  grouping moc-Lm {
+    description "Supports activities and contains information related to license management.";
+    leaf lastInventoryChange {
+      config false;
+      description "Date and time of the last change in the license inventory.\n\nChange in the license inventory may occur when the key file is updated on the Managed Element or when license information is refreshed by synchronizing with license servers.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf referenceToLicenseServer {
+      config false;
+      description "Reference to the primary license server used by the License Manager.\n\nFor instance, the reference can contain the IP address of the server or locate its configuration interface. The attribute value is NULL if the License Manager does not rely on any license server.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf fingerprint {
+      description "The unique identification of the Managed Element.";
+      mandatory true;
+      type string;
+    }
+    leaf fingerprintUpdateable {
+      config false;
+      description "Indicates whether or not the fingerprint of the Managed Element can be updated.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf lmState {
+      config false;
+      description "The current operational state of the License Manager.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmState;
+    }
+    leaf lastLicenseInventoryRefresh {
+      config false;
+      description "Date and time when License Manager last synchronized the license inventory of the Managed Element.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    action refreshLicenseInventory {
+      description "Initiates the synchronization of Managed Element's license inventory.\n\nReturn value is true if the synchronization succeeded, otherwise false.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-Lm'
+  grouping moc-IntegrationUnlock-keys {
+    description "Key(s) for MOC IntegrationUnlock";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name integrationUnlockId;
+      type string;
+    }
+  } // end 'grouping moc-IntegrationUnlock-keys'
+  grouping moc-IntegrationUnlock {
+    description "Integration Unlock state information.";
+    leaf activationsLeft {
+      config false;
+      description "Remaining allowed Integration Unlock activations left.";
+      notife:notifiable-state-data true;
+      type uint8;
+    }
+    leaf expiration {
+      config false;
+      description "Expiry date and time of Integration Unlock.\n\nThe value is NULL if the activation state is INACTIVE.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf activationState {
+      config false;
+      description "Activation state of Integration Unlock.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmActivationState;
+    }
+    action activate {
+      description "Initiates activation of the Integration Unlock operational mode.\n\nReturn value is true if the activation succeeded, otherwise false.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-IntegrationUnlock'
+  grouping moc-KeyFileManagement-keys {
+    description "Key(s) for MOC KeyFileManagement";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name keyFileManagementId;
+      type string;
+    }
+  } // end 'grouping moc-KeyFileManagement-keys'
+  grouping moc-KeyFileManagement {
+    description "Enables installation of key files and provides information about the installed key file.";
+    container reportProgress {
+      description "Reference to the progress report including the result of the initiated key file installation.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcslm:struct-AsyncActionProgress;
+    } // end 'container reportProgress'
+    action installKeyFile {
+      description "Initiates the key file installation defined by the URI given as a parameter.\n\nThe return value is the action Id if the initiation succeeded, otherwise it is 0.\n\nThe installation is an asynchronous operation. Progress is reported via attribute reportProgress.";
+      input {
+        leaf password {
+          mandatory true;
+          description "Password to access the referenced file.\n\nIf  authentication is not password based, this parameter will be ignored.\n";
+          type erienmnrmrcslm:ddt-EcimPasswordString;
+        }
+        leaf uri {
+          mandatory true;
+          description "The URI of the key file that is to be installed.\n\nThe URI shall be a remote source file (for example sftp://myuser@myhostname.ericsson.local/dir/subdir/rbs006.xml).\n\nIf user name is needed to access the referenced file then the URI shall include the user name. The URI must not contain password.\n\nThe generic URI syntax is defined by RFC 3986.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type uint16;
+        }
+      }
+    }
+  } // end 'grouping moc-KeyFileManagement'
+  grouping moc-CapacityKey-keys {
+    description "Key(s) for MOC CapacityKey";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name capacityKeyId;
+      type string;
+    }
+  } // end 'grouping moc-CapacityKey-keys'
+  grouping moc-CapacityKey {
+    description "Key of a licensed capacity that is available for the Managed Element.";
+    container licensedCapacityLimit {
+      description "Licensed capacity limit as defined in the installed key file.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcslm:struct-LmCapacityValue;
+    } // end 'container licensedCapacityLimit'
+    leaf licensedCapacityLimitReached {
+      config false;
+      description "Indicates whether or not current capacity usage reaches the licensed capacity limit.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf shared {
+      config false;
+      description "Indicates whether the key is shared among Managed Elements or dedicated to the Managed Element.\n\nA key is dedicated to the Managed Element if the key can be used only by the Managed Element. This is always the case when the ELIM format is used. A key can be shared among multiple Managed Elements if it is installed on a License Server to which multiple Managed Elements connect.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf grantedCapacityLevel {
+      config false;
+      description "The capacity level currently granted by the License Manager.\n\nThe attribute value is based on requests and releases of capacity units made by License Users. If such requests and releases are not made by License Users, the value of the attribute defaults to the licensed capacity limit. Note: The value of the attribute is not based on Performance Management data.\n";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf name {
+      config false;
+      description "The name of the feature represented by the key.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf keyId {
+      config false;
+      description "Identity of the feature under license control.\n\nE.g., CXC4011234, FAT1021234";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf expiration {
+      config false;
+      description "The key expiry date and time.\n\nFor perpetual keys, the value is NULL.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf state {
+      config false;
+      description "State information for the capacity associated with this key.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf validFrom {
+      config false;
+      description "The date and time from which the key is valid.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf capacityUnit {
+      erienmyext:no-notification;
+      config false;
+      description "The licensed capacity measuring unit.";
+      type string;
+    }
+    leaf productType {
+      config false;
+      description "Identifier of the type of product to which the capacity is related.\n\nThis attribute is used only in systems where the different applications use separate key files to identify which application or product the capacity belongs to, e.g. “SASN”, “GSN_GGSN”, “SSR 8000”.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-CapacityKey'
+  grouping moc-CapacityState-keys {
+    description "Key(s) for MOC CapacityState";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name capacityStateId;
+      type string;
+    }
+  } // end 'grouping moc-CapacityState-keys'
+  grouping moc-CapacityState {
+    description "States of capacities that are supported by a Managed Element.";
+    leaf licensedCapacityLimitReached {
+      config false;
+      description "Indicates whether or not current capacity usage reaches the licensed capacity limit.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf serviceState {
+      config false;
+      description "Service State for the new optional capacity licenses.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmServiceState;
+    }
+    leaf featureState {
+      status current {
+        yexte:preliminary;
+        yexte:status-information "Cannot be changed to DEACTIVATED";
+      }
+      description "Feature State for the new optional capacity licenses.";
+      type erienmnrmrcslm:enum-LmFeatureState;
+      default ACTIVATED;
+    }
+    leaf licenseState {
+      config false;
+      description "Indicates whether or not a valid license key enables the capacity usage.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmLicenseState;
+    }
+    container currentCapacityLimit {
+      description "Licensed capacity limit as defined by the currently valid license key.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcslm:struct-LmCapacityValue;
+    } // end 'container currentCapacityLimit'
+    leaf grantedCapacityLevel {
+      config false;
+      description "The capacity level currently granted by the License Manager.\n\nThe attribute value is based on requests and releases of capacity units made by License Users. If such requests and releases are not made by License Users, the value of the attribute defaults to the licensed capacity limit. Note: The value of the attribute is not based on Performance Management data.\n";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf description {
+      config false;
+      description "The description of the capacity.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf keyId {
+      config false;
+      description "Identity of the feature under license control.\n\nE.g., CXC4011234, FAT1021234";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list capacityKey {
+      min-elements 0;
+      config false;
+      description "Key instances associated with this capacity.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf capacityUnit {
+      erienmyext:no-notification;
+      config false;
+      description "The licensed capacity measuring unit.";
+      type string;
+    }
+  } // end 'grouping moc-CapacityState'
+  grouping moc-KeyFileInformation-keys {
+    description "Key(s) for MOC KeyFileInformation";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name keyFileInformationId;
+      type string;
+    }
+  } // end 'grouping moc-KeyFileInformation-keys'
+  grouping moc-KeyFileInformation {
+    description "Basic information about the key file installed on the Managed Element.";
+    leaf installationTime {
+      config false;
+      description "Date and time when key file was installed on the Managed Element.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf sequenceNumber {
+      config false;
+      description "Sequence number of the key file.\n\nIf sequence number is not available, this value is 0.\n";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf locatable {
+      config false;
+      description "Indicates whether or not the key file can currently be located.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf productType {
+      config false;
+      description "Identifier of the product type to which the capacity is related.\n\nThis attribute is used only in systems where different applications use separate key files to identify to which application or product the capacity belongs, e.g: SASN, GSN_GGSN, or SSR 8000.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-KeyFileInformation'
+  grouping moc-AutonomousMode-keys {
+    description "Key(s) for MOC AutonomousMode";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name autonomousModeId;
+      type string;
+    }
+  } // end 'grouping moc-AutonomousMode-keys'
+  grouping moc-AutonomousMode {
+    description "Autonomous Mode state information.";
+    leaf expiration {
+      config false;
+      description "Expiry date and time of Autonomous Mode.\n\nThe value is NULL if the activation state is INACTIVE.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf activationState {
+      config false;
+      description "Autonomous Mode activation state.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmActivationState;
+    }
+  } // end 'grouping moc-AutonomousMode'
+  grouping moc-GracePeriod-keys {
+    description "Key(s) for MOC GracePeriod";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name gracePeriodId;
+      type string;
+    }
+  } // end 'grouping moc-GracePeriod-keys'
+  grouping moc-GracePeriod {
+    description "Grace period information of the associated capacity.";
+    leaf gracePeriodExpiration {
+      config false;
+      description "Expiry date and time of the grace period.\n\nThe value is NULL if grace-period state is inactive.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf gracePeriodState {
+      config false;
+      description "Grace period state of the capacity.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmActivationState;
+    }
+  } // end 'grouping moc-GracePeriod'
+  grouping moc-EmergencyUnlock-keys {
+    description "Key(s) for MOC EmergencyUnlock";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name emergencyUnlockId;
+      type string;
+    }
+  } // end 'grouping moc-EmergencyUnlock-keys'
+  grouping moc-EmergencyUnlock {
+    description "Emergency Unlock state information.";
+    leaf activationsLeft {
+      config false;
+      description "Remaining allowed Emergency Unlock activations left.";
+      notife:notifiable-state-data true;
+      type uint8;
+    }
+    leaf expiration {
+      config false;
+      description "Expiry date and time of Emergency Unlock.\n\nThe value is NULL if the activation state is INACTIVE.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf activationState {
+      config false;
+      description "Activation state of Emergency Unlock.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmActivationState;
+    }
+    action activate {
+      description "Initiates activation of the Emergency Unlock operational mode.\n\nReturn value is true if the activation succeeded, otherwise false.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-EmergencyUnlock'
+  grouping moc-FeatureState-keys {
+    description "Key(s) for MOC FeatureState";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name featureStateId;
+      type string;
+    }
+  } // end 'grouping moc-FeatureState-keys'
+  grouping moc-FeatureState {
+    description "This MO class defines different licensing-related states of a feature.";
+    leaf serviceState {
+      config false;
+      description "Indicates whether or not the feature is able to provide its service from a license perspective.\n\nThe value of serviceState is derived from featureState and licenseState. If featureState is ACTIVATED and licenseState is ENABLED, serviceState is OPERABLE. In all other cases, serviceState is INOPERABLE.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmServiceState;
+    }
+    leaf featureState {
+      description "Indicates whether or not the feature license is administratively activated.";
+      yexte:disturbances "Deactivating a feature may cause traffic loss";
+      type erienmnrmrcslm:enum-LmFeatureState;
+      default DEACTIVATED;
+    }
+    leaf licenseState {
+      config false;
+      description "Indicates whether or not a valid license key enables the feature usage.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:enum-LmLicenseState;
+    }
+    leaf description {
+      config false;
+      description "The description of the feature.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf keyId {
+      config false;
+      description "Identity of the feature under license control.\n\nE.g., CXC4011234, FAT1021234";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list featureKey {
+      min-elements 0;
+      config false;
+      description "Key instances associated with this feature.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-FeatureState'
+  grouping moc-FeatureKey-keys {
+    description "Key(s) for MOC FeatureKey";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name featureKeyId;
+      type string;
+    }
+  } // end 'grouping moc-FeatureKey-keys'
+  grouping moc-FeatureKey {
+    description "Key of a licensed feature that is available for the Managed Element.";
+    leaf shared {
+      config false;
+      description "Indicates whether the key is shared among Managed Elements or dedicated to the Managed Element.\n\nA key is dedicated to the Managed Element if the key can be used only by the Managed Element. This is always the case when the ELIM format is used. A key can be shared among multiple Managed Elements if it is installed on a License Server to which multiple Managed Elements connect.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf name {
+      config false;
+      description "The name of the feature represented by the key.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf keyId {
+      config false;
+      description "Identity of the feature under license control.\n\nE.g., CXC4011234, FAT1021234";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf expiration {
+      config false;
+      description "The key expiry date and time.\n\nFor perpetual keys, the value is NULL.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf state {
+      config false;
+      description "State information for the feature associated with this key.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf validFrom {
+      config false;
+      description "The date and time from which the key is valid.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslm:ddt-DateTime;
+    }
+    leaf productType {
+      config false;
+      description "Identifier of the type of product to which the capacity is related.\n\nThis attribute is used only in systems where the different applications use separate key files to identify which application or product the capacity belongs to, e.g. “SASN”, “GSN_GGSN”, “SSR 8000”.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-FeatureKey'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list Lm {
+      key id;
+      max-elements 1;
+      description "Supports activities and contains information related to license management.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Lm-keys;
+      container attributes {
+        description "Attributes for Lm";
+        uses moc-Lm;
+      } // end 'container attributes'
+    } // end 'list Lm'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm {
+    list IntegrationUnlock {
+      key id;
+      max-elements 1;
+      description "Integration Unlock state information.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-IntegrationUnlock-keys;
+      container attributes {
+        description "Attributes for IntegrationUnlock";
+        uses moc-IntegrationUnlock;
+      } // end 'container attributes'
+    } // end 'list IntegrationUnlock'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm {
+    list KeyFileManagement {
+      key id;
+      max-elements 1;
+      description "Enables installation of key files and provides information about the installed key file.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-KeyFileManagement-keys;
+      container attributes {
+        description "Attributes for KeyFileManagement";
+        uses moc-KeyFileManagement;
+      } // end 'container attributes'
+    } // end 'list KeyFileManagement'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm {
+    list CapacityKey {
+      key id;
+      description "Key of a licensed capacity that is available for the Managed Element.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CapacityKey-keys;
+      container attributes {
+        description "Attributes for CapacityKey";
+        uses moc-CapacityKey;
+      } // end 'container attributes'
+    } // end 'list CapacityKey'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm {
+    list CapacityState {
+      key id;
+      description "States of capacities that are supported by a Managed Element.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CapacityState-keys;
+      container attributes {
+        description "Attributes for CapacityState";
+        uses moc-CapacityState;
+      } // end 'container attributes'
+    } // end 'list CapacityState'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm/erienmnrmrcslm:KeyFileManagement {
+    list KeyFileInformation {
+      key id;
+      description "Basic information about the key file installed on the Managed Element.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-KeyFileInformation-keys;
+      container attributes {
+        description "Attributes for KeyFileInformation";
+        uses moc-KeyFileInformation;
+      } // end 'container attributes'
+    } // end 'list KeyFileInformation'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm {
+    list AutonomousMode {
+      key id;
+      max-elements 1;
+      description "Autonomous Mode state information.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-AutonomousMode-keys;
+      container attributes {
+        description "Attributes for AutonomousMode";
+        uses moc-AutonomousMode;
+      } // end 'container attributes'
+    } // end 'list AutonomousMode'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm/erienmnrmrcslm:CapacityKey {
+    list GracePeriod {
+      key id;
+      max-elements 1;
+      description "Grace period information of the associated capacity.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-GracePeriod-keys;
+      container attributes {
+        description "Attributes for GracePeriod";
+        uses moc-GracePeriod;
+      } // end 'container attributes'
+    } // end 'list GracePeriod'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm/erienmnrmrcslm:CapacityState {
+    list GracePeriod {
+      key id;
+      max-elements 1;
+      description "Grace period information of the associated capacity.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-GracePeriod-keys;
+      container attributes {
+        description "Attributes for GracePeriod";
+        uses moc-GracePeriod;
+      } // end 'container attributes'
+    } // end 'list GracePeriod'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm {
+    list EmergencyUnlock {
+      key id;
+      max-elements 1;
+      description "Emergency Unlock state information.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EmergencyUnlock-keys;
+      container attributes {
+        description "Attributes for EmergencyUnlock";
+        uses moc-EmergencyUnlock;
+      } // end 'container attributes'
+    } // end 'list EmergencyUnlock'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm {
+    list FeatureState {
+      key id;
+      description "This MO class defines different licensing-related states of a feature.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FeatureState-keys;
+      container attributes {
+        description "Attributes for FeatureState";
+        uses moc-FeatureState;
+      } // end 'container attributes'
+    } // end 'list FeatureState'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslm:Lm {
+    list FeatureKey {
+      key id;
+      description "Key of a licensed feature that is available for the Managed Element.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FeatureKey-keys;
+      container attributes {
+        description "Attributes for FeatureKey";
+        uses moc-FeatureKey;
+      } // end 'container attributes'
+    } // end 'list FeatureKey'
+  }
+}

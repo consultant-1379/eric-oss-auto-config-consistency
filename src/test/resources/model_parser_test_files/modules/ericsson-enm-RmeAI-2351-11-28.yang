@@ -1,0 +1,117 @@
+module ericsson-enm-RmeAI {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeAI;
+  prefix erienmnrmrmeai;
+  yexte:ecim-name RmeAI;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-ConfigLevel {
+    description "The stages of auto provisioning.";
+    type enumeration {
+      enum SITE_CONFIG_COMPLETE {
+        description "Site configuration is completed.\nThe node is ready for integration by OSS.";
+        value 1;
+      }
+      enum OSS_CONFIGURATION_SUCCESSFUL {
+        description "The node is successfully configured by OSS.";
+        value 2;
+      }
+      enum INTEGRATION_COMPLETE {
+        description "The node is integrated in a network.";
+        value 3;
+      }
+      enum READY_FOR_SERVICE {
+        description "Integration is complete. \nAll planned configuration has been applied successfully.";
+        value 4;
+      }
+      enum OSS_ACTIVATING_CONFIGURATION {
+        description "OSS continues with configuration.";
+        value 5;
+      }
+      enum OSS_CONFIGURATION_FAILED {
+        description "Node configuration by OSS has failed.";
+        value 6;
+      }
+      enum ACTIVATING_FEATURES {
+        description "All features with valid licenses are activated.";
+        value 7;
+      }
+      enum ACTIVATING_FEATURES_FAILED {
+        description "Not all features with valid licenses installed are correctly activated.";
+        value 8;
+      }
+      enum OSS_CONTROL_NODE_CONN {
+        description "OSS activates node conection to the control node.";
+        value 9;
+      }
+      enum OSS_CONTROL_NODE_CONN_FAILED {
+        description "Node connection to control node failed.";
+        value 10;
+      }
+      enum UNLOCKING_CELLS {
+        description "Unlocked cells are coming into service.";
+        value 11;
+      }
+      enum UNLOCKING_CELLS_FAILED {
+        description "One or more cells failed to unlock.";
+        value 12;
+      }
+      enum RAN_INTEGRATION_WAS_CANCELLED {
+        description "AutoIntegration was cancelled but the ME is still manageable from OSS.";
+        value 13;
+      }
+    }
+  }
+  grouping moc-AutoProvisioning-keys {
+    description "Key(s) for MOC AutoProvisioning";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name autoProvisioningId;
+      type string;
+    }
+  } // end 'grouping moc-AutoProvisioning-keys'
+  grouping moc-AutoProvisioning {
+    description "This MO class contains configuration items for the Auto provisioning service.";
+    leaf rbsConfigLevel {
+      description "Show the current stage of auto provisioning for this managed element.";
+      type erienmnrmrmeai:enum-ConfigLevel;
+    }
+  } // end 'grouping moc-AutoProvisioning'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list AutoProvisioning {
+      key id;
+      max-elements 1;
+      description "This MO class contains configuration items for the Auto provisioning service.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-AutoProvisioning-keys;
+      container attributes {
+        description "Attributes for AutoProvisioning";
+        uses moc-AutoProvisioning;
+      } // end 'container attributes'
+    } // end 'list AutoProvisioning'
+  }
+}

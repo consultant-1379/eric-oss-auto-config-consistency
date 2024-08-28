@@ -1,0 +1,9 @@
+"id","moType","attributeName","attributeValue",conditions
+"1","ENodeBFunction","prachConfigEnabled","true",
+"2","ENodeBFunction","zzzTemporary74","-2000000000",
+"3","EUtranCellFDD","cellCapMinCellSubCap","1000",
+"4","EUtranCellFDD","cellCapMinMaxWriProt","true",
+"5","EUtranCellFDD","cfraEnable","true",
+"6","EUtranCellFDD","commonCqiPeriodicity","80",
+"7","EUtranCellFDD","ulVolteCovMobThr","5",
+"99","EUtranCellFDD","","false",

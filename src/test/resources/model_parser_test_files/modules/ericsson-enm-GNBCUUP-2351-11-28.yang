@@ -1,0 +1,1411 @@
+module ericsson-enm-GNBCUUP {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-GNBCUUP;
+  prefix erienmnrmgnbcuup;
+  yexte:ecim-name GNBCUUP;
+  revision 2351-11-28 {
+    yexte:version 7;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-PathStatusType {
+    description "GTP-U path status.";
+    type enumeration {
+      enum UNKNOWN {
+        description "Peer status is unknown.";
+        status current {
+          yexte:preliminary;
+        }
+        value 0;
+      }
+      enum REACHABLE {
+        description "Peer reachable, responds to GTP-U echo requests.";
+        status current {
+          yexte:preliminary;
+        }
+        value 1;
+      }
+      enum UNREACHABLE {
+        description "Peer unreachable, does not respond to GTP-U echo requests.";
+        status current {
+          yexte:preliminary;
+        }
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef enum-InterfaceName {
+    description "RAN interfaces.";
+    type enumeration {
+      enum C5 {
+        description "C5 for user plane.";
+        value 0;
+      }
+      enum E1 {
+        description "E1 for control and user plane.";
+        value 1;
+      }
+      enum E6 {
+        description "E6 for control plane.";
+        value 2;
+      }
+      enum F1 {
+        description "F1 for control and user plane.";
+        value 3;
+      }
+      enum NG {
+        description "NG for control and user plane.";
+        value 4;
+      }
+      enum S1 {
+        description "S1 for user plane.";
+        value 5;
+      }
+      enum XN {
+        description "Xn for control and user plane.";
+        value 6;
+      }
+      enum X2 {
+        description "X2 for control and user plane.";
+        value 7;
+      }
+    }
+  }
+  typedef enum-AqmMode {
+    description "AQM mode.";
+    type enumeration {
+      enum OFF {
+        description "Turned off.";
+        status current {
+          yexte:preliminary;
+        }
+        value 0;
+      }
+      enum MODE1 {
+        description Non-GBR.;
+        status current {
+          yexte:preliminary;
+        }
+        value 1;
+      }
+      enum MODE2 {
+        description GBR.;
+        status current {
+          yexte:preliminary;
+        }
+        value 2;
+      }
+    }
+  }
+  typedef enum-MonitoringStatusType {
+    description "GTP-U echo path monitoring activity status.";
+    type enumeration {
+      enum INACTIVE {
+        description "GTP-U Path monitoring is disabled.";
+        status current {
+          yexte:preliminary;
+        }
+        value 0;
+      }
+      enum ACTIVE {
+        description "GTP-U Path monitoring is enabled.";
+        status current {
+          yexte:preliminary;
+        }
+        value 1;
+      }
+    }
+  }
+  typedef ddt-GNBCUUP_S1ULink_remoteEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_estimatedUeL2Buffer {
+    type int32 {
+      range 0..400;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_gtpuErrorIndDscp {
+    type int32 {
+      range 0..63;
+    }
+  }
+  typedef ddt-GNBCUUP_EP_XnU_remoteEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_endcDlNrRetProhibTimer {
+    type int32 {
+      range 0..1000;
+    }
+  }
+  typedef ddt-NratCommonLibrary_PLMNId_mnc {
+    type string {
+      length 2..3;
+    }
+  }
+  typedef ddt-GNBCUUP_PpControlLink_remoteEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_gNBId {
+    type int64 {
+      range 0..4294967295;
+    }
+  }
+  typedef ddt-GNBCUUP_CUUP5qi_dscp {
+    type int32 {
+      range 0..63;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_dcDlAggActTime {
+    type int32 {
+      range 0..1000;
+    }
+  }
+  typedef ddt-GNBCUUP_CUUP5qi_packetDelayBudgetOffset {
+    type int32 {
+      range 0..1023;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_x2EndcGtpuEchoDscp {
+    type int32 {
+      range 0..63;
+    }
+  }
+  typedef ddt-GNBCUUP_X2ULink_localEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-UserLabel {
+    description "User-defined label, maximum 128 characters including spaces.";
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-GNBCUUP_S1ULink_localEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_EP_NgU_remoteEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_CUUP5qi_estimatedE2ERTT {
+    type int32 {
+      range 0..1023;
+    }
+  }
+  typedef ddt-GNBCUUP_ResourcePartition_resourcePartitionName {
+    type string {
+      length 1..255;
+    }
+  }
+  typedef ddt-GNBCUUP_PpControlLink_detailedAvailabilityInfoTemp {
+    type string {
+      length 1..256;
+    }
+  }
+  typedef ddt-GNBCUUP_RpUserPlaneLink_localEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-NratCommonLibrary_SliceSelectionAssistInfo_sd {
+    type int32 {
+      range 0..16777215;
+    }
+  }
+  typedef ddt-NratCommonLibrary_SliceSelectionAssistInfo_sst {
+    type int32 {
+      range 0..255;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_dlPdcpSpsTargetTimeLTE {
+    type int32 {
+      range 0..1000;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_endcUlNrRetProhibTimer {
+    type int32 {
+      range 0..10000;
+    }
+  }
+  typedef ddt-GNBCUUP_RpUserPlaneLink_remoteEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_EP_XnU_localEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_X2ULink_remoteEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-NratCommonLibrary_PLMNId_mcc {
+    type string {
+      length 3..3;
+    }
+  }
+  typedef ddt-GNBCUUP_CUUP5qi_packetDelayBudget {
+    type int32 {
+      range 0..1023;
+    }
+  }
+  typedef ddt-GNBCUUP_EP_NgU_localEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_dlPdcpSpsTargetTimeNR {
+    type int32 {
+      range 0..1000;
+    }
+  }
+  typedef ddt-GNBCUUP_CUUP5qi_profile5qi {
+    type int32 {
+      range 0..255;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_gNBIdLength {
+    type int32 {
+      range 22..32;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_s1GtpuEchoDscp {
+    type int32 {
+      range 0..63;
+    }
+  }
+  typedef ddt-GNBCUUP_CUUP5qi_tOooUlDelivery {
+    type int32 {
+      range "10..10 | 20..20 | 30..30 | 40..40 | 50..50 | 60..60 | 75..75 | 100..100 | 150..150 | 200..200 | 250..250 | 300..300 | 500..500 | 750..750 | 1500..1500";
+    }
+  }
+  typedef ddt-GNBCUUP_PpControlLink_localEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-GNBCUUP_GNBCUUPFunction_dcDlAggExpiryTimer {
+    type int32 {
+      range 0..10000;
+    }
+  }
+  grouping struct-SliceSelectionAssistInfo {
+    description "Single Network Slice Selection Assistance Information (S-NSSAI).";
+    leaf sd {
+      description "Slice Differentiator (SD).\nIf it is not associated with SST, SD value can be set to 16777215.";
+      type erienmnrmgnbcuup:ddt-NratCommonLibrary_SliceSelectionAssistInfo_sd;
+      mandatory true;
+    }
+    leaf sst {
+      description "Slice/Service Type (SST).\nValues 0 to 127 belong to standardized SST range and are defined in 3GPP TS 23.501. Values 128 to 255 belong to operator-specific range.";
+      type erienmnrmgnbcuup:ddt-NratCommonLibrary_SliceSelectionAssistInfo_sst;
+      mandatory true;
+    }
+  } // end 'grouping struct-SliceSelectionAssistInfo'
+  grouping struct-PLMNId {
+    description "PLMN Identity consisting of Mobile Country Code (MCC) and Mobile Network Code (MNC).";
+    leaf mnc {
+      description "The Mobile Network Code (MNC) identifies home PLMN of mobile subscription.\nMNC consists of two or three decimal digits. For example, MNC of 001 is not same as MNC of 01.\nAs default value, use 01.\nAllowed values: [0-9][0-9][0-9]|[0-9][0-9]";
+      type erienmnrmgnbcuup:ddt-NratCommonLibrary_PLMNId_mnc;
+      mandatory true;
+    }
+    leaf mcc {
+      description "The Mobile Country Code (MCC) identifies uniquely domicile country of mobile subscriber.\nMCC consists of three decimal digits. The first digit of MCC identifies geographic region. (Values 1 and 8 in the first digit are not allowed.)\nAs default value, use 001.\nAllowed values: [02345679][0-9][0-9]";
+      type erienmnrmgnbcuup:ddt-NratCommonLibrary_PLMNId_mcc;
+      mandatory true;
+    }
+  } // end 'grouping struct-PLMNId'
+  grouping moc-CUUP5qi-keys {
+    description "Key(s) for MOC CUUP5qi";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cUUP5qiId;
+      type string;
+    }
+  } // end 'grouping moc-CUUP5qi-keys'
+  grouping moc-CUUP5qi {
+    description "QoS configuration corresponding to 3GPP-defined and operator-defined 5QI profiles.\n\nMaximum number of operator-defined profiles is 9.\n\nEach profile can be present once in each table.";
+    leaf counterActiveMode {
+      status current {
+        yexte:preliminary;
+      }
+      description "In-session activity handling.\nIf set to false, DRB is labeled as bursty. Active session time is measured for each DRB after data is transferred in UL or DL, the session time measurement continues with an added guard period of 100 ms.\nA bursty DRB is labeled as released in session if any data is transferred during the last 100 ms.\nIf set to true, DRB is labeled as continuous. Active time is measured for each DRB from first UL or DL data transmission until 100 ms after last data transmission.\nA continuous DRB is always labeled as released in session.\nOnly applicable for standalone DRBs. Default value is false, which is applicable for all non-standalone DRBs.";
+      yexte:disturbances "Changing this attribute can affect network KPI values.";
+      yexte:takes-effect "Next cell unlock";
+      type boolean;
+      default false;
+    }
+    leaf packetDelayBudgetOffset {
+      status current {
+        yexte:preliminary;
+      }
+      description "Offset added to PDB.\nFollowing values are recommended:\n-0 if profile5qi is 2, 3, 4, 5, 6, 7, 8, 9, 65, 66, 67, 69, 70, 79, 80, 82, 83, 84 or 85.\n-50 if profile5qi is 1.";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_CUUP5qi_packetDelayBudgetOffset;
+      default 0;
+    }
+    leaf userLabel {
+      status current {
+        yexte:preliminary;
+      }
+      description "Label for free use.";
+      type erienmnrmgnbcuup:ddt-UserLabel;
+    }
+    leaf profile5qi {
+      description "5G QoS Identifier unique within a table.\nFor 3GPP-defined 5QIs, 5QI can be 1, 2, 3, 4, 5, 6, 7, 8, 9, 65, 66, 67, 69, 70, 79, 80, 82, 83, 84 or 85.";
+      mandatory true;
+      yexte:dependencies "Value must be unique in 5qiTable.\nFor 3GPP-defined profiles:\n-profile5qi=1, aqmMode must be MODE2.\n-profile5qi=2, aqmMode must be MODE2.\n-profile5qi=3, aqmMode must be MODE2.\n-profile5qi=4, aqmMode must be MODE2.\n-profile5qi=5, aqmMode must be OFF.\n-profile5qi=6, aqmMode must be MODE1.\n-profile5qi=7, aqmMode must be MODE1.\n-profile5qi=8, aqmMode must be MODE1.\n-profile5qi=9, aqmMode must be MODE1.\n-profile5qi=65, aqmMode must be MODE2.\n-profile5qi=66, aqmMode must be MODE2.\n-profile5qi=67, aqmMode must be MODE2.\n-profile5qi=69, aqmMode must be OFF.\n-profile5qi=70, aqmMode must be MODE1.\n-profile5qi=79, aqmMode must be MODE1.\n-profile5qi=80, aqmMode must be MODE1.\n-profile5qi=82, aqmMode must be MODE2.\n-profile5qi=83, aqmMode must be MODE2.\n-profile5qi=84, aqmMode must be MODE2.\n-profile5qi=85, aqmMode must be MODE2.";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_CUUP5qi_profile5qi;
+    }
+    leaf dscp {
+      description "DSCP for 5QI.\nCorresponds to mappings from RAN QoS to transport network QoS.\nFollowing values are recommended:\n46 if profile5qi is 1, 65, 66 or 67.\n36 if profile5qi is 2.\n34 if profile5qi is 3.\n38 if profile5qi is 4.\n40 if profile5qi is 5 or 69.\n26 if profile5qi is 6 or 70.\n10 if profile5qi is 7.\n12 if profile5qi is 8.\n14 if profile5qi is 9.";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_CUUP5qi_dscp;
+      default 12;
+    }
+    leaf aqmMode {
+      status current {
+        yexte:preliminary;
+      }
+      description "AQM mode.";
+      yexte:dependencies "MODE2 if profile5qi is 1, 2, 3, 4, 65, 66, 67, 82, 83, 84 or 85.\nMODE1 if profile5qi is 6, 7, 8, 9, 70, 79 or 80.\nOFF if profile5qi is 5 or 69.";
+      type erienmnrmgnbcuup:enum-AqmMode;
+      default MODE1;
+    }
+    leaf tOooUlDelivery {
+      description "Extension period when reception of out-of-order (ooo) packets is allowed.\nExtension period is added after tReorderingUl in PDCP expires.\nWhen timer expires, PDCP reception window is moved forward and remaining arriving packets are discarded. Therefore, packets that arrive within tReorderingUl + tOooUlDelivery can be delivered to upper layers.\nDifferent values are set based on purpose of optimization and bearer type.\nIf empty, system handles timer value as infinite.";
+      yexte:takes-effect "New connection";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_CUUP5qi_tOooUlDelivery;
+      default 150;
+    }
+    leaf estimatedE2ERTT {
+      status current {
+        yexte:preliminary;
+      }
+      description "Estimated end-to-end Round-Trip Time (RTT).\nFollowing values are recommended:\n-0 if profile5qi is 1, 2, 3, 4, 5, 65, 66, 67, 69, 82, 83, 84 or 85.\n-50 if profile5qi is 6, 7, 8, 9, 70, 79 or 80.";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_CUUP5qi_estimatedE2ERTT;
+      default 50;
+    }
+    leaf packetDelayBudget {
+      status current {
+        yexte:preliminary;
+      }
+      description "Contribution from gNodeB to PDB for 5QI.\nPacket delays outside gNodeB are excluded, for example, in transport network.\nFollowing values are recommended:\n-80 if profile5qi is 1, 5, 7, 66 or 67.\n-130 if profile5qi is 2.\n-30 if profile5qi is 3 or 79.\n-280 if profile5qi is 4, 6, 8 or 9.\n-65 if profile5qi is 65.\n-50 if profile5qi is 69.\n-190 if profile5qi is 70.\n-8 if profile5qi is 80.\n-9 if profile5qi is 82 or 83.\n-25 if profile5qi is 84.\n-3 if profile5qi is 85.";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_CUUP5qi_packetDelayBudget;
+      default 280;
+    }
+  } // end 'grouping moc-CUUP5qi'
+  grouping moc-LocalIpEndpoint-keys {
+    description "Key(s) for MOC LocalIpEndpoint";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name localIpEndpointId;
+      type string;
+    }
+  } // end 'grouping moc-LocalIpEndpoint-keys'
+  grouping moc-LocalIpEndpoint {
+    description "Local transport network endpoint for user plane interface.\n\nE1 control plane uses TCP, hence this interface is also configured by this class.";
+    leaf-list addressRef {
+      min-elements 1;
+      max-elements 2;
+      description "Reference to AddressIPv4 or AddressIPv6 MO instance.\nMust be unique among LocalIpEndpoint MO instances under EndpointResource. Dual stack is not supported, only one IP address can be referenced.";
+      yexte:takes-effect "Node restart";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list interfaceList {
+      min-elements 1;
+      max-elements 6;
+      description "List of user plane interfaces that use the referenced AddressIPv4 or AddressIPv6.\nAllowed values: NG, S1, F1, E1, X2 and XN.\nInterface must be unique across LocalIpEndpoints under EndpointResource.";
+      yexte:takes-effect "Node restart";
+      type erienmnrmgnbcuup:enum-InterfaceName;
+    }
+  } // end 'grouping moc-LocalIpEndpoint'
+  grouping moc-PpControlLink-keys {
+    description "Key(s) for MOC PpControlLink";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ppControlLinkId;
+      type string;
+    }
+  } // end 'grouping moc-PpControlLink-keys'
+  grouping moc-PpControlLink {
+    description "Control link for the packet processing interface.\n\nSystem created when a packet processing control link is established.\nSystem deleted when a packet processing control link is released.\n\nThe RDN of this MO is PpControlLink=[Local Ip Address]_[Remote Ip Address].";
+    leaf detailedAvailabilityInfoTemp {
+      config false;
+      description "Additional Info for the availabilityStatus FAILED and DEPENDENCY_FAILED.\nThe FailureCause has the format: <causeID>  <cause Slogan>    [<cause description>]\nExample: 1 TLS LICENSE NOT INSTALLED   The TLS License installation is a prerequisite for Service Discovery.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_PpControlLink_detailedAvailabilityInfoTemp;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:enum-OperState;
+    }
+    leaf remoteEndPoint {
+      config false;
+      description "Remote IP address used for initialization of the underlying TCP connection.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_PpControlLink_remoteEndPoint;
+    }
+    leaf localEndPoint {
+      config false;
+      description "Local IP address used for initialization of the underlying TCP connection.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_PpControlLink_localEndPoint;
+    }
+  } // end 'grouping moc-PpControlLink'
+  grouping moc-CUUP5qiTable-keys {
+    description "Key(s) for MOC CUUP5qiTable";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cUUP5qiTableId;
+      type string;
+    }
+  } // end 'grouping moc-CUUP5qiTable-keys'
+  grouping moc-CUUP5qiTable {
+    description "Mapping from 5G QoS Identifier to parameters that have impact on QoS.";
+    leaf default5qiTable {
+      description "Indicates that the CUUP5qiTable instance is a default 5QI table.\nThe default 5QI table will be used when no CUUP5qiTable has been configured for a resource partition.";
+      yexte:takes-effect "New connection";
+      yexte:dependencies "Only one CUUP5qiTable instance can have the attribute default5qiTable set to TRUE.";
+      type boolean;
+      default false;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf resourcePartitionRef {
+      status obsolete {
+        yexte:status-information "Since 20.Q2. Deprecated: Since 20.Q1. Planned to be removed.";
+      }
+      description "Reference to an instance of ResourcePartition MO.";
+      yexte:takes-effect "New connection";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-CUUP5qiTable'
+  grouping moc-S1ULink-keys {
+    description "Key(s) for MOC S1ULink";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name s1ULinkId;
+      type string;
+    }
+  } // end 'grouping moc-S1ULink-keys'
+  grouping moc-S1ULink {
+    description "Contains information about S1 user plane link between PPF and SGW.\n\nThe RDN of this MO is S1ULink=[Local Ip Address]_[Remote Ip Address].";
+    leaf monitoringStatus {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "Status of GTP-U echo path monitoring for link.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:enum-MonitoringStatusType;
+    }
+    leaf echoPeerStatus {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "Peer connectivity status for link.\nResult of GTP-U path monitoring.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:enum-PathStatusType;
+    }
+    leaf remoteEndPoint {
+      config false;
+      description "Remote IP address used for initialization of the underlying GTPU transport.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_S1ULink_remoteEndPoint;
+    }
+    leaf localEndPoint {
+      config false;
+      description "Local IP address used for initialization of the underlying GTPU transport.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_S1ULink_localEndPoint;
+    }
+  } // end 'grouping moc-S1ULink'
+  grouping moc-PpControlTermination-keys {
+    description "Key(s) for MOC PpControlTermination";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ppControlTerminationId;
+      type string;
+    }
+  } // end 'grouping moc-PpControlTermination-keys'
+  grouping moc-PpControlTermination {
+    description "Local termination point of the packet processing control interface.\n\nSystem created when the first packet processing control link is established.\nSystem deleted at node restart.\n\nThe RDN of this MO is PpControlTermination=1.";
+  } // end 'grouping moc-PpControlTermination'
+  grouping moc-RpUserPlaneTermination-keys {
+    description "Key(s) for MOC RpUserPlaneTermination";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name rpUserPlaneTerminationId;
+      type string;
+    }
+  } // end 'grouping moc-RpUserPlaneTermination-keys'
+  grouping moc-RpUserPlaneTermination {
+    description "Local termination point of the radio processing user plane interface.\n\nThe RDN for this MO is RpUserPlaneTermination=1.";
+  } // end 'grouping moc-RpUserPlaneTermination'
+  grouping moc-S1UTermination-keys {
+    description "Key(s) for MOC S1UTermination";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name s1UTerminationId;
+      type string;
+    }
+  } // end 'grouping moc-S1UTermination-keys'
+  grouping moc-S1UTermination {
+    description "Contains information about S1 user plane.\n\nSystem created when the first S1 user plane link is created.\n\nSystem deleted at node restart.\n\nThe RDN of this MO is S1UTermination=1.";
+  } // end 'grouping moc-S1UTermination'
+  grouping moc-ResourcePartitions-keys {
+    description "Key(s) for MOC ResourcePartitions";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name resourcePartitionsId;
+      type string;
+    }
+  } // end 'grouping moc-ResourcePartitions-keys'
+  grouping moc-ResourcePartitions {
+    description "Set of resource partitions.";
+  } // end 'grouping moc-ResourcePartitions'
+  grouping moc-GNBCUUPFunction-keys {
+    description "Key(s) for MOC GNBCUUPFunction";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name gNBCUUPFunctionId;
+      type string;
+    }
+  } // end 'grouping moc-GNBCUUPFunction-keys'
+  grouping moc-GNBCUUPFunction {
+    description "Represents GNBCUUP function.\n\nIn embedded CUUP deployment, maximum number of instances is one.\n\nIn virtual CUUP deployment, when NR Virtual Packet Processing feature is operable, the following apply:\n- MO is automatically created at setup of E1 link. RDN for this MO type is GNBCUUPFunction=[gNBCuName]. If gNBCuName is not present in setup request, remote IP address of E1 link is used instead.\n- MO is deleted when E1AP link is disabled for a long period because of failure.";
+    leaf gtpuErrorIndDscp {
+      description "DSCP value used when sending GTP-U Error Indication messages on user-plane paths.";
+      yexte:takes-effect "Next path setup";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_gtpuErrorIndDscp;
+      default 40;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmgnbcuup:ddt-UserLabel;
+    }
+    leaf xnUpIpAddressRef {
+      status deprecated {
+        yexte:status-information "Since 20.Q3. Replaced by LocalIpEndpoint::addressRef. Planned to be removed.";
+      }
+      description "Reference can be to local IP address for Xn User plane connection.\nValid reference is of MO type AddressIPv4 or AddressIPv6 instance.";
+      yexte:disturbances "Changing this attribute can affect traffic.";
+      yexte:takes-effect "Node restart";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf release {
+      config false;
+      description "The product release of the ManagedFunction.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf x2EndcGtpuEchoDscp {
+      description "DSCP value used when sending GTP-U Echo Request on X2 EN-DC user-plane paths.\nValue applicable if x2GtpuEchoEnable = true.";
+      yexte:takes-effect "Next path setup";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_x2EndcGtpuEchoDscp;
+      default 14;
+    }
+    leaf endpointResDepHEnabled {
+      description "Whether endpoint resource deprecation handling is enabled.\nIf true, updating following deprecated attributes also updates the IP addresses configured with MO classes EndPointResource, LocalIPsecEndpoint and LocalIpEndpoint:\n- intraRanIpAddressRef\n- rpUpIpAddressRef\n- upIpAddressRef\n- x2UpIpAddressRef\n- xnUpIpAddressRef\n- ipsecEpAddressRef\n- ipsecEndcEpAddressRef\nIf false, updating the deprecated attributes does not update following MO classes:\n- EndPointResource\n- LocalIPsecEndpoint\n- LocalIpEndpoint\nNode always uses the IP addresses configured with following MO classes:\n- EndPointResource\n- LocalIPsecEndpoint\n- LocalIpEndpoint\nUpdating these MO classes never updates deprecated attributes. Deprecated attributes cannot express all configurations.\nDeprecation handling can be disabled. This protects following MO classes from modification from older management system versions where only the deprecated attributes are visible:\n- EndPointResource\n- LocalIPsecEndpoint\n- LocalIpEndpoint";
+      type boolean;
+      default true;
+    }
+    leaf x2EndcGtpuEchoEnable {
+      description "Enables GTP-U supervision for X2 (EN-DC) paths.\nWhen true, all GTP-U X2 (EN-DC) paths are supervised by gNodeB-CU-UP that sends Echo Request every 60 seconds. If five requests in row do not receive response, path connectivity is considered lost. If three requests in row receive response, connectivity is considered re-established.\nWhen connectivity is lost no traffic is allocated to the path.\nIf a path is unused for 24h the supervision stops and connectivity is thereafter not known.";
+      yexte:takes-effect "Next path setup";
+      type boolean;
+      default false;
+    }
+    leaf endcUlNrRetProhibTimer {
+      description "Minimum time between an uplink leg switch from NR to LTE and an uplink leg switch from LTE to NR.\nThe timer is only started after an uplink leg switch to LTE, and thus not started after an uplink leg switch to NR.\nValid for SN Terminated split bearer.";
+      yexte:takes-effect "Embedded PPF: Next Cell Unlock, Virtualized PPF: New Connection";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_endcUlNrRetProhibTimer;
+      default 1000;
+    }
+    list sNSSAIList {
+      min-elements 0;
+      max-elements 1024;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "List of supported network slices.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmgnbcuup:struct-SliceSelectionAssistInfo;
+    } // end 'list sNSSAIList'
+    leaf endcDlNrRetProhibTimer {
+      description "Minimum time between a downlink leg switch from NR to LTE and a downlink leg switch from LTE to NR.\nThe timer is only started after a downlink leg switch to LTE, and thus not started after a downlink leg switch to NR.\nValid for SN Terminated split bearer.";
+      yexte:takes-effect "New connection";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_endcDlNrRetProhibTimer;
+      default 400;
+    }
+    leaf ipsecEndcEpAddressRef {
+      status deprecated {
+        yexte:status-information "Since 20.Q3. Replaced by LocalIPsecEndpoint::outerIpAddressRef. Planned to be removed.";
+      }
+      description "Local outer address for direct IPsec VPN connection with X2 eNodeB neighbor in EN-DC case.\nReference to AddressIPv4 MO or AddressIPv6 MO.\nMust be set if direct IPsec VPN connection is to be established with X2 eNodeB neighbor in EN-DC case and different address than in attribute ipsecEpAddressRef.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf gNBId {
+      description "Identifies a gNodeB within a PLMN.\nThis gNBId parameter is part of the NR Cell Identifier (NCI) of the gNodeB cells.";
+      mandatory true;
+      yexte:takes-effect "Node restart";
+      yexte:dependencies "If gNBId bit representation exceeds 22 bits, gNBIdLength value must be at least minimum bit length that can accommodate gNBId [gNBId =< (2^gNBIdLength)-1]";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_gNBId;
+    }
+    leaf ipsecEpAddressRef {
+      status deprecated {
+        yexte:status-information "Since 20.Q3. Replaced by LocalIPsecEndpoint::outerIpAddressRef. Planned to be removed.";
+      }
+      description "Local outer address for direct IPsec VPN connection with X2 or Xn neighbor.\nReference to AddressIPv4 MO or AddressIPv6 MO.\nMust be set if direct IPsec VPN connection is to be established with X2 or Xn gNodeB neighbor.\nAlso used for direct IPsec VPN connection with X2 eNodeB neighbor in EN-DC case unless specified in ipsecEnDcEpAddressRef.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf s1GtpuEchoDscp {
+      description "DSCP value used when sending GTP-U Echo Request on S1 user-plane paths.\nValue applicable if s1GtpuEchoEnable = true.";
+      yexte:takes-effect "Next path setup";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_s1GtpuEchoDscp;
+      default 14;
+    }
+    leaf upIpAddressRef {
+      status deprecated {
+        yexte:status-information "Since 20.Q3. Replaced by LocalIpEndpoint::addressRef. Planned to be removed.";
+      }
+      description "Reference to IP address for user plane connections.\nUsed for the following connections:\n- S1 user plane connections\n- Ng user plane connections\n- X2 user plane connections unless specified by x2UpIpAddressRef\n- Xn user plane connections unless specified by xnUpIpAddressRef\nValid reference is of MO type AddressIPv4 or AddressIPv6 instance.";
+      yexte:disturbances "Changing this attribute can affect traffic.";
+      yexte:takes-effect "Node restart";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf s1GtpuEchoEnable {
+      description "Enables GTP-U supervision for S1 paths.\nWhen true, all GTP-U S1 paths are supervised by gNodeB-CU-UP that sends Echo Request every 60 seconds. If five requests in row do not receive response, path connectivity is considered lost. If three requests in row receive response, connectivity is considered re-established.\nWhen connectivity is lost no traffic is allocated to the path.\nIf a path is unused for 24h the supervision stops and connectivity is thereafter not known.";
+      yexte:takes-effect "Next path setup";
+      type boolean;
+      default false;
+    }
+    leaf endpointResourceRef {
+      description "Reference to EndpointResource MO instance.\nResourcePartitionMember MO can also refer to EndpointResource MO instances only valid for specific PLMN or NSSAI. If ResourcePartitionMember::endpointResourceRef is empty, this reference is used.";
+      yexte:takes-effect "Node restart";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf endcDataUsageReportEnabled {
+      description "Enables generation of Data Usage Report for NR part of split bearers in EN-DC.";
+      yexte:takes-effect "New connection";
+      type boolean;
+      default false;
+    }
+    leaf estimatedUeL2Buffer {
+      description "Estimated size of a UE Layer 2 reordering buffer.\nLimits how many undelivered PDCP PDUs can be in flight towards UE.\nNumber of maximum packets set in relation to buffer size.\nTotal number of packets are calculated for, which includes any number of packets not yet received by UE.\nMakes sure PDCP in gNodeB does not send more packets than what UE reordering buffers can handle.\nIf set to empty, treated as maximum possible size.";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_estimatedUeL2Buffer;
+    }
+    leaf x2UpIpAddressRef {
+      status deprecated {
+        yexte:status-information "Since 20.Q3. Replaced by LocalIpEndpoint::addressRef. Planned to be removed.";
+      }
+      description "Reference to the IP address for X2 User plane connection.\nReference can be either to an AddressIPv4 or AddressIPv6 instance.";
+      yexte:takes-effect "Node restart";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf dcDlAggActTime {
+      description "Activates DC DL aggregation.\nDC DL aggregation is applied for bearers where a packet spends longer time than attribute value in PDCP SDU queue.\nEnabling DC DL aggregation for a bearer requires the following:\n- UE is capable of DC DL aggregation.\n- Feature state is activated.";
+      yexte:takes-effect "New connection";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_dcDlAggActTime;
+      default 1;
+    }
+    leaf dcDlAggExpiryTimer {
+      description "Deactivates DC DL aggregation.\nTimer is started when a bearer with DC DL aggregation activated runs empty in PDCP PDU and PDCP SDU buffers.\nAt timer expiry, bearer returns to packet scheduling on single leg NR.";
+      yexte:takes-effect "New connection";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_dcDlAggExpiryTimer;
+      default 100;
+    }
+    leaf intraRanIpAddressRef {
+      status deprecated {
+        yexte:status-information "Since 20.Q3. Replaced by LocalIpEndpoint::addressRef. Planned to be removed.";
+      }
+      description "Reference to the IP address for Intra-RAN connections.\nUsed for:\n - Intra-RAN control connections\n - Intra-RAN user plane connections unless specified by rpUpIpAddressRef\nReference can be to either an AddressIPv4 or AddressIPv6 instance.";
+      yexte:takes-effect "Node restart";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf dlPdcpSpsTargetTimeNR {
+      description "Target buffer depth in the DU for PDCP PDUs on NR leg.";
+      yexte:takes-effect "New connection";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_dlPdcpSpsTargetTimeNR;
+      default 25;
+    }
+    list pLMNIdList {
+      min-elements 1;
+      max-elements 12;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "List of PLMN identifiers.\n\nPLMNs a UE must have as serving PLMN to be allowed to use gNodeB-CU-UP.\nOnly one entry is allowed in pLMNIdList.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmgnbcuup:struct-PLMNId;
+    } // end 'list pLMNIdList'
+    leaf gNBIdLength {
+      description "Length of gNBId bit string representation.";
+      yexte:takes-effect "Node restart";
+      yexte:dependencies "If gNBId bit representation exceeds 22 bits, gNBIdLength value must be at least minimum bit length that can accommodate gNBId [gNBId =< (2^gNBIdLength)-1]";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_gNBIdLength;
+      default 22;
+    }
+    leaf dlPdcpSpsTargetTimeLTE {
+      description "Target buffer depth in the DU for PDCP PDUs on LTE leg.";
+      yexte:takes-effect "New connection";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_GNBCUUPFunction_dlPdcpSpsTargetTimeLTE;
+      default 25;
+    }
+    leaf rpUpIpAddressRef {
+      status deprecated {
+        yexte:status-information "Since 20.Q3. Replaced by LocalIpEndpoint::addressRef. Planned to be removed.";
+      }
+      description "Reference to the IP address for intra RAN user plane connections.\nReference can be to either an AddressIPv4 or AddressIPv6 instance.";
+      yexte:takes-effect "Node restart";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-GNBCUUPFunction'
+  grouping moc-LocalIPsecEndpoint-keys {
+    description "Key(s) for MOC LocalIPsecEndpoint";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name localIPsecEndpointId;
+      type string;
+    }
+  } // end 'grouping moc-LocalIPsecEndpoint-keys'
+  grouping moc-LocalIPsecEndpoint {
+    description "Local transport network endpoint for interfaces using direct IPsec VPN connection with X2 neighbor.";
+    leaf-list interfaceList {
+      min-elements 1;
+      max-elements 2;
+      description "List of interfaces that use the referenced outer address AddressIPv4 or AddressIPv6.\nAllowed values: X2.\nInterface must be unique across LocalIPsecEndpoints under EndpointResource.";
+      yexte:takes-effect "Node restart";
+      type erienmnrmgnbcuup:enum-InterfaceName;
+    }
+    leaf-list outerIpAddressRef {
+      min-elements 1;
+      max-elements 2;
+      description "Reference to AddressIPv4 or AddressIPv6 MO instance.\nMust be unique among LocalIPsecEndpoint MO instances under EndpointResource. Dual stack is not supported, only one IP address can be referenced.";
+      yexte:takes-effect "Node restart";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-LocalIPsecEndpoint'
+  grouping moc-X2UTermination-keys {
+    description "Key(s) for MOC X2UTermination";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name x2UTerminationId;
+      type string;
+    }
+  } // end 'grouping moc-X2UTermination-keys'
+  grouping moc-X2UTermination {
+    description "X2 user plane termination.\n\nSystem created when the first X2 user plane link is created.\nRDN for this MO type is X2UTermination=1.";
+  } // end 'grouping moc-X2UTermination'
+  grouping moc-ResourcePartition-keys {
+    description "Key(s) for MOC ResourcePartition";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name resourcePartitionId;
+      type string;
+    }
+  } // end 'grouping moc-ResourcePartition-keys'
+  grouping moc-ResourcePartition {
+    description "Combination of attributes specifying in which resource partition a UE is included.";
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.\nCurrently not used.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf related5qiTableRef {
+      description "Reference to CUUP5qiTable MO instance.";
+      yexte:takes-effect "New connection";
+      yexte:dependencies "If non-empty, ResourcePartitionMember::endpointResourceRef must be empty.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf resourcePartitionName {
+      description "Name of a resource partition.";
+      type erienmnrmgnbcuup:ddt-GNBCUUP_ResourcePartition_resourcePartitionName;
+    }
+  } // end 'grouping moc-ResourcePartition'
+  grouping moc-EP_XnU-keys {
+    description "Key(s) for MOC EP_XnU";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name eP_XnUId;
+      type string;
+    }
+  } // end 'grouping moc-EP_XnU-keys'
+  grouping moc-EP_XnU {
+    description "Xn link PPF termination point.\n\nCreated by the system when XnU link is established.\n\nDeleted by the system when XnU link is released.\n\nThe RDN of this MO is EP_XnU=[Local Ip Address]_[Remote Ip Address].";
+    leaf remoteEndPoint {
+      config false;
+      description "Remote IP address for initialization of underlying GTP-U transport.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_EP_XnU_remoteEndPoint;
+    }
+    leaf localEndPoint {
+      config false;
+      description "Local IP address for initialization of underlying GTP-U transport.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_EP_XnU_localEndPoint;
+    }
+  } // end 'grouping moc-EP_XnU'
+  grouping moc-RpUserPlaneLink-keys {
+    description "Key(s) for MOC RpUserPlaneLink";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name rpUserPlaneLinkId;
+      type string;
+    }
+  } // end 'grouping moc-RpUserPlaneLink-keys'
+  grouping moc-RpUserPlaneLink {
+    description "User plane link for the radio processing interface.\n\nSystem created when a radio processing user plane link is established.\nSystem deleted when a radio processing user plane link is released.\n\nThe RDN of this MO is RpUserPlaneLink=[Local Ip Address]_[Remote Ip Address].";
+    leaf remoteEndPoint {
+      config false;
+      description "Remote IP address used for initialization of the underlying GTPU transport.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_RpUserPlaneLink_remoteEndPoint;
+    }
+    leaf localEndPoint {
+      config false;
+      description "Local IP address used for initialization of the underlying GTPU transport.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_RpUserPlaneLink_localEndPoint;
+    }
+  } // end 'grouping moc-RpUserPlaneLink'
+  grouping moc-EndpointResource-keys {
+    description "Key(s) for MOC EndpointResource";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name endpointResourceId;
+      type string;
+    }
+  } // end 'grouping moc-EndpointResource-keys'
+  grouping moc-EndpointResource {
+    description "Transport network endpoints for RAN interfaces.\n\nConfiguration is valid for an entity that refers to an instance of this MO.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmgnbcuup:ddt-UserLabel;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-EndpointResource'
+  grouping moc-EP_NgU-keys {
+    description "Key(s) for MOC EP_NgU";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name eP_NgUId;
+      type string;
+    }
+  } // end 'grouping moc-EP_NgU-keys'
+  grouping moc-EP_NgU {
+    description "Models an NG link UPF termination point.\n\nCreated by the system when an NgU link is established.\nDeleted by the system when an NgU link is released.\n\nThe RDN of this MO is EP_NgU=[Local Ip Address]_[Remote Ip Address].";
+    leaf remoteEndPoint {
+      config false;
+      description "Remote IP address used for initialization of underlying GTPU transport.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_EP_NgU_remoteEndPoint;
+    }
+    leaf localEndPoint {
+      config false;
+      description "Local IP address used for initialization of underlying GTPU transport.\nIP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_EP_NgU_localEndPoint;
+    }
+  } // end 'grouping moc-EP_NgU'
+  grouping moc-ResourcePartitionMember-keys {
+    description "Key(s) for MOC ResourcePartitionMember";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name resourcePartitionMemberId;
+      type string;
+    }
+  } // end 'grouping moc-ResourcePartitionMember-keys'
+  grouping moc-ResourcePartitionMember {
+    description "Set of member information of resource partition.";
+    list sNSSAIList {
+      min-elements 0;
+      max-elements 1024;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "List of Single Network Slice Selection Assistance Information (S-NSSAI).";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmgnbcuup:struct-SliceSelectionAssistInfo;
+    } // end 'list sNSSAIList'
+    leaf endpointResourceRef {
+      description "Reference to EndpointResource MO instance.\nThe reference setting defines the Transport Network configuration for specific PLMN or NSSAI.\nIf this reference is empty, attribute GNBCUUPFunction::endpointResourceRef is used.";
+      yexte:takes-effect "Node restart";
+      yexte:dependencies "Must be empty if ResourcePartition::related5qiTableRef is non-empty.\nIf endpointResourceRef is non-empty, the following dependencies apply:\n- pLMNIdList must be non-empty.\n- Only sNSSAIList or pLMNIdList can have more than one element.\n- If sNSSAIList is empty, PLMNId must be unique among ResourcePartitionMember MOs.\n- If sNSSAIList is non-empty, the combination of PLMNId and SliceSelectionAssistInfo must be unique among ResourcePartitionMember MOs.\n- If pLMNIdList and sNSSAIList are non-empty, the EndpointResource.LocalIpEndpoint::interfaceList must not contain S1 or X2.\n- If pLMNIdList is non-empty and sNSSAIList is empty, the EndpointResource.LocalIpEndpoint::interfaceList must not contain NG or XN.\n- If pLMNIdList is non-empty and sNSSAIList is empty, the EndpointResource.LocalIPsecEndpoint::interfaceList must not contain X2.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    list pLMNIdList {
+      min-elements 0;
+      max-elements 12;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "List of PLMN identifier.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmgnbcuup:struct-PLMNId;
+    } // end 'list pLMNIdList'
+  } // end 'grouping moc-ResourcePartitionMember'
+  grouping moc-X2ULink-keys {
+    description "Key(s) for MOC X2ULink";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name x2ULinkId;
+      type string;
+    }
+  } // end 'grouping moc-X2ULink-keys'
+  grouping moc-X2ULink {
+    description "X2 user plane link.\n\nSystem created when the first HO occur.\nRDNs for this MO type is X2ULink=[Local Ip Address]_[Remote Ip Address].";
+    leaf monitoringStatus {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "Status of GTP-U echo path monitoring for link.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:enum-MonitoringStatusType;
+    }
+    leaf echoPeerStatus {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "Peer connectivity status for link.\nResult of GTP-U path monitoring.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:enum-PathStatusType;
+    }
+    leaf remoteEndPoint {
+      config false;
+      description "Remote IP address for the X2 user plane connection.\nThe IP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_X2ULink_remoteEndPoint;
+    }
+    leaf localEndPoint {
+      config false;
+      description "Local IP address for the X2 user plane connection.\nThe IP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmgnbcuup:ddt-GNBCUUP_X2ULink_localEndPoint;
+    }
+  } // end 'grouping moc-X2ULink'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:CUUP5qiTable {
+    list CUUP5qi {
+      key id;
+      max-elements 29;
+      description "QoS configuration corresponding to 3GPP-defined and operator-defined 5QI profiles.\n\nMaximum number of operator-defined profiles is 9.\n\nEach profile can be present once in each table.";
+      erienmyext:enm-type MOC;
+      uses moc-CUUP5qi-keys;
+      container attributes {
+        description "Attributes for CUUP5qi";
+        uses moc-CUUP5qi;
+      } // end 'container attributes'
+    } // end 'list CUUP5qi'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:EndpointResource {
+    list LocalIpEndpoint {
+      key id;
+      description "Local transport network endpoint for user plane interface.\n\nE1 control plane uses TCP, hence this interface is also configured by this class.";
+      erienmyext:enm-type MOC;
+      uses moc-LocalIpEndpoint-keys;
+      container attributes {
+        description "Attributes for LocalIpEndpoint";
+        uses moc-LocalIpEndpoint;
+      } // end 'container attributes'
+    } // end 'list LocalIpEndpoint'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:PpControlTermination {
+    list PpControlLink {
+      key id;
+      description "Control link for the packet processing interface.\n\nSystem created when a packet processing control link is established.\nSystem deleted when a packet processing control link is released.\n\nThe RDN of this MO is PpControlLink=[Local Ip Address]_[Remote Ip Address].";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PpControlLink-keys;
+      container attributes {
+        description "Attributes for PpControlLink";
+        uses moc-PpControlLink;
+      } // end 'container attributes'
+    } // end 'list PpControlLink'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list CUUP5qiTable {
+      key id;
+      max-elements 36;
+      description "Mapping from 5G QoS Identifier to parameters that have impact on QoS.";
+      erienmyext:enm-type MOC;
+      uses moc-CUUP5qiTable-keys;
+      container attributes {
+        description "Attributes for CUUP5qiTable";
+        uses moc-CUUP5qiTable;
+      } // end 'container attributes'
+    } // end 'list CUUP5qiTable'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:S1UTermination {
+    list S1ULink {
+      key id;
+      max-elements 128;
+      description "Contains information about S1 user plane link between PPF and SGW.\n\nThe RDN of this MO is S1ULink=[Local Ip Address]_[Remote Ip Address].";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-S1ULink-keys;
+      container attributes {
+        description "Attributes for S1ULink";
+        uses moc-S1ULink;
+      } // end 'container attributes'
+    } // end 'list S1ULink'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list PpControlTermination {
+      key id;
+      max-elements 1;
+      description "Local termination point of the packet processing control interface.\n\nSystem created when the first packet processing control link is established.\nSystem deleted at node restart.\n\nThe RDN of this MO is PpControlTermination=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PpControlTermination-keys;
+    } // end 'list PpControlTermination'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list RpUserPlaneTermination {
+      key id;
+      max-elements 1;
+      description "Local termination point of the radio processing user plane interface.\n\nThe RDN for this MO is RpUserPlaneTermination=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-RpUserPlaneTermination-keys;
+    } // end 'list RpUserPlaneTermination'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list S1UTermination {
+      key id;
+      max-elements 1;
+      description "Contains information about S1 user plane.\n\nSystem created when the first S1 user plane link is created.\n\nSystem deleted at node restart.\n\nThe RDN of this MO is S1UTermination=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-S1UTermination-keys;
+    } // end 'list S1UTermination'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list ResourcePartitions {
+      key id;
+      max-elements 1;
+      description "Set of resource partitions.";
+      erienmyext:enm-type MOC;
+      uses moc-ResourcePartitions-keys;
+    } // end 'list ResourcePartitions'
+  }
+  augment /erienmnrmcomtop:ManagedElement {
+    list GNBCUUPFunction {
+      key id;
+      description "Represents GNBCUUP function.\n\nIn embedded CUUP deployment, maximum number of instances is one.\n\nIn virtual CUUP deployment, when NR Virtual Packet Processing feature is operable, the following apply:\n- MO is automatically created at setup of E1 link. RDN for this MO type is GNBCUUPFunction=[gNBCuName]. If gNBCuName is not present in setup request, remote IP address of E1 link is used instead.\n- MO is deleted when E1AP link is disabled for a long period because of failure.";
+      erienmyext:enm-type MOC;
+      uses moc-GNBCUUPFunction-keys;
+      container attributes {
+        description "Attributes for GNBCUUPFunction";
+        uses moc-GNBCUUPFunction;
+      } // end 'container attributes'
+    } // end 'list GNBCUUPFunction'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:EndpointResource {
+    list LocalIPsecEndpoint {
+      key id;
+      description "Local transport network endpoint for interfaces using direct IPsec VPN connection with X2 neighbor.";
+      erienmyext:enm-type MOC;
+      uses moc-LocalIPsecEndpoint-keys;
+      container attributes {
+        description "Attributes for LocalIPsecEndpoint";
+        uses moc-LocalIPsecEndpoint;
+      } // end 'container attributes'
+    } // end 'list LocalIPsecEndpoint'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list X2UTermination {
+      key id;
+      max-elements 1;
+      description "X2 user plane termination.\n\nSystem created when the first X2 user plane link is created.\nRDN for this MO type is X2UTermination=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-X2UTermination-keys;
+    } // end 'list X2UTermination'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:ResourcePartitions {
+    list ResourcePartition {
+      key id;
+      max-elements 36;
+      description "Combination of attributes specifying in which resource partition a UE is included.";
+      erienmyext:enm-type MOC;
+      uses moc-ResourcePartition-keys;
+      container attributes {
+        description "Attributes for ResourcePartition";
+        uses moc-ResourcePartition;
+      } // end 'container attributes'
+    } // end 'list ResourcePartition'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list EP_XnU {
+      key id;
+      max-elements 512;
+      description "Xn link PPF termination point.\n\nCreated by the system when XnU link is established.\n\nDeleted by the system when XnU link is released.\n\nThe RDN of this MO is EP_XnU=[Local Ip Address]_[Remote Ip Address].";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EP_XnU-keys;
+      container attributes {
+        description "Attributes for EP_XnU";
+        uses moc-EP_XnU;
+      } // end 'container attributes'
+    } // end 'list EP_XnU'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:RpUserPlaneTermination {
+    list RpUserPlaneLink {
+      key id;
+      description "User plane link for the radio processing interface.\n\nSystem created when a radio processing user plane link is established.\nSystem deleted when a radio processing user plane link is released.\n\nThe RDN of this MO is RpUserPlaneLink=[Local Ip Address]_[Remote Ip Address].";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-RpUserPlaneLink-keys;
+      container attributes {
+        description "Attributes for RpUserPlaneLink";
+        uses moc-RpUserPlaneLink;
+      } // end 'container attributes'
+    } // end 'list RpUserPlaneLink'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list EndpointResource {
+      key id;
+      description "Transport network endpoints for RAN interfaces.\n\nConfiguration is valid for an entity that refers to an instance of this MO.";
+      erienmyext:enm-type MOC;
+      uses moc-EndpointResource-keys;
+      container attributes {
+        description "Attributes for EndpointResource";
+        uses moc-EndpointResource;
+      } // end 'container attributes'
+    } // end 'list EndpointResource'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction {
+    list EP_NgU {
+      key id;
+      max-elements 64;
+      description "Models an NG link UPF termination point.\n\nCreated by the system when an NgU link is established.\nDeleted by the system when an NgU link is released.\n\nThe RDN of this MO is EP_NgU=[Local Ip Address]_[Remote Ip Address].";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EP_NgU-keys;
+      container attributes {
+        description "Attributes for EP_NgU";
+        uses moc-EP_NgU;
+      } // end 'container attributes'
+    } // end 'list EP_NgU'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:ResourcePartitions/erienmnrmgnbcuup:ResourcePartition {
+    list ResourcePartitionMember {
+      key id;
+      max-elements 36;
+      description "Set of member information of resource partition.";
+      erienmyext:enm-type MOC;
+      uses moc-ResourcePartitionMember-keys;
+      container attributes {
+        description "Attributes for ResourcePartitionMember";
+        uses moc-ResourcePartitionMember;
+      } // end 'container attributes'
+    } // end 'list ResourcePartitionMember'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgnbcuup:GNBCUUPFunction/erienmnrmgnbcuup:X2UTermination {
+    list X2ULink {
+      key id;
+      description "X2 user plane link.\n\nSystem created when the first HO occur.\nRDNs for this MO type is X2ULink=[Local Ip Address]_[Remote Ip Address].";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-X2ULink-keys;
+      container attributes {
+        description "Attributes for X2ULink";
+        uses moc-X2ULink;
+      } // end 'container attributes'
+    } // end 'list X2ULink'
+  }
+}

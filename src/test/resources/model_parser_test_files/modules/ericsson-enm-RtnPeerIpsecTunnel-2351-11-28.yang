@@ -1,0 +1,97 @@
+module ericsson-enm-RtnPeerIpsecTunnel {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnPeerIpsecTunnel;
+  prefix erienmnrmrtnpeeripsectunnel;
+  yexte:ecim-name RtnPeerIpsecTunnel;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 7;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  grouping moc-PeerIpsecTunnel-keys {
+    description "Key(s) for MOC PeerIpsecTunnel";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\nInner IP address of peer node.";
+      mandatory true;
+      yexte:ecim-name peerIpsecTunnelId;
+      type string;
+    }
+  } // end 'grouping moc-PeerIpsecTunnel-keys'
+  grouping moc-PeerIpsecTunnel {
+    description "Represents direct IPsec VPN connection to X2 or Xn neighbor.";
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.\nDisabled if not possible to establish IKE SA or Child SA pair.";
+      type erienmnrmrtnpeeripsectunnel:enum-OperState;
+    }
+    leaf peerOuterAddress {
+      erienmyext:no-notification;
+      config false;
+      description "Outer IP address of peer node.\nOn gNB, if neighbor relation to eNB is automatically created, outer address of peer is not visible in this attribute. Only visible by using COM CLI command \"show ikesa\" when operationalState is ENABLED.";
+      type string;
+    }
+    leaf localOuterAddress {
+      config false;
+      description "Local outer IP address.\nReference to AddressIPv4 MO or AddressIPv6 MO.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf localInnerAddress {
+      config false;
+      description "Local inner IP address.\nReference to AddressIPv4 MO or AddressIPv6 MO.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    action restartIkeSa {
+      description "Causes node to delete IKE SA. New IKE SA negotiation is initiated.";
+    }
+  } // end 'grouping moc-PeerIpsecTunnel'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list PeerIpsecTunnel {
+      key id;
+      description "Represents direct IPsec VPN connection to X2 or Xn neighbor.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PeerIpsecTunnel-keys;
+      container attributes {
+        description "Attributes for PeerIpsecTunnel";
+        uses moc-PeerIpsecTunnel;
+      } // end 'container attributes'
+    } // end 'list PeerIpsecTunnel'
+  }
+}

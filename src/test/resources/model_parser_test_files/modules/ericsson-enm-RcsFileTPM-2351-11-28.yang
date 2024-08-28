@@ -1,0 +1,298 @@
+module ericsson-enm-RcsFileTPM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsFileTPM;
+  prefix erienmnrmrcsfiletpm;
+  yexte:ecim-name RcsFileTPM;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 0;
+    yexte:correction 3;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RcsSysM {
+    prefix erienmnrmrcssysm;
+  }
+  typedef enum-BasicAdmState {
+    description "Basic administrative states for a resource.";
+    type enumeration {
+      enum LOCKED {
+        description " The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-RcsFileTPM_FtpServer_idleTimer {
+    type uint16 {
+      range 10..3600;
+    }
+  }
+  typedef ddt-SshAlgorithm {
+    description "Derived string for SSH Cipher, Key Exchange and Message Authentication Code strings.";
+    type string;
+  }
+  grouping moc-FtpTlsServer-keys {
+    description "Key(s) for MOC FtpTlsServer";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name ftpTlsServerId;
+      type string;
+    }
+  } // end 'grouping moc-FtpTlsServer-keys'
+  grouping moc-FtpTlsServer {
+    description "Represents the FTP over Transport Layer Security (TLS) server of the ME.\n\nThe server only accepts FTP sessions that are explicitly requesting a TLS layer by the \"AUTH TLS\" command.";
+    leaf administrativeState {
+      description "The administrative state for the FTP server.\nWhen LOCKED all on-going connections will immediately be terminated.";
+      mandatory true;
+      type erienmnrmrcsfiletpm:enum-BasicAdmState;
+    }
+    leaf port {
+      description "The listening port number of the FTP over TLS server control connection.\n\nThe TLS layer is established on the regular FTP port by issuing an \"AUTH TLS\" command.\n";
+      type uint16;
+      default 9921;
+    }
+    leaf nodeCredential {
+      description "The credential used for FTP over TLS based file transfer. \nSpecifies the DN of a NodeCredential MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustCategory {
+      description "The set of certificates trusted by the FTP over TLS based file transfer. \nSpecifies the DN of a TrustCategory MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf maxDataPort {
+      description "The maximum port number for PASV data connections.\n\nMust be greater or equal to minDataPort.";
+      type uint16;
+    }
+    leaf minDataPort {
+      description "The minimum port number for PASV data connections.\n\nMust be lower or equal to maxDataPort.";
+      type uint16;
+    }
+  } // end 'grouping moc-FtpTlsServer'
+  grouping moc-FtpTls-keys {
+    description "Key(s) for MOC FtpTls";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name ftpTlsId;
+      type string;
+    }
+  } // end 'grouping moc-FtpTls-keys'
+  grouping moc-FtpTls {
+    description "Represents the common configuration parameters of FTP over Transport Layer Security (TLS) clients on the ME.\n\n\n";
+    leaf nodeCredential {
+      description "The credential used for FTP over TLS based file transfer. \nSpecifies the DN of a NodeCredential MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustCategory {
+      description "The set of certificates trusted by the FTP over TLS based file transfer. \nSpecifies the DN of a TrustCategory MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-FtpTls'
+  grouping moc-FileTPM-keys {
+    description "Key(s) for MOC FileTPM";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name fileTPMId;
+      type string;
+    }
+  } // end 'grouping moc-FileTPM-keys'
+  grouping moc-FileTPM {
+    description "The top class for server and client configuration of different protocols implementing file transfer.\nLists the protocols supported by the ME by any file transfer client or server.";
+  } // end 'grouping moc-FileTPM'
+  grouping moc-Sftp-keys {
+    description "Key(s) for MOC Sftp";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name sftpId;
+      type string;
+    }
+  } // end 'grouping moc-Sftp-keys'
+  grouping moc-Sftp {
+    description "Represents the common configuration parameters of Secure Shell File Transfer Protocol (SFTP) clients on the ME.";
+    leaf-list supportedMacs {
+      min-elements 1;
+      config false;
+      description "Lists the supported message authentication codes.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsfiletpm:ddt-SshAlgorithm;
+    }
+    leaf-list selectedMacs {
+      min-elements 1;
+      description "The list of selected message authentication codes.\n\nThe algorithms are offered to the SSH peer in the order as configured. Each value indicates one coding algorithm.";
+      type erienmnrmrcsfiletpm:ddt-SshAlgorithm;
+    }
+    leaf-list supportedKeyExchanges {
+      min-elements 1;
+      config false;
+      description "Lists the supported key exchange algorithms.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsfiletpm:ddt-SshAlgorithm;
+    }
+    leaf-list supportedCiphers {
+      min-elements 1;
+      config false;
+      description "Lists the supported encryption ciphers.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsfiletpm:ddt-SshAlgorithm;
+    }
+    leaf-list selectedCiphers {
+      min-elements 1;
+      description "The list of selected ciphers.\n\nThe ciphers are offered to the SSH peer in the order as configured. Each value indicates one cipher.";
+      type erienmnrmrcsfiletpm:ddt-SshAlgorithm;
+    }
+    leaf-list selectedKeyExchanges {
+      min-elements 1;
+      description "The list of selected key exchange algorithms.\n\nThe algorithms are offered to the SSH peer in the order as configured. Each value indicates one algorithm.";
+      type erienmnrmrcsfiletpm:ddt-SshAlgorithm;
+    }
+  } // end 'grouping moc-Sftp'
+  grouping moc-FtpServer-keys {
+    description "Key(s) for MOC FtpServer";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name ftpServerId;
+      type string;
+    }
+  } // end 'grouping moc-FtpServer-keys'
+  grouping moc-FtpServer {
+    description "Generic configuration options for a file transfer server.";
+    leaf idleTimer {
+      description "The amount of seconds after which an idle session is terminated.\n\nSpecifies the maximum time an FTP session may remain idle. A session will be dropped if the length of the idle session exceeds the configured time. No idleTimer means idle sessions are not limited.";
+      type erienmnrmrcsfiletpm:ddt-RcsFileTPM_FtpServer_idleTimer;
+      default 600;
+    }
+  } // end 'grouping moc-FtpServer'
+  grouping moc-SftpServer-keys {
+    description "Key(s) for MOC SftpServer";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name sftpServerId;
+      type string;
+    }
+  } // end 'grouping moc-SftpServer-keys'
+  grouping moc-SftpServer {
+    description "Represents the Secure Shell File Transfer Protocol (SFTP) server of the ME.";
+    leaf administrativeState {
+      description "The administrative state for the SFTP server.\nWhen LOCKED all on-going connections will immediately be terminated.";
+      mandatory true;
+      type erienmnrmrcsfiletpm:enum-BasicAdmState;
+    }
+    leaf port {
+      description "The listening port number of the SFTP server.";
+      type uint16;
+      default 115;
+    }
+  } // end 'grouping moc-SftpServer'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcsfiletpm:FileTPM/erienmnrmrcsfiletpm:FtpServer {
+    list FtpTlsServer {
+      key id;
+      max-elements 1;
+      description "Represents the FTP over Transport Layer Security (TLS) server of the ME.\n\nThe server only accepts FTP sessions that are explicitly requesting a TLS layer by the \"AUTH TLS\" command.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FtpTlsServer-keys;
+      container attributes {
+        description "Attributes for FtpTlsServer";
+        uses moc-FtpTlsServer;
+      } // end 'container attributes'
+    } // end 'list FtpTlsServer'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcsfiletpm:FileTPM {
+    list FtpTls {
+      key id;
+      max-elements 1;
+      description "Represents the common configuration parameters of FTP over Transport Layer Security (TLS) clients on the ME.\n\n\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FtpTls-keys;
+      container attributes {
+        description "Attributes for FtpTls";
+        uses moc-FtpTls;
+      } // end 'container attributes'
+    } // end 'list FtpTls'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list FileTPM {
+      key id;
+      max-elements 1;
+      description "The top class for server and client configuration of different protocols implementing file transfer.\nLists the protocols supported by the ME by any file transfer client or server.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FileTPM-keys;
+    } // end 'list FileTPM'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcsfiletpm:FileTPM {
+    list Sftp {
+      key id;
+      max-elements 1;
+      description "Represents the common configuration parameters of Secure Shell File Transfer Protocol (SFTP) clients on the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Sftp-keys;
+      container attributes {
+        description "Attributes for Sftp";
+        uses moc-Sftp;
+      } // end 'container attributes'
+    } // end 'list Sftp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcsfiletpm:FileTPM {
+    list FtpServer {
+      key id;
+      max-elements 1;
+      description "Generic configuration options for a file transfer server.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FtpServer-keys;
+      container attributes {
+        description "Attributes for FtpServer";
+        uses moc-FtpServer;
+      } // end 'container attributes'
+    } // end 'list FtpServer'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcsfiletpm:FileTPM/erienmnrmrcsfiletpm:FtpServer {
+    list SftpServer {
+      key id;
+      max-elements 1;
+      description "Represents the Secure Shell File Transfer Protocol (SFTP) server of the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SftpServer-keys;
+      container attributes {
+        description "Attributes for SftpServer";
+        uses moc-SftpServer;
+      } // end 'container attributes'
+    } // end 'list SftpServer'
+  }
+}

@@ -1,0 +1,151 @@
+module ericsson-enm-ReqORadioSwSlot {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqORadioSwSlot;
+  prefix erienmnrmreqoradioswslot;
+  yexte:ecim-name ReqORadioSwSlot;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqORadio {
+    prefix erienmnrmreqoradio;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-ORadioSwSlotAccess {
+    description "Whether the slot is writable.\nContains access status in software slot of ORadio. ";
+    type enumeration {
+      enum READ_ONLY {
+        description "Slot intended only for factory software. Activation of such software slot restores factory defaults.";
+        value 1;
+      }
+      enum READ_WRITE {
+        description "Slot used for updating software.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-ORadioSwSlotStatus {
+    description "Software status in the software slot of ORadio.";
+    type enumeration {
+      enum VALID {
+        description "Slot contains software build considered as valid.";
+        value 1;
+      }
+      enum INVALID {
+        description "Software build is considered as damaged and is not currently used by ORadio.";
+        value 2;
+      }
+      enum EMPTY {
+        description "Slot does not contain software package.";
+        value 3;
+      }
+    }
+  }
+  grouping moc-ORadioSwSlot-keys {
+    description "Key(s) for MOC ORadioSwSlot";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name oRadioSwSlotId;
+      type string;
+    }
+  } // end 'grouping moc-ORadioSwSlot-keys'
+  grouping moc-ORadioSwSlot {
+    description "Represents a software slot in ORadio. Contains information about the software stored in the slot.\nCreated by system when management plane between Baseband unit and ORadio is established, and software inventory data is fetched.";
+    leaf running {
+      config false;
+      description "Whether software stored in the slot is running. Value changes to true after ORadio restart, if software is active.\nfalse: Software is not running.\ntrue: Software is running.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf buildName {
+      config false;
+      description "Name of software build.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf buildVersion {
+      config false;
+      description "Version of software build.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf access {
+      config false;
+      description "Access rights for the slot.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqoradioswslot:enum-ORadioSwSlotAccess;
+    }
+    leaf productCode {
+      config false;
+      description "Product code provided by the vendor, specific to product.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf name {
+      config false;
+      description "Name of software slot.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf active {
+      config false;
+      description "Whether software in the slot is active.\nfalse: Software is not active.\ntrue: Software is active.\nSet by MO action ORadio::sendCommand in the following ways:\n- To false after the install command.\n- To true after the activate command.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf buildId {
+      config false;
+      description "Identity of software build.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf status {
+      config false;
+      description "Status of the software package. ";
+      notife:notifiable-state-data true;
+      type erienmnrmreqoradioswslot:enum-ORadioSwSlotStatus;
+    }
+    leaf vendorCode {
+      config false;
+      description "Vendor code.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-ORadioSwSlot'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqoradio:ORadio {
+    list ORadioSwSlot {
+      key id;
+      description "Represents a software slot in ORadio. Contains information about the software stored in the slot.\nCreated by system when management plane between Baseband unit and ORadio is established, and software inventory data is fetched.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-ORadioSwSlot-keys;
+      container attributes {
+        description "Attributes for ORadioSwSlot";
+        uses moc-ORadioSwSlot;
+      } // end 'container attributes'
+    } // end 'list ORadioSwSlot'
+  }
+}

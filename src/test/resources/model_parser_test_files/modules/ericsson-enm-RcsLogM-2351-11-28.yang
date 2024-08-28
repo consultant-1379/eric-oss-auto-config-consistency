@@ -1,0 +1,514 @@
+module ericsson-enm-RcsLogM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsLogM;
+  prefix erienmnrmrcslogm;
+  yexte:ecim-name RcsLogM;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 0;
+    yexte:correction 3;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ActionResultType {
+    description "Lists the different results of an action.";
+    type enumeration {
+      enum SUCCESS {
+        description "The asynchronous action ended with success.";
+        value 1;
+      }
+      enum FAILURE {
+        description "The asynchronous action ended with failure.";
+        value 2;
+      }
+      enum NOT_AVAILABLE {
+        description "No result is available yet.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-ActionStateType {
+    description "Lists the action states.";
+    type enumeration {
+      enum CANCELLING {
+        description "Cancellation is in progress.";
+        value 1;
+      }
+      enum RUNNING {
+        description "The execution of the action is currently in progress.";
+        value 2;
+      }
+      enum FINISHED {
+        description "The action is finished.";
+        value 3;
+      }
+      enum CANCELLED {
+        description "The action has been cancelled and cancellation has been done.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+    }
+  }
+  typedef enum-LogSeverity {
+    description "Each log entry is assigned a severity.\n\nThis can be used to put a filter on the log so that only events of a certain severity get logged.";
+    type enumeration {
+      enum EMERGENCY {
+        description "Add this to the severity filter to capture EMERGENCY events to the log.";
+        value 0;
+      }
+      enum ALERT {
+        description "Add this to the severity filter to capture ALERT type events in the log.";
+        value 1;
+      }
+      enum CRITICAL {
+        description "Add this to the severity filter to capture CRITICAL events to the log.";
+        value 2;
+      }
+      enum ERROR {
+        description "Add this to the severity filter to capture ERROR events to the log.";
+        value 3;
+      }
+      enum WARNING {
+        description "add this to the severity filter to capture WARNING events to the log.";
+        value 4;
+      }
+      enum NOTICE {
+        description "Add this to the severity filter to capture NOTICE events to the log.";
+        value 5;
+      }
+      enum INFO {
+        description "Add this to the severity filter to capture INFO events to the log.";
+        value 6;
+      }
+    }
+  }
+  typedef enum-TransferType {
+    description "The transfer type makes it possible to instruct the system to transfer log content.\nIt can be as a continous stream or as individual files.";
+    type enumeration {
+      enum STREAM {
+        description "Instructs the system to transfer log data in a continuous stream.";
+        value 0;
+      }
+      enum BULK {
+        description "Instructs the system to transfer log data in bulk mode.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-LogM_exportEsi_password {
+    type string;
+  }
+  typedef ddt-ActionInvocationResult {
+    description "This is the datatype for the Asychronous Action Id. ";
+    type uint16;
+  }
+  typedef ddt-Log_export_password {
+    type string;
+  }
+  typedef ddt-LogM_exportAvailabilityLog_password {
+    type string;
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC\n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)";
+    type string {
+      length 19..31;
+    }
+  }
+  typedef ddt-EcimEmpty {
+    description "Represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping struct-EcimPassword {
+    description "Stores the password.";
+    leaf password {
+      description "Holds the password or passphrase text.";
+      type string;
+      mandatory true;
+    }
+    leaf cleartext {
+      description "Indicates whether or not the password is entered in cleartext.";
+      type erienmnrmrcslogm:ddt-EcimEmpty;
+    }
+  } // end 'grouping struct-EcimPassword'
+  grouping struct-AsyncActionProgress {
+    description "Records the progress of an asynchronous action.";
+    leaf result {
+      description "Result state of a completed action.\nThis field has value NOT_AVAILABLE if the action is not finished.";
+      type erienmnrmrcslogm:enum-ActionResultType;
+    }
+    leaf timeOfLastStatusUpdate {
+      description "Date and time when the struct member state was last updated.";
+      type erienmnrmrcslogm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf timeActionCompleted {
+      description "Date and time when the action was completed (successfully or unsuccessfully).";
+      type erienmnrmrcslogm:ddt-DateTime;
+    }
+    leaf-list additionalInfo {
+      min-elements 0;
+      description "Used for logging significant messages during execution of an action.";
+      type string;
+    }
+    leaf actionId {
+      description "Uniquely identifies the invocation of an action.\nIdentifies the invocation of an action when the managed object allows invocation of more than one action at a time.";
+      type erienmnrmrcslogm:ddt-ActionInvocationResult;
+      mandatory true;
+    }
+    leaf progressPercentage {
+      description "Progress of the action.\nThe range is between 0 and 100.";
+      type uint8;
+    }
+    leaf progressInfo {
+      description "Textual information that describes the actual state of the action execution.";
+      type string;
+    }
+    leaf state {
+      description "Current state of the action.";
+      type erienmnrmrcslogm:enum-ActionStateType;
+    }
+    leaf timeActionStarted {
+      description "Date and time when the current action was started.";
+      type erienmnrmrcslogm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf resultInfo {
+      description "Textual description of the outcome/result of the action containing useful information for the NMS.\nIf the action failed, it can contain an error message.";
+      type string;
+    }
+    leaf actionName {
+      description "Name of the invoked asynchronous action.";
+      type string;
+    }
+  } // end 'grouping struct-AsyncActionProgress'
+  grouping moc-Log-keys {
+    description "Key(s) for MOC Log";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO. It has no effect on the transfer function.";
+      mandatory true;
+      yexte:ecim-name logId;
+      type string;
+    }
+  } // end 'grouping moc-Log-keys'
+  grouping moc-Log {
+    description "Enables configuration of the Log general properties.\nThe Log MO contains parameters for a specific log file/stream in the system.";
+    container progressReport {
+      description "Reports the progress of a exportEsi or exportAvailabilityLog action.";
+      status deprecated {
+        yexte:status-information "Deprecated since 20.Q1. Use attribute Log:reportProgress instead.";
+      }
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcslogm:struct-AsyncActionProgress;
+    } // end 'container progressReport'
+    leaf-list severityFilter {
+      min-elements 0;
+      max-elements 7;
+      description "\nThis can be used to put a filter on the log so that only events of a certain severity get logged.\n\nIf no value is set, all entries will be kept.\n\n";
+      type erienmnrmrcslogm:enum-LogSeverity;
+    }
+    list reportProgress {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Represents the progress and result of the ongoing action.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcslogm:struct-AsyncActionProgress;
+    } // end 'list reportProgress'
+    action cancel {
+      description "Action will cancel the current  action invoked on this MO.\n";
+      input {
+        leaf actionID {
+          description "Optional parameter. \nIf supplied the cancel() action will operate on the selected action. \nIf omitted the cancel() action operates on all ongoing actions.";
+          type erienmnrmrcslogm:enum-ActionResultType;
+        }
+      }
+    }
+    action export {
+      description "Exports this log type to a given destination.\nThis action will move all log entries into a single ASCII encoded file which is transfered to the destination given in the parameters of the action.";
+      input {
+        leaf password {
+          description "If credentials are required, the password is filled in here.\nIf no credentials are required, this parameter is ignored.";
+          type erienmnrmrcslogm:ddt-Log_export_password;
+        }
+        leaf uri {
+          mandatory true;
+          description "A uniform resource locator describing the file transfer for the Log stream file.\n(i.e. identifying protocol, server and destination directory)\n e.g. sftp://myserver.mydomain.com/support/LogStreamA\n\nThe file name is determined by the system";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type erienmnrmrcslogm:ddt-ActionInvocationResult;
+        }
+      }
+    }
+  } // end 'grouping moc-Log'
+  grouping moc-LogPushTransfer-keys {
+    description "Key(s) for MOC LogPushTransfer";
+    leaf id {
+      erienmyext:no-notification;
+      description "This is the logPushTransfer MOC id attribute. It has no affect on the transfer function.";
+      mandatory true;
+      yexte:ecim-name logPushTransferId;
+      type string;
+    }
+  } // end 'grouping moc-LogPushTransfer-keys'
+  grouping moc-LogPushTransfer {
+    description "Enables configuration of the connection parameters for both LogM and LogM.\n\nAn MO shall be created to cause the system to transfer a specific log whenever it reaches a maximum level or as a continuous stream.\n\nA rotating log will transfer a file whenever a new file is rotated in.\n\nIf there is no instance of this class for a specific log, the log service will simply stop writing to a non-wrapping log when it has reached its maximum size.\n\nA wrap log will wrap as usual when reaching its maximum size.\n\nLog data transfer for wrap files occurs before the log is wrapped.\n";
+    container password {
+      description "Password field for the remote server.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcslogm:struct-EcimPassword;
+    } // end 'container password'
+    leaf transferType {
+      description "The transfer type makes it possible to instruct the system to transfer log content.\nThis attribute indicates whether automatic transfer log data should be sent continously in a stream or in bulk whenever a file is filled.";
+      type erienmnrmrcslogm:enum-TransferType;
+      default BULK;
+    }
+    leaf operationalState {
+      config false;
+      description "Operational state of this log Push Transfer object.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslogm:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      status deprecated {
+        yexte:status-information "Deprecated since 20.Q1. Use attribute LogPushTransfer:availStatus instead.";
+      }
+      config false;
+      description "Available status for this log push transfer object.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcslogm:enum-AvailStatus;
+    }
+    leaf uri {
+      description "A uniform resource locator describing the file transfer for log streams.\n\nThis attribute holds the uniform resource indicator which specifies the file transfer protocol, server and destination directory to which the log file should be exported.\n\n E.g. sftp://myserver.mydomain.com/logs\n\nThe name of the file being exported is determined by the system.";
+      mandatory true;
+      type string;
+    }
+    leaf-list availStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Available status for this log push transfer object.";
+      type erienmnrmrcslogm:enum-AvailStatus;
+    }
+  } // end 'grouping moc-LogPushTransfer'
+  grouping moc-LogM-keys {
+    description "Key(s) for MOC LogM";
+    leaf id {
+      erienmyext:no-notification;
+      description "This is the identity  for the LogM, it does not affect the file transfer and default value is 1.";
+      mandatory true;
+      yexte:ecim-name logMId;
+      type string;
+    }
+  } // end 'grouping moc-LogM-keys'
+  grouping moc-LogM {
+    description "Enables configuration of the LogM general properties.\nThis is the root MO for the log management fragment.\nIt contains various parameters concerning the log management service.";
+    container progressReport {
+      description "Reports the progress of a exportEsi or exportAvailabilityLog action.";
+      status deprecated {
+        yexte:status-information "Deprecated since 20.Q1, Use attribute LogM:reportProgress instead.";
+      }
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcslogm:struct-AsyncActionProgress;
+    } // end 'container progressReport'
+    leaf nodeCredential {
+      description "NodeCredential associated with CertM (optional).";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustCategory {
+      description "trustCategory associated with CertM (optional).\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    list reportProgress {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Represents the progress and result of the ongoing action.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcslogm:struct-AsyncActionProgress;
+    } // end 'list reportProgress'
+    action cancel {
+      description "Action will cancel the current  action invoked on this MO.";
+      input {
+        leaf actionID {
+          description "Optional parameter.\nIf supplied the cancel() action will operate on the selected action. \nIf omitted the cancel() action operates on all ongoing actions.";
+          type erienmnrmrcslogm:ddt-ActionInvocationResult;
+        }
+      }
+    }
+    action exportAvailabilityLog {
+      description "This action causes the system to transfer the Availability log to a location defined in the action.\nWhen the model is deployed on certain architectures, there might be ISP (In Service Performance) mechanisms to collect and retrieve data from a system. \n\n The return value of the action will match the actionId struct member of the progressReport attribute.";
+      input {
+        leaf password {
+          description "If credentials are required, the password is filled in here.\nIf no credentials are required, this parameter is ignored.";
+          type erienmnrmrcslogm:ddt-LogM_exportAvailabilityLog_password;
+        }
+        leaf uri {
+          mandatory true;
+          description "An uniform resource locator describing the file transfer for the Availablity log file.\n(i.e. idntifying protocol, server and destination directory)\ne.g. sftp://myserver.mydomain.com/avli\n\nThe file name is determined by the system.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type erienmnrmrcslogm:ddt-ActionInvocationResult;
+        }
+      }
+    }
+    action exportEsi {
+      description "Used for For Ericsson troubleshooting.\nThis action causes the system to generate Ericsson Support Information and transfer a file containing this information to a location specified in the uri.\nThe MS requests ME to collect the information targeted to Ericsson personnel, information such as application log files and in general all kind of files used for troubleshooting and analysis to a predefined storage location; The ECIM Log Management  fragment sends this information to a predefined location.\nIn case a system is implementing a tool to collect diagnostic information of the MEs of a node, that action can serve as a hook to invoke the retrieval through NBI of all the data collected via this mean. The use case here is for troubleshooting purposes to collect in one action all the available logs and relevant data.\n\nThe return value of the action will match the actionId struct member of the progressReport attribute.\n\ne.g.\n\nexportEsi( sftp://myserver.mydomain.com/support/ESI passwd123 CLUSTER)";
+      input {
+        leaf password {
+          description "If credentials are required, the password should be given in here.\n\n If no credentials are required, this parameter is ignored.";
+          type erienmnrmrcslogm:ddt-LogM_exportEsi_password;
+        }
+        leaf granularity {
+          description "Description: Sets the scope of the data collection.\nThe allowed values are \"small\", \"large\", \"static\" and \"refresh\". If not given, \"large\" will be assumed.";
+          type string;
+        }
+        leaf uri {
+          mandatory true;
+          description "A uniform resource locator describing the file transfer for the ESI file.\n(i.e identifying transfer protocol, server and destination directory)\n e.g. sftp://myserver.mydomain.com/support/ESI\n\nThe file name is determined by the system";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type erienmnrmrcslogm:ddt-ActionInvocationResult;
+        }
+      }
+    }
+  } // end 'grouping moc-LogM'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslogm:LogM {
+    list Log {
+      key id;
+      description "Enables configuration of the Log general properties.\nThe Log MO contains parameters for a specific log file/stream in the system.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Log-keys;
+      container attributes {
+        description "Attributes for Log";
+        uses moc-Log;
+      } // end 'container attributes'
+    } // end 'list Log'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcslogm:LogM/erienmnrmrcslogm:Log {
+    list LogPushTransfer {
+      key id;
+      max-elements 5;
+      description "Enables configuration of the connection parameters for both LogM and LogM.\n\nAn MO shall be created to cause the system to transfer a specific log whenever it reaches a maximum level or as a continuous stream.\n\nA rotating log will transfer a file whenever a new file is rotated in.\n\nIf there is no instance of this class for a specific log, the log service will simply stop writing to a non-wrapping log when it has reached its maximum size.\n\nA wrap log will wrap as usual when reaching its maximum size.\n\nLog data transfer for wrap files occurs before the log is wrapped.\n";
+      erienmyext:enm-type MOC;
+      uses moc-LogPushTransfer-keys;
+      container attributes {
+        description "Attributes for LogPushTransfer";
+        uses moc-LogPushTransfer;
+      } // end 'container attributes'
+    } // end 'list LogPushTransfer'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list LogM {
+      key id;
+      max-elements 1;
+      description "Enables configuration of the LogM general properties.\nThis is the root MO for the log management fragment.\nIt contains various parameters concerning the log management service.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-LogM-keys;
+      container attributes {
+        description "Attributes for LogM";
+        uses moc-LogM;
+      } // end 'container attributes'
+    } // end 'list LogM'
+  }
+}

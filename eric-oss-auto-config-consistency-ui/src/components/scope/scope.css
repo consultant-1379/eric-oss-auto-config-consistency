@@ -1,0 +1,57 @@
+/*******************************************************************************
+ * COPYRIGHT Ericsson 2023
+ *
+ *
+ *
+ * The copyright to the computer program(s) herein is the property of
+ *
+ * Ericsson Inc. The programs may be used and/or copied only with written
+ *
+ * permission from Ericsson Inc. or in accordance with the terms and
+ *
+ * conditions stipulated in the agreement/contract under which the
+ *
+ * program(s) have been supplied.
+ ******************************************************************************/
+:host {
+  display: block;
+}
+
+.app-header {
+  font-size: 16px;
+  padding-right: var(--space-xl);
+  display: contents;
+}
+
+.app-count-style {
+  vertical-align: middle;
+}
+
+.app-empty-state {
+  align-items: center;
+  display: flex;
+  font-size: 14px;
+  gap: var(--space-base);
+  height: var(--space-large);
+  width: fit-content;
+}
+
+.app-create-button {
+  display: block;
+}
+
+.action-buttons {
+  float: right;
+  padding-right: var(--space-xl);
+}
+
+.app-table-container {
+  padding-right: var(--space-xl);
+  height: 83vh;
+}
+
+eui-table::part(download-icon-cell) {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-right: var(--space-base, 8px);
+}

@@ -1,0 +1,16 @@
+ModelObjectName:Exists
+AdmissionControl:true
+AnrFunction:true
+CommonBeamforming:true
+DataRadioBearer:true
+ExternalENodeBFunction:true
+ExternalGNBCUCPFunction:true
+GNBDUFunction:true
+GNBCUCPFunction:true
+GNBCUUPFunction:true
+McfbCellProfile:true
+NRCellCU:true
+NRCellDU:true
+QciProfileEndcConfigExt:true
+Rrc:true
+DoesNotExist:false

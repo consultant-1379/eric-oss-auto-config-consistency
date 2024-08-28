@@ -1,0 +1,61 @@
+module ericsson-enm-RtnL3PacketCapture {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnL3PacketCapture;
+  prefix erienmnrmrtnl3packetcapture;
+  yexte:ecim-name RtnL3PacketCapture;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef ddt-RtnL3PacketCapture_PacketCapture_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-PacketCapture-keys {
+    description "Key(s) for MOC PacketCapture";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name packetCaptureId;
+      type string;
+    }
+  } // end 'grouping moc-PacketCapture-keys'
+  grouping moc-PacketCapture {
+    description "Packet Capture ";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnl3packetcapture:ddt-RtnL3PacketCapture_PacketCapture_userLabel;
+    }
+  } // end 'grouping moc-PacketCapture'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list PacketCapture {
+      key id;
+      max-elements 1;
+      description "Packet Capture ";
+      erienmyext:enm-type MOC;
+      uses moc-PacketCapture-keys;
+      container attributes {
+        description "Attributes for PacketCapture";
+        uses moc-PacketCapture;
+      } // end 'container attributes'
+    } // end 'list PacketCapture'
+  }
+}

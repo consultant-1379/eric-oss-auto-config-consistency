@@ -1,0 +1,6 @@
+modelObjectName:attributeName:cmHandle:dataType
+EUtranCellFDD:operationalState:cmHandle1:enumeration
+EUtranCellFDD:loadBasedCaEnabled:cmHandle1:boolean
+EUtranCellFDD:freqBand:cmHandle1:int32
+EUtranCellFDD:userLabel:cmHandle1:string
+SectorCarrier:essScPairId:cmHandle1:int64

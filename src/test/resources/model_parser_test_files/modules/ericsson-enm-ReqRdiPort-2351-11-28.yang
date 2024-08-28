@@ -1,0 +1,178 @@
+module ericsson-enm-ReqRdiPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqRdiPort;
+  prefix erienmnrmreqrdiport;
+  yexte:ecim-name ReqRdiPort;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef ddt-ReqRdiPort_RdiPort_preferredSfpProductNumber {
+    type string {
+      length 1..13;
+    }
+  }
+  grouping moc-RdiPort-keys {
+    description "Key(s) for MOC RdiPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name rdiPortId;
+      type string;
+    }
+  } // end 'grouping moc-RdiPort-keys'
+  grouping moc-RdiPort {
+    description "This MO represents a port on the FieldReplaceableUnit. The port is used for communication between IRU and RD units.";
+    leaf remoteRdiPortRef {
+      description "Refers to the RdiPort object on the remote unit to which this unit is connected.\n";
+      yexte:precondition "The RdiPort object on the remote unit exists.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf sfpModuleRef {
+      config false;
+      description "Refers to one SfpModule on the unit to which the port is connected.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list channelRef {
+      min-elements 0;
+      config false;
+      description "Reference to MO SfpChannel instance connected to this port.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrdiport:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrdiport:enum-OperState;
+    }
+    leaf preferredSfpProductNumber {
+      description "Ericsson product number of the preferred SFP module for the RiPort.\nIf SFP with different product number detected, alarm \"SFP Product Number Mismatch\" is issued.\nThe default value, nil, means the SFP validation function is disabled.";
+      type erienmnrmreqrdiport:ddt-ReqRdiPort_RdiPort_preferredSfpProductNumber;
+    }
+  } // end 'grouping moc-RdiPort'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list RdiPort {
+      key id;
+      description "This MO represents a port on the FieldReplaceableUnit. The port is used for communication between IRU and RD units.";
+      erienmyext:enm-type MOC;
+      uses moc-RdiPort-keys;
+      container attributes {
+        description "Attributes for RdiPort";
+        uses moc-RdiPort;
+      } // end 'container attributes'
+    } // end 'list RdiPort'
+  }
+}

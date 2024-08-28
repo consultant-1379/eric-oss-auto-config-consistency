@@ -1,0 +1,92 @@
+module ericsson-enm-ResEquipmentSupportFunction {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ResEquipmentSupportFunction;
+  prefix erienmnrmresequipmentsupportfunction;
+  yexte:ecim-name ResEquipmentSupportFunction;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 3;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  grouping moc-EquipmentSupportFunction-keys {
+    description "Key(s) for MOC EquipmentSupportFunction";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name equipmentSupportFunctionId;
+      type string;
+    }
+  } // end 'grouping moc-EquipmentSupportFunction-keys'
+  grouping moc-EquipmentSupportFunction {
+    description "This MO represents the logical functions needed for other equipment to function properly. These are functions like Power Supply and Climate.\n\nOne instance of this MO is created by the system.\n \n";
+    leaf supportSystemControl {
+      description "Indicates if the node controls and supervises the climate, power, and external alarm hardware in the cabinet. Only one node in the cabinet can control and supervise climate and power.";
+      type boolean;
+      default true;
+    }
+    leaf autoCreateUnits {
+      description "Whether or not detection of unconfigured HW units results in auto-creation of corresponding MOs.";
+      type boolean;
+      default true;
+    }
+    leaf autoCreateExternalNodes {
+      description "Whether or not detection of unconfigured external nodes results in auto-creation of corresponding ExternalNode MOs.";
+      type boolean;
+      default true;
+    }
+    leaf userLabel {
+      description "Used for product free-text description. ";
+      type string;
+    }
+    leaf supportFunction {
+      config false;
+      description "A read-only attribute boolean supportFunction, default true, always set to true. \nFor use by management systems to distinguish supportFunction implementations.\n";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf release {
+      config false;
+      description "The product release of the SupportFunction.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a reference to the EcBus MO that reserve this MO instance.";
+      yexte:takes-effect Immediately;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-EquipmentSupportFunction'
+  augment /erienmnrmcomtop:ManagedElement {
+    list EquipmentSupportFunction {
+      key id;
+      max-elements 2;
+      description "This MO represents the logical functions needed for other equipment to function properly. These are functions like Power Supply and Climate.\n\nOne instance of this MO is created by the system.\n \n";
+      erienmyext:enm-type MOC;
+      uses moc-EquipmentSupportFunction-keys;
+      container attributes {
+        description "Attributes for EquipmentSupportFunction";
+        uses moc-EquipmentSupportFunction;
+      } // end 'container attributes'
+    } // end 'list EquipmentSupportFunction'
+  }
+}

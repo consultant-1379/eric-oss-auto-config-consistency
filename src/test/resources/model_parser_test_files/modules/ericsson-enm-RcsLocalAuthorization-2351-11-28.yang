@@ -1,0 +1,287 @@
+module ericsson-enm-RcsLocalAuthorization {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsLocalAuthorization;
+  prefix erienmnrmrcslocalauthorization;
+  yexte:ecim-name RcsLocalAuthorization;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 3;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RcsSecM {
+    prefix erienmnrmrcssecm;
+  }
+  typedef enum-PermissionType {
+    description "Permission is the access right a role has on a target object specified by the ruleData attribute.\n\nCurrent permission types follow UNIX/Linux permission enumeration values as follows:\n0 = NO_ACCESS\n1 = X (EXECUTE)\n4 = R (READ)\n5 = RX (READ and EXECUTE)\n6 = RW (READ and WRITE)\n7 = RWX (READ, WRITE and EXECUTE)\n\nReserved values that are not included here are as follows and if required, may be introduced at a later date: \n\n2 = W (WRITE)\n3 = WX (WRITE and EXECUTE).";
+    type enumeration {
+      enum R {
+        description "Read only access right.\n\nThe user can read MOs and can get attribute values.";
+        value 4;
+      }
+      enum RW {
+        description "Read and write access right.\n\nThe user can create and delete MOs and set and get attribute values.";
+        value 6;
+      }
+      enum X {
+        description "Execute access right.\n\nThis is valid only for actions and specific commands.";
+        value 1;
+      }
+      enum RX {
+        description "Read and execute access rights.\n\nThe user can read MOs, get attribute values, and execute any actions.";
+        value 5;
+      }
+      enum RWX {
+        description "Read, write, and execute access rights.\n\nThe user can create and delete MOs, and set and get attribute values, and execute any actions.";
+        value 7;
+      }
+      enum NO_ACCESS {
+        description "No access.\n\nThe user has no read, write or execute rights to the MO, attribute, or action.";
+        value 0;
+      }
+    }
+  }
+  typedef enum-BasicAdmState {
+    description "Basic administrative states for a resource.";
+    type enumeration {
+      enum LOCKED {
+        description " The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-RuleDataType {
+    description "This type specifies the target Managed Object (MO) or MO Class (MOC) that a rule applies to.\n\nEntire sub-trees can be addressed as well as attributes and actions defined for a specific MO or MOC. Patterns are used for this purpose according to simplified regular expression syntax. Any regular expression can also be defined but must be identified as such using a specific prefix.\n\nMOCs are specified in their containment hierarchy separated by commas “,”. For example:  “ManagedElement,ApplFuncX”. \n \nMOs are specified using the 3GPP DN notation, with the exception that the same rule may mix MO and MOC, such as “ManagedElement, ApplFuncX=1”. Omitting the instance Id is the preferred notation for singleton MOCs, which makes the rule applicable for all ManagedElement instances. Thus rule design becomes independent of system implementation for singleton MOC types.\n\nIf the naming attribute is not the same as the MO Class name + “Id”, the naming attribute is in accordance with the 3GPP part of the DN as well. This means that if ApplFuncX naming attribute is xyz, then the DN is “ManagedElement,ApplFuncX.xyz=2”. However, it is not required nor forbidden to use this more elaborate form of DN. The naming attribute xyz can be omitted.\n \nAttributes and actions are specified after the MO or MOC separated by a dot “.”. Since the ‘,’ character is allowed in the naming attribute of MO of 3GPP DNs, escaping must be used if the character occurs in an attribute value by the reverse solidus (‘\\’) character. Several attributes or actions can be specified for the same MO or MOC separated by the the bar “|” character.\n\nThe rule applies to a single MO or MOC and all its attributes and actions unless the following notation is used:  \n\n...,MOC.* \tThe rule applies to all attributes and actions that belong to the MO Class, but not to the MOC itself. \n...,MOC,*\tThe rule applies to the MOC and all its attributes and actions and all contained (child) MOCs and their attribute and actions.\n\n(DEPRECATED: ...,MOC$ \tThe rule applies only to the MOC itself and not to its attributes and actions.)\n\nThe above notations are also valid for MOs and must close an expression.\n\nIn addition, the ruleData attribute can specify any Perl Compatible Regular Expressions. These regular expressions must only be used by CLI command modules for tailored commands or by Netconf modules for Netconf operations. The permitted content is specified by the CLI and Netconf documentation. The only general restriction to these kinds of rule data is that they must start with “:cli:regexp:” or “:netconf:regexp:” plus a different expression from the wild card “.*”. \n\nExamples:\n1)\tEntire MO tree, that is the rule will match all Managed Objects:\nManagedElement,*\n\n2)\tOnly MOs and their attributes and actions of ManagedElement MOC:\nManagedElement \n\n3)\t(Deprecated) Only MOs of ManagedElement MOC but not their attributes and actions:\nManagedElement$\n\n4)\tA specific MO including singleton parents:\nManagedElement,Equipment,FRU=19\nManagedElement=10\\.10\\.10\\.10\n\n5)\tAn entire sub-tree below that includes a specific MO:\nManagedElement,Equipment,FRU=17,*\n\n6)\tAn entire sub-tree below that includes a specific MO that belongs to an MO class where the naming attribute is not equal to the MOC Name + “Id”.  Two examples are given, both are valid and accurately describe the same MO tree:\nManagedElement,Equipment,Abc.xyz=1,*\nManagedElement,Equipment,Abc=1,*\n\n7)\tAll port attributes that belong to MOs of the Boo MOC:\nManagedElement,ApplFuncX,Boo.port\n\n8)\tAll ipAddress and port attributes that belong to MOs of the Boo MO class:\nManagedElement,ApplFuncX,Boo.ipAddress|port\n\n9)\tOnly the port attribute that belongs to a specific instance of the Boo MOC:\nManagedElement,ApplFuncX=1,Boo=17.port\n\n10)\tThe restart action on the ManagedElement MOC:\nManagedElement.restart\n\n11)\tAll CLI commands in the command module group 'System':\n:cli:regexp:System-[a-zA-Z0-9]+ \nor\nregexp:System-[a-zA-Z0-9]+ \n\n12)\tNetconf operation <operationx>:\n:netconf:regexp:operationx";
+    type string;
+  }
+  grouping moc-Role-keys {
+    description "Key(s) for MOC Role";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name roleId;
+      type string;
+    }
+  } // end 'grouping moc-Role-keys'
+  grouping moc-Role {
+    description "Authorization roles that may be assigned to users.\n\nRoles have a containment relationship to the rules which define the access controls to objects.";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf roleName {
+      config false;
+      description "The role name a user may have.\n\nThe name is matched against role names retrieved from the user information store.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-Role'
+  grouping moc-LocalAuthorizationMethod-keys {
+    description "Key(s) for MOC LocalAuthorizationMethod";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name localAuthorizationMethodId;
+      type string;
+    }
+  } // end 'grouping moc-LocalAuthorizationMethod-keys'
+  grouping moc-LocalAuthorizationMethod {
+    description "The Root MOC of the Local Authorization method.\n\nRoles and authorization rules are defined to build a Role Based Access Control (RBAC) model for controlling access to Managed Element resources such as Managed Objects, attributes, actions and CLI commands. ";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf administrativeState {
+      description "The administrative state of this authorization method.";
+      mandatory true;
+      type erienmnrmrcslocalauthorization:enum-BasicAdmState;
+    }
+  } // end 'grouping moc-LocalAuthorizationMethod'
+  grouping moc-CustomRule-keys {
+    description "Key(s) for MOC CustomRule";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name customRuleId;
+      type string;
+    }
+  } // end 'grouping moc-CustomRule-keys'
+  grouping moc-CustomRule {
+    description "The rules created by the MS that define the access control to objects.\n\nThe CustomRule MO instances are associated with CustomRole MO instances, which may be then applied to users. ";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf-list reservedByRoles {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The roles to which this rule is associated.\n\nIndicates the Distinguished Names of CustomRole MO instances that refer to this CustomRule MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf ruleName {
+      description "The rule name.";
+      type string;
+    }
+    leaf permission {
+      description "Permission is the access right the rule provides on a target specified by the ruleData attribute. ";
+      mandatory true;
+      type erienmnrmrcslocalauthorization:enum-PermissionType;
+    }
+    leaf ruleData {
+      description "Defines the model elements for which the permission is applicable.";
+      mandatory true;
+      type erienmnrmrcslocalauthorization:ddt-RuleDataType;
+    }
+  } // end 'grouping moc-CustomRule'
+  grouping moc-Rule-keys {
+    description "Key(s) for MOC Rule";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ruleId;
+      type string;
+    }
+  } // end 'grouping moc-Rule-keys'
+  grouping moc-Rule {
+    description "The rules that define the access control to objects.\n\nA Rule MO is contained by a Role MO which may be then applied to users.";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf ruleName {
+      erienmyext:no-notification;
+      config false;
+      description "The rule name.\n\nThe rule name is a string of '<FunctionName>_<RuleNumber>'\n\n<FunctionName> is a unique name for a system, transport, equipment, or application function.  \n\n<RuleNumber> is a numerical ID of the Rule MO within a <FunctionName>. \n\nExamples:\n\n\tBackupAndRestoreManagement_1\n\tFileManagement_2\n\tSecurityManagement_2\n\tSystemManagement_1\n";
+      type string;
+    }
+    leaf permission {
+      erienmyext:no-notification;
+      config false;
+      description "Permission is the access right the rule provides on a target specified by the ruleData attribute. ";
+      type erienmnrmrcslocalauthorization:enum-PermissionType;
+    }
+    leaf ruleData {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the model elements for which the permission is applicable.";
+      type erienmnrmrcslocalauthorization:ddt-RuleDataType;
+    }
+  } // end 'grouping moc-Rule'
+  grouping moc-CustomRole-keys {
+    description "Key(s) for MOC CustomRole";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name customRoleId;
+      type string;
+    }
+  } // end 'grouping moc-CustomRole-keys'
+  grouping moc-CustomRole {
+    description "Authorization roles defined by the MS that may be assigned to users.\n\nCustomRole MO instances are associated to CustomRule MO instances, which define the access controls to objects. ";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf roleName {
+      yexte:restricted;
+      description "The role name a user may have.\n\nThe name must match a role name retrieved from the user information store.";
+      mandatory true;
+      type string;
+    }
+    leaf-list rules {
+      min-elements 1;
+      description "The rules of the role created by the MS.\n\nContains the Distinguished Names of CustomRule MO instances.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-CustomRole'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement/erienmnrmrcslocalauthorization:LocalAuthorizationMethod {
+    list Role {
+      key id;
+      description "Authorization roles that may be assigned to users.\n\nRoles have a containment relationship to the rules which define the access controls to objects.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Role-keys;
+      container attributes {
+        description "Attributes for Role";
+        uses moc-Role;
+      } // end 'container attributes'
+    } // end 'list Role'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement {
+    list LocalAuthorizationMethod {
+      key id;
+      max-elements 1;
+      description "The Root MOC of the Local Authorization method.\n\nRoles and authorization rules are defined to build a Role Based Access Control (RBAC) model for controlling access to Managed Element resources such as Managed Objects, attributes, actions and CLI commands. ";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-LocalAuthorizationMethod-keys;
+      container attributes {
+        description "Attributes for LocalAuthorizationMethod";
+        uses moc-LocalAuthorizationMethod;
+      } // end 'container attributes'
+    } // end 'list LocalAuthorizationMethod'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement/erienmnrmrcslocalauthorization:LocalAuthorizationMethod {
+    list CustomRule {
+      key id;
+      description "The rules created by the MS that define the access control to objects.\n\nThe CustomRule MO instances are associated with CustomRole MO instances, which may be then applied to users. ";
+      erienmyext:enm-type MOC;
+      uses moc-CustomRule-keys;
+      container attributes {
+        description "Attributes for CustomRule";
+        uses moc-CustomRule;
+      } // end 'container attributes'
+    } // end 'list CustomRule'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement/erienmnrmrcslocalauthorization:LocalAuthorizationMethod/erienmnrmrcslocalauthorization:Role {
+    list Rule {
+      key id;
+      description "The rules that define the access control to objects.\n\nA Rule MO is contained by a Role MO which may be then applied to users.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Rule-keys;
+      container attributes {
+        description "Attributes for Rule";
+        uses moc-Rule;
+      } // end 'container attributes'
+    } // end 'list Rule'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement/erienmnrmrcslocalauthorization:LocalAuthorizationMethod {
+    list CustomRole {
+      key id;
+      description "Authorization roles defined by the MS that may be assigned to users.\n\nCustomRole MO instances are associated to CustomRule MO instances, which define the access controls to objects. ";
+      erienmyext:enm-type MOC;
+      uses moc-CustomRole-keys;
+      container attributes {
+        description "Attributes for CustomRole";
+        uses moc-CustomRole;
+      } // end 'container attributes'
+    } // end 'list CustomRole'
+  }
+}

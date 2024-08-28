@@ -1,0 +1,113 @@
+module ericsson-enm-RtnAuthenticationServer {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnAuthenticationServer;
+  prefix erienmnrmrtnauthenticationserver;
+  yexte:ecim-name RtnAuthenticationServer;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 6;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef ddt-IpDNSAddress {
+    description "The IpDNSAddress type represents an IP address or a DNS domain name.\n\nA unicast IPv4 address is presented in three-digit decimal blocks. It is specified in dotted-quad decimal notation (i.e. three-digit decimal blocks) in accordance with RFC791, The blocks are separated by a dot.\n- The unicast IPV4 address is within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\n- The IP address range 127.0.0.0 – 127.255.255.255 is reserved for loopback\n- The IP address range 0– 0.255.255.255 are reserved\n- The IP address range 169.254.1.0 - 169.254.254.255 is used for link-local addresses.\n\nAn IPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons as described in RFC 4291. If multiple consecutive groups contain only zeros, the use of “::” indicates one or more groups of 16 bits of zeros, as described in RFC 4291, section 2.2 bullet 2. A link-local address will have prefix fe80::/10. The format of the embedded IPv4/IPv6 addresses is described in RFC 6052.\n- IPv6 minimum length = 3 and maximum length = 39.\n- Valid characters: 0123456789abcdefABCDEF:\n\nA domain name is specified in dot separated alphanumeric notation as described in RFC 1034. The domain name consists of one or more parts, called labels, that are delimited by dots.\n- Domain Name's length: 253 characters\n- Label's length: 63 characters.\n- Valid characters: a-z, A-Z, 0,1,2,3,4,5,6,7,8,9,-\n- The Label’s first character is a letter.\n- Labels shall not start or end with a hyphen.\n- Labels shall not start with a numbers\n- Labels shall end with a number or a letter.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-PresharedKey {
+    description "Derived string used as pre-shared key.\n\nPre-shared key must be either valid hexadecimal number or ASCII string.\nExamples:\n - Hexadecimal: 0x5e921e7706e90bd13032\n - ASCII: dz8GmnVla0tKik4jBYXtq98NDJZG9J";
+    type string {
+      length 1..130;
+    }
+  }
+  typedef ddt-RtnAuthenticationServer_AuthenticationServer_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-AuthenticationServer-keys {
+    description "Key(s) for MOC AuthenticationServer";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN. ";
+      mandatory true;
+      yexte:ecim-name authenticationServerId;
+      type string;
+    }
+  } // end 'grouping moc-AuthenticationServer-keys'
+  grouping moc-AuthenticationServer {
+    description "Provides access to redundant remote authentication servers.";
+    leaf-list usedServerAddress {
+      min-elements 1;
+      max-elements 3;
+      config false;
+      description "List of used authentication server addresses.\nIPv4 address is specified in dotted quad notation, for example 130.100.92.154.\nRFC 791 describes syntax details.\nIPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons, for example 2001:0db8:85a3:0000:0000:8a2e:0370:7334.\nRFC 4291 describes syntax details.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnauthenticationserver:ddt-RtnAuthenticationServer_AuthenticationServer_userLabel;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list serverAddress {
+      min-elements 1;
+      max-elements 3;
+      description "List of configured remote authentication server addresses.\nFor each configured remote authentication server address, pre-shared key must be installed with action installPreSharedKey.";
+      yexte:dependencies "Must be FQDN or have same IP address family as this attribute.\nMust be of same type as used by InterfaceIPv4 MO or InterfaceIPv6 MO.\nIf set to FQDN, only one element is created.\nIf domain name is used, DnsClient MO must be configured in same Router MO. ";
+      type erienmnrmrtnauthenticationserver:ddt-IpDNSAddress;
+    }
+    action installPreSharedKey {
+      description "Install pre-shared key for RADIUS encryption.\n\nInstallation of pre-shared key is completed when action is completed without error.\nInstallation is not done if any error is returned.";
+      input {
+        leaf presharedKey {
+          mandatory true;
+          description "String used as pre-shared key.";
+          type erienmnrmrtnauthenticationserver:ddt-PresharedKey;
+        }
+        leaf serverAddress {
+          mandatory true;
+          description "Remote authentication server, either IPv4 or IPv6 address. Address must be identical to one of addresses configured with this attribute.";
+          type erienmnrmrtnauthenticationserver:ddt-IpDNSAddress;
+        }
+      }
+    }
+  } // end 'grouping moc-AuthenticationServer'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list AuthenticationServer {
+      key id;
+      description "Provides access to redundant remote authentication servers.";
+      erienmyext:enm-type MOC;
+      uses moc-AuthenticationServer-keys;
+      container attributes {
+        description "Attributes for AuthenticationServer";
+        uses moc-AuthenticationServer;
+      } // end 'container attributes'
+    } // end 'list AuthenticationServer'
+  }
+}

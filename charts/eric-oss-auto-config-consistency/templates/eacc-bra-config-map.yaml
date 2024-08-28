@@ -1,0 +1,39 @@
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "eric-oss-auto-config-consistency.name" . }}-backup
+  labels:
+  {{- include "eric-oss-auto-config-consistency.labels" . | nindent 4 }}
+  annotations:
+  {{- include "eric-oss-auto-config-consistency.annotations" . | nindent 4 }}
+data:
+  brm_backup.yaml: |
+    backupRestoreMetadataConfig:
+        # Supported backup types are listed in "backupType".
+        # In each "backupType", "database" specifies the logical database for backup and restore.
+        # In each "database", "inOutTables" specifies the tables to be included or excluded for
+        # backup and restore. It can take values "in", "out" or "none":
+        #    - "in": Only the tables in "tablesList" will be included in the backup and restore.
+        #    - "out": The tables in "tablesList" will be excluded in the backup and restore.
+        #    - "none": all tables defined in the database will be included in the backup and restore.
+        #     "tablesList" parameter will be ignored.
+        - backupType: EACC
+          # username is required when mTLS is enabled
+          database: eacc
+          inOutTables: none

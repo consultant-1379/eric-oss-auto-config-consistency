@@ -1,0 +1,193 @@
+module ericsson-enm-ReqDotGroupConfig {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqDotGroupConfig;
+  prefix erienmnrmreqdotgroupconfig;
+  yexte:ecim-name ReqDotGroupConfig;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef ddt-ReqDotGroupConfig_DotGroup_noOfBranchesInGrp1 {
+    type int32 {
+      range "0..0 | 2..2 | 4..4 | 8..8";
+    }
+  }
+  typedef ddt-ReqDotGroupConfig_DotGroup_noOfBranchesInGrp2 {
+    type int32 {
+      range "0..0 | 2..2 | 4..4 | 8..8";
+    }
+  }
+  typedef ddt-ReqDotGroupConfig_DotGroup_noOfBranchesInGrp3 {
+    type int32 {
+      range "0..0 | 2..2 | 4..4 | 8..8";
+    }
+  }
+  typedef ddt-ReqDotGroupConfig_DotGroup_noOfBranchesInGrp4 {
+    type int32 {
+      range "0..0 | 2..2 | 4..4 | 8..8";
+    }
+  }
+  grouping struct-DotGroup {
+    description "Radio dot groups.";
+    leaf noOfBranchesInGrp2 {
+      description "Number of branches in dot group 2.";
+      type erienmnrmreqdotgroupconfig:ddt-ReqDotGroupConfig_DotGroup_noOfBranchesInGrp2;
+      default 0;
+    }
+    leaf noOfBranchesInGrp3 {
+      description "Number of branches in dot group 3.";
+      type erienmnrmreqdotgroupconfig:ddt-ReqDotGroupConfig_DotGroup_noOfBranchesInGrp3;
+      default 0;
+    }
+    leaf noOfBranchesInGrp1 {
+      description "Number of branches in dot group 1.";
+      type erienmnrmreqdotgroupconfig:ddt-ReqDotGroupConfig_DotGroup_noOfBranchesInGrp1;
+      default 0;
+    }
+    leaf noOfBranchesInGrp4 {
+      description "Number of branches in dot group 4.";
+      type erienmnrmreqdotgroupconfig:ddt-ReqDotGroupConfig_DotGroup_noOfBranchesInGrp4;
+      default 0;
+    }
+  } // end 'grouping struct-DotGroup'
+  grouping moc-DotGroupConfig-keys {
+    description "Key(s) for MOC DotGroupConfig";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name dotGroupConfigId;
+      type string;
+    }
+  } // end 'grouping moc-DotGroupConfig-keys'
+  grouping moc-DotGroupConfig {
+    description "Configuration of radio dot groups.\n\nCreated automatically for IRU which supports Radio Dot grouping.\nCan also be created manually.\nMO can only be deleted when parent FieldReplaceableUnit MO has administrativeState LOCKED.\n\nWhen created automatically, the RDN of this MO is DotGroupConfig=1.";
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state. Set by the application in the RBS.";
+      type erienmnrmreqdotgroupconfig:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmreqdotgroupconfig:enum-AvailStatus;
+    }
+    container dotGroup {
+      description "Number of required  dot groups wanted and branches in each dot group of parent FRU representing IRU. \nValues must be set starting with dot group 1, in ascending and consecutive order. Number of elements with non-zero value represents the number of required dot groups wanted. \nIf all elements have value 0, no dot group is configured and this attribute has no effect.\nIf IRU has no dot grouping capability, this attribute must have value 0, otherwise IRU cannot function correctly and alarm is raised.\nNumber of dot groups can be 1, 2, or 4, which means the following configuration options can be selected:\n1. Setting value for noOfBranchesInGrp1 while leaving other elements 0.\n2. Setting values for noOfBranchesInGrp1 and noOfBranchesInGrp2 while leaving other elements 0.\n3. Setting values for all elements. \nSum of branch numbers of all dot groups must not exceed 16. For example {4,4,4,8} is not allowed because 4 + 4 + 4 + 8 > 16. Takes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be set when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqdotgroupconfig:struct-DotGroup;
+    } // end 'container dotGroup'
+  } // end 'grouping moc-DotGroupConfig'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list DotGroupConfig {
+      key id;
+      max-elements 1;
+      description "Configuration of radio dot groups.\n\nCreated automatically for IRU which supports Radio Dot grouping.\nCan also be created manually.\nMO can only be deleted when parent FieldReplaceableUnit MO has administrativeState LOCKED.\n\nWhen created automatically, the RDN of this MO is DotGroupConfig=1.";
+      erienmyext:enm-type MOC;
+      uses moc-DotGroupConfig-keys;
+      container attributes {
+        description "Attributes for DotGroupConfig";
+        uses moc-DotGroupConfig;
+      } // end 'container attributes'
+    } // end 'list DotGroupConfig'
+  }
+}

@@ -1,0 +1,7 @@
+fdn
+"SubNetwork=Europe,SubNetwork=Ireland,SubNetwork=NETSimW,ManagedElement=LTE63dg2ERBST00068"
+"SubNetwork=Europe,SubNetwork=Ireland,SubNetwork=NETSimW,ManagedElement=LTE63dg2ERBST00073"
+"SubNetwork=Europe,SubNetwork=Ireland,SubNetwork=NETSimW,ManagedElement=LTE63dg2ERBST00075"
+"SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR127gNodeBRadioT00005,ManagedElement=NR127gNodeBRadioT00005"
+"SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR174gNodeBRadioT00023,ManagedElement=NR174gNodeBRadioT00023"
+"SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR149gNodeBRadioT00003,ManagedElement=NR149gNodeBRadioT00003"

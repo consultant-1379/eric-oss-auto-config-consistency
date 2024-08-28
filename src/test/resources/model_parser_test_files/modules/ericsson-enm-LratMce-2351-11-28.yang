@@ -1,0 +1,297 @@
+module ericsson-enm-LratMce {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-LratMce;
+  prefix erienmnrmlratmce;
+  yexte:ecim-name LratMce;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 9014;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OrderCode {
+    type enumeration {
+      enum RETAIN_EXISTING {
+        value 0;
+      }
+      enum RENEW_ALL_EXISTING {
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef ddt-LratMce_TermPointToMmeM3_usedIpAddress {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-LratMce_TermPointToMmeM3_domainName {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-LratMce_TermPointToMmeM3_ipv6Address2 {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-LratMce_TermPointToMmeM3_ipv6Address1 {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-LratMce_TermPointToMmeM3_ipAddress1 {
+    type string {
+      length 7..15;
+    }
+  }
+  typedef ddt-LratMce_TermPointToMmeM3_ipAddress2 {
+    type string {
+      length 7..15;
+    }
+  }
+  typedef ddt-LratMce_MceFunction_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-TermPointToMmeM3-keys {
+    description "Key(s) for MOC TermPointToMmeM3";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name termPointToMmeM3Id;
+      type string;
+    }
+  } // end 'grouping moc-TermPointToMmeM3-keys'
+  grouping moc-TermPointToMmeM3 {
+    description "Models the MME termination point of an M3 link between the RBS and the MME node.";
+    leaf usedIpAddress {
+      config false;
+      description "The destination address used for initialization of the underlying SCTP association of the latest successful M3-Setup.\nThe IP address can be an IPv4 or an IPv6 address.\nNote: usedIpAddress never changes during the lifetime of the SCTP association.";
+      notife:notifiable-state-data true;
+      type erienmnrmlratmce:ddt-LratMce_TermPointToMmeM3_usedIpAddress;
+    }
+    leaf ipAddress1 {
+      description "The primary IP address of the MME. A unique IP address is required for each MME.\nThe input format is four fields of digits, separated by dots. Each field consists of three digits. The value of each field must be in the range 0-255.\nTo set this attribute, administrativeState must be LOCKED.";
+      yexte:takes-effect "Object unlocked";
+      type erienmnrmlratmce:ddt-LratMce_TermPointToMmeM3_ipAddress1;
+      default 0.0.0.0;
+    }
+    leaf ipAddress2 {
+      description "The secondary IP address of the MME. A unique IP address is required for each MME.\nThe input format is four fields of digits, separated by dots. Each field consists of three digits. The value of each field must be in the range 0-255.\nTo set this attribute, administrativeState must be LOCKED.";
+      yexte:takes-effect "Object unlocked";
+      type erienmnrmlratmce:ddt-LratMce_TermPointToMmeM3_ipAddress2;
+      default 0.0.0.0;
+    }
+    leaf administrativeState {
+      description "The administrative state.\nNote: If this attribute is set to SHUTTING_DOWN, it will immediately go into the state LOCKED.";
+      yexte:disturbances "Changing this attribute to LOCKED or SHUTTINGDOWN can cause loss of traffic. Loss of MBMS capability if Internal MCE is used.";
+      yexte:takes-effect Immediately;
+      type erienmnrmlratmce:enum-AdmState;
+      default LOCKED;
+    }
+    leaf domainName {
+      description "The fully-qualified domain name of the MME.\nA valid domain name consists of 1 or more labels separated by dots (.).\nValid characters for a label are limited to letters a - z, A - Z, digits 0 - 9, and the character - (dash). Character case is preserved. Length of a label may not exceed 255 characters.\nNOTE: The first and last character in the domain name must be one of the following alphanumeric characters a - z, A - Z or digits 0 - 9. For more information refer to RFC 952, 1101 and 1123.\nTo set this attribute, administrativeState must be LOCKED.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic. Possible loss of MBMS capability if Internal MCE is used.";
+      yexte:takes-effect "Object unlocked";
+      type erienmnrmlratmce:ddt-LratMce_TermPointToMmeM3_domainName;
+      default "";
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState. This attribute is set by the application in the RBS.";
+      type erienmnrmlratmce:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state. This attribute is set by the application in the RBS.";
+      notife:notifiable-state-data true;
+      type erienmnrmlratmce:enum-OperState;
+    }
+    leaf ipv6Address1 {
+      description "The primary IPv6 address of the MME.\nThe input format is eight fields, separated by colons. Each field consists of four hexadecimal characters. The value of each field must be in the range 0-FFFF. Leading zeroes can be omitted in a field, and multiple groups of 16 bits of zeroes can be compressed to ::. The :: can be used only once in an address.\nTo set this attribute, administrativeState must be LOCKED.";
+      yexte:takes-effect "Object unlocked";
+      type erienmnrmlratmce:ddt-LratMce_TermPointToMmeM3_ipv6Address1;
+      default ::;
+    }
+    leaf ipv6Address2 {
+      description "The secondary IPv6 address of the MME.\nThe input format is eight fields, separated by colons. Each field consists of four hexadecimal characters. The value of each field must be in the range 0-FFFF. Leading zeroes can be omitted in a field, and multiple groups of 16 bits of zeroes can be compressed to ::. The :: can be used only once in an address.\nTo set this attribute, administrativeState must be LOCKED.";
+      yexte:takes-effect "Object unlocked";
+      type erienmnrmlratmce:ddt-LratMce_TermPointToMmeM3_ipv6Address2;
+      default ::;
+    }
+  } // end 'grouping moc-TermPointToMmeM3'
+  grouping moc-MceFunction-keys {
+    description "Key(s) for MOC MceFunction";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name mceFunctionId;
+      type string;
+    }
+  } // end 'grouping moc-MceFunction-keys'
+  grouping moc-MceFunction {
+    description "This MO is the top level MO for MCE functions. It contains the M3 connection classes.";
+    leaf userLabel {
+      description "Used for product free-text description. ";
+      type erienmnrmlratmce:ddt-LratMce_MceFunction_userLabel;
+    }
+    leaf release {
+      erienmyext:no-notification;
+      config false;
+      description "The product release of the ManagedFunction.\nIt commonly contains the Managed Function release, for example  L12.0, 13A, R1A ";
+      type string;
+    }
+    leaf useM3dnsFormat {
+      description "This parameter specifies if the DNS lookup shall use the M3 or S1 format for the TAI domain name:\nm3mme.tac-lb<tac-lb>.tac-hb<tac-hb>.tac.epc.mnc<mnc>.mcc<mcc>.3gppnetwork.org (true)\ns1mme.tac-lb<tac-lb>.tac-hb<tac-hb>.tac.epc.mnc<mnc>.mcc<mcc>.3gppnetwork.org (false)";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      yexte:takes-effect "New connection";
+      type boolean;
+      default false;
+    }
+    action updateMMEConnection {
+      description "This action shall make it possible to order the RBS to make a new DNS lookup to get possible new MME Pool addresses. The orderCode has two different options:\n\n- Retain: This option will retain all connections that were included in DNS response and the connections that weren't included in the response will be removed. For the IP addresses that were unknown for the RBS, the RBS will establish connections to those MMEs.\n\n- Renew All existing: The RBS performs a DNS lookup. Release all M3 connections to the MMEs and connect to the MMEs that are included in the DNS response.\n\nThis action should be used only when dnsLookupOnTai has the value ON. The action is rejected if dnsLookupState has the value OFF or if MBMS Service is inoperable.";
+      input {
+        leaf orderCode {
+          mandatory true;
+          type erienmnrmlratmce:enum-OrderCode;
+        }
+      }
+    }
+  } // end 'grouping moc-MceFunction'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmlratmce:MceFunction {
+    list TermPointToMmeM3 {
+      key id;
+      max-elements 64;
+      description "Models the MME termination point of an M3 link between the RBS and the MME node.";
+      erienmyext:enm-type MOC;
+      uses moc-TermPointToMmeM3-keys;
+      container attributes {
+        description "Attributes for TermPointToMmeM3";
+        uses moc-TermPointToMmeM3;
+      } // end 'container attributes'
+    } // end 'list TermPointToMmeM3'
+  }
+  augment /erienmnrmcomtop:ManagedElement {
+    list MceFunction {
+      key id;
+      max-elements 1;
+      description "This MO is the top level MO for MCE functions. It contains the M3 connection classes.";
+      erienmyext:enm-type MOC;
+      uses moc-MceFunction-keys;
+      container attributes {
+        description "Attributes for MceFunction";
+        uses moc-MceFunction;
+      } // end 'container attributes'
+    } // end 'list MceFunction'
+  }
+}

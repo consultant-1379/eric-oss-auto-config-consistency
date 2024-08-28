@@ -1,0 +1,70 @@
+module ericsson-enm-ReqPimcHwacControl {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqPimcHwacControl;
+  prefix erienmnrmreqpimchwaccontrol;
+  yexte:ecim-name ReqPimcHwacControl;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  grouping moc-PimcHwacControl-keys {
+    description "Key(s) for MOC PimcHwacControl";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name pimcHwacControlId;
+      type string;
+    }
+  } // end 'grouping moc-PimcHwacControl-keys'
+  grouping moc-PimcHwacControl {
+    description "Represents Passive Inter-Modulation Cancellation (PIMC) function configured on a radio unit. Created manually for enabling PIMC on current radio unit.";
+    leaf pimcHwacAllocated {
+      config false;
+      description "Whether PIMC HWAC is allocated for current radio unit.\nDefault value is false.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf pimcEnabled {
+      description "Whether PIMC is enabled on radio unit. Triggers PIMC HWAC allocation and release on radio unit.\ntrue: PIMC is enabled. Setting value to true allocates PIMC HWAC for PIMC capable radio unit.\nfalse: PIMC is disabled.";
+      yexte:precondition "If pimcHwacAllocated is true, pimcEnabled can be set to false only when parent FieldReplaceableUnit MO has adminstrativeState LOCKED. ";
+      type boolean;
+      default false;
+    }
+  } // end 'grouping moc-PimcHwacControl'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list PimcHwacControl {
+      key id;
+      max-elements 1;
+      description "Represents Passive Inter-Modulation Cancellation (PIMC) function configured on a radio unit. Created manually for enabling PIMC on current radio unit.";
+      erienmyext:enm-type MOC;
+      uses moc-PimcHwacControl-keys;
+      container attributes {
+        description "Attributes for PimcHwacControl";
+        uses moc-PimcHwacControl;
+      } // end 'container attributes'
+    } // end 'list PimcHwacControl'
+  }
+}

@@ -1,0 +1,8 @@
+moType,attributeName,attributeValue,conditions,priority
+NRCellDU,ailgDlPrbLoadLevel,1,,
+NRCellDU,fddLteCoexistence,false,,
+GNBDUFunction,endpointResDepHEnabled,true,,
+EUtranCellFDD,upperLayerAutoConfEnabled,false,,
+EUtranCellFDD,outOfCoverageThreshold,20,,
+ENodeBFunction,timePhaseMaxDeviationOtdoa,10,,
+NRSectorCarrier,configuredMaxTxPower,2000,,

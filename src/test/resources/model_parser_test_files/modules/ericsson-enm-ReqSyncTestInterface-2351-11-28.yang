@@ -1,0 +1,147 @@
+module ericsson-enm-ReqSyncTestInterface {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqSyncTestInterface;
+  prefix erienmnrmreqsynctestinterface;
+  yexte:ecim-name ReqSyncTestInterface;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 4;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-SyncTestInterfaceSignalOutput {
+    description "Signal output on sync test interface.";
+    type enumeration {
+      enum SPECIAL {
+        description "Used for Ericsson internal testing.";
+        value 0;
+      }
+      enum FREQUENCY_1PPS {
+        description "1PPS frequency.";
+        value 1;
+      }
+      enum TIME_LOCKED_1PPS {
+        description "1PPS with rising edge aligned to one second increments of recovered time reference.\n\nSignal output in clock states TIME_OFFSET_LOCKED, TIME_OFFSET_HOLDOVER, RNT_TIME_LOCKED and RNT_TIME_HOLDOVER. Otherwise it is squelched.";
+        value 2;
+      }
+      enum FREQUENCY_2048KHZ {
+        description "2048 kHz frequency.";
+        value 3;
+      }
+      enum FREQUENCY_10MHZ {
+        description "10 MHz frequency.\n\nOnly supported by BASEBAND T503.";
+        status deprecated {
+          yexte:status-information "Not supported.";
+        }
+        value 4;
+      }
+      enum NO_SIGNAL {
+        description "No signal output.";
+        value 5;
+      }
+      enum NOT_SUPPORTED {
+        description "Sync test interface not supported by field replaceable unit.";
+        value 8;
+      }
+    }
+  }
+  typedef enum-OutputSyncTestInterfaceSignal {
+    description "Signal output on sync test interface.";
+    type enumeration {
+      enum FREQUENCY_1PPS {
+        description "1PPS frequency.";
+        value 1;
+      }
+      enum TIME_LOCKED_1PPS {
+        description "1PPS with rising edge aligned to one second increments of recovered time reference.\n\nSignal output in clock states TIME_OFFSET_LOCKED, TIME_OFFSET_HOLDOVER, RNT_TIME_LOCKED and RNT_TIME_HOLDOVER. Otherwise it is squelched.";
+        value 2;
+      }
+      enum FREQUENCY_2048KHZ {
+        description "2048 kHz frequency.";
+        value 3;
+      }
+      enum FREQUENCY_10MHZ {
+        description "10 MHz frequency.\n\nOnly supported by BASEBAND T503.";
+        status deprecated {
+          yexte:status-information "Not supported.";
+        }
+        value 4;
+      }
+      enum NO_SIGNAL {
+        description "No signal output.";
+        value 5;
+      }
+    }
+  }
+  typedef ddt-ReqSyncTestInterface_SyncTestInterface_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-SyncTestInterface-keys {
+    description "Key(s) for MOC SyncTestInterface";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name syncTestInterfaceId;
+      type string;
+    }
+  } // end 'grouping moc-SyncTestInterface-keys'
+  grouping moc-SyncTestInterface {
+    description "Represents physical sync test interface on LMT port of BASEBAND, BASEBAND-T and BASEBAND-C unit.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqsynctestinterface:ddt-ReqSyncTestInterface_SyncTestInterface_userLabel;
+    }
+    leaf syncTestInterfaceSignalOutput {
+      erienmyext:no-notification;
+      config false;
+      description "Signal output on sync test interface.";
+      type erienmnrmreqsynctestinterface:enum-SyncTestInterfaceSignalOutput;
+    }
+    action outputSyncTestInterfaceSignal {
+      description "Signal output on sync test interface.";
+      input {
+        leaf outputSyncTestInterfaceSignal {
+          mandatory true;
+          description "Signal output on sync test interface.";
+          type erienmnrmreqsynctestinterface:enum-OutputSyncTestInterfaceSignal;
+        }
+      }
+    }
+  } // end 'grouping moc-SyncTestInterface'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list SyncTestInterface {
+      key id;
+      max-elements 1;
+      description "Represents physical sync test interface on LMT port of BASEBAND, BASEBAND-T and BASEBAND-C unit.";
+      erienmyext:enm-type MOC;
+      uses moc-SyncTestInterface-keys;
+      container attributes {
+        description "Attributes for SyncTestInterface";
+        uses moc-SyncTestInterface;
+      } // end 'container attributes'
+    } // end 'list SyncTestInterface'
+  }
+}

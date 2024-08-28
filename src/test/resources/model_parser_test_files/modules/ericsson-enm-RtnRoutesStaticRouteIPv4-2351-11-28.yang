@@ -1,0 +1,153 @@
+module ericsson-enm-RtnRoutesStaticRouteIPv4 {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnRoutesStaticRouteIPv4;
+  prefix erienmnrmrtnroutesstaticrouteipv4;
+  yexte:ecim-name RtnRoutesStaticRouteIPv4;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 13;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef ddt-DistanceValueType {
+    description "Distance Value Type.";
+    type int16 {
+      range 1..255;
+    }
+  }
+  typedef ddt-Ipv4UnicastAddressStr {
+    description "IPv4 address string, controlled by a regular expression.\n\nThe address is specified in dotted-quad decimal notation in accordance with RFC791, without leading zeros.\n\nIPv4 addresses are within the range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters. \nValid characters: 0123456789.\n\nExample: 1.1.1.1, 1.1.255.255";
+    type string;
+  }
+  typedef ddt-Ipv4RouteAddressAndPrefixLengthStr {
+    description "'Unicast IPv4 address'/'prefix length' string.\n\nAddress should be specified in dotted-quad decimal notation in accordance with RFC791, without leading 0s.\nIPv4 address within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters. Prefix is a number 0 to 32.\n0.0.0.0/0 default route is allowed too.\n\nExample: 1.1.2.2/28";
+    type string;
+  }
+  typedef ddt-EcimEmpty {
+    description "This type represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping moc-RouteTableIPv4Static-keys {
+    description "Key(s) for MOC RouteTableIPv4Static";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name routeTableIPv4StaticId;
+      type string;
+    }
+  } // end 'grouping moc-RouteTableIPv4Static-keys'
+  grouping moc-RouteTableIPv4Static {
+    description "Contains manually defined IPv4 static routes defined by Dst MOs and their child NextHop MOs.\n\nDependencies:\nAll Dst MOs under RouteTableIPv4Static MO must have unique dst attributes.";
+  } // end 'grouping moc-RouteTableIPv4Static'
+  grouping moc-Dst-keys {
+    description "Key(s) for MOC Dst";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dstId;
+      type string;
+    }
+  } // end 'grouping moc-Dst-keys'
+  grouping moc-Dst {
+    description "Represents IPv4 destination of routes defined by one or more NextHop child MOs.";
+    leaf dst {
+      description "IPv4 destination prefix for routes defined by NextHop child MOs.\nDefault route is expressed as 0.0.0.0/0.";
+      mandatory true;
+      yexte:dependencies "If attribute reference in NextHop MO refers to Router MO, this attribute must contain IPv4 host address with prefix length 32. ";
+      type erienmnrmrtnroutesstaticrouteipv4:ddt-Ipv4RouteAddressAndPrefixLengthStr;
+    }
+  } // end 'grouping moc-Dst'
+  grouping moc-NextHop-keys {
+    description "Key(s) for MOC NextHop";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nextHopId;
+      type string;
+    }
+  } // end 'grouping moc-NextHop-keys'
+  grouping moc-NextHop {
+    description "Contains information about the route defined by this MO and its parent Dst MO.\n\nDependencies:\nMax number of NextHop MOs are 10000 within all RouteTableIpv4Static MOs in the node.";
+    leaf reference {
+      description "Only applicable if IPsec functionality is supported on node, or if matching flows need to be routed to another Router MO.\nRoute traffic from inner network through IPsec VPN connection, or to route flows to another router.";
+      yexte:dependencies "Only one of attributes address, discard or reference must be set at same time.\nCan refer to InterfaceIPv4 MO that has IpsecTunnel MO as encapsulation reference, or to another\nRouter MO that has InterfaceIPv4 MO with IPv4 address defined in parent Dst MO.\nMust be unique under same Dst MO.\nIf referring to InterfaceIPv4 MO, it must be within same Router MO as InterfaceIPv4 MO.\nIf referring to Router MO, it cannot be within same Router MO as parent of this NextHop MO.\nIf set, only one NextHop MO is allowed under Dst MO.\nIf referring to Router MO, attribute bfdMonitoring must be set to false.\nIf referring to Router MO, attribute dst under parent Dst MO must contain IPv4 host address with prefix length 32.\n If referring to Router MO, attribute adminDistance must be set to 1. ";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf discard {
+      description "Packets with destination that matches this route are discarded.";
+      yexte:dependencies "One of attributes address, discard, or reference must be set, only one of them at same time.\nOnly one NextHop MO with discard set is allowed under Dst MO.";
+      type erienmnrmrtnroutesstaticrouteipv4:ddt-EcimEmpty;
+    }
+    leaf address {
+      description "IP address of nexthop gateway of this route.";
+      yexte:dependencies "One of attributes address, discard, or reference must be set, only one of them at same time.\nMust not coincide with address configured on InterfaceIPv4 MO on this router.\nMust be unique under same Dst MO.";
+      type erienmnrmrtnroutesstaticrouteipv4:ddt-Ipv4UnicastAddressStr;
+    }
+    leaf bfdMonitoring {
+      description "Controls whether availability of this route depends on BFD session that monitors nexthop.\nIf set to true, availability of this route depends on session state, if BFD session monitors nexthop.\nIf set to false, availability of this route does not depend on session state, even when BFD session monitors nexthop.\nTo enable BFD monitoring of a nexthop, see details in InterfaceIPv4::bfdStaticRoutes and PeerIPv4::bfdStaticRoutes.";
+      yexte:dependencies "If attribute reference refers to Router MO, this attribute must be set to false.";
+      type boolean;
+      default true;
+    }
+    leaf adminDistance {
+      description "Defines priority of this MO relative to other NextHop MOs under the same Dst MO.\nDefines priority of this MO relative to routes to the same destination network learned from dynamic routing protocols.\nUsed to select the preferred path when two or more routes lead to the same destination.";
+      yexte:dependencies "Two NextHop MOs under the same Dst MO cannot have the same adminDistance.\nIf attribute reference refers to Router MO, this attribute must be set to 1.";
+      type erienmnrmrtnroutesstaticrouteipv4:ddt-DistanceValueType;
+      default 1;
+    }
+  } // end 'grouping moc-NextHop'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list RouteTableIPv4Static {
+      key id;
+      max-elements 1;
+      description "Contains manually defined IPv4 static routes defined by Dst MOs and their child NextHop MOs.\n\nDependencies:\nAll Dst MOs under RouteTableIPv4Static MO must have unique dst attributes.";
+      erienmyext:enm-type MOC;
+      uses moc-RouteTableIPv4Static-keys;
+    } // end 'list RouteTableIPv4Static'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnroutesstaticrouteipv4:RouteTableIPv4Static {
+    list Dst {
+      key id;
+      description "Represents IPv4 destination of routes defined by one or more NextHop child MOs.";
+      erienmyext:enm-type MOC;
+      uses moc-Dst-keys;
+      container attributes {
+        description "Attributes for Dst";
+        uses moc-Dst;
+      } // end 'container attributes'
+    } // end 'list Dst'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnroutesstaticrouteipv4:RouteTableIPv4Static/erienmnrmrtnroutesstaticrouteipv4:Dst {
+    list NextHop {
+      key id;
+      description "Contains information about the route defined by this MO and its parent Dst MO.\n\nDependencies:\nMax number of NextHop MOs are 10000 within all RouteTableIpv4Static MOs in the node.";
+      erienmyext:enm-type MOC;
+      uses moc-NextHop-keys;
+      container attributes {
+        description "Attributes for NextHop";
+        uses moc-NextHop;
+      } // end 'container attributes'
+    } // end 'list NextHop'
+  }
+}

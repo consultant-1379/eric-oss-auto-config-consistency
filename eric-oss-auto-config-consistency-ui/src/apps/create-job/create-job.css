@@ -1,0 +1,119 @@
+/*******************************************************************************
+ * COPYRIGHT Ericsson 2023
+ *
+ *
+ *
+ * The copyright to the computer program(s) herein is the property of
+ *
+ * Ericsson Inc. The programs may be used and/or copied only with written
+ *
+ * permission from Ericsson Inc. or in accordance with the terms and
+ *
+ * conditions stipulated in the agreement/contract under which the
+ *
+ * program(s) have been supplied.
+ ******************************************************************************/
+
+:host {
+  font-size: 14px;
+  padding-left: var(--space-large);
+}
+
+.app-header {
+  font-size: 20px;
+}
+
+.app-sub-header {
+  padding-top: var(--space-large);
+}
+
+.app-component {
+  padding-top: var(--space-base);
+}
+
+.app-single-component {
+  display: block;
+}
+
+.app-multiple-component {
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-schedule-frequency {
+  padding-right: var(--space-base);
+  padding-left: var(--space-base);
+  font-size: 14px;
+}
+
+.app-schedule-time {
+  margin-left: var(--space-base);
+  display: inline-block;
+}
+
+.row {
+  display: flex;
+}
+
+.col-1 {
+  width: 75%;
+}
+
+.col-2 {
+  width: 25%;
+  padding-right: 2%;
+  padding-top: 1%;
+}
+
+.action-buttons {
+  padding: 2%;
+  float: right;
+}
+
+.input__validation-message {
+  vertical-align: middle;
+  text-align: left;
+  font-size: 12px;
+}
+
+.input__validation {
+  width: 100%;
+  display: inline-flex;
+}
+
+.icon-triangle-warning {
+  --icon-size: 12px;
+  --icon-color: var(--input-error-icon, #bb0b02);
+  margin-right: var(--space-small, 4px);
+}
+
+#scheduleString {
+  padding-top: var(--space-large);
+  font-size: 14px;
+  color: grey;
+}
+
+#jobName {
+  color: var(--gray-55);
+}
+
+.error {
+  border: 1px solid red;
+}
+
+.frequency,
+.time {
+  display: inline-block;
+}
+
+.ruleset {
+  max-width: 132px;
+}
+
+.scope {
+  max-width: 132px;
+}
+
+#scheduleTimeWarning {
+  padding-left: var(--space-base);
+}

@@ -1,0 +1,24 @@
+{
+ "ManagedElement":
+  [
+    {
+      "id": "LTE04dg2ERBS00082",
+      "attributes":
+      {
+        "dnPrefix": "test",
+        "siteLocation": "athlone"
+      },
+      "ENodeBFunction":
+      [
+        {
+          "id": "1",
+          "attributes":
+          {
+            "timeAndPhaseSynchAlignment": "true",
+            "rrcConnReestActive": "false"
+          }
+         }
+     ]
+    }
+  ]
+}

@@ -1,0 +1,295 @@
+module ericsson-enm-ReqCcLink {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqCcLink;
+  prefix erienmnrmreqcclink;
+  yexte:ecim-name ReqCcLink;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef ddt-ReqCcLink_CcLink_ulTrafficDelay {
+    type int32 {
+      range -1..800000;
+    }
+  }
+  typedef ddt-ReqCcLink_CcLink_ulAttenuation {
+    type int32 {
+      range -500..500;
+    }
+  }
+  typedef ddt-ReqCcLink_CcLink_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-CcLink-keys {
+    description "Key(s) for MOC CcLink";
+    leaf id {
+      erienmyext:no-notification;
+      description "RDN value component.";
+      mandatory true;
+      yexte:ecim-name ccLinkId;
+      type string;
+    }
+  } // end 'grouping moc-CcLink-keys'
+  grouping moc-CcLink {
+    description "This MO represents the analog cross connect cable which is used to connect two radio units via their cross connect ports to enable antenna sharing.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqcclink:ddt-ReqCcLink_CcLink_userLabel;
+    }
+    leaf rxInRfPortRef {
+      description "Refers to the RfPort MO representing the physical cross connect port (RfPort=RXA_IO or RXB_IO) on the radio unit receiving the analogue uplink antenna stream from the cross connect cable.";
+      mandatory true;
+      yexte:takes-effect "CcLink Lock/Unlock.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list ulAttenuation {
+      min-elements 40;
+      max-elements 40;
+      description "Uplink attenuation of the cross-connect cable.\nThe sequence contains 40 entries and each entry represents one 5-MHz interval.\nThe first entry represents the attenuation value of the lowest frequency interval in the operating band, and so on.\nThe number of intervals depends on the operating band.\nFor information on the different operating bands, refer to 3GPP TS 36.104.\nThe value range for each entry is -500 to -2, -1, 0-500 (-50 to 50 dB). Unused entries are set to -1.\n";
+      yexte:takes-effect "lock/unlock of CcLink";
+      type erienmnrmreqcclink:ddt-ReqCcLink_CcLink_ulAttenuation;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf administrativeState {
+      description "The administrative state. If set to SHUTTINGDOWN, the state will immediately be brought to LOCKED.\nSpecification: ITU-T rec. X.731";
+      type erienmnrmreqcclink:enum-AdmState;
+      default UNLOCKED;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of CcBranch MO instances that reserve this MO instance.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState. Specification: ITU-T rec. X.731";
+      type erienmnrmreqcclink:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state. Specification: ITU-T rec. X.731";
+      type erienmnrmreqcclink:enum-OperState;
+    }
+    leaf rxOutRfPortRef {
+      description "Refers to the RfPort MO representing the physical cross connect port (RfPort=RXA_IO, RXA_OUT or RXB_IO) on the radio unit receiving the analogue uplink antenna stream from the antenna and sends it to the cross connect cable.";
+      mandatory true;
+      yexte:takes-effect "CcLink Lock/Unlock.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list ulTrafficDelay {
+      min-elements 40;
+      max-elements 40;
+      description "Uplink delay of the cross-connect cable.\nThe sequence contains 40 entries and each entry represents one 5-MHz interval. The first entry represents the delay value of the lowest frequency interval in the operating band, and so on.\nThe number of intervals used depends on the operating band.\nFor information on the different operating bands, refer to 3GPP TS 36.104.\nThe value range for each entry is 0-800000 (0-800000 ns). Unused entries are set to -1.\nNOTE: The range supported by individual radio units may be smaller and must be considered when configuring the antenna system. ";
+      yexte:takes-effect "lock/unlock of CcLink";
+      type erienmnrmreqcclink:ddt-ReqCcLink_CcLink_ulTrafficDelay;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+  } // end 'grouping moc-CcLink'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list CcLink {
+      key id;
+      max-elements 24;
+      description "This MO represents the analog cross connect cable which is used to connect two radio units via their cross connect ports to enable antenna sharing.";
+      erienmyext:enm-type MOC;
+      uses moc-CcLink-keys;
+      container attributes {
+        description "Attributes for CcLink";
+        uses moc-CcLink;
+      } // end 'container attributes'
+    } // end 'list CcLink'
+  }
+}

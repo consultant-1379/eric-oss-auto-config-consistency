@@ -1,0 +1,394 @@
+module ericsson-enm-ReqORadio {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqORadio;
+  prefix erienmnrmreqoradio;
+  yexte:ecim-name ReqORadio;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 6;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef enum-FileOperationStatus {
+    description "Type for file operation status.";
+    type enumeration {
+      enum FAILURE {
+        description "File operation is failed.";
+        value 0;
+      }
+      enum SUCCESS {
+        description "File operation is successful.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-IpDNSAddress {
+    description "The IpDNSAddress type represents an IP address or a DNS domain name.\n\nA unicast IPv4 address is presented in three-digit decimal blocks. It is specified in dotted-quad decimal notation (i.e. three-digit decimal blocks) in accordance with RFC791, The blocks are separated by a dot.\n- The unicast IPV4  address is within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\n- The IP address range 127.0.0.0 – 127.255.255.255 is reserved for loopback\n- The IP address range 0– 0.255.255.255 are reserved\n- The IP address range 169.254.1.0 - 169.254.254.255 is used for link-local addresses.\n\nAn  IPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons as described in RFC 4291. If multiple consecutive groups contain only zeros, the use of “::” indicates one or more groups of 16 bits of zeros, as described in RFC 4291, section 2.2 bullet 2. A link-local address will have prefix fe80::/10. The format of the embedded IPv4/IPv6 addresses is described in RFC 6052.\n- IPv6 minimum length = 3 and maximum length = 39.\n- Valid characters: 0123456789abcdefABCDEF:\n\nA domain name is specified in dot separated alphanumeric notation  as described in RFC 1034. The domain name consists of one or more parts, called labels, that are delimited by dots.\n- Domain Name's length: 253 characters\n- Label's length: 63 characters.\n- Valid characters: a-z, A-Z, 0,1,2,3,4,5,6,7,8,9,-\n- The Label’s first character is a letter.\n- Labels shall not start or end with a hyphen.\n- Labels shall not start with a numbers\n- Labels shall end with a number or a letter.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-ReqORadio_UploadFileNotificationResult_rejectReason {
+    type string {
+      length 0..1;
+    }
+  }
+  typedef ddt-ORadio_uploadFile_timeout {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-EcimPasswordString {
+    description "Type for secure handling of passwords.";
+    type string;
+  }
+  typedef ddt-EcimEmpty {
+    description "Represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping struct-UploadFileNotificationResult {
+    description "Result of uploadFile action.";
+    leaf localLogicalFilePath {
+      description "Complete logical path of file in ORadio unit.";
+      type string;
+    }
+    leaf rejectReason {
+      description "Reason for file upload failure.";
+      type erienmnrmreqoradio:ddt-ReqORadio_UploadFileNotificationResult_rejectReason;
+    }
+    leaf remoteFilePath {
+      description "Complete logical path of file in file server.";
+      type string;
+    }
+    leaf status {
+      description "Whether file upload is completed successfully.";
+      type erienmnrmreqoradio:enum-FileOperationStatus;
+    }
+  } // end 'grouping struct-UploadFileNotificationResult'
+  grouping struct-EcimPassword {
+    description "Stores the password.";
+    leaf password {
+      description "Holds the password or passphrase text.";
+      type string;
+      mandatory true;
+    }
+    leaf cleartext {
+      description "Indicates whether or not the password is entered in cleartext.";
+      type erienmnrmreqoradio:ddt-EcimEmpty;
+    }
+  } // end 'grouping struct-EcimPassword'
+  grouping struct-ReadFileListResult {
+    description "Result of readFileList action.";
+    leaf rejectReason {
+      description "Reason of failure of readFileList action.";
+      type string;
+    }
+    leaf-list fileList {
+      min-elements 0;
+      description "List of files received from ORadio unit.";
+      type string;
+    }
+    leaf status {
+      description "Whether readFileList action is completed successfully.";
+      type erienmnrmreqoradio:enum-FileOperationStatus;
+    }
+  } // end 'grouping struct-ReadFileListResult'
+  grouping moc-ORadio-keys {
+    description "Key(s) for MOC ORadio";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name oRadioId;
+      type string;
+    }
+  } // end 'grouping moc-ORadio-keys'
+  grouping moc-ORadio {
+    description "This Managed Object (MO) is used to configure and monitor an ORadio.\n";
+    leaf commandResult {
+      config false;
+      description "Result of command from ORadio. ";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf pmActivated {
+      description "Whether PM measurement is activated on ORadio.";
+      type boolean;
+      default false;
+    }
+    leaf subnet {
+      description "Subnet between BB and ORadio.\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      type string;
+    }
+    container uploadFileNotificationResult {
+      description "Notification of file upload triggered by uploadFile action.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqoradio:struct-UploadFileNotificationResult;
+    } // end 'container uploadFileNotificationResult'
+    leaf serialNumber {
+      description "The serial number of the ORadio to be connected.\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      type string;
+    }
+    container sudoUserPassword {
+      description "Password for sudo user login.\n\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqoradio:struct-EcimPassword;
+    } // end 'container sudoUserPassword'
+    leaf defaultUserName {
+      description "Username for default login set in factory.\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      type string;
+    }
+    leaf sudoUserName {
+      description "Username for sudo user login.\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      type string;
+    }
+    leaf nmsAddress {
+      description "External NMS IP address.\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      type string;
+    }
+    leaf sshKeyValidation {
+      description "Whether validation of SSH keys is enabled.\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      type boolean;
+      default true;
+    }
+    leaf oamConnectionResult {
+      config false;
+      description "Result of openOamNetwork or closeOamNetwork.\nValue range:\nopen/close OK  (all is well)\nopen/close RETRY  (system starting up, try later)\nopen/close PARAMETER_FAULT  (function parameters)\nopen/close TIMEOUT  (internal timeout)\nopen/close RESOURCE_LIMIT  (e.g. too many of something)\nopen/close GEN_ERROR  (generic)\nopen/close DISABLED  (backend not running)\nopen/close NOT_IMPLEMENTED  (for now)\nExample: open OK";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    container defaultUserPassword {
+      description "Password for default login set in factory.\n\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqoradio:struct-EcimPassword;
+    } // end 'container defaultUserPassword'
+    leaf serialNumberValidation {
+      description "Whether validation of serial number reported by ORadio is enabled.\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      type boolean;
+      default true;
+    }
+    leaf pmConfigString {
+      description "YANG-style XML command to activate PM measurement on ORadio when pmActivated is set to true.";
+      type string;
+    }
+    leaf notificationResult {
+      config false;
+      description "Notification of command from ORadio. ";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf nmsUserName {
+      description "Username for NMS login.\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      type string;
+    }
+    leaf pmActivatedStatus {
+      config false;
+      description "Current status after pmActivated. pmConfigString, or both, are updated.\nValue range:\nNOT_ACTIVATED means that pmActivated is set to false, or no response is received from ORadio on PM configuration request.\nOK means that PM configuration request is acknowledged by ORadio.\nERROR means that PM configuration request is timed out or discarded by ORadio.\n\n";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqoradio:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqoradio:enum-OperState;
+    }
+    container nmsUserPassword {
+      description "Password for NMS login.\n\nTakes effect: Next unlock of parent FieldReplaceableUnit MO.\nPrecondition: Value can only be changed when parent FieldReplaceableUnit MO has administrativeState LOCKED.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqoradio:struct-EcimPassword;
+    } // end 'container nmsUserPassword'
+    container readFileListResult {
+      description "List of files received from ORadio unit after running readFileList action.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqoradio:struct-ReadFileListResult;
+    } // end 'container readFileListResult'
+    action uploadFile {
+      description "Uploads a single file from the ORadio unit to a file server.\nResult is displayed in uploadFileNotificationResult attribute.";
+      input {
+        leaf password {
+          mandatory true;
+          description "Password for connecting to file server.";
+          type erienmnrmreqoradio:ddt-EcimPasswordString;
+        }
+        leaf remotePath {
+          mandatory true;
+          description "File path on file server where uploaded file is stored.";
+          type string;
+        }
+        leaf ipAddress {
+          mandatory true;
+          description "IP address of file server.";
+          type erienmnrmreqoradio:ddt-IpDNSAddress;
+        }
+        leaf localPath {
+          mandatory true;
+          description "File path on ORadio unit for file to be uploaded.";
+          type string;
+        }
+        leaf timeout {
+          mandatory true;
+          description "Maximum time to wait for response and notification.\nUnit: 1s.";
+          type erienmnrmreqoradio:ddt-ORadio_uploadFile_timeout;
+        }
+        leaf username {
+          mandatory true;
+          description "User name for connecting to file server.";
+          type string;
+        }
+      }
+    }
+    action sendCommand {
+      description "Perform YANG style XML commands towards ORadio. ";
+      input {
+        leaf notification {
+          description "NETCONF notification to be received.";
+          type string;
+        }
+        leaf commandString {
+          mandatory true;
+          description "Command to be executed. ";
+          type string;
+        }
+        leaf timeout {
+          mandatory true;
+          description "Maximum time to wait for response and (optional) notification.\nvalue 0 is invalid.\nUnit: 1s.";
+          type int32;
+        }
+      }
+    }
+    action cancelCommand {
+      description "Cancel current command.";
+    }
+    action readFileList {
+      description "Retrieves the file list from the ORadio unit.\nResult is displayed in readFileListResult attribute.";
+      input {
+        leaf folder {
+          mandatory true;
+          description "Folder of ORadio unit to be read.";
+          type string;
+        }
+      }
+    }
+    action openOamNetwork {
+      description "Open OAM network connection between management system and ORadio.\nResult is displayed in oamConnectionResult.";
+    }
+    action closeOamNetwork {
+      description "Close OAM network connection between management system and ORadio.\nResult is displayed in oamConnectionResult.";
+    }
+  } // end 'grouping moc-ORadio'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list ORadio {
+      key id;
+      max-elements 1;
+      description "This Managed Object (MO) is used to configure and monitor an ORadio.\n";
+      erienmyext:enm-type MOC;
+      uses moc-ORadio-keys;
+      container attributes {
+        description "Attributes for ORadio";
+        uses moc-ORadio;
+      } // end 'container attributes'
+    } // end 'list ORadio'
+  }
+}

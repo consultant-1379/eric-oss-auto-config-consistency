@@ -1,0 +1,330 @@
+module ericsson-enm-RmeSectorEquipmentFunction {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeSectorEquipmentFunction;
+  prefix erienmnrmrmesectorequipmentfunction;
+  yexte:ecim-name RmeSectorEquipmentFunction;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 20;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-RadioEquipOrderType {
+    description "Geographical relations representing combined coverage area.";
+    type enumeration {
+      enum NON_ADJACENT {
+        description "Coverage shapes of cascaded radio units are not adjacent to each other.";
+        value 0;
+      }
+      enum LEFT_TO_RIGHT {
+        description "Adjacent coverage shapes of two or three cascaded radio units are combined into one coverage area in a geographical relation from left to right. From radio unit front view, second radio is to the right of first radio and so forth.";
+        value 1;
+      }
+      enum RIGHT_TO_LEFT {
+        description "Adjacent coverage shapes of two or three cascaded radio units are combined into one coverage area in a geographical relation from right to left. From radio unit front view, second radio is to the left of first radio and so forth.";
+        value 2;
+      }
+      enum CIRCLE_CLOCKWISE {
+        description "Adjacent coverage shapes of three cascaded radio units are combined into one coverage area in a circular clockwise geographical direction. From radio unit front view, second radio is to the left of first radio and so forth.";
+        value 3;
+      }
+      enum CIRCLE_COUNTER_CLOCKWISE {
+        description "Adjacent coverage shapes of three cascaded radio units are combined into one coverage area in a circular counterclockwise geographical direction. From radio unit front view, second radio is to the right of first radio and so forth.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_utranFddFqBands {
+    type string {
+      length 0..256;
+    }
+  }
+  typedef ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_noiseFigure {
+    type int16 {
+      range 100..350;
+    }
+  }
+  typedef ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_geranFqBands {
+    type string {
+      length 0..256;
+    }
+  }
+  typedef ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_nRFqBands {
+    type string {
+      length 0..256;
+    }
+  }
+  typedef ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_eUtranFqBands {
+    type string {
+      length 0..256;
+    }
+  }
+  typedef ddt-EcimDerivedIntegerConfiguredOutputPower {
+    type int32 {
+      range 0..10000000;
+    }
+  }
+  typedef ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_availableHwOutputPower {
+    type int32 {
+      range 0..10000000;
+    }
+  }
+  grouping moc-SectorEquipmentFunction-keys {
+    description "Key(s) for MOC SectorEquipmentFunction";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name sectorEquipmentFunctionId;
+      type string;
+    }
+  } // end 'grouping moc-SectorEquipmentFunction-keys'
+  grouping moc-SectorEquipmentFunction {
+    description "This MO serves as a mapping between the cell and the RBS equipment used to provide coverage in a certain geographical area. The MO also controls the maximum output power of the sector.";
+    leaf userLabel {
+      description "Label for free use.";
+      type string;
+      default "";
+    }
+    leaf availableSectorPower {
+      status deprecated {
+        yexte:status-information "Since 16B, planned to be removed.";
+      }
+      config false;
+      description "Available sector power.\nThe value represents the sum of the power allocated for all the activated LTE cells in this sector.\nThis value can be less than the sum of the confOutputPower*partOfSectorPower(up to L13A) or configuredOutputPower*partOfSectorPower(start from L13B) for the following reasons:\n-Insufficient Output Power Hardware Activation Codes\n-Failed radio resources\n-Radio HW capability limitation\nUnit: 1 mW";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf fqBand {
+      status deprecated {
+        yexte:status-information "Since L16A. Planned to be removed. Replaced by eUtranFqBands. \nIf one or multiple bands are fully supported by all rfBranches associated with the SectorEquipmentFunction, the band number of the first fully supported band in eUtranFqBands is mapped to the value of this attribute.\nIf no band is fully supported by all rfBranches associated with the SectorEquipmentFunction, this attribute is set to an invalid value (0).";
+      }
+      config false;
+      description "The E-UTRA frequency band used in the SectorEquipmentFunction, based on the radio connected to the SectorEquipmentFunction.\nRange 1-32 for frequency division duplex, and 33 or higher for time division duplex (defined in 3GPP TS 36.104). ";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf-list rfBranchRef {
+      min-elements 0;
+      max-elements 24;
+      description "Reference to the reserved RfBranch, CcBranch, MulticastAntennaBranch, or Transceiver MO instances. \nTransceiver must represent antenna streams in an Antenna Integrated Radio. SectorEquipmentFunction must not refer directly to Transceiver representing antenna streams in a Radio Dot\n";
+      yexte:takes-effect "Next MO unlock";
+      yexte:precondition "Locked MO";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf noiseFigure {
+      description "Wanted noise figure for RDS uplink.\nSet for WCDMA  RDS only.\nUnit: 0.1 dB";
+      yexte:takes-effect "Next MO unlock or restart of radio unit (IRU).";
+      type erienmnrmrmesectorequipmentfunction:ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_noiseFigure;
+    }
+    leaf-list nRFqBands {
+      min-elements 0;
+      max-elements 256;
+      config false;
+      description "List of NR frequency bands supported by the hardware associated with SectorEquipmentFunction.\nIf a frequency band is only partially supported by some associated RfBranches, support for this band is explicitly displayed in each RfBranch MO.\nValid frequency bands are specified in 3GPP TS 38.104, section Operating bands.\nIf hardware does not support NR frequency bands, the list is empty.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmesectorequipmentfunction:ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_nRFqBands;
+    }
+    leaf configuredOutputPower {
+      status deprecated {
+        yexte:status-information "Since 16B, planned to be removed.";
+      }
+      description "Requested maximum sector power.\nThe value represents the sum of the power for all antenna connectors used by the sector.\nNote: The valid range of configuredOutputPower is limited by the Radio hardware capability or the lack of suitable HWAC, or both.\nUnit: 1 mW\nDisturbances: Changes can affect traffic\nTakes effect: Lock/unlock of the Cell and Sector MOs.";
+      yexte:takes-effect "Next cell unlock";
+      type erienmnrmrmesectorequipmentfunction:ddt-EcimDerivedIntegerConfiguredOutputPower;
+      default 0;
+    }
+    leaf-list eUtranFqBands {
+      min-elements 0;
+      max-elements 256;
+      config false;
+      description "List of LTE frequency bands that hardware associated with SectorEquipmentFunction supports. \nIf a frequency band is only partially supported by some associated rfBranches, support for this band is explicitly displayed for each RfBranch.\nSee CPI for more information.\nNOTE: If HW does not support E-UTRA frequency bands, the list is empty.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmesectorequipmentfunction:ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_eUtranFqBands;
+    }
+    leaf radioEquipmentOrdering {
+      description "Geographical relation of mounted cascaded radio units that represent a coverage area when combined.\nIf empty and rfBranchRef refers to multiple Transceiver MOs, system sets value CIRCLE_COUNTER_CLOCKWISE. ";
+      yexte:takes-effect "Next MO unlock";
+      yexte:dependencies "Only takes effect when rfBranchRef refers to multiple Transceiver MO instances.";
+      type erienmnrmrmesectorequipmentfunction:enum-RadioEquipOrderType;
+    }
+    leaf mixedModeRadio {
+      status deprecated {
+        yexte:status-information "Since 17B. Planned to be removed. Replaced by FieldReplaceableUnit::isSharedWithExternalMe.";
+      }
+      description "Whether or not any radio unit related to this MO is also managed by an additional physically-connected ME. Ensures dual Operation & Maintenance of shared radio unit.\nNote! Has no relation to number of standards the radio unit handles.";
+      yexte:takes-effect "Object unlocked";
+      type boolean;
+      default false;
+    }
+    leaf administrativeState {
+      description "The administrative state. Takes effect: Immediately.";
+      type erienmnrmrmesectorequipmentfunction:enum-AdmState;
+      default LOCKED;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState. This attribute is set by the application in the RBS.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmesectorequipmentfunction:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state. This attribute is set by the application in the RBS.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmrmesectorequipmentfunction:enum-OperState;
+    }
+    leaf-list utranFddFqBands {
+      min-elements 0;
+      max-elements 256;
+      config false;
+      description "List of UTRAN FDD frequency bands that hardware associated with SectorEquipmentFunction supports. \nIf a frequency band is only partially supported by some associated rfBranches, support for this band is explicitly displayed for each RfBranch.\nSee CPI for more information.\nNOTE: If HW does not support UTRAN FDD frequency bands, the list is empty.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmesectorequipmentfunction:ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_utranFddFqBands;
+    }
+    leaf availableHwOutputPower {
+      erienmyext:no-notification;
+      config false;
+      description "Sum of HW output power capability for all radio HW in the sector.\nNot dependent on the availability of output power HWAC, therefore RAT power demands are not necessarily available. Note, if the sector is equipped with several RU types it is not possible to calculate the available output power for each TX port in the sector.";
+      type erienmnrmrmesectorequipmentfunction:ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_availableHwOutputPower;
+    }
+    leaf-list geranFqBands {
+      min-elements 0;
+      max-elements 256;
+      config false;
+      description "List of GERAN frequency bands that is supported by hardware associated with SectorEquipmentFunction. \nIf a frequency band is only partially supported by some associated rfBranches, support for this band is explicitly displayed for each RfBranch. \nIf HW does not support GERAN frequency bands, the list is empty";
+      notife:notifiable-state-data true;
+      type erienmnrmrmesectorequipmentfunction:ddt-RmeSectorEquipmentFunction_SectorEquipmentFunction_geranFqBands;
+    }
+  } // end 'grouping moc-SectorEquipmentFunction'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list SectorEquipmentFunction {
+      key id;
+      description "This MO serves as a mapping between the cell and the RBS equipment used to provide coverage in a certain geographical area. The MO also controls the maximum output power of the sector.";
+      erienmyext:enm-type MOC;
+      uses moc-SectorEquipmentFunction-keys;
+      container attributes {
+        description "Attributes for SectorEquipmentFunction";
+        uses moc-SectorEquipmentFunction;
+      } // end 'container attributes'
+    } // end 'list SectorEquipmentFunction'
+  }
+}

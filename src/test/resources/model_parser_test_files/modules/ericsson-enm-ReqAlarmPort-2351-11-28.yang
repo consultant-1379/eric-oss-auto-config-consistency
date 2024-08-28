@@ -1,0 +1,266 @@
+module ericsson-enm-ReqAlarmPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqAlarmPort;
+  prefix erienmnrmreqalarmport;
+  yexte:ecim-name ReqAlarmPort;
+  revision 2351-11-28 {
+    yexte:version 5;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-ApcFilterAlgorithm {
+    type enumeration {
+      enum NONE {
+        description "Default system behavior. No manual filter configuration possible.";
+        value 0;
+      }
+      enum FIXED {
+        description "Manual filter configuration. Allows modification of filterTime and filterDelay attributes.";
+        value 1;
+      }
+      enum AUTO {
+        description "Automatic toggling reduction. filterDelay is calculated by the system, filterTime can be configured manually. The recommended setting when toggling frequency is unknown at the time of configuration or is expected to change over time.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef enum-ApcPerceivedSeverity {
+    description "This parameter provides an indication of how it is perceived that the capability of the managed object has been affected.";
+    type enumeration {
+      enum CRITICAL {
+        description "The Critical severity level indicates that a service affecting condition has occurred and an immediate corrective action is required. Such a severity can be reported, for example, when a managed object becomes totally out of service and its capability must be restored.";
+        value 2;
+      }
+      enum MAJOR {
+        description "The Major severity level indicates that a service affecting condition has developed and an urgent corrective action is required. Such a severity can be reported, for example, when there is a severe degradation in the capability of the managed object and its full capability must be restored.";
+        value 3;
+      }
+      enum MINOR {
+        description "The Minor severity level indicates the existence of a non-service affecting fault condition and that corrective action should be taken in order to prevent a more serious (for example, service affecting) fault. Such a severity can be reported, for example, when the detected alarm condition is not currently degrading the capacity of the managed object. ";
+        value 4;
+      }
+      enum WARNING {
+        description "The Warning severity level indicates the detection of a potential or impending service affecting fault, before any significant effects have been felt. Action should be taken to further diagnose (if necessary) and correct the problem in order to prevent it from becoming a more serious service affecting fault.";
+        value 5;
+      }
+    }
+  }
+  typedef ddt-ReqAlarmPort_AlarmPort_alarmSlogan {
+    type string {
+      length 1..63;
+    }
+  }
+  typedef ddt-ReqAlarmPort_AlarmPort_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqAlarmPort_AlarmPort_filterTime {
+    type int32 {
+      range 0..3600;
+    }
+  }
+  typedef ddt-ReqAlarmPort_AlarmPort_filterDelay {
+    type int32 {
+      range 60..28800;
+    }
+  }
+  grouping moc-AlarmPort-keys {
+    description "Key(s) for MOC AlarmPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN. The value shall match the the number on the physical port.";
+      mandatory true;
+      yexte:ecim-name alarmPortId;
+      type string;
+    }
+  } // end 'grouping moc-AlarmPort-keys'
+  grouping moc-AlarmPort {
+    description "This MO models an Alarm Port. It is used to detect a fault indication from external equipment and report it as external alarm to the Network Management System.";
+    leaf userLabel {
+      description "Label for free use.\n ";
+      type erienmnrmreqalarmport:ddt-ReqAlarmPort_AlarmPort_userLabel;
+    }
+    leaf activeExternalAlarm {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates that an active alarm was sent and an external alarm exists on the port.";
+      type boolean;
+    }
+    leaf alarmSlogan {
+      description "Specifies the alarm. Used in additional text in the alarm ExternalAlarm.";
+      type erienmnrmreqalarmport:ddt-ReqAlarmPort_AlarmPort_alarmSlogan;
+    }
+    leaf filterTime {
+      description "Alarms shorter than the value set are not reported. An alarm is raised when the alarm port is active for at least the time set. The alarm is cleared when the alarm port is inactive for at least the time set.";
+      yexte:dependencies "Only takes effect when filterAlgorithm is FIXED or AUTO. Value has to be less than filterDelay.";
+      type erienmnrmreqalarmport:ddt-ReqAlarmPort_AlarmPort_filterTime;
+      default 0;
+    }
+    leaf filterAlgorithm {
+      description "Filter algorithm can be used to decrease the number of alarm notifications generated by alarm port based on the value set.";
+      type erienmnrmreqalarmport:enum-ApcFilterAlgorithm;
+      default NONE;
+    }
+    leaf administrativeState {
+      description "Defines the administrative state.\n\nNote: State \"SHUTTING_DOWN\" will immediately be switched to \"LOCKED\".";
+      type erienmnrmreqalarmport:enum-AdmState;
+      default LOCKED;
+    }
+    leaf perceivedSeverity {
+      description "The severity level of the alarm ExternalAlarm.";
+      yexte:takes-effect " At next generated alarm";
+      type erienmnrmreqalarmport:enum-ApcPerceivedSeverity;
+      default MINOR;
+    }
+    leaf filterDelay {
+      description "Reduces toggling alarm notifications by configuring delay before an alarm is cleared. Subsequent alarm port state changes to active state occurring during this time are reported as one alarm event.\nExact time of clearing the alarm is chosen by the system, but not lower than value set.";
+      yexte:dependencies "Only takes effect when filterAlgorithm is FIXED or AUTO. Value of filterDelay is calculated and updated by the system when filterAlgorithm is set to AUTO. Value has to be greater than filterTime.";
+      type erienmnrmreqalarmport:ddt-ReqAlarmPort_AlarmPort_filterDelay;
+      default 60;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqalarmport:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "Defines the operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqalarmport:enum-OperState;
+    }
+    leaf normallyOpen {
+      description "The active state of the alarm port:\ntrue = Closing the circuit generates an alarm.\nfalse = Opening the circuit generates an alarm.  ";
+      type boolean;
+      default true;
+    }
+    leaf alarmInExternalMe {
+      description "In primary node: whether to distribute alarm status to a secondary node sharing the external equipment or not.";
+      type boolean;
+      default false;
+    }
+  } // end 'grouping moc-AlarmPort'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list AlarmPort {
+      key id;
+      description "This MO models an Alarm Port. It is used to detect a fault indication from external equipment and report it as external alarm to the Network Management System.";
+      erienmyext:enm-type MOC;
+      uses moc-AlarmPort-keys;
+      container attributes {
+        description "Attributes for AlarmPort";
+        uses moc-AlarmPort;
+      } // end 'container attributes'
+    } // end 'list AlarmPort'
+  }
+}

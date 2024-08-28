@@ -1,0 +1,90 @@
+/*******************************************************************************
+ * COPYRIGHT Ericsson 2024
+ *
+ *
+ *
+ * The copyright to the computer program(s) herein is the property of
+ *
+ * Ericsson Inc. The programs may be used and/or copied only with written
+ *
+ * permission from Ericsson Inc. or in accordance with the terms and
+ *
+ * conditions stipulated in the agreement/contract under which the
+ *
+ * program(s) have been supplied.
+ ******************************************************************************/
+:host {
+  display: block;
+}
+
+.dialog-message {
+  font-size: 14px;
+}
+
+.filter-content {
+  font-size: 14px;
+}
+
+.filter-label {
+  margin-block-start: var(--space-base);
+  margin-block-end: var(--space-base);
+}
+
+#filterPill {
+  padding-bottom: var(--space-large);
+  font-size: 14px;
+  float: right;
+}
+
+#applyAll {
+  padding-top: var(--space-large);
+  font-size: 14px;
+  float: right;
+}
+
+#applySelected {
+  padding-top: var(--space-large);
+  font-size: 14px;
+  float: right;
+}
+
+.app-paginated-container {
+  font-size: 14px;
+}
+
+.row-count-text {
+  font-size: 14px;
+  color: var(--gray-55);
+  padding-left: var(--space-small);
+}
+
+eui-multi-panel-tile {
+  padding: 0;
+}
+
+eui-text-field {
+  width: 100%;
+}
+
+.filter-buttons {
+  margin-top: var(--space-xxl);
+  float: right;
+}
+
+.clear-filter {
+  color: var(--link-blue);
+}
+
+.clear-filter:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-button {
+  height: var(--space-xxl);
+}

@@ -1,0 +1,87 @@
+module ericsson-enm-RmePowerSaving {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmePowerSaving;
+  prefix erienmnrmrmepowersaving;
+  yexte:ecim-name RmePowerSaving;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-BbPowerSavingStatus {
+    type enumeration {
+      enum DEACTIVATED {
+        description "Baseband Power Savings is deactivated on node.";
+        value 0;
+      }
+      enum ACTIVATED {
+        description "Baseband Power Savings is activated on node.\n";
+        value 1;
+      }
+      enum DEACTIVATED_PENDING_RESTART {
+        description "Baseband Power Savings is deactivated.\nNode restart is required to update bbPowerSavingStatus.\n";
+        value 2;
+      }
+      enum ACTIVATED_PENDING_RESTART {
+        description "Baseband Power Savings is activated. \nNode restart is required to update bbPowerSavingStatus.\n";
+        value 3;
+      }
+    }
+  }
+  grouping moc-PowerSaving-keys {
+    description "Key(s) for MOC PowerSaving";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN. \n";
+      mandatory true;
+      yexte:ecim-name powerSavingId;
+      type string;
+    }
+  } // end 'grouping moc-PowerSaving-keys'
+  grouping moc-PowerSaving {
+    description "MO PowerSaving handles configuration of certain power saving feature in node. Activation of Power saving is dependent on HW, SW, RAT standard and configuration.\n\nThe RDN of this MO is PowerSaving=1.";
+    leaf bbPowerSavingsEnabled {
+      description "Whether Baseband Power Savings is enabled. Allows node to save energy by deactivating BB capacity. \nTakes effect: Node restart\n";
+      type boolean;
+      default true;
+    }
+    leaf bbPowerSavingStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Status for Baseband Power Savings on node.";
+      type erienmnrmrmepowersaving:enum-BbPowerSavingStatus;
+    }
+  } // end 'grouping moc-PowerSaving'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list PowerSaving {
+      key id;
+      max-elements 1;
+      description "MO PowerSaving handles configuration of certain power saving feature in node. Activation of Power saving is dependent on HW, SW, RAT standard and configuration.\n\nThe RDN of this MO is PowerSaving=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PowerSaving-keys;
+      container attributes {
+        description "Attributes for PowerSaving";
+        uses moc-PowerSaving;
+      } // end 'container attributes'
+    } // end 'list PowerSaving'
+  }
+}

@@ -1,0 +1,226 @@
+module ericsson-enm-RtnTransportAutomationAgent {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnTransportAutomationAgent;
+  prefix erienmnrmrtntransportautomationagent;
+  yexte:ecim-name RtnTransportAutomationAgent;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 13;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-EndcX2 {
+    description "E-UTRA NR Dual Connectivity (EN-DC) X2 transport automation services.";
+    type enumeration {
+      enum DISABLED {
+        description "EN-DC X2 transport automation service is disabled for this Baseband.";
+        status current {
+          yexte:preliminary;
+        }
+        value 0;
+      }
+      enum ENABLED {
+        description "EN-DC X2 transport automation service is enabled for this Baseband.";
+        status current {
+          yexte:preliminary;
+        }
+        value 1;
+      }
+    }
+  }
+  typedef enum-ElasticRan {
+    description "Elastic RAN transport automation services.";
+    type enumeration {
+      enum DISABLED {
+        description "Elastic RAN transport automation service is disabled for this Baseband.";
+        status current {
+          yexte:preliminary;
+        }
+        value 0;
+      }
+      enum ENABLED {
+        description "Elastic RAN transport automation service is enabled for this Baseband.";
+        status current {
+          yexte:preliminary;
+        }
+        value 1;
+      }
+    }
+  }
+  typedef ddt-IpDNSAddress {
+    description "The IpDNSAddress type represents an IP address or a DNS domain name.\n\nA unicast IPv4 address is presented in three-digit decimal blocks. It is specified in dotted-quad decimal notation (i.e. three-digit decimal blocks) in accordance with RFC791, The blocks are separated by a dot.\n- The unicast IPV4 address is within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\n- The IP address range 127.0.0.0 – 127.255.255.255 is reserved for loopback\n- The IP address range 0– 0.255.255.255 are reserved\n- The IP address range 169.254.1.0 - 169.254.254.255 is used for link-local addresses.\n\nAn IPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons as described in RFC 4291. If multiple consecutive groups contain only zeros, the use of “::” indicates one or more groups of 16 bits of zeros, as described in RFC 4291, section 2.2 bullet 2. A link-local address will have prefix fe80::/10. The format of the embedded IPv4/IPv6 addresses is described in RFC 6052.\n- IPv6 minimum length = 3 and maximum length = 39.\n- Valid characters: 0123456789abcdefABCDEF:\n\nA domain name is specified in dot separated alphanumeric notation as described in RFC 1034. The domain name consists of one or more parts, called labels, that are delimited by dots.\n- Domain Name's length: 253 characters\n- Label's length: 63 characters.\n- Valid characters: a-z, A-Z, 0,1,2,3,4,5,6,7,8,9,-\n- The Label’s first character is a letter.\n- Labels shall not start or end with a hyphen.\n- Labels shall not start with a numbers\n- Labels shall end with a number or a letter.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-RtnTransportAutomationAgent_TransportAutomationAgent_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-TransportAutomationAgent-keys {
+    description "Key(s) for MOC TransportAutomationAgent";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name transportAutomationAgentId;
+      type string;
+    }
+  } // end 'grouping moc-TransportAutomationAgent-keys'
+  grouping moc-TransportAutomationAgent {
+    description "For future release.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtntransportautomationagent:ddt-RtnTransportAutomationAgent_TransportAutomationAgent_userLabel;
+    }
+    leaf endcX2 {
+      status current {
+        yexte:preliminary;
+      }
+      description "Enables E-UTRA NR Dual Connectivity (EN-DC) X2 transport automation servicefor this Baseband.";
+      type erienmnrmrtntransportautomationagent:enum-EndcX2;
+      default DISABLED;
+    }
+    leaf elasticRan {
+      status current {
+        yexte:preliminary;
+      }
+      description "Enables Elastic RAN transport automation service for this Baseband.";
+      type erienmnrmrtntransportautomationagent:enum-ElasticRan;
+      default DISABLED;
+    }
+    leaf nodeCredential {
+      description "Credential used for TLS over Ericsson internal interface Ni1 between TIF and TIF agent.\nDN of NodeCredential MO in certificate management.\nIf set, communication over Ni1 is secured using TLS.\nIf not set, communication over Ni1 is not secured.";
+      yexte:dependencies "Both nodeCredential and trustCategory must be set or neither of them.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf serverAddress {
+      yexte:restricted;
+      description "IP address or Fully Qualified Domain Name (FQDN) to automation service server.";
+      mandatory true;
+      yexte:dependencies "Must be FQDN or have same IP address family as localIpAddress attribute.";
+      type erienmnrmrtntransportautomationagent:ddt-IpDNSAddress;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmrtntransportautomationagent:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmrtntransportautomationagent:enum-OperState;
+    }
+    leaf trustCategory {
+      description "Set of certificates trusted for TLS over Ericsson internal interface Ni1 between TIF and TIF agent. DN of TrustCategory MO in certificate management.\nIf set, communication over Ni1 is secured using TLS.\nIf not set, communication over Ni1 is not secured.";
+      yexte:dependencies "Both nodeCredential and trustCategory must be set or neither of them.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf localIpAddress {
+      yexte:restricted;
+      description "Local IP address for automation agent.";
+      mandatory true;
+      yexte:dependencies "Refers to AddressIPv4 MO or AddressIPv6 MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-TransportAutomationAgent'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list TransportAutomationAgent {
+      key id;
+      description "For future release.";
+      erienmyext:enm-type MOC;
+      uses moc-TransportAutomationAgent-keys;
+      container attributes {
+        description "Attributes for TransportAutomationAgent";
+        uses moc-TransportAutomationAgent;
+      } // end 'container attributes'
+    } // end 'list TransportAutomationAgent'
+  }
+}

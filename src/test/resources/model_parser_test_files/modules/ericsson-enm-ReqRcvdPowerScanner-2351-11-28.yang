@@ -1,0 +1,177 @@
+module ericsson-enm-ReqRcvdPowerScanner {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqRcvdPowerScanner;
+  prefix erienmnrmreqrcvdpowerscanner;
+  yexte:ecim-name ReqRcvdPowerScanner;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-RcvdPowerScanType {
+    description "Received power scan types.\nDetermines whether the scan shall be performed on frequency ranges with or without active carriers.";
+    type enumeration {
+      enum RCVD_POWER_WITHOUT_CARRIER {
+        description "A scan on a frequency range without carriers.";
+        value 0;
+      }
+      enum RCVD_POWER_WITH_CARRIER {
+        description "A scan on a frequency range with carrier(s).";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-ReqRcvdPowerScanner_RcvdPowerFreqRange_bandwidth {
+    type int32 {
+      range 0..150000;
+    }
+  }
+  typedef ddt-ReqRcvdPowerScanner_RcvdPowerFreqRange_freq {
+    type int32 {
+      range 3550000..3700000;
+    }
+  }
+  typedef ddt-ReqRcvdPowerScanner_RcvdPowerReport_freq {
+    type int32 {
+      range 3550000..3700000;
+    }
+  }
+  typedef ddt-ReqRcvdPowerScanner_RcvdPowerReport_rcvdPower {
+    type int32 {
+      range -10000..10000;
+    }
+  }
+  typedef ddt-ReqRcvdPowerScanner_RcvdPowerReport_bandwidth {
+    type int32 {
+      range 0..150000;
+    }
+  }
+  grouping struct-RcvdPowerFreqRange {
+    description "Specifies a frequency range. \nThe range is given as a start frequency and a bandwidth.\n";
+    leaf bandwidth {
+      description "Measured band width.";
+      type erienmnrmreqrcvdpowerscanner:ddt-ReqRcvdPowerScanner_RcvdPowerFreqRange_bandwidth;
+      mandatory true;
+    }
+    leaf freq {
+      description "Measured frequency range.";
+      type erienmnrmreqrcvdpowerscanner:ddt-ReqRcvdPowerScanner_RcvdPowerFreqRange_freq;
+      mandatory true;
+    }
+  } // end 'grouping struct-RcvdPowerFreqRange'
+  grouping struct-RcvdPowerReport {
+    description "Received power scan result.\nRepresents a sequence of data points.\nEach data point is given by start frequency, bandwidth and received power. Specifically, the i:th data point is given by (freq[i], bandwidth[i], rcvdPower[i]).";
+    leaf-list bandwidth {
+      min-elements 1;
+      max-elements 30;
+      description "Band width.";
+      type erienmnrmreqrcvdpowerscanner:ddt-ReqRcvdPowerScanner_RcvdPowerReport_bandwidth;
+    }
+    leaf-list freq {
+      min-elements 1;
+      max-elements 30;
+      description Frequency.;
+      type erienmnrmreqrcvdpowerscanner:ddt-ReqRcvdPowerScanner_RcvdPowerReport_freq;
+    }
+    leaf-list rcvdPower {
+      min-elements 1;
+      max-elements 30;
+      description "Received power.";
+      type erienmnrmreqrcvdpowerscanner:ddt-ReqRcvdPowerScanner_RcvdPowerReport_rcvdPower;
+    }
+  } // end 'grouping struct-RcvdPowerReport'
+  grouping moc-RcvdPowerScanner-keys {
+    description "Key(s) for MOC RcvdPowerScanner";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name rcvdPowerScannerId;
+      type string;
+    }
+  } // end 'grouping moc-RcvdPowerScanner-keys'
+  grouping moc-RcvdPowerScanner {
+    description "Measures power at receive antenna when O&M interface requests it. \n\nThe RDN of this MO is RcvdPowerScanner=1. ";
+    leaf scanId {
+      config false;
+      description "Identifier for the last completed scan contained in attribute scanResult.\nA value of 0 means that no scan has been completed, no results are available.\n";
+      notife:notifiable-state-data true;
+      type uint32;
+    }
+    list scanResult {
+      min-elements 0;
+      max-elements 16;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Contains the last completed scan result identified by attribute scanId.\nThe result sequence has one entry for each radio capable of performing a scan under the FRU.\nEach entry contains the measured received power on the frequencies requested in the scanRcvdPower action.\n";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqrcvdpowerscanner:struct-RcvdPowerReport;
+    } // end 'list scanResult'
+    action scanRcvdPower {
+      description "Starts a scan on the radio unit, measuring the received power on a set of frequency ranges.\nIf the scan can be started, the action returns a value greater than zero, indicating the scanId. \nWhen the scan is completed, attribute scanResult is updated and attribute scanId is set to the identifier returned by the action.\n\nIf a scan cannot be started, a negative value is returned. The negative value do not update the result attributes.\nEach negative value corresponds to a unique error code as specified below:\n-1 scan request parameters are invalid / scan request have invalid parameters\n-2 target device is not available\n-3 target device does not have capability to perform scan\n-4 scan mode and carrier status are inconsistent \n-5 scan is already ongoing.";
+      input {
+        list scanFreqList {
+          min-elements 1;
+          max-elements 30;
+          key auto-generated-struct-key;
+          leaf auto-generated-struct-key {
+            type uint16;
+            description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+            mandatory true;
+          }
+          description "the set of frequencies on which the scan shall be performed.";
+          uses erienmnrmreqrcvdpowerscanner:struct-RcvdPowerFreqRange;
+          erienmyext:enm-type STRUCT;
+        } // end 'list scanFreqList'
+        leaf scanType {
+          mandatory true;
+          description "Received power scan types.\nDetermines whether the scan shall be performed on frequency ranges with or without active carriers.";
+          type erienmnrmreqrcvdpowerscanner:enum-RcvdPowerScanType;
+        }
+      }
+      output {
+        leaf result {
+          type int32;
+        }
+      }
+    }
+  } // end 'grouping moc-RcvdPowerScanner'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list RcvdPowerScanner {
+      key id;
+      max-elements 1;
+      description "Measures power at receive antenna when O&M interface requests it. \n\nThe RDN of this MO is RcvdPowerScanner=1. ";
+      erienmyext:enm-type MOC;
+      uses moc-RcvdPowerScanner-keys;
+      container attributes {
+        description "Attributes for RcvdPowerScanner";
+        uses moc-RcvdPowerScanner;
+      } // end 'container attributes'
+    } // end 'list RcvdPowerScanner'
+  }
+}

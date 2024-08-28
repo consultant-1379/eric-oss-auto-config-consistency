@@ -1,0 +1,1 @@
+ALTER TABLE rules ALTER COLUMN conditions TYPE VARCHAR(512);

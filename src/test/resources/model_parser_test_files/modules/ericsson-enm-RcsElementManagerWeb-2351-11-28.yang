@@ -1,0 +1,78 @@
+module ericsson-enm-RcsElementManagerWeb {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsElementManagerWeb;
+  prefix erienmnrmrcselementmanagerweb;
+  yexte:ecim-name RcsElementManagerWeb;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef ddt-idleTimer {
+    description "Number of minutes after which an idle session is terminated automatically.";
+    type uint8 {
+      range 1..60;
+    }
+  }
+  typedef ddt-absoluteTimer {
+    description "Maximum lifetime of an active session after which  the session is terminated automatically.";
+    type uint8 {
+      range 8..24;
+    }
+  }
+  grouping moc-ElementManagerWeb-keys {
+    description "Key(s) for MOC ElementManagerWeb";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name elementManagerWebId;
+      type string;
+    }
+  } // end 'grouping moc-ElementManagerWeb-keys'
+  grouping moc-ElementManagerWeb {
+    description "Common configuration attributes for Element Manager web-based sessions.\n\nThe RDN of this MO is ElementManagerWeb=1.";
+    leaf idleTimer {
+      description "Number of minutes after which an idle session is terminated automatically.";
+      type erienmnrmrcselementmanagerweb:ddt-idleTimer;
+      default 10;
+    }
+    leaf absoluteTimer {
+      description "Maximum lifetime of an active session after which  the session is terminated automatically.";
+      type erienmnrmrcselementmanagerweb:ddt-absoluteTimer;
+      default 8;
+    }
+  } // end 'grouping moc-ElementManagerWeb'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list ElementManagerWeb {
+      key id;
+      max-elements 1;
+      description "Common configuration attributes for Element Manager web-based sessions.\n\nThe RDN of this MO is ElementManagerWeb=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-ElementManagerWeb-keys;
+      container attributes {
+        description "Attributes for ElementManagerWeb";
+        uses moc-ElementManagerWeb;
+      } // end 'container attributes'
+    } // end 'list ElementManagerWeb'
+  }
+}

@@ -1,0 +1,62 @@
+module ericsson-enm-ReqEquipment {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqEquipment;
+  prefix erienmnrmreqequipment;
+  yexte:ecim-name ReqEquipment;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef ddt-ReqEquipment_Equipment_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-Equipment-keys {
+    description "Key(s) for MOC Equipment";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\nIt is set automatically when the MO instance is created.";
+      mandatory true;
+      yexte:ecim-name equipmentId;
+      type string;
+    }
+  } // end 'grouping moc-Equipment-keys'
+  grouping moc-Equipment {
+    description "This MO is used as a structural element for the network element, that is, it only acts as a container for other MOs. This MO structures the equipment of the network element.\nThis MO is created automatically and cannot be deleted.\nThe RDN of this MO is Equipment=1. ";
+    leaf userLabel {
+      description userLabel.;
+      type erienmnrmreqequipment:ddt-ReqEquipment_Equipment_userLabel;
+    }
+  } // end 'grouping moc-Equipment'
+  augment /erienmnrmcomtop:ManagedElement {
+    list Equipment {
+      key id;
+      max-elements 1;
+      description "This MO is used as a structural element for the network element, that is, it only acts as a container for other MOs. This MO structures the equipment of the network element.\nThis MO is created automatically and cannot be deleted.\nThe RDN of this MO is Equipment=1. ";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Equipment-keys;
+      container attributes {
+        description "Attributes for Equipment";
+        uses moc-Equipment;
+      } // end 'container attributes'
+    } // end 'list Equipment'
+  }
+}

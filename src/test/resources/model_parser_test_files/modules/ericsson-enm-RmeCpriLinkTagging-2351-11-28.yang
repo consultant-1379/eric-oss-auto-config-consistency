@@ -1,0 +1,66 @@
+module ericsson-enm-RmeCpriLinkTagging {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeCpriLinkTagging;
+  prefix erienmnrmrmecprilinktagging;
+  yexte:ecim-name RmeCpriLinkTagging;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef ddt-RmeCpriLinkTagging_CpriLinkTagging_nodeTag {
+    type int32 {
+      range -1..16777215;
+    }
+  }
+  grouping moc-CpriLinkTagging-keys {
+    description "Key(s) for MOC CpriLinkTagging";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cpriLinkTaggingId;
+      type string;
+    }
+  } // end 'grouping moc-CpriLinkTagging-keys'
+  grouping moc-CpriLinkTagging {
+    description "The Managed Object (MO) is used to configure the CPRI link tagging information.";
+    leaf nodeTag {
+      description "Node identity part of the CPRI link tag.";
+      yexte:takes-effect Immediately;
+      type erienmnrmrmecprilinktagging:ddt-RmeCpriLinkTagging_CpriLinkTagging_nodeTag;
+      default -1;
+    }
+  } // end 'grouping moc-CpriLinkTagging'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list CpriLinkTagging {
+      key id;
+      max-elements 1;
+      description "The Managed Object (MO) is used to configure the CPRI link tagging information.";
+      erienmyext:enm-type MOC;
+      uses moc-CpriLinkTagging-keys;
+      container attributes {
+        description "Attributes for CpriLinkTagging";
+        uses moc-CpriLinkTagging;
+      } // end 'container attributes'
+    } // end 'list CpriLinkTagging'
+  }
+}

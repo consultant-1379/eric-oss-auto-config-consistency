@@ -1,0 +1,293 @@
+module ericsson-enm-RsyncNodeGroupSyncMember {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RsyncNodeGroupSyncMember;
+  prefix erienmnrmrsyncnodegroupsyncmember;
+  yexte:ecim-name RsyncNodeGroupSyncMember;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 7;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-RsyncSynchronization {
+    prefix erienmnrmrsyncsynchronization;
+  }
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RsyncRadioEquipmentClock {
+    prefix erienmnrmrsyncradioequipmentclock;
+  }
+  typedef enum-AdmState {
+    description "The administrative state of a resource. ";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-LocalStatus {
+    description "Node Group Member Local Status.";
+    type enumeration {
+      enum UNKNOWN {
+        description "The synchronization state of the Node Group Member is unknown.";
+        value 0;
+      }
+      enum SYNC_PROVIDER {
+        description "The Node Group Member is a Synchronization Provider and is either locked to an external synchronization reference, or in holdover mode. The reference in use is indicated by currentRadioClockReference in the RadioEquipmentClock MO. The clock state is indicated by radioClockState in the RadioEquipmentClock MO.";
+        value 1;
+      }
+      enum SYNC_RECEIVER_TIME_LOCKED {
+        description "The Node Group Member is a Synchronization Receiver that is radio-frame time-locked to another Node Group Member.";
+        value 2;
+      }
+      enum SYNC_RECEIVER_TIME_HOLDOVER {
+        description "The Node Group Member is a Synchronization Receiver in time holdover state. Services are maintained.";
+        value 3;
+      }
+      enum ENTERING_NODE_GROUP {
+        description "The Node Group Member is entering into a Node Group. The role in the Node Group is not yet defined.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-RiPortStatus {
+    description "Radio Interface Port Status.";
+    type enumeration {
+      enum UNKNOWN {
+        description "The synchronization status of the Radio Interface (RI) port is unknown.";
+        value 0;
+      }
+      enum OK_ACTIVE {
+        description "The Synchronization RI port is OK and is selected as active reference for the node.";
+        value 1;
+      }
+      enum OK_NOT_ACTIVE {
+        description "The Synchronization RI port is OK, but is not selected as active reference for the node.";
+        value 2;
+      }
+      enum CPRI_LINK_NOT_AVAILABLE {
+        description "The RI port configured as synchronization candidate is not available for synchronization.";
+        value 3;
+      }
+      enum FREQUENCY_ERROR {
+        description "The node cannot frequency-synchronize to the neighbor node connected to the RI port.";
+        value 4;
+      }
+      enum PHASE_ERROR {
+        description "The node cannot phase-synchronize to the neighbor node connected to the RI port.";
+        value 5;
+      }
+      enum LOSS_OF_FREQUENCY_MEASUREMENTS {
+        description "No measurements of frequency difference can be retrieved from the RI port.";
+        value 6;
+      }
+      enum LOSS_OF_PHASE_MEASUREMENTS {
+        description "No measurements of phase difference can be retrieved from the RI port.";
+        value 7;
+      }
+      enum FREQUENCY_LOCKING {
+        description "The Node Group Member is at the intermediate stage of frequency synchronization to the neighbor node connected to this RI port. The attribute syncRiPortStatus will be either OK_ACTIVE or OK_NOT_ACTIVE when frequency synchronization is successfully completed.";
+        value 8;
+      }
+      enum CONNECTED_TO_RU_NOT_TO_NEIGHBOR {
+        description "Connection can be set up with shared RU, communication with neighbor not possible.";
+        value 9;
+      }
+      enum NO_SYNC_COMMUNICATION {
+        description "Nodes are frequency aligned, there is no communication with neighbor.";
+        value 10;
+      }
+      enum NODE_PRIORITY_COLLISION {
+        description "Same syncNodePriority used in two or more nodes.";
+        value 11;
+      }
+      enum SELECTION_MODE_MISMATCH {
+        description "RI port disqualified due to selection mode mismatch.";
+        value 12;
+      }
+    }
+  }
+  typedef enum-SyncProviderState {
+    description "The synchronization state of the Synchronization Provider.";
+    type enumeration {
+      enum UNKNOWN {
+        description "The synchronization state of the Synchronization Provider is unknown, or no Synchronization Provider is reported within the Node Group.";
+        value 0;
+      }
+      enum TIME_MODE {
+        description "The Synchronization Provider is operating in time-providing mode.";
+        value 1;
+      }
+      enum FREQUENCY_MODE {
+        description "The Synchronization Provider is operating in frequency-providing mode.";
+        value 2;
+      }
+      enum FREE_RUNNING {
+        description "The Synchronization Provider has lost all external references and the frequency holdover period has expired. No other node has managed to take over the role of Synchronization Provider.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-SelectionMode {
+    description "Specifies selection mode of node group sync member.";
+    type enumeration {
+      enum NODE_PRIORITY {
+        description "Selection based on syncNodePriority value.";
+        value 1;
+      }
+      enum REFERENCE_AND_NODE_PRIORITY {
+        description "Selection based on best reference availability and syncNodePriority value.";
+        value 2;
+      }
+    }
+  }
+  typedef ddt-RsyncSyncLibrary_LocalNodeInfo_hopsFromSyncProvider {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RsyncNodeGroupSyncMember_NodeGroupSyncMember_syncNodePriority {
+    type uint8 {
+      range 1..15;
+    }
+  }
+  typedef ddt-RsyncNodeGroupSyncMember_NodeGroupSyncMember_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RsyncSyncLibrary_LocalNodeInfo_synchronizedTo {
+    type uint8 {
+      range 0..15;
+    }
+  }
+  grouping struct-LocalNodeInfo {
+    description "Local Node Information.";
+    leaf hopsFromSyncProvider {
+      status current {
+        yexte:preliminary;
+      }
+      description "The number of hops to reach the Synchronization Provider.\nIf the Node Group Member is a Synchronization Provider, the value is zero.";
+      type erienmnrmrsyncnodegroupsyncmember:ddt-RsyncSyncLibrary_LocalNodeInfo_hopsFromSyncProvider;
+      mandatory true;
+    }
+    leaf synchronizedTo {
+      description "The neighbor node, to which a Synchronization Receiver is synchronized.\nThe number is the Node Priority of the neighbor node. If the node is a Synchronization Provider, the attribute indicates the priority of this node.";
+      type erienmnrmrsyncnodegroupsyncmember:ddt-RsyncSyncLibrary_LocalNodeInfo_synchronizedTo;
+      mandatory true;
+    }
+    leaf localState {
+      description "The role and the state of the Node Group Member.";
+      type erienmnrmrsyncnodegroupsyncmember:enum-LocalStatus;
+      mandatory true;
+    }
+  } // end 'grouping struct-LocalNodeInfo'
+  grouping struct-SyncProviderInfo {
+    description "Synchronization Provider information.";
+    leaf syncProviderNodePriority {
+      description "The node priority of the Synchronization Provider as given by the attribute syncNodePriority for that node. If the node is a Synchronization Provider, the attribute indicates the priority of this node.";
+      type uint8;
+      mandatory true;
+    }
+    leaf syncProviderState {
+      description "The synchronization state of the Synchronization Provider.\nThis information applies to a Synchronization Receiver. If the node has the role of Synchronization Provider, the detailed information on the state is in the RadioEquipmentClock MO.\nThe synchronization state of the Synchronization Provider determines which services can be enabled on the node: Time-dependent services, Frequency-dependent services, or no services.";
+      type erienmnrmrsyncnodegroupsyncmember:enum-SyncProviderState;
+      mandatory true;
+    }
+  } // end 'grouping struct-SyncProviderInfo'
+  grouping moc-NodeGroupSyncMember-keys {
+    description "Key(s) for MOC NodeGroupSyncMember";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nodeGroupSyncMemberId;
+      type string;
+    }
+  } // end 'grouping moc-NodeGroupSyncMember-keys'
+  grouping moc-NodeGroupSyncMember {
+    description "A Node Group is a group of Ericsson RBS nodes that must be radio-frame synchronized to each other.\n\nThe MO is created for each member of the Node Group. Each Node Group uses only one external synchronization reference. The node that uses the external synchronization reference is called the Synchronization Provider. The other nodes in the Node Group are called Synchronization Receivers. All Synchronization Receivers synchronize their radio-frame to the Synchronization Provider, either directly or to another Synchronization Receiver.";
+    leaf syncNodePriority {
+      description "This number is used both as a way to identify a Node Group Member, and to give the node a priority value which is used when selecting the Synchronization Provider. Every Node Group Member must have a unique number. The value 1 has the highest priority.";
+      mandatory true;
+      type erienmnrmrsyncnodegroupsyncmember:ddt-RsyncNodeGroupSyncMember_NodeGroupSyncMember_syncNodePriority;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrsyncnodegroupsyncmember:ddt-RsyncNodeGroupSyncMember_NodeGroupSyncMember_userLabel;
+    }
+    container syncProviderInformation {
+      description "Provides information on the Synchronization Provider, that is the Node Group Member that is synchronizing to a reference external to the Node Group.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncnodegroupsyncmember:struct-SyncProviderInfo;
+    } // end 'container syncProviderInformation'
+    leaf administrativeState {
+      description "The administrative state.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrsyncnodegroupsyncmember:enum-AdmState;
+      default LOCKED;
+    }
+    leaf-list syncRiPortStatus {
+      min-elements 1;
+      max-elements 18;
+      erienmyext:no-notification;
+      config false;
+      description "The status of the Radio Interface (RI) ports configured as candidates for Node Group synchronization.\nThe order of the Synchronization RI Ports is the same as for syncRiPortCandidate.";
+      type erienmnrmrsyncnodegroupsyncmember:enum-RiPortStatus;
+    }
+    container localNodeInformation {
+      description "Synchronization information on the Node Group Member itself.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncnodegroupsyncmember:struct-LocalNodeInfo;
+    } // end 'container localNodeInformation'
+    leaf selectionMode {
+      description "Role selection mode of node group member.";
+      type erienmnrmrsyncnodegroupsyncmember:enum-SelectionMode;
+      default NODE_PRIORITY;
+    }
+    leaf-list syncRiPortCandidate {
+      min-elements 1;
+      max-elements 18;
+      description "Reference list of RiPort MOs that are candidates to be used as synchronization reference for all nodes. For NGS startup procedure RiPort MO must be set as syncRiPortCandidate only when it is connected to other nodes in NGS, otherwise node startup is prolonged to its maximum value.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    action retryEntranceToNodeGroup {
+      description "Retries entrance to the Node Group. Can be used if the automatic entrance to the Node Group has failed.";
+    }
+  } // end 'grouping moc-NodeGroupSyncMember'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrsyncsynchronization:Synchronization/erienmnrmrsyncradioequipmentclock:RadioEquipmentClock {
+    list NodeGroupSyncMember {
+      key id;
+      max-elements 1;
+      description "A Node Group is a group of Ericsson RBS nodes that must be radio-frame synchronized to each other.\n\nThe MO is created for each member of the Node Group. Each Node Group uses only one external synchronization reference. The node that uses the external synchronization reference is called the Synchronization Provider. The other nodes in the Node Group are called Synchronization Receivers. All Synchronization Receivers synchronize their radio-frame to the Synchronization Provider, either directly or to another Synchronization Receiver.";
+      erienmyext:enm-type MOC;
+      uses moc-NodeGroupSyncMember-keys;
+      container attributes {
+        description "Attributes for NodeGroupSyncMember";
+        uses moc-NodeGroupSyncMember;
+      } // end 'container attributes'
+    } // end 'list NodeGroupSyncMember'
+  }
+}

@@ -1,0 +1,98 @@
+module ericsson-enm-ReqVirtualAlarmPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqVirtualAlarmPort;
+  prefix erienmnrmreqvirtualalarmport;
+  yexte:ecim-name ReqVirtualAlarmPort;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqCabinet {
+    prefix erienmnrmreqcabinet;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-ApcPerceivedSeverity {
+    description "This parameter provides an indication of how it is perceived that the capability of the managed object has been affected.";
+    type enumeration {
+      enum CRITICAL {
+        description "The Critical severity level indicates that a service affecting condition has occurred and an immediate corrective action is required. Such a severity can be reported, for example, when a managed object becomes totally out of service and its capability must be restored.";
+        value 2;
+      }
+      enum MAJOR {
+        description "The Major severity level indicates that a service affecting condition has developed and an urgent corrective action is required. Such a severity can be reported, for example, when there is a severe degradation in the capability of the managed object and its full capability must be restored.";
+        value 3;
+      }
+      enum MINOR {
+        description "The Minor severity level indicates the existence of a non-service affecting fault condition and that corrective action should be taken in order to prevent a more serious (for example, service affecting) fault. Such a severity can be reported, for example, when the detected alarm condition is not currently degrading the capacity of the managed object. ";
+        value 4;
+      }
+      enum WARNING {
+        description "The Warning severity level indicates the detection of a potential or impending service affecting fault, before any significant effects have been felt. Action should be taken to further diagnose (if necessary) and correct the problem in order to prevent it from becoming a more serious service affecting fault.";
+        value 5;
+      }
+    }
+  }
+  typedef ddt-ReqVirtualAlarmPort_VirtualAlarmPort_alarmSlogan {
+    type string {
+      length 1..63;
+    }
+  }
+  grouping moc-VirtualAlarmPort-keys {
+    description "Key(s) for MOC VirtualAlarmPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of RDN. It is set automatically when the MO instance is created and consists of a concatenated string of the RDN of the parent of mirrored AlarmPort MO, colon and the value of attribute alarmPortId of the mirrored AlarmPort MO. Example HwUnit-SCU-1:1.";
+      mandatory true;
+      yexte:ecim-name virtualAlarmPortId;
+      type string;
+    }
+  } // end 'grouping moc-VirtualAlarmPort-keys'
+  grouping moc-VirtualAlarmPort {
+    description "This MO is in secondary node. It mirrors an AlarmPort MO which is in primary node.  \n\nMO is created by the system when the mirrored AlarmPort MO has a raised alarm. MO is deleted when the alarm is ceased.\n\nThe RDN of this MO is described in attribute virtualAlarmPortId.\n\nDependencies: Can only exist in the node when the attribute supportSystemControl on MO EquipmentSupportFunction is set to false.\n";
+    leaf perceivedSeverity {
+      config false;
+      description "The severity level of the alarm ExternalAlarm.";
+      yexte:dependencies "perceivedSeverity is configured by the operator in the matching MO AlarmPort.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqvirtualalarmport:enum-ApcPerceivedSeverity;
+    }
+    leaf alarmSlogan {
+      config false;
+      description "Specifies the alarm. Used in additional text in the alarm ExternalAlarm.\n";
+      yexte:dependencies "alarmSlogan is configured by the operator in the matching MO AlarmPort.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqvirtualalarmport:ddt-ReqVirtualAlarmPort_VirtualAlarmPort_alarmSlogan;
+    }
+  } // end 'grouping moc-VirtualAlarmPort'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqcabinet:Cabinet {
+    list VirtualAlarmPort {
+      key id;
+      description "This MO is in secondary node. It mirrors an AlarmPort MO which is in primary node.  \n\nMO is created by the system when the mirrored AlarmPort MO has a raised alarm. MO is deleted when the alarm is ceased.\n\nThe RDN of this MO is described in attribute virtualAlarmPortId.\n\nDependencies: Can only exist in the node when the attribute supportSystemControl on MO EquipmentSupportFunction is set to false.\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-VirtualAlarmPort-keys;
+      container attributes {
+        description "Attributes for VirtualAlarmPort";
+        uses moc-VirtualAlarmPort;
+      } // end 'container attributes'
+    } // end 'list VirtualAlarmPort'
+  }
+}

@@ -1,0 +1,630 @@
+module ericsson-enm-RsyncGnssInfo {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RsyncGnssInfo;
+  prefix erienmnrmrsyncgnssinfo;
+  yexte:ecim-name RsyncGnssInfo;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-RsyncSynchronization {
+    prefix erienmnrmrsyncsynchronization;
+  }
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RsyncTimeSyncIO {
+    prefix erienmnrmrsynctimesyncio;
+  }
+  typedef enum-SatelliteSystem {
+    description "Combination of satellite systems.";
+    type enumeration {
+      enum UNKNOWN {
+        value 0;
+      }
+      enum GPS {
+        value 1;
+      }
+      enum BDS {
+        description "BeiDou Navigation Satellite System.";
+        value 2;
+      }
+      enum GALILEO {
+        value 4;
+      }
+      enum GPS_GLONASS {
+        value 17;
+      }
+      enum GPS_BDS {
+        value 18;
+      }
+      enum GPS_GALILEO {
+        value 19;
+      }
+      enum GPS_QZSS {
+        value 20;
+      }
+      enum GPS_GLONASS_QZSS {
+        value 30;
+      }
+      enum GPS_BDS_QZSS {
+        value 31;
+      }
+      enum GPS_GALILEO_QZSS {
+        value 32;
+      }
+    }
+  }
+  typedef enum-GnssRefState {
+    description "Status of GNSS receiver.";
+    type enumeration {
+      enum HW_FAULT {
+        description "Hardware fault reported from the receiver.";
+        status deprecated;
+        value 0;
+      }
+      enum OK {
+        description "Indicates fully operational GNSS receiver.";
+        status deprecated;
+        value 1;
+      }
+      enum NO_TIME {
+        description "No time reported.";
+        status deprecated;
+        value 2;
+      }
+      enum NO_MESSAGES {
+        description "No messages received.";
+        status deprecated;
+        value 3;
+      }
+      enum PROTOCOL_NOT_RECOGNIZED {
+        description "The protocol used by the receiver is not recognised.";
+        status deprecated;
+        value 4;
+      }
+      enum LOSS_OF_1PPS_SIGNAL {
+        description "1PPS synchronization signal lost.";
+        status deprecated;
+        value 5;
+      }
+      enum SYNCHRONIZED {
+        description "GNSS receiver is synchronized to satellites.";
+        value 6;
+      }
+      enum NOT_SYNCHRONIZED {
+        description "GNSS receiver is not synchronized to satellites.";
+        value 7;
+      }
+      enum UNKNOWN {
+        description "No contact with GNSS receiver.";
+        value 8;
+      }
+    }
+  }
+  typedef enum-MultipleGnssStatus {
+    description "Multiple GNSS feature status.";
+    type enumeration {
+      enum WANTED_GNSS_USED {
+        description "Wanted satellite system used by GNSS receiver.";
+        value 0;
+      }
+      enum DISABLED_LICENSE {
+        description "Wanted satellite system not used by GNSS receiver. Missing or deactivated Multiple GNSS Support license.";
+        value 1;
+      }
+      enum GNSS_REC_UNREACHABLE {
+        description "Wanted satellite system not used by GNSS receiver. Control path to GNSS receiver missing.";
+        value 2;
+      }
+      enum WANTED_GNSS_UNSUPPORTED {
+        description "Connected GNSS receiver does not support wanted satellite system.";
+        value 3;
+      }
+      enum GNSS_REC_CONFIG_FAULT {
+        description "Wanted satellite system not used by GNSS receiver.\n\nAnother node sharing GNSS receiver has configured it differently. Attribute multipleGnssWanted needs to be changed on one of nodes to get matching configuration.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-GnssInfoObservationPointMode {
+    description "Observation point of GNSS receiver.";
+    type enumeration {
+      enum UNKNOWN {
+        description "Observation point mode is not known. ";
+        value 0;
+      }
+      enum SURVEY {
+        description "GNSS receiver is in survey mode, time and position are continuously calculated.";
+        value 1;
+      }
+      enum POSITION_HOLD {
+        description "GNSS receiver locked to fixed position, which is used to calculate time.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-GnssRecControlAction {
+    description "Actions of control.";
+    type enumeration {
+      enum RELEASE_CONTROL {
+        description "Release control of GNSS receiver.";
+        value 0;
+      }
+      enum GET_CONTROL {
+        description "Get control of GNSS receiver.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-GnssReceiverResurveyAction {
+    description "Action of gnssReceiverResurvey.";
+    type enumeration {
+      enum ENABLE {
+        description "Enable automatic resurvey.";
+        value 0;
+      }
+      enum DISABLE {
+        description "Disable automatic resurvey.";
+        value 1;
+      }
+      enum EXECUTE {
+        description "Initiate manual resurvey.";
+        value 2;
+      }
+      enum CANCEL {
+        description "Cancel manual resurvey in progress.";
+        value 3;
+      }
+      enum STATUS {
+        description "Display resurvey status and position information.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-ControlPath {
+    description "Control path of GNSS receiver.";
+    type enumeration {
+      enum UNKNOWN {
+        description "Control path availability from Baseband to GNSS receiver unknown.";
+        value 0;
+      }
+      enum CONTROL_PATH_EXIST {
+        description "Control path exists from Baseband to GNSS receiver. Baseband can configure GNSS receiver.";
+        value 1;
+      }
+      enum NO_CONTROL_PATH {
+        description "No control path from Baseband to GNSS receiver. Baseband cannot configure GNSS receiver. Error in cable, connectors or caused by intermediate HW.";
+        value 2;
+      }
+      enum UNSUPPORTED {
+        description "GNSS receiver does not support control from Baseband. Applies to GPS01.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-FwUpgradeStatus {
+    description "GNSS receiver firmware upgrade status.";
+    type enumeration {
+      enum UNKNOWN {
+        description "Displayed at start-up phase and when there is no GNSS receiver connected.";
+        value 0;
+      }
+      enum UPGRADE_UNSUPPORTED {
+        description "Connected GNSS receiver does not support firmware upgrade.";
+        value 1;
+      }
+      enum NO_CONTROL {
+        description "Node is not in control of GNSS receiver.";
+        value 2;
+      }
+      enum DOWNLOAD_ONGOING {
+        description "Downloading of firmware to GNSS receiver is ongoing.";
+        value 3;
+      }
+      enum EVALUATING_RESTART_PRECONDITIONS {
+        description "Latest firmware is downloaded to GNSS receiver. Before ordering GNSS receiver to restart with latest firmware, but node is evaluating sky visibility to find a time window where GNSS receiver can lock to satellites.";
+        value 4;
+      }
+      enum SKY_VISIBILITY_LIMITED {
+        description "Latest firmware downloaded. Node will not order GNSS receiver to restart on latest firmware due to too limited sky visibility.";
+        value 5;
+      }
+      enum RESTART_ORDERED {
+        description "GNSS receiver ordered to restart with latest firmware.";
+        value 6;
+      }
+      enum OK {
+        description "GNSS receiver use latest firmware.";
+        value 7;
+      }
+      enum FIRMWARE_REJECTED {
+        description "GNSS receiver rejects firmware in UP.";
+        value 8;
+      }
+      enum FILE_TRANSFER_REJECTED {
+        description "GNSS receiver rejected file transfer.";
+        value 9;
+      }
+      enum DOWNLOAD_FAILED {
+        description "Download of firmware to GNSS receiver has failed, but it was not rejected.";
+        value 10;
+      }
+      enum FIRMWARE_MISMATCH {
+        description "GNSS receiver is running older firmware than firmware in UP. GNSS receiver failed to start on firmware downloaded from UP, or user have by action ordered GNSS receiver to start from slot which does not contain latest firmware.";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-GnssInfo_gnssReceiverReset_slotNumber {
+    type uint8 {
+      range 0..2;
+    }
+  }
+  typedef ddt-RsyncSyncLibrary_SatelliteInfo_signalToNoiseRatio {
+    type int16;
+  }
+  typedef ddt-GnssInfo_gnssReceiverRestartFromSlot_slotNumber {
+    type uint8 {
+      range 0..2;
+    }
+  }
+  typedef ddt-RsyncSyncLibrary_SatelliteInfo_azimuth {
+    type uint16;
+  }
+  typedef ddt-GnssInfo_gnssReceiverRestartFromSlot_rollbackSlot {
+    type uint8 {
+      range 0..2;
+    }
+  }
+  typedef ddt-RsyncGnssInfo_GnssInfo_altitude {
+    type string;
+  }
+  typedef ddt-RsyncSyncLibrary_SatelliteInfo_elevation {
+    type uint16;
+  }
+  typedef ddt-GnssInfo_gnssReceiverResurvey_noOfSatellites {
+    type uint8 {
+      range 4..24;
+    }
+  }
+  grouping struct-GnssReceiverFw {
+    description "Gnss receiver firmware struct.";
+    leaf fwRevisionSlot1 {
+      description "FW revision in slot 1 on GRU04.";
+      type string;
+      mandatory true;
+    }
+    leaf fwRevisionSlot0 {
+      description "FW revision in slot 0 on GRU04.";
+      type string;
+      mandatory true;
+    }
+    leaf fwRevisionSlot2 {
+      description "FW revision in slot 2 on GRU04.";
+      type string;
+      mandatory true;
+    }
+    leaf executingSlot {
+      description "FW revision which is currently being executed on GRU04.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-GnssReceiverFw'
+  grouping struct-GnssReceiverProduct {
+    description "GNSS receiver product data struct.";
+    leaf serialNumber {
+      description "Serial number of connected GNSS receiver.";
+      type string;
+      mandatory true;
+    }
+    leaf additionalInfo {
+      description "Additional info of connected GNSS receiver. Differs for GNSS receiver products.";
+      type string;
+      mandatory true;
+    }
+    leaf productName {
+      description "Type of connected GNSS receiver or RBS with embeded GNSS receiver.";
+      type string;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "Product revision of connected GNSS receiver.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-GnssReceiverProduct'
+  grouping struct-UsedSatelliteInfo {
+    description "List of satellite identities used for positioning.";
+    leaf usedSatelliteIdentity {
+      description "Satellite ID used for positioning and synchronization.";
+      type uint16;
+      mandatory true;
+    }
+  } // end 'grouping struct-UsedSatelliteInfo'
+  grouping struct-SatelliteInfo {
+    description "Information about satellites.";
+    leaf elevation {
+      description "Elevation of satellite.";
+      type erienmnrmrsyncgnssinfo:ddt-RsyncSyncLibrary_SatelliteInfo_elevation;
+      mandatory true;
+    }
+    leaf satelliteIdentity {
+      description "Satellite ID reported by GNSS receiver.\nValues 1 to 32 represent GPS satellites.\nValues 65 to 88 represent GLONASS satellites.\nValues 201 to 235 represent BDS satellites.";
+      type uint16;
+      mandatory true;
+    }
+    leaf azimuth {
+      description "Azimuth of satellite.";
+      type erienmnrmrsyncgnssinfo:ddt-RsyncSyncLibrary_SatelliteInfo_azimuth;
+      mandatory true;
+    }
+    leaf signalToNoiseRatio {
+      description "Signal to noise ratio (SNR) of signal received from satellite.";
+      type erienmnrmrsyncgnssinfo:ddt-RsyncSyncLibrary_SatelliteInfo_signalToNoiseRatio;
+      mandatory true;
+    }
+  } // end 'grouping struct-SatelliteInfo'
+  grouping moc-GnssInfo-keys {
+    description "Key(s) for MOC GnssInfo";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name gnssInfoId;
+      type string;
+    }
+  } // end 'grouping moc-GnssInfo-keys'
+  grouping moc-GnssInfo {
+    description "Represents connected GNSS receiver status, satellite systems used, synchronization to satellites and satellite visibility details.";
+    leaf multipleGnssWanted {
+      description "Wanted satellite system to be used by GNSS receiver.\nGNSS receivers GPS01 and GPS02 support only GPS.\nGNSS receivers GPS03, GRU04 and future GNSS receivers start by using GPS and GLONASS. Can be configured to use different satellite systems.\nSupported values for GPS03 are: GPS, BDS, GPS_GLONASS and GPS_BDS.\nSupported values for GRU04 and future GNSS receivers are: GPS, BDS, GALILEO, GPS_GLONASS, GPS_BDS, GPS_GALILEO, GPS_QZSS, GPS_GLONASS_QZSS, GPS_BDS_QZSS and GPS_GALILEO_QZSS.\nDependencies: UNKNOWN is not applicable for wanted satellite system.";
+      type erienmnrmrsyncgnssinfo:enum-SatelliteSystem;
+      default GPS_GLONASS;
+    }
+    list usedSatelliteInformation {
+      min-elements 0;
+      max-elements 72;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Used satellites.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncgnssinfo:struct-UsedSatelliteInfo;
+    } // end 'list usedSatelliteInformation'
+    leaf altitude {
+      erienmyext:no-notification;
+      config false;
+      description "Altitude of GNSS receiver antenna.\nIn survey mode, instantaneous calculated altitude of antenna.\nIn position-hold mode, altitude of antenna averaged over survey period.";
+      type erienmnrmrsyncgnssinfo:ddt-RsyncGnssInfo_GnssInfo_altitude;
+    }
+    leaf pdop {
+      erienmyext:no-notification;
+      config false;
+      description "Position dilution of precision of reported antenna position.";
+      type string;
+    }
+    leaf gnssReceiverStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Status of GNSS receiver.";
+      type erienmnrmrsyncgnssinfo:enum-GnssRefState;
+    }
+    leaf latitude {
+      erienmyext:no-notification;
+      config false;
+      description "Latitude of GNSS receiver antenna.\nIn survey mode, instantaneous calculated latitude of antenna.\nIn position-hold mode, latitude of antenna averaged over survey period.";
+      type string;
+    }
+    leaf noOfSatellitesInUse {
+      erienmyext:no-notification;
+      config false;
+      description "Number of satellites in use.";
+      type int32;
+    }
+    leaf hdop {
+      erienmyext:no-notification;
+      config false;
+      description "Horizontal dilution of precision of reported antenna position.";
+      type string;
+    }
+    leaf noOfSatellitesInView {
+      erienmyext:no-notification;
+      config false;
+      description "Number of satellites in view.";
+      type int32;
+    }
+    container gnssReceiverProductData {
+      description "Connected GNSS receiver.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncgnssinfo:struct-GnssReceiverProduct;
+    } // end 'container gnssReceiverProductData'
+    leaf observationPointMode {
+      erienmyext:no-notification;
+      config false;
+      description "Mode of observation point of GNSS receiver.";
+      type erienmnrmrsyncgnssinfo:enum-GnssInfoObservationPointMode;
+    }
+    leaf multipleGnssStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Multiple GNSS usage status.\nIf wanted satellite system is used by GNSS receiver, or if there is mismatch between actual and wanted satellite system usage including possible mismatch cause.";
+      type erienmnrmrsyncgnssinfo:enum-MultipleGnssStatus;
+    }
+    container gnssReceiverFirmware {
+      description "List of GNSS receiver firmware.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncgnssinfo:struct-GnssReceiverFw;
+    } // end 'container gnssReceiverFirmware'
+    leaf vdop {
+      erienmyext:no-notification;
+      config false;
+      description "Vertical dilution of precision of reported antenna position.";
+      type string;
+    }
+    leaf gnssRecControlPath {
+      erienmyext:no-notification;
+      config false;
+      description "Control path status.\nShows if control path exists.";
+      type erienmnrmrsyncgnssinfo:enum-ControlPath;
+    }
+    list satelliteInformation {
+      min-elements 0;
+      max-elements 72;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Satellites in view.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncgnssinfo:struct-SatelliteInfo;
+    } // end 'list satelliteInformation'
+    leaf gnssReceiverFwUpgradeStatus {
+      config false;
+      description "Status of last remote GNSS receiver firmware upgrade, or ongoing remote firmware upgrade.";
+      notife:notifiable-state-data true;
+      type erienmnrmrsyncgnssinfo:enum-FwUpgradeStatus;
+    }
+    leaf gnssReceiverControl {
+      erienmyext:no-notification;
+      config false;
+      description "Node control status of GNSS receiver.";
+      type string;
+    }
+    leaf longitude {
+      erienmyext:no-notification;
+      config false;
+      description "Longitude of GNSS receiver antenna.\nIn survey mode, instantaneous calculated longitude of antenna.\nIn position-hold mode, longitude of antenna averaged over survey period.";
+      type string;
+    }
+    leaf multipleGnssActual {
+      erienmyext:no-notification;
+      config false;
+      description "Satellite systems used by GNSS receiver.";
+      type erienmnrmrsyncgnssinfo:enum-SatelliteSystem;
+    }
+    action gnssReceiverRestartFromSlot {
+      description "Initiate reset to different firmware slot on GRU04.\n\nAction can be executed only if GRU04 receiver is connected to node.";
+      input {
+        leaf slotNumber {
+          mandatory true;
+          description "GNSS receiver firmware slot number is used to restart GNSS receiver on particular firmware revision.";
+          type erienmnrmrsyncgnssinfo:ddt-GnssInfo_gnssReceiverRestartFromSlot_slotNumber;
+        }
+        leaf rollbackSlot {
+          mandatory true;
+          description "If restart fails due to new defined slot number, GRU04 will autonomously restart to slot defined with rollbackSlot parameter.\nIf action is executed successfully, result is empty string.\nIf action failed, result is string with explanation.\nAction fails in following cases:\n- Executed on node with connected GNSS receiver of older generation than GRU04.\n- GRU04 is connected to node, but node has no control over GRU04.";
+          type erienmnrmrsyncgnssinfo:ddt-GnssInfo_gnssReceiverRestartFromSlot_rollbackSlot;
+        }
+        leaf action {
+          mandatory true;
+          description "Set action to initiate reset.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action gnssReceiverRestart {
+      description "Initiate restart of connected GNSS receiver.\n\nAction can be executed if GPS02, GPS03 or GRU04 receiver is connected to node.";
+      input {
+        leaf action {
+          mandatory true;
+          description "Set action to initiate reset.\nIf action is executed successfully, result is empty string.\nIf action failed, result is string with explanation.\nAction fails if executed on node which has:\n- GPS01 connected.\n- GPS02, GPS03 or GRU04 connected, but there is no control path towards GNSS receiver.\n- GRU04 connected, but there is no control over GNSS receiver.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action gnssReceiverReset {
+      description "Initiate reset of connected GNSS receiver.";
+      input {
+        leaf slotNumber {
+          mandatory true;
+          description "GRU firmware slot number is used to restart GRU on particular firmware revision.";
+          type erienmnrmrsyncgnssinfo:ddt-GnssInfo_gnssReceiverReset_slotNumber;
+          default 0;
+        }
+        leaf action {
+          mandatory true;
+          description "Set action to execute to initiate reset.";
+          type string;
+        }
+      }
+    }
+    action getGnssReceiverControl {
+      description "Give node control of GNSS receiver.";
+      input {
+        leaf action {
+          mandatory true;
+          description "Set action to get or release control of GNSS receiver.\nIf action is executed successfully, result is empty string.\nIf action failed, result is string with explanation.\nAction fails in following cases:\n- Executed on node with connected GNSS receiver of older generation than GRU04.\n- GRU04 is connected to node, but node has no control over GRU04.";
+          type erienmnrmrsyncgnssinfo:enum-GnssRecControlAction;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action gnssReceiverResurvey {
+      description "Enable or disable automatic self-resurvey, or perform manual self-resurvey on connected GNSS receiver.";
+      input {
+        leaf noOfSatellites {
+          mandatory true;
+          description "noOfSatellites can be in range 4..24, and is used only when action is set to execute.\nIf action is executed successfully, result is empty string.\nIf action failed, result is string with explanation.";
+          type erienmnrmrsyncgnssinfo:ddt-GnssInfo_gnssReceiverResurvey_noOfSatellites;
+          default 4;
+        }
+        leaf action {
+          mandatory true;
+          description "Selects action to perform.";
+          type erienmnrmrsyncgnssinfo:enum-GnssReceiverResurveyAction;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+  } // end 'grouping moc-GnssInfo'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrsyncsynchronization:Synchronization/erienmnrmrsynctimesyncio:TimeSyncIO {
+    list GnssInfo {
+      key id;
+      max-elements 1;
+      description "Represents connected GNSS receiver status, satellite systems used, synchronization to satellites and satellite visibility details.";
+      erienmyext:enm-type MOC;
+      uses moc-GnssInfo-keys;
+      container attributes {
+        description "Attributes for GnssInfo";
+        uses moc-GnssInfo;
+      } // end 'container attributes'
+    } // end 'list GnssInfo'
+  }
+}

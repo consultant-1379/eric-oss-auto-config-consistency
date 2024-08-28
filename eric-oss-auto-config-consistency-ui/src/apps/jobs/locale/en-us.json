@@ -1,0 +1,21 @@
+{
+  "JOBS": "Jobs",
+  "ZERO_JOBS": "No jobs created",
+  "VIEW_EXECUTIONS": "View Executions",
+  "DELETE": "Delete",
+  "DELETE_JOB": "Delete Job",
+  "CONFIRM_DELETE": "Confirm Delete Job",
+  "DELETE_JOB_MESSAGE": "Are you sure you want to permanently delete the job",
+  "DELETED_SUCCESS_MESSAGE": "was deleted.",
+  "DELETED_FAILURE_MESSAGE": "Unable to delete",
+  "DELETE_FAILURE_GENERIC_DESCRIPTION": "Internal Server Error. Try again or contact the system administrator.",
+  "DELETE_FAILURE_404_DESCRIPTION": "Job could not be found or no longer exists.",
+  "JOB_NAME": "Job Name",
+  "SCHEDULE": "Schedule",
+  "RULESET_NAME": "Ruleset",
+  "SCOPE_NAME": "Scope",
+  "CREATE_JOB": "Create Job",
+  "UPDATE_JOB": "Update Job",
+  "REST_403_DESCRIPTION": "Your role does not allow you to perform this operation. Contact the System Administrator to change your access rights.",
+  "ACCESS_DENIED": "Access Denied"
+}

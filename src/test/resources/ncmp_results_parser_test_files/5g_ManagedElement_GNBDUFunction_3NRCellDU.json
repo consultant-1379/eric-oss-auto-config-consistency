@@ -1,0 +1,49 @@
+{
+  "ManagedElement":
+  [
+    {
+      "id": "NR01gNodeBRadio00007",
+      "attributes":
+      {
+        "dnPrefix": "test"
+      },
+      "GNBDUFunction":
+      [
+        {
+          "id": "1",
+          "attributes":
+          {
+            "endpointResDepHEnabled": "true"
+          },
+          "NRCellDU":
+          [
+            {
+              "id": "NR01gNodeBRadio00007-1",
+              "attributes":
+              {
+                "drxEnable": "true",
+                "csiRsShiftingPrimary": "DEACTIVATED"
+              }
+            },
+            {
+              "id": "NR01gNodeBRadio00007-2",
+              "attributes":
+              {
+                "drxEnable": "true",
+                "csiRsShiftingPrimary": "DEACTIVATED"
+              }
+            },
+            {
+              "id": "NR01gNodeBRadio00007-3",
+              "attributes":
+              {
+                "drxEnable": "true",
+                "csiRsShiftingPrimary": "DEACTIVATED"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

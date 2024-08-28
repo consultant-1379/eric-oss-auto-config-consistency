@@ -1,0 +1,123 @@
+module ericsson-enm-ReqAasData {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqAasData;
+  prefix erienmnrmreqaasdata;
+  yexte:ecim-name ReqAasData;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqTransceiver {
+    prefix erienmnrmreqtransceiver;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-AntSegmentationType {
+    description "Antenna Segmentation requested for an embedded array antenna module.";
+    type enumeration {
+      enum AUTO {
+        description "Automatic antenna segmentation selection.";
+        value 0;
+      }
+      enum WHOLE_100 {
+        description "Entire array without segmentation.";
+        value 1;
+      }
+      enum SPLIT_H_50_50 {
+        description "Split array evenly 50/50 horizontally top-down";
+        value 2;
+      }
+      enum SPLIT_V_50_50 {
+        description "Split array evenly 50/50 vertically left-to-right";
+        value 3;
+      }
+      enum SPLIT_H_75_25 {
+        description "Split array 75/25 horizontally top-down ";
+        value 4;
+      }
+      enum SPLIT_V_75_25 {
+        description "Split array 75/25 vertically left-to-right";
+        value 5;
+      }
+      enum SPLIT_H_50_25_25 {
+        description "Split array 50/25/25 horizontally top-down";
+        value 6;
+      }
+      enum SPLIT_V_50_25_25 {
+        description "Split array 50/25/25 vertically left-to-right";
+        value 7;
+      }
+      enum SPLIT_H_25_25_25_25 {
+        description "Split array 25/25/25/25 horizontally top-down";
+        value 8;
+      }
+      enum SPLIT_V_25_25_25_25 {
+        description "Split array 25/25/25/25 vertically left-to-right";
+        value 9;
+      }
+      enum AUTO_SPLIT {
+        description "Automatic split selection based on majority coverage (sector) shapes.";
+        value 10;
+      }
+    }
+  }
+  grouping moc-AasData-keys {
+    description "Key(s) for MOC AasData";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name aasDataId;
+      type string;
+    }
+  } // end 'grouping moc-AasData-keys'
+  grouping moc-AasData {
+    description "This MO contains configuration parameters for the Array Antenna Module in an AAS radio.";
+    leaf usedAntSegmentation {
+      erienmyext:no-notification;
+      config false;
+      description "Selected antenna segmentation for an embedded array antenna module.";
+      type erienmnrmreqaasdata:enum-AntSegmentationType;
+    }
+    leaf antSegmentation {
+      description "Antenna Segmentation requested for an embedded array antenna module. usedAntSegmentation shows the antenna segmentation in use.";
+      yexte:takes-effect "Next SectorEquipmentFunction Unlock.";
+      yexte:dependencies "Only takes effect in AAS radio equipment supporting configurable embedded array antenna module.\nSelect a value supported by installed radio equipment. Refer to CPI for installed radio equipment for exact bandwidth, maximum number of supported carriers and Equivalent Isotropically Radiated Power (EIRP) per antenna segmentation.";
+      type erienmnrmreqaasdata:enum-AntSegmentationType;
+      default AUTO;
+    }
+  } // end 'grouping moc-AasData'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqtransceiver:Transceiver {
+    list AasData {
+      key id;
+      max-elements 1;
+      description "This MO contains configuration parameters for the Array Antenna Module in an AAS radio.";
+      erienmyext:enm-type MOC;
+      uses moc-AasData-keys;
+      container attributes {
+        description "Attributes for AasData";
+        uses moc-AasData;
+      } // end 'container attributes'
+    } // end 'list AasData'
+  }
+}

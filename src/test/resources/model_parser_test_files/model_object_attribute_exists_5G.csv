@@ -1,0 +1,31 @@
+ModelObjectName:AttributeName:Exists
+AdmissionControl:admissionPrioThreshold:false
+#Comment-This is not available in version of model used for tests
+AnrFunction:removeFreqRelTime:false
+AnrFunction:removeNrelTime:true
+#Comment-This is not available in version of model used for tests
+CommonBeamforming:ssbBeams:false
+CommonBeamforming:digitalPan:true
+DataRadioBearer:tStatusProhibitUl:true
+#Comment-This is not available in version of model usedfor tests
+ExternalENodeBFunction:isRemoveAllowed:false
+ExternalENodeBFunction:userLabel:true
+#Comment-This is not available in version of model used for tests
+ExternalGNBCUCPFunction:isRemoveAllowed:false
+GNBDUFunction:ulBbCapacityMaxLimit:true
+#Comment-This is not available in version of model used for tests
+GNBCUCPFunction:tXnDcOverall:false
+GNBCUCPFunction:tDcOverall:true
+GNBCUUPFunction:dcDlAggActTime:true
+#Comment-This is not available in version of model used for tests
+McfbCellProfile:rejectVoiceIncHoAtEpsFb:false
+McfbCellProfile:triggerQuantity:true
+##Comment-This is not available in version of model used for tests
+NRCellCU:hiPrioDetEnabled:false
+NRCellCU:mcpcPSCellEnabled:true
+NRCellCU:DoesNotExist:false
+NRCellDU:dftSOfdmPuschEnabled:true
+QciProfileEndcConfigExt:initialUplinkConf:true
+#Comment-This is not available in version of model used for tests
+Rrc:t319:false
+Rrc:t310:true

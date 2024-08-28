@@ -1,0 +1,153 @@
+module ericsson-enm-ReqExternalNode {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqExternalNode;
+  prefix erienmnrmreqexternalnode;
+  yexte:ecim-name ReqExternalNode;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 3;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-ApcSupportSystemControl {
+    type enumeration {
+      enum FALSE {
+        description "This node does not control the support system.  ";
+        value 0;
+      }
+      enum TRUE {
+        description "This node controls the support system.  ";
+        value 1;
+      }
+      enum NOT_AVAILABLE {
+        description "The value is used if information is currently not available.  ";
+        value 2;
+      }
+    }
+  }
+  typedef enum-ApcRadioAccessTechnology {
+    type enumeration {
+      enum NOT_AVAILABLE {
+        description "The value is used if information is currently not available.";
+        value 0;
+      }
+      enum GSM {
+        value 1;
+      }
+      enum WCDMA {
+        value 2;
+      }
+      enum LTE {
+        value 3;
+      }
+      enum MULTI_STANDARD {
+        value 4;
+      }
+      enum TRANSMISSION {
+        description "TRANSMISSION is RAT-type used to identify MINI-LINK equipment.";
+        value 5;
+      }
+    }
+  }
+  typedef ddt-ReqExternalNode_ExternalNode_logicalName {
+    type string {
+      length 1..255;
+    }
+  }
+  typedef ddt-ReqExternalNode_ExternalNode_fullDistinguishedName {
+    type string {
+      length 1..255;
+    }
+  }
+  grouping moc-ExternalNode-keys {
+    description "Key(s) for MOC ExternalNode";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name externalNodeId;
+      type string;
+    }
+  } // end 'grouping moc-ExternalNode-keys'
+  grouping moc-ExternalNode {
+    description "MO ExternalNode in a node represents an external node sharing resources (climate, power and external alarm hardware) with it and possibly other external nodes. A node here is understood as node with ManagedElement as top MO. \n\nWhere the node acts in a primary role:\n- ExternalNode MO instances represent every external secondary role node. \n- Number of ExternalNode MOs must match number of external nodes.\n- Child MO EcPort is used to configure the termination point for inter-node communication. (Has no function for non-EcBus inter-node communication)\n- Attribute inciConnectorRef points to termination point for the inter-node communication.\n- Attribute equipmentSupportFunctionRef points to an EquipmentSupportFunction MO instance that correlates the ExternalNode to belong to a primary role node. \n\nWhere the node acts in a secondary role:\n- ExternalNode MO instances represent external neighbouring primary and secondary role node(s).\n- MO ExternalNode is optional in case of inter-node communication over the EC-bus.\n- Child MO EcPort has no function.\n- Attribute inciConnectorRef points to termination point for the inter-node communication.\n- Attribute equipmentSupportFunctionRef points to an EquipmentSupportFunction MO instance that correlate the ExternalNode MO to belong to a secondary role node.";
+    leaf supportSystemControl {
+      config false;
+      description "Support system control on MO EquipmentSupportFunction in external node. NOT_AVAILABLE is used when no information is available from the external node.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqexternalnode:enum-ApcSupportSystemControl;
+    }
+    leaf fullDistinguishedName {
+      config false;
+      description "Full Distinguished Name (FDN) on MO ManagedElement in external node. Undefined value, an empty string, is used for node that has no configured fullDistinguishedName, such as a GSM node. NOT AVAILABLE is used when no information is available from external node. For MULTI_STANDARD node the FDN is derived from attributes dnPrefix and managedElementId.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqexternalnode:ddt-ReqExternalNode_ExternalNode_fullDistinguishedName;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      yexte:takes-effect Immediately;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf logicalName {
+      config false;
+      description "Logical name on MO ManagedElement in external node. Undefined value, an empty string, is used for node that has no configured logicalName. NOT AVAILABLE is used when no information is available from external node. NOT_AVAILABLE is also used for MULTI_STANDARD node which doesn't have a logical name on MO ManagedElement.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqexternalnode:ddt-ReqExternalNode_ExternalNode_logicalName;
+    }
+    leaf equipmentSupportFunctionRef {
+      description "Reference to the EquipmentSupportFunction MO where the MO ExternalNode belongs.";
+      yexte:takes-effect Immediately;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf radioAccessTechnology {
+      config false;
+      description "Radio access technology that external node can support. NOT_AVAILABLE used if no information is available from the external node. When external node can run more than one standard, set to MULTI_STANDARD.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqexternalnode:enum-ApcRadioAccessTechnology;
+    }
+    leaf informationOnly {
+      description "Indicates if the MO data is only for informational purposes or for configuration purposes.\n\nWhen set to true, the MO contains read-only data about the external nodes. The number of MO ExternalNode does not have to match the actual number of external nodes. The MO attributes are populated with data if a corresponding external node exists.\n\nWhen set to false, the MO contains configuration data such as MO EcPort. The MO ExternalNode number must match the actual number of external nodes. ";
+      type boolean;
+      default false;
+    }
+    leaf inciConnectorRef {
+      description "Reference to the MOC that provides the inter node communication towards the external node. The MOC is an instance of MOC FieldReplaceableUnit or EcBus.\nFor an ExternalNode MO representing another secondary role node in a secondary role node, the attribute points to the ExternalNode MO instance that represents the primary role.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-ExternalNode'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list ExternalNode {
+      key id;
+      description "MO ExternalNode in a node represents an external node sharing resources (climate, power and external alarm hardware) with it and possibly other external nodes. A node here is understood as node with ManagedElement as top MO. \n\nWhere the node acts in a primary role:\n- ExternalNode MO instances represent every external secondary role node. \n- Number of ExternalNode MOs must match number of external nodes.\n- Child MO EcPort is used to configure the termination point for inter-node communication. (Has no function for non-EcBus inter-node communication)\n- Attribute inciConnectorRef points to termination point for the inter-node communication.\n- Attribute equipmentSupportFunctionRef points to an EquipmentSupportFunction MO instance that correlates the ExternalNode to belong to a primary role node. \n\nWhere the node acts in a secondary role:\n- ExternalNode MO instances represent external neighbouring primary and secondary role node(s).\n- MO ExternalNode is optional in case of inter-node communication over the EC-bus.\n- Child MO EcPort has no function.\n- Attribute inciConnectorRef points to termination point for the inter-node communication.\n- Attribute equipmentSupportFunctionRef points to an EquipmentSupportFunction MO instance that correlate the ExternalNode MO to belong to a secondary role node.";
+      erienmyext:enm-type MOC;
+      uses moc-ExternalNode-keys;
+      container attributes {
+        description "Attributes for ExternalNode";
+        uses moc-ExternalNode;
+      } // end 'container attributes'
+    } // end 'list ExternalNode'
+  }
+}

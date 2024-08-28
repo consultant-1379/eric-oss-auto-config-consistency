@@ -1,0 +1,214 @@
+module ericsson-enm-RcsSwIM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsSwIM;
+  prefix erienmnrmrcsswim;
+  yexte:ecim-name RcsSwIM;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 3;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC \n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)\n\n";
+    type string {
+      length 19..31;
+    }
+  }
+  grouping struct-ProductData {
+    description "Represents an Ericsson software product.\nThe product name, product number, and product revision represent product information stored in PRIM realization part.";
+    leaf productionDate {
+      description "Production date of the product.";
+      type erienmnrmrcsswim:ddt-DateTime;
+      mandatory true;
+    }
+    leaf description {
+      description "Free text description of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "Product number of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf type {
+      description "Free text description of the product type.";
+      type string;
+      mandatory true;
+    }
+    leaf productName {
+      description "Name of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "Revision state of the product.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-ProductData'
+  grouping moc-SwInventory-keys {
+    description "Key(s) for MOC SwInventory";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name swInventoryId;
+      type string;
+    }
+  } // end 'grouping moc-SwInventory-keys'
+  grouping moc-SwInventory {
+    description "A singleton class, the purpose of which is only structural.";
+    leaf userLabel {
+      description "A label for free usage.";
+      type string;
+    }
+    leaf-list active {
+      min-elements 1;
+      config false;
+      description "A reference to the active software version of a software domain. \nThe software of a managed element can be structured into more than one software domain. The active software versions control the behavior of the managed element .";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-SwInventory'
+  grouping moc-SwItem-keys {
+    description "Key(s) for MOC SwItem";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of RDN.";
+      mandatory true;
+      yexte:ecim-name swItemId;
+      type string;
+    }
+  } // end 'grouping moc-SwItem-keys'
+  grouping moc-SwItem {
+    description "A software item holds information about an executable software product.\nA software item can also represent a container product that contains other software items, which represent a subordinate container and/or executable software products.";
+    container administrativeData {
+      description "The software item product identification.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsswim:struct-ProductData;
+    } // end 'container administrativeData'
+    leaf userLabel {
+      description "A label for free usage.";
+      type string;
+    }
+    leaf additionalInfo {
+      config false;
+      description "Describes any additional relevant aspects of the software item.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list consistsOf {
+      min-elements 0;
+      config false;
+      description "Describes a hierarchical relationship between software items.\nAn empty value indicates that the current software item is not a container that includes subordinate software items.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-SwItem'
+  grouping moc-SwVersion-keys {
+    description "Key(s) for MOC SwVersion";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name swVersionId;
+      type string;
+    }
+  } // end 'grouping moc-SwVersion-keys'
+  grouping moc-SwVersion {
+    description "An MO of this class represents the software version of a domain of the software.\nIf there is only one software domain, the MO represents the overall version of the managed element.";
+    container administrativeData {
+      description "The software version product identification.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsswim:struct-ProductData;
+    } // end 'container administrativeData'
+    leaf userLabel {
+      description "A label for free usage.";
+      type string;
+    }
+    leaf timeOfDeactivation {
+      config false;
+      description "Indicates the time when the software version was deactivated. \nIf no time is shown, the current software version is not deactivated.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsswim:ddt-DateTime;
+    }
+    leaf-list consistsOf {
+      min-elements 0;
+      config false;
+      description "List of references to the software items of which the software version consists.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf timeOfInstallation {
+      config false;
+      description "Indicates the time the software version was installed.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsswim:ddt-DateTime;
+    }
+    leaf timeOfActivation {
+      config false;
+      description "Indicates the time when the software version was activated. \nIf no time is shown, the current software version is not activated.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsswim:ddt-DateTime;
+    }
+  } // end 'grouping moc-SwVersion'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list SwInventory {
+      key id;
+      max-elements 1;
+      description "A singleton class, the purpose of which is only structural.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SwInventory-keys;
+      container attributes {
+        description "Attributes for SwInventory";
+        uses moc-SwInventory;
+      } // end 'container attributes'
+    } // end 'list SwInventory'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcsswim:SwInventory {
+    list SwItem {
+      key id;
+      description "A software item holds information about an executable software product.\nA software item can also represent a container product that contains other software items, which represent a subordinate container and/or executable software products.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SwItem-keys;
+      container attributes {
+        description "Attributes for SwItem";
+        uses moc-SwItem;
+      } // end 'container attributes'
+    } // end 'list SwItem'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcsswim:SwInventory {
+    list SwVersion {
+      key id;
+      description "An MO of this class represents the software version of a domain of the software.\nIf there is only one software domain, the MO represents the overall version of the managed element.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SwVersion-keys;
+      container attributes {
+        description "Attributes for SwVersion";
+        uses moc-SwVersion;
+      } // end 'container attributes'
+    } // end 'list SwVersion'
+  }
+}

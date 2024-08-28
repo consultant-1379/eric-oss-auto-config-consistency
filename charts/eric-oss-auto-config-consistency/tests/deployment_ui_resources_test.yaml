@@ -1,0 +1,60 @@
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+suite: Verify UI container resources are allocated.
+
+templates:
+  - deployment.yaml
+tests:
+  - it: When EACC is deployed with its default configuration, then UI container resources are set (real Values.yaml).
+    asserts:
+      - isKind:
+          of: Deployment
+      #
+      #     UI container resources are set based on the requested and limit values
+      ######################################################################################
+      - equal:
+          path: spec.template.spec.containers[1].resources
+          value:
+            requests:
+              cpu: 125m
+              memory: 320Mi
+            limits:
+              cpu: 500m
+              memory: 976Mi
+
+
+  - it: When EACC is deployed with resource values overridden, then UI container resources are set (empheral-storage is set too).
+    values:
+      - ui_image_test_values/image_resource_values.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      #
+      #     UI container resources are set based on the requested values
+      ######################################################################################
+      - equal:
+          path: spec.template.spec.containers[1].resources
+          value:
+            requests:
+              cpu: 10m
+              memory: 320Mi
+              ephemeral-storage: "storage"
+            limits:
+              cpu: 500m
+              memory: 976Mi
+              ephemeral-storage: "storage"
+

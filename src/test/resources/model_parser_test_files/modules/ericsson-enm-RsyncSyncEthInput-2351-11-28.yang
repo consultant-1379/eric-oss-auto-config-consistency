@@ -1,0 +1,247 @@
+module ericsson-enm-RsyncSyncEthInput {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RsyncSyncEthInput;
+  prefix erienmnrmrsyncsyncethinput;
+  yexte:ecim-name RsyncSyncEthInput;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-RsyncSynchronization {
+    prefix erienmnrmrsyncsynchronization;
+  }
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-SyncEthStatus {
+    description "Synchronous Ethernet status for used Ethernet port.";
+    type enumeration {
+      enum UNKNOWN {
+        description "No status information available.";
+        value 0;
+      }
+      enum NO_FAULT {
+        description "No fault detected.";
+        value 1;
+      }
+      enum NO_SUPPORT_SFP_CAT_X_CABLE {
+        description "SFP-RJ45 electrical cable not supported.";
+        value 2;
+      }
+      enum LOSS_OF_SIGNAL {
+        description "Signal not received.";
+        value 3;
+      }
+      enum LOSS_OF_ESMC {
+        description "No valid ESMC-PDU detected within five seconds.";
+        value 4;
+      }
+      enum RJ45_1000_BASE_T_NOT_SLAVE {
+        description "Ethernet port configured as sync reference is not in slave state.";
+        value 5;
+      }
+    }
+  }
+  typedef enum-SyncEthPhysical {
+    description "Type of connected physical cable.";
+    type enumeration {
+      enum SFP_UNKNOWN {
+        value 0;
+      }
+      enum SFP_DAC {
+        value 1;
+      }
+      enum SFP_OPTICAL {
+        value 2;
+      }
+      enum SFP_CAT_X_CABLE {
+        description "SFP-RJ45 electrical cable.";
+        value 3;
+      }
+      enum CAT_X_CABLE {
+        value 4;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  grouping moc-SyncEthInput-keys {
+    description "Key(s) for MOC SyncEthInput";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name syncEthInputId;
+      type string;
+    }
+  } // end 'grouping moc-SyncEthInput-keys'
+  grouping moc-SyncEthInput {
+    description "Represents synchronous Ethernet properties of Ethernet interface configured for synchronization.";
+    leaf encapsulation {
+      description "Reference to the underlying encapsulation.\nMust be EthernetPort MO.";
+      mandatory true;
+      yexte:dependencies "Two or more SyncEthInput MOs cannot refer to same EthernetPort MO.\nAttribute encapsulation of SyncEthInput MO can only refer to EthernetPort MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf numberCascadedEec {
+      erienmyext:no-notification;
+      config false;
+      description "Number of cascaded EECs from the nearest SSU/PRC/ePRC.";
+      type uint8;
+    }
+    leaf syncEthStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Status of port.";
+      type erienmnrmrsyncsyncethinput:enum-SyncEthStatus;
+    }
+    leaf numberCascadedEnhancedEec {
+      erienmyext:no-notification;
+      config false;
+      description "Number of cascaded eEECs from the nearest SSU/PRC/ePRC.";
+      type uint8;
+    }
+    leaf receivedSsmCode {
+      erienmyext:no-notification;
+      config false;
+      description "Synchronization Status Messages code.";
+      type string;
+    }
+    leaf syncEMasterId {
+      erienmyext:no-notification;
+      config false;
+      description "SyncE Master ID.";
+      type string;
+    }
+    leaf syncEthPhysical {
+      erienmyext:no-notification;
+      config false;
+      description "Type of connected physical cable.";
+      type erienmnrmrsyncsyncethinput:enum-SyncEthPhysical;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf mixedEecEnhancedEec {
+      erienmyext:no-notification;
+      config false;
+      description "Specifies whether chain is mixed EEC/eEEC.";
+      type boolean;
+    }
+    leaf partialChain {
+      erienmyext:no-notification;
+      config false;
+      description "Specifies whether chain is incomplete.";
+      type boolean;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmrsyncsyncethinput:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmrsyncsyncethinput:enum-OperState;
+    }
+  } // end 'grouping moc-SyncEthInput'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrsyncsynchronization:Synchronization {
+    list SyncEthInput {
+      key id;
+      max-elements 8;
+      description "Represents synchronous Ethernet properties of Ethernet interface configured for synchronization.";
+      erienmyext:enm-type MOC;
+      uses moc-SyncEthInput-keys;
+      container attributes {
+        description "Attributes for SyncEthInput";
+        uses moc-SyncEthInput;
+      } // end 'container attributes'
+    } // end 'list SyncEthInput'
+  }
+}

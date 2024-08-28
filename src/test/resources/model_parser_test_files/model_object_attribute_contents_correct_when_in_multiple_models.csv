@@ -1,0 +1,14 @@
+ModuleName:ModuleVersion:ModelObjectName:AttributeName:Type:DataType:ValueConstraint:TakesEffect:PreCondition
+ericsson-enm-Lrat:2351-11-28:AnrFunction:removeNrelTime:leaf:int32:1..1000::
+ericsson-enm-GNBCUCP:2351-11-28:AnrFunction:removeNrelTime:leaf:int32:1..1000::
+ericsson-enm-Lrat:2351-11-28:ExternalENodeBFunction:userLabel:leaf:string:length 1..128::
+ericsson-enm-GNBCUCP:2351-11-28:ExternalENodeBFunction:userLabel:leaf:string:length 1..128::
+ericsson-enm-GNBDU:2351-11-28:DataRadioBearer:dlMaxRetxThreshold:leaf:int32:1..1 | 2..2 | 3..3 | 4..4 | 6..6 | 8..8 | 16..16 | 32..32:New connection:
+ericsson-enm-Lrat:2351-11-28:DataRadioBearer:dlMaxRetxThreshold:leaf:int32:1..1 | 2..2 | 3..3 | 4..4 | 6..6 | 8..8 | 16..16 | 32..32:Cell lock/unlock:
+
+
+
+
+
+
+

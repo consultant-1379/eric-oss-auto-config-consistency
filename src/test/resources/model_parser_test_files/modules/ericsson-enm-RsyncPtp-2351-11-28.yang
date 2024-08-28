@@ -1,0 +1,561 @@
+module ericsson-enm-RsyncPtp {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RsyncPtp;
+  prefix erienmnrmrsyncptp;
+  yexte:ecim-name RsyncPtp;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-ClockStatus {
+    description "Clock status.";
+    type enumeration {
+      enum NO_FAULT {
+        description "No fault detected.";
+        value 0;
+      }
+      enum PDV_PROBLEM {
+        description "Too many Packet Delay Variation (PDV) in network.";
+        value 1;
+      }
+      enum CLOCK_CLASS {
+        description "Received clock class is not good enough for synchronization.";
+        value 2;
+      }
+      enum CLOCK_ACCURACY {
+        description "Received clock accuracy is not good enough for synchronization.";
+        value 3;
+      }
+      enum TIME_NOT_TRACEABLE {
+        description "Time is not traceable to primary time reference clock.";
+        value 4;
+      }
+      enum TIME_SCALE_NOT_PTP {
+        description "Time scale is not PTP from primary time reference clock.";
+        value 5;
+      }
+      enum ERRATIC_SYNC {
+        description "Synchronization messages arriving irregularly, but not totally missing. Could indicate packet loss in network.";
+        value 6;
+      }
+      enum LOW_ANNOUNCE_RATE {
+        description "Too few announce messages received per second.";
+        value 7;
+      }
+      enum LOW_SYNC_RATE {
+        description "Too few sync messages received per time interval.";
+        value 8;
+      }
+      enum LOW_DELAY_REQ_RATE {
+        description "Allowed delay request rate indicated from master is too low.";
+        value 9;
+      }
+      enum LOW_DELAY_RSP_RATE {
+        description "Too few delay response messages received per second.";
+        value 10;
+      }
+      enum NO_ANNOUNCE {
+        description "No announce messages are detected.";
+        value 11;
+      }
+      enum NO_SYNC {
+        description "No synchronization messages are detected.";
+        value 12;
+      }
+      enum NO_DELAY_RSP {
+        description "No delay response messages are detected.";
+        value 13;
+      }
+      enum NO_MESSAGES {
+        description "No messages are detected. Check ptpPortStatus attribute in PtpBcOcPort MO for PTP port information.";
+        value 14;
+      }
+      enum UNKNOWN {
+        description "Status information not available.";
+        value 15;
+      }
+    }
+  }
+  typedef enum-ClockAccuracy {
+    description "Available clock accuracy types.\n\nClock accuracy characterizes clock for purpose of Best Master Clock (BMC) algorithm.";
+    type enumeration {
+      enum CLOCK_ACCURACY_25NS {
+        value 32;
+      }
+      enum CLOCK_ACCURACY_100NS {
+        value 33;
+      }
+      enum CLOCK_ACCURACY_250NS {
+        value 34;
+      }
+      enum CLOCK_ACCURACY_1US {
+        value 35;
+      }
+      enum CLOCK_ACCURACY_2500NS {
+        value 36;
+      }
+      enum CLOCK_ACCURACY_10US {
+        value 37;
+      }
+      enum CLOCK_ACCURACY_25US {
+        value 38;
+      }
+      enum CLOCK_ACCURACY_100US {
+        value 39;
+      }
+      enum CLOCK_ACCURACY_250US {
+        value 40;
+      }
+      enum CLOCK_ACCURACY_1MS {
+        value 41;
+      }
+      enum CLOCK_ACCURACY_2500US {
+        value 42;
+      }
+      enum CLOCK_ACCURACY_10MS {
+        value 43;
+      }
+      enum CLOCK_ACCURACY_25MS {
+        value 44;
+      }
+      enum CLOCK_ACCURACY_100MS {
+        value 45;
+      }
+      enum CLOCK_ACCURACY_250MS {
+        value 46;
+      }
+      enum CLOCK_ACCURACY_1S {
+        value 47;
+      }
+      enum CLOCK_ACCURACY_10S {
+        value 48;
+      }
+      enum CLOCK_ACCURACY_MORETHAN_10S {
+        value 49;
+      }
+      enum CLOCK_ACCURACY_UNKNOWN {
+        value 254;
+      }
+      enum CLOCK_ACCURACY_RESERVED {
+        value 255;
+      }
+    }
+  }
+  typedef enum-BcOcClockType {
+    description "Type of PTP clock.";
+    type enumeration {
+      enum GRAND_MASTER_ORDINARY_CLOCK {
+        description "PTP clock that only operates as Grand Master.";
+        value 0;
+      }
+      enum BOUNDARY_CLOCK {
+        description "PTP clock that operates as Boundary Clock.";
+        value 1;
+      }
+      enum SLAVE_ONLY_ORDINARY_CLOCK {
+        description "PTP clock that only operates as slave-only ordinary clock.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-PtpProfile {
+    description "PTP profile type.";
+    type enumeration {
+      enum IEEE_1588_J3 {
+        description "Since 17.Q4. Planned to be removed.\n\nDefault profile based on IEEE1588-2008 appendix J3.\n\nSelecting this profile requires that ptpMulticastAddress attribute in PtpBcOcPort MO must be set according to network planning.";
+        status deprecated;
+        value 1;
+      }
+      enum G_8275_1 {
+        description "Telecom profile for time synchronization according to G.8275.1.\n\nSelecting this profile requires that ptpMulticastAddress attribute in PtpBcOcPort MO must be set according to network planning.";
+        value 2;
+      }
+      enum G_8265_1 {
+        description "Telecom profile for frequency synchronization according to G.8265.1.\n\nSelecting this profile requires that associated grandmaster attribute in PtpBcOcPort MO must be set.";
+        value 3;
+      }
+      enum G_8275_2 {
+        description "Telecom profile for assisted partial time support, according to G.8275.2.\n\nSelecting this profile requires that associated grandmaster attribute in PtpBcOcPort MO must be set.";
+        value 4;
+      }
+      enum IEEE_1588_TIME_DEFAULT {
+        description "Default profile based on IEEE1588-2008 appendix J3 with packet rate of 8 event packets per seconds.\n\nSelecting this profile requires that ptpMulticastAddress attribute in PtpBcOcPort MO must be set according to network planning.";
+        value 5;
+      }
+      enum IEEE_1588_TIME_SLOW {
+        description "Default profile based on IEEE1588-2008 appendix J3 with packet rate of 64 event packets per second and long locking time.\n\nSelecting this profile requires that ptpMulticastAddress attribute in PtpBcOcPort MO must be set according to network planning.";
+        value 6;
+      }
+    }
+  }
+  typedef enum-TimeSource {
+    description "Indicates the source of time used by the grandmaster clock.";
+    type enumeration {
+      enum ATOMIC_CLOCK {
+        value 16;
+      }
+      enum GPS {
+        value 32;
+      }
+      enum TERRESTRIAL_RADIO {
+        value 48;
+      }
+      enum PTP {
+        value 64;
+      }
+      enum NTP {
+        value 80;
+      }
+      enum HAND_SET {
+        value 96;
+      }
+      enum OTHER {
+        value 144;
+      }
+      enum INTERNAL_OSCILLATOR {
+        value 160;
+      }
+    }
+  }
+  typedef ddt-RsyncPtp_BoundaryOrdinaryClock_priority2 {
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-RsyncPtp_BoundaryOrdinaryClock_priority1 {
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-TimeInterval {
+    description "Type of time interval.";
+    type int64;
+  }
+  typedef ddt-ClockClass {
+    description "The type of clock class.";
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-ClockDomain {
+    description "Type of clock domain number.\n\nDomain consists of one or more PTP devices communicating with each other as defined by protocol. Domain defines scope of PTP message communication, state, operations, data sets, and time scale.";
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-ClockPriority {
+    description "Type of clock priority.";
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-RsyncPtp_BoundaryOrdinaryClock_domainNumber {
+    type uint8 {
+      range 0..255;
+    }
+  }
+  grouping struct-DefaultDS {
+    description "Attributes related with default dataset to describe local clock.";
+    leaf clockClass {
+      description "Clock class.";
+      type erienmnrmrsyncptp:ddt-ClockClass;
+      mandatory true;
+    }
+    leaf clockAccuracy {
+      description "Accuracy of clock.";
+      type erienmnrmrsyncptp:enum-ClockAccuracy;
+      mandatory true;
+    }
+    leaf offsetScaledLogVariance {
+      description "Stability of clock.";
+      type uint16;
+      mandatory true;
+    }
+    leaf clockIdentity {
+      description "String with hexadecimal words representing identity of PTP device.";
+      type string;
+      mandatory true;
+    }
+    leaf priority2 {
+      description "priority2 attribute value used in execution of BMC algorithm.";
+      type erienmnrmrsyncptp:ddt-ClockPriority;
+      mandatory true;
+    }
+    leaf domainNumber {
+      description "Domain number of clock.";
+      type erienmnrmrsyncptp:ddt-ClockDomain;
+      mandatory true;
+    }
+    leaf slaveOnly {
+      description "Whether clock is slave-only.";
+      type boolean;
+      mandatory true;
+    }
+    leaf priority1 {
+      description "priority1 attribte value used in execution of BMC algorithm.";
+      type erienmnrmrsyncptp:ddt-ClockPriority;
+      mandatory true;
+    }
+    leaf numberPorts {
+      description "Number of PTP ports on clock. For ordinary clock, value is 1.";
+      type uint16;
+      mandatory true;
+    }
+    leaf twoStepFlag {
+      description "Whether clock is one-step clock or two-step clock.";
+      type boolean;
+      mandatory true;
+    }
+  } // end 'grouping struct-DefaultDS'
+  grouping struct-TimePropertiesDS {
+    description "Attributes related with time properties dataset to describe local clock.";
+    leaf currentUtcOffsetValid {
+      description "Whether timePropertiesDS.currentUtcOffset is known to be correct.";
+      type boolean;
+      mandatory true;
+    }
+    leaf leap59 {
+      description "Last minute of current UTC day contains 59 seconds in case PTP time epoch is used.";
+      type boolean;
+      mandatory true;
+    }
+    leaf frequencyTraceable {
+      description "Whether frequency determining timescale is traceable to primary reference.";
+      type boolean;
+      mandatory true;
+    }
+    leaf timeTraceable {
+      description "Whether time and timescale are traceable to primary reference clock.";
+      type boolean;
+      mandatory true;
+    }
+    leaf currentUtcOffset {
+      description "UTC offset.\n\nWhen epoch is PTP, it is possible to calculate UTC time using value of currentUtcOffset.\n\nValue of currentUtcOffset is as follows:\ncurrentUtcOffset = TAI - UTC.";
+      type int16;
+      mandatory true;
+    }
+    leaf leap61 {
+      description "Last minute of current UTC day contains 61 seconds in case PTP time epoch is used.";
+      type boolean;
+      mandatory true;
+    }
+    leaf timeSource {
+      description "Source of time used by grandmaster clock.";
+      type erienmnrmrsyncptp:enum-TimeSource;
+      mandatory true;
+    }
+    leaf ptpTimescale {
+      description "Whether clock timescale of grandmaster clock is PTP.";
+      type boolean;
+      mandatory true;
+    }
+  } // end 'grouping struct-TimePropertiesDS'
+  grouping struct-CurrentDS {
+    description "Current data set.";
+    leaf stepsRemoved {
+      description "Number of communication paths traversed between local clock and grandmaster clock.";
+      type uint16;
+      mandatory true;
+    }
+    leaf offsetFromMaster {
+      description "Current value of time difference between master and slave as computed by slave.";
+      type erienmnrmrsyncptp:ddt-TimeInterval;
+      mandatory true;
+    }
+    leaf meanPathDelay {
+      description "Current value of mean propagation time between master and slave clock as computed by slave.";
+      type erienmnrmrsyncptp:ddt-TimeInterval;
+      mandatory true;
+    }
+  } // end 'grouping struct-CurrentDS'
+  grouping struct-ParentDS {
+    description "Structure describing parent clock.\n\nParent clock to which ordinary clock synchronizes, it can also be grandmaster which is clock at root of master-slave hierarchy.";
+    leaf grandmasterIdentity {
+      description "String with hexadecimal word representing identity of grandmaster clock.";
+      type string;
+      mandatory true;
+    }
+    leaf parentClockIdentity {
+      description "Identity of parent port.";
+      type string;
+      mandatory true;
+    }
+    leaf parentPortNumber {
+      description "Value of port number on PTP node with single PTP port is 1.\nValues of port numbers for N ports on PTP node supporting N PTP ports are 1, 2, …N. All zeros and ones values for port number are reserved.";
+      type uint16;
+      mandatory true;
+    }
+    leaf grandmasterPriority2 {
+      description "priority2 attribute value of grandmaster clock used in execution of BMC algorithm.";
+      type erienmnrmrsyncptp:ddt-ClockPriority;
+      mandatory true;
+    }
+    leaf observedParentOffsetScalLogVar {
+      description "Stability of parent clock.\nValue is represented as hexadecimal word.";
+      type string;
+      mandatory true;
+    }
+    leaf grandmasterClockClass {
+      description "Clock class of grandmaster clock.";
+      type uint8;
+      mandatory true;
+    }
+    leaf observedParentClkPhaseChgRate {
+      description "Estimate for phase change rate of parent clock, measured by slave clock.\nValue is represented as hexadecimal word.";
+      type string;
+      mandatory true;
+    }
+    leaf grandmasterOffsetScaledLogVariance {
+      description "Stability of grandmaster clock.";
+      type uint16;
+      mandatory true;
+    }
+    leaf grandmasterPriority1 {
+      description "priority1 attribute value of grandmaster clock used in execution of BMC algorithm.";
+      type erienmnrmrsyncptp:ddt-ClockPriority;
+      mandatory true;
+    }
+    leaf parentStats {
+      description "Whether values of observedParentOffsetScaledLogVariance and observedParentClockPhaseChangeRate are measured and valid.\nValue true indicates valid data.";
+      type boolean;
+      mandatory true;
+    }
+    leaf grandmasterClockAccuracy {
+      description "Accuracy of grandmaster clock.";
+      type erienmnrmrsyncptp:enum-ClockAccuracy;
+      mandatory true;
+    }
+  } // end 'grouping struct-ParentDS'
+  grouping moc-BoundaryOrdinaryClock-keys {
+    description "Key(s) for MOC BoundaryOrdinaryClock";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name boundaryOrdinaryClockId;
+      type string;
+    }
+  } // end 'grouping moc-BoundaryOrdinaryClock-keys'
+  grouping moc-BoundaryOrdinaryClock {
+    description "Represents boundary clock, grandmaster ordinary clock or slave-only ordinary clock. Type of PTP clock is specified by clockType.";
+    container parentDS {
+      description "Parent Data Set";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncptp:struct-ParentDS;
+    } // end 'container parentDS'
+    leaf ptpProfile {
+      yexte:restricted;
+      description "PTP profile in used.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptp:enum-PtpProfile;
+    }
+    container defaultDS {
+      description "Default Data Set";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncptp:struct-DefaultDS;
+    } // end 'container defaultDS'
+    leaf priority2 {
+      description "Priority two used in Best Master Clock (BMC) Algorithm.\nLower values take precedence.\nAttribute value is subject to PTP network planning.\nAttribute not used in frequency profile.\nIf clockType is SLAVE_ONLY_ORDINARY_CLOCK, only valid value is 255.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptp:ddt-RsyncPtp_BoundaryOrdinaryClock_priority2;
+      default 128;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list clockStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Status of clock.";
+      type erienmnrmrsyncptp:enum-ClockStatus;
+    }
+    container currentDS {
+      description "Current Data Set";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncptp:struct-CurrentDS;
+    } // end 'container currentDS'
+    leaf domainNumber {
+      description "PTP domain.\nNumber must be unique for each clock domain of network.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptp:ddt-RsyncPtp_BoundaryOrdinaryClock_domainNumber;
+    }
+    leaf priority1 {
+      description "Priority one used in Best Master Clock (BMC) Algorithm.\nLower values take precedence.\nAttribute value is subject to PTP network planning.\nAttribute not used in frequency profile.\nIf clockType is SLAVE_ONLY_ORDINARY_CLOCK, only valid value is 255.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptp:ddt-RsyncPtp_BoundaryOrdinaryClock_priority1;
+      default 128;
+    }
+    leaf clockType {
+      yexte:restricted;
+      description "Type of PTP clock.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      yexte:dependencies "If SLAVE_ONLY_ORDINARY_CLOCK, BoundaryOrdinaryClock MO can only have one PtpBcOcPort MO.\nIf GRAND_MASTER_ORDINARY_CLOCK, BoundaryOrdinaryClock MO cannot have ptpProfile set to G_8265_1 or G_8275_2.\nIf BOUNDARY_CLOCK, BoundaryOrdinaryClock MO cannot have ptpProfile set to G_8265_1 or G_8275_2.";
+      type erienmnrmrsyncptp:enum-BcOcClockType;
+    }
+    container timePropertiesDS {
+      description "Time Properties Data Set.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncptp:struct-TimePropertiesDS;
+    } // end 'container timePropertiesDS'
+  } // end 'grouping moc-BoundaryOrdinaryClock'
+  grouping moc-Ptp-keys {
+    description "Key(s) for MOC Ptp";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ptpId;
+      type string;
+    }
+  } // end 'grouping moc-Ptp-keys'
+  grouping moc-Ptp {
+    description "Represents top class MO for Precision Time Protocol management.\n\nDependencies:\nMaximum one BoundaryOrdinaryClock MO with clockType GRAND_MASTER_ORDINARY_CLOCK can be created.\nMaximum one BoundaryOrdinaryClock MO with clockType GRAND_MASTER_ORDINARY_CLOCK can be created. Cannot coexist with other types of BoundaryOrdinaryClock MOs.\nMaximum one BoundaryOrdinaryClock MO with clockType BOUNDARY_CLOCK can be created. Cannot coexist with other types of BoundaryOrdinaryClock MOs.\nMaximum 8 BoundaryOrdinaryClock with clocktype SLAVE_ONLY_ORDINARY_CLOCK can coexist.";
+  } // end 'grouping moc-Ptp'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrsyncptp:Ptp {
+    list BoundaryOrdinaryClock {
+      key id;
+      max-elements 9;
+      description "Represents boundary clock, grandmaster ordinary clock or slave-only ordinary clock. Type of PTP clock is specified by clockType.";
+      erienmyext:enm-type MOC;
+      uses moc-BoundaryOrdinaryClock-keys;
+      container attributes {
+        description "Attributes for BoundaryOrdinaryClock";
+        uses moc-BoundaryOrdinaryClock;
+      } // end 'container attributes'
+    } // end 'list BoundaryOrdinaryClock'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list Ptp {
+      key id;
+      max-elements 1;
+      description "Represents top class MO for Precision Time Protocol management.\n\nDependencies:\nMaximum one BoundaryOrdinaryClock MO with clockType GRAND_MASTER_ORDINARY_CLOCK can be created.\nMaximum one BoundaryOrdinaryClock MO with clockType GRAND_MASTER_ORDINARY_CLOCK can be created. Cannot coexist with other types of BoundaryOrdinaryClock MOs.\nMaximum one BoundaryOrdinaryClock MO with clockType BOUNDARY_CLOCK can be created. Cannot coexist with other types of BoundaryOrdinaryClock MOs.\nMaximum 8 BoundaryOrdinaryClock with clocktype SLAVE_ONLY_ORDINARY_CLOCK can coexist.";
+      erienmyext:enm-type MOC;
+      uses moc-Ptp-keys;
+    } // end 'list Ptp'
+  }
+}

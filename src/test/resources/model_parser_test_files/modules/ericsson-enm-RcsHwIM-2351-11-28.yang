@@ -1,0 +1,292 @@
+module ericsson-enm-RcsHwIM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsHwIM;
+  prefix erienmnrmrcshwim;
+  yexte:ecim-name RcsHwIM;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 1;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-HwDataEntry {
+    description "The mode for handling the inventory data insertion.\nIndicates whether the unit is passive, manual insertion of inventory data is required or active, inventory data can be read from the unit.";
+    type enumeration {
+      enum PASSIVE {
+        description "Manual insertion of inventory data is required. ";
+        value 0;
+      }
+      enum ACTIVE {
+        description "Inventory data can be read from the hardware item.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC\n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)";
+    type string {
+      length 19..31;
+    }
+  }
+  grouping struct-ProductData {
+    description "Represents an Ericsson software product.\nThe product name, product number, and product revision represent product information stored in PRIM realization part.";
+    leaf productionDate {
+      description "Production date of the product.";
+      type erienmnrmrcshwim:ddt-DateTime;
+      mandatory true;
+    }
+    leaf description {
+      description "Free text description of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "Product number of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf type {
+      description "Free text description of the product type.";
+      type string;
+      mandatory true;
+    }
+    leaf productName {
+      description "Name of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "Revision state of the product.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-ProductData'
+  grouping struct-ProductIdentity {
+    description "Deprecated, Contains product information for a Managed Element and ManagedFunction(s).\nReplaced by ProductData.";
+    leaf productDesignation {
+      description "Common product name.";
+      type string;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "The product number in Ericsson ABC format.\nFor information, refer to Ericsson Corporate Basic Standards.";
+      type string;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "The product revision in the form R[1-9][A-Z].\nFor information, refer to Ericsson Corporate Basic Standards.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-ProductIdentity'
+  grouping struct-HwItemAttribute {
+    description "Additional HwItem attributes that are considered application-specific.";
+    leaf name {
+      description "Attribute name.";
+      type string;
+      mandatory true;
+    }
+    leaf value {
+      description "Attribute value.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-HwItemAttribute'
+  grouping moc-HwInventory-keys {
+    description "Key(s) for MOC HwInventory";
+    leaf id {
+      erienmyext:no-notification;
+      description "The unique identifier for this object instance.";
+      mandatory true;
+      yexte:ecim-name hwInventoryId;
+      type string;
+    }
+  } // end 'grouping moc-HwInventory-keys'
+  grouping moc-HwInventory {
+    description "The HW Inventory.\n\nThe RDN of this MO is HwInventory=1.";
+    leaf userLabel {
+      erienmyext:no-notification;
+      description "Label that is to be used by the operator or commissioning engineer to provide relevant information.";
+      type string;
+    }
+    leaf timeOfLatestInvChange {
+      config false;
+      description "The time of the latest inventory change or of the last node restart. An inventory change results in an AVC notification.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcshwim:ddt-DateTime;
+    }
+  } // end 'grouping moc-HwInventory'
+  grouping moc-HwItem-keys {
+    description "Key(s) for MOC HwItem";
+    leaf id {
+      erienmyext:no-notification;
+      description "The unique identifier for this object instance.";
+      mandatory true;
+      yexte:ecim-name hwItemId;
+      type string;
+    }
+  } // end 'grouping moc-HwItem-keys'
+  grouping moc-HwItem {
+    description "HwItem represents any kind of Ericsson hardware that is present on the ME. ";
+    leaf additionalInformation {
+      config false;
+      description "Supplementary information about the inventory data, if any. ";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf dateOfManufacture {
+      status deprecated {
+        yexte:status-information "Use productData:productionDate";
+      }
+      config false;
+      description "The date of manufacture of the hardware item. DEPRECATED. Use productData:productionDate.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcshwim:ddt-DateTime;
+    }
+    leaf-list equipmentMoRef {
+      min-elements 0;
+      config false;
+      description "Reference to a managed object from the Equipment model.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf serialNumber {
+      config false;
+      description "The hardware serial number. It consists of max 35 alphanumerical characters to accommodate support for foreign numbers as well as acquired companies' solutions. However, it typically consists of 13 characters grouped as 6 plus 7 characters. The first 6 characters are to be used for factory codes and the last 7 characters are used for an individual number or batch number.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf dateOfLastService {
+      config false;
+      description "The date of last service or repair of the hardware item.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcshwim:ddt-DateTime;
+    }
+    leaf hwType {
+      config false;
+      description "The MO class the hardware item is represented by.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    container productIdentity {
+      description "ProductIdentity contains product designation, number, and revision information.\nDEPRECATED. Use productData. The product designation, that is, productNumber + productRevision must correspond to the criteria defined in PRIM.";
+      status deprecated {
+        yexte:status-information "Use productData.";
+      }
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcshwim:struct-ProductIdentity;
+    } // end 'container productIdentity'
+    leaf hwUnitLocation {
+      config false;
+      description "The position of the hardware item. \n\nDepending on the implementation of the unit in the managed system, the value and meaning of this attribute can vary. \nFor example, if a system has three levels and types of units that represents Rack, Shelf and Slot respectively, that is, the Managed Element contains multiple Rack inventory units, each Rack inventory unit contains multiple Shelf inventory units and each Shelf inventory unit contains multiple Slot inventory units. In this example: \n\n- For the Inventory Unit that represents a Rack, the Frame Identification code can be used as the value of this attribute. \n- For the Inventory Unit that represents a Shelf, the Rack Shelf code can be used as the value of this attribute. \n- For the Inventory Unit that represents a Slot, the position code can be used as the value of this attribute.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    container productData {
+      description "ProductData contains product name, type, number, revision, and production date.\n\nThe product description i.e. productNumber + productRevision should correspond to what is defined in PRIM.\n\nproductName is the mnemonic of HW inventory unit family type. \nCompared to hwType, this is a more specific classification of the HwItem, for example, Fan, Baseband or Generic Processor.\n\nproductNumber is the unique product number of the hardware in the Ericsson ABC format. See Ericsson Corporate Basic Standards for information.\n\ntype is the hardware item type. \nUsed for a general classification of the HwItem, for example, Blade or ReplaceableUnit. \nThe hwType must correspond to the MO Class of the corresponding MO in ECIM Equipment, for example, Blade or FieldReplaceableUnit. \nIf a managed element does not support ECIM Equipment, it can choose one of the ECIM Optional Constructs – Cabinet, Shelf , Rack, PluginUnit, Blade, Card, PhysicalConnector, FanModule – as appropriate.\n\nproductionDate is the manufacturing date of the hardware item.\n\nproductRevision is in the format R[1-9][A-Z]. See the Ericsson Corporate Basic Standards for information.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcshwim:struct-ProductData;
+    } // end 'container productData'
+    leaf vendorName {
+      config false;
+      description "The name of the hardware item vendor or the manufacturer's name provided by the vendor.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf manualDataEntry {
+      config false;
+      description "The mode for handling the inventory data insertion. Indicates whether the unit is passive, that is, manual insertion of inventory data is needed, or active, that is, inventory data can be read from the unit.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcshwim:enum-HwDataEntry;
+      default ACTIVE;
+    }
+    leaf hwCapability {
+      config false;
+      description "A free description of the hardware capability, for example, capacity, size. ";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf hwModel {
+      config false;
+      description "The hardware configuration. For example a standard HW unit or a variant that can contain additional disk capacity. Compared with hwName, this is a further specification of the hardware item.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf hwName {
+      config false;
+      description "Mnemonic of HW inventory unit family type, assigned by vendor.Compared with hwType, this is a more specific classification of the hardware item, for example, Fan, Baseband, or Generic Processor.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list licMgmtMoRef {
+      min-elements 0;
+      config false;
+      description "Reference to license MOs controlling the allowed usage of the hardware item (if any).";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list swInvMoRef {
+      min-elements 0;
+      config false;
+      description "Reference to software inventory items loaded on this hardware.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    list additionalAttributes {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Additional HwItem attributes that are considered application specific.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcshwim:struct-HwItemAttribute;
+    } // end 'list additionalAttributes'
+  } // end 'grouping moc-HwItem'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list HwInventory {
+      key id;
+      max-elements 1;
+      description "The HW Inventory.\n\nThe RDN of this MO is HwInventory=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-HwInventory-keys;
+      container attributes {
+        description "Attributes for HwInventory";
+        uses moc-HwInventory;
+      } // end 'container attributes'
+    } // end 'list HwInventory'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcshwim:HwInventory {
+    list HwItem {
+      key id;
+      description "HwItem represents any kind of Ericsson hardware that is present on the ME. ";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-HwItem-keys;
+      container attributes {
+        description "Attributes for HwItem";
+        uses moc-HwItem;
+      } // end 'container attributes'
+    } // end 'list HwItem'
+  }
+}

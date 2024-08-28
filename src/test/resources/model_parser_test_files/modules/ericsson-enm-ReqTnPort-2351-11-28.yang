@@ -1,0 +1,90 @@
+module ericsson-enm-ReqTnPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqTnPort;
+  prefix erienmnrmreqtnport;
+  yexte:ecim-name ReqTnPort;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 18;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef ddt-ReqTnPort_TnPort_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-TnPort-keys {
+    description "Key(s) for MOC TnPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\nMust match corresponding connector label on unit.\nPort with SFP connector has one channel.\nPort with QSFP connector has four channels identified by number 1-4.\nPorts with several channels shall be appended with _channelId.\nChannel ID can be omitted if connector has one channel.\nExample:\nIf connector is labeled TN A or TN B use: TN_A, TN_B.\nIf connector is labeled IDL A use: IDL_A1, IDL_A2.\nIf connector is labeled TN/IDL A or TN/IDL B use:\nTN_IDL_A_1, TN_IDL_A_2 if port has multiple channels.\nTN_IDL_B or TN_IDL_B_1 if port has only one channel.";
+      mandatory true;
+      yexte:ecim-name tnPortId;
+      yexte:dependencies "TnPort MO and DiPort MO cannot refer to same physical port.\nTnPort MOs with and without channel ID on same connector are not allowed.";
+      type string;
+    }
+  } // end 'grouping moc-TnPort-keys'
+  grouping moc-TnPort {
+    description "Represents physical connector towards Transport Network and connectors for internal transport between nodes.\n\nPhysical connector can be situated on board FRU or on SFP-module SfpModule.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqtnport:ddt-ReqTnPort_TnPort_userLabel;
+    }
+    leaf sfpModuleRef {
+      config false;
+      description "Reference to SfpModule MO.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list channelRef {
+      min-elements 0;
+      config false;
+      description "Reference  to SfpChannel MOs.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-TnPort'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list TnPort {
+      key id;
+      description "Represents physical connector towards Transport Network and connectors for internal transport between nodes.\n\nPhysical connector can be situated on board FRU or on SFP-module SfpModule.";
+      erienmyext:enm-type MOC;
+      uses moc-TnPort-keys;
+      container attributes {
+        description "Attributes for TnPort";
+        uses moc-TnPort;
+      } // end 'container attributes'
+    } // end 'list TnPort'
+  }
+}

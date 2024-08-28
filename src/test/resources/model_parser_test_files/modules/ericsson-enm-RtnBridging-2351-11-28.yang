@@ -1,0 +1,160 @@
+module ericsson-enm-RtnBridging {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnBridging;
+  prefix erienmnrmrtnbridging;
+  yexte:ecim-name RtnBridging;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 6;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-MacAddressStr {
+    description "MAC address string, controlled by a regular expression.\n\nAddress should be specified in colon separated hexadecimal notation as described in IEEE 802. \nMAC addresses shall have 17 characters.\nValid characters: 0123456789abcdefABCDEF\n\nExample: 00:12:34:56:78:9A";
+    type string {
+      length 17..17;
+    }
+  }
+  grouping moc-Bridge-keys {
+    description "Key(s) for MOC Bridge";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name bridgeId;
+      type string;
+    }
+  } // end 'grouping moc-Bridge-keys'
+  grouping moc-Bridge {
+    description "Ethernet L2 forwarding technique.\n\nA network bridge connects multiple network segments at the data link layer (Layer 2) of the OSI model.\n\nIn Ethernet networks, the term bridge formally means a device that behaves according to the IEEE 802.1D standards.\n\nBridging takes place at OSI Model Layer 2 (data-link layer), that it (including MAC Bridge, Provider Bridge) directs frames according to hardware assigned MAC addresses.\n\nBridge MO can only refer to existing VlanPort MO.";
+    leaf macAddress {
+      config false;
+      description "The MAC address of the Bridged Virtual Interface (BVI), when a BVI is associated with this Bridge.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnbridging:ddt-MacAddressStr;
+    }
+    leaf-list port {
+      min-elements 0;
+      description "Reference to VlanPort.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If this attribute refers to VlanPort MO, same VlanPort instance cannot be referenced by InterfaceIPv4 MO or InterfaceIPv6 MO. \nCannot add same VlanPort MO to more than one bridge.\nIn all reserved VlanPort MOs attribute lowLatencySwitching must be set to same value.\nIn all reserved VlanPort MOs attribute vlanId must be set to same value, when attribute lowLatencySwitching is set to true.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      yexte:dependencies "Max one MO of type InterfaceIPv4 and max one MO of type InterfaceIPv6 can reserve this bridge.\n";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnbridging:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnbridging:enum-OperState;
+    }
+  } // end 'grouping moc-Bridge'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list Bridge {
+      key id;
+      max-elements 256;
+      description "Ethernet L2 forwarding technique.\n\nA network bridge connects multiple network segments at the data link layer (Layer 2) of the OSI model.\n\nIn Ethernet networks, the term bridge formally means a device that behaves according to the IEEE 802.1D standards.\n\nBridging takes place at OSI Model Layer 2 (data-link layer), that it (including MAC Bridge, Provider Bridge) directs frames according to hardware assigned MAC addresses.\n\nBridge MO can only refer to existing VlanPort MO.";
+      erienmyext:enm-type MOC;
+      uses moc-Bridge-keys;
+      container attributes {
+        description "Attributes for Bridge";
+        uses moc-Bridge;
+      } // end 'container attributes'
+    } // end 'list Bridge'
+  }
+}

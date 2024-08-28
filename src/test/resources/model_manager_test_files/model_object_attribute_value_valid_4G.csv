@@ -1,0 +1,75 @@
+ModelObjectName:AttributeName:AttributeValue:Valid
+# Boolean type ENodeBFunction:rrcConnReestActive:leaf:boolean:::
+ENodeBFunction:rrcConnReestActive:true:true
+ENodeBFunction:rrcConnReestActive:false:true
+ENodeBFunction:rrcConnReestActive:somethingelse:false
+
+# Enumeration type EUtranCellFDD:cellBarred:leaf:enumeration:[enum BARRED, enum NOT_BARRED]::
+EUtranCellFDD:cellBarred:BARRED:true
+EUtranCellFDD:cellBarred:NOT_BARRED:true
+EUtranCellFDD:cellBarred:somethingelse:false
+
+# String type ericsson-enm-Lrat:2351-11-28:ExternalENodeBFunction:userLabel:leaf:string:length 1..128::
+ExternalENodeBFunction:userLabel:a:true
+ExternalENodeBFunction:userLabel:someuserlabel:true
+ExternalENodeBFunction:userLabel:someuserlabelOneLessThanMaxLengthxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:true
+ExternalENodeBFunction:userLabel:someuserlabelEqualToMaxLengthxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:true
+ExternalENodeBFunction:userLabel::false
+ExternalENodeBFunction:userLabel:someuserlabelOneGreaterThanMaxLengthxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:false
+ExternalENodeBFunction:userLabel:someuserlabelTenGreaterThanMaxLengthxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:false
+
+# Int32 single range EUtranCellFDD:qRxLevMin:leaf:int32:-140..-44::
+EUtranCellFDD:qRxLevMin:-66:true
+EUtranCellFDD:qRxLevMin:-44:true
+EUtranCellFDD:qRxLevMin:-140:true
+EUtranCellFDD:qRxLevMin:-43:false
+EUtranCellFDD:qRxLevMin:-141:false
+# Cover exception make sure returned as false if not number type
+EUtranCellFDD:qRxLevMin:not_number:false
+
+# Int32 multiple ranges DataRadioBearer:ulMaxRetxThreshold:leaf:int32:1..1 | 2..2 | 3..3 | 4..4 | 6..6 | 8..8 | 16..16 | 32..32:New connection:
+DataRadioBearer:ulMaxRetxThreshold:-2147483649:false
+DataRadioBearer:ulMaxRetxThreshold:-2147483648:false
+DataRadioBearer:ulMaxRetxThreshold:-3:false
+DataRadioBearer:ulMaxRetxThreshold:-8:false
+DataRadioBearer:ulMaxRetxThreshold:1:true
+DataRadioBearer:ulMaxRetxThreshold:2:true
+DataRadioBearer:ulMaxRetxThreshold:3:true
+DataRadioBearer:ulMaxRetxThreshold:4:true
+DataRadioBearer:ulMaxRetxThreshold:5:false
+DataRadioBearer:ulMaxRetxThreshold:6:true
+DataRadioBearer:ulMaxRetxThreshold:7:false
+DataRadioBearer:ulMaxRetxThreshold:8:true
+DataRadioBearer:ulMaxRetxThreshold:9:false
+DataRadioBearer:ulMaxRetxThreshold:15:false
+DataRadioBearer:ulMaxRetxThreshold:16:true
+DataRadioBearer:ulMaxRetxThreshold:17:false
+DataRadioBearer:ulMaxRetxThreshold:31:false
+DataRadioBearer:ulMaxRetxThreshold:32:true
+DataRadioBearer:ulMaxRetxThreshold:33:false
+DataRadioBearer:ulMaxRetxThreshold:2147483647:false
+DataRadioBearer:ulMaxRetxThreshold:2147483648:false
+
+# Int32 no range constraint GtpPath:samplingInterval:leaf:int32:::
+GtpPath:samplingInterval:-2147483649:false
+GtpPath:samplingInterval:-2147483648:true
+GtpPath:samplingInterval:2147483647:true
+GtpPath:samplingInterval:2147483648:false
+
+# Int64 single range SectorCarrier:essScPairId:leaf:int64:1..9223372036854775807:Next MO unlock:Value can only be changed if administrativeState is LOCKED.
+SectorCarrier:essScPairId:-9223372036854775808:false
+SectorCarrier:essScPairId:-1:false
+SectorCarrier:essScPairId:1:true
+SectorCarrier:essScPairId:2:true
+SectorCarrier:essScPairId:9223372036854775806:true
+SectorCarrier:essScPairId:9223372036854775807:true
+SectorCarrier:essScPairId:-9223372036854775807:false
+SectorCarrier:essScPairId:9223372036854775808:false
+
+
+
+
+
+
+
+

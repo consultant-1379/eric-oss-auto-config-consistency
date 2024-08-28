@@ -1,0 +1,46 @@
+ModelObjectName:CmHandle:Exists
+AnrFunction:cmHandle1:true
+AnrFunction:cmHandle2:true
+AnrFunction:cmHandle3:false
+CommonBeamforming:cmHandle1:false
+CommonBeamforming:cmHandle2:true
+CommonBeamforming:cmHandle3:false
+#In both 4g and 5g
+DataRadioBearer:cmHandle1:true
+DataRadioBearer:cmHandle2:true
+DataRadioBearer:cmHandle3:false
+#In both 4g and 5g
+ExternalENodeBFunction:cmHandle1:true
+ExternalENodeBFunction:cmHandle2:true
+ExternalENodeBFunction:cmHandle3:false
+ExternalGNBCUCPFunction:cmHandle1:false
+ExternalGNBCUCPFunction:cmHandle2:true
+ExternalGNBCUCPFunction:cmHandle3:false
+GNBDUFunction:cmHandle1:false
+GNBDUFunction:cmHandle2:true
+GNBDUFunction:cmHandle3:false
+GNBCUCPFunction:cmHandle1:false
+GNBCUCPFunction:cmHandle2:true
+GNBCUCPFunction:cmHandle3:false
+GNBCUUPFunction:cmHandle1:false
+GNBCUUPFunction:cmHandle2:true
+GNBCUUPFunction:cmHandle3:true
+McfbCellProfile:cmHandle1:false
+McfbCellProfile:cmHandle2:true
+McfbCellProfile:cmHandle3:false
+NRCellCU:cmHandle1:false
+NRCellCU:cmHandle2:true
+NRCellCU:cmHandle3:false
+NRCellDU:cmHandle1:false
+NRCellDU:cmHandle2:true
+NRCellDU:cmHandle3:false
+QciProfileEndcConfigExt:cmHandle1:false
+QciProfileEndcConfigExt:cmHandle2:true
+QciProfileEndcConfigExt:cmHandle3:false
+#In both 4g and 5g
+Rrc:cmHandle1:true
+Rrc:cmHandle2:true
+Rrc:cmHandle3:false
+DoesNotExist:cmHandle1:false
+DoesNotExist:cmHandle2:false
+DoesNotExist:cmHandle3:false

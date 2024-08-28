@@ -1,0 +1,377 @@
+module ericsson-enm-ReqCabinet {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqCabinet;
+  prefix erienmnrmreqcabinet;
+  yexte:ecim-name ReqCabinet;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 5;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-ApcClimateRegulationSystem {
+    description "The climate regulation system type.";
+    type enumeration {
+      enum NOT_APPLICABLE {
+        description "Not Applicable (used by RBS types where type of climate regulation system is not a choice).";
+        value 0;
+      }
+      enum DAC {
+        description "Direct Air Cooling.";
+        value 1;
+      }
+      enum TS {
+        description Thermosiphon.;
+        value 2;
+      }
+      enum HEX {
+        description "Heat Exchanger.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-ApcEnclosurePidSelection {
+    description .;
+    type enumeration {
+      enum CANCEL {
+        description "Cancels Cabinet Product Data resolution.";
+        value 0;
+      }
+      enum MOM_ENCLOSURE_PID {
+        description "Cabinet Product Data stored in the database is valid and selected for use.";
+        value 1;
+      }
+      enum SCU_ENCLOSURE_PID {
+        description "Cabinet Product Data stored in SCU/SUP is valid and selected for use.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-ApcClimateControlMode {
+    type enumeration {
+      enum NORMAL {
+        description "Default mode.";
+        value 0;
+      }
+      enum BATTERY_LIFE_EXTENSION {
+        description "Improves battery life time. Can cause increased acoustic noise. Only applicable for RBS with internal batteries.";
+        value 1;
+      }
+      enum BOOST {
+        description "Boosted cooling mode can cause increased acoustic noise and is applicable for RBS with integrated equipment not participating in climate control.";
+        value 2;
+      }
+      enum ECO {
+        description "Optimized for minimizing power consumption. Applicable for RBS 6601.";
+        value 3;
+      }
+      enum ENHANCED {
+        description "Enhanced cooling. Applicable for RBS 6101, RBS 6102, RBS 6120, RBS 6201, RBS 6301, and RBS 6131.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-ApcClimateSystem {
+    type enumeration {
+      enum STANDARD {
+        value 0;
+      }
+      enum EXTENDED {
+        value 1;
+      }
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_momProductionDate {
+    type string {
+      length 5..8;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_scuProductName {
+    type string {
+      length 1..32;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_serialNumber {
+    type string {
+      length 1..13;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productRevision {
+    type string {
+      length 1..7;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_scuProductRevision {
+    type string {
+      length 1..7;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_momProductNumber {
+    type string {
+      length 1..24;
+    }
+  }
+  typedef ddt-ReqCabinet_Cabinet_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productName {
+    type string {
+      length 1..32;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_momProductRevision {
+    type string {
+      length 1..7;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_scuProductionDate {
+    type string {
+      length 5..8;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_scuProductNumber {
+    type string {
+      length 1..24;
+    }
+  }
+  typedef ddt-ReqCabinet_Cabinet_sharedCabinetIdentifier {
+    type string {
+      length 1..38;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productNumber {
+    type string {
+      length 1..24;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productionDate {
+    type string {
+      length 5..8;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_momSerialNumber {
+    type string {
+      length 1..13;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_scuSerialNumber {
+    type string {
+      length 1..13;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcEnclosurePidList_momProductName {
+    type string {
+      length 1..32;
+    }
+  }
+  grouping struct-ApcEnclosurePidList {
+    description .;
+    leaf momSerialNumber {
+      description "Product serial number, as stored in database.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_momSerialNumber;
+      mandatory true;
+    }
+    leaf scuProductNumber {
+      description "Product number, as stored in SCU/SUP.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_scuProductNumber;
+      mandatory true;
+    }
+    leaf scuSerialNumber {
+      description "Product serial number, as stored in SCU/SUP.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_scuSerialNumber;
+      mandatory true;
+    }
+    leaf scuProductionDate {
+      description "Production date, as stored in SCU/SUP.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_scuProductionDate;
+      mandatory true;
+    }
+    leaf momProductionDate {
+      description "Production date, as stored in database.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_momProductionDate;
+      mandatory true;
+    }
+    leaf momProductRevision {
+      description "Product revision state, as stored in database.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_momProductRevision;
+      mandatory true;
+    }
+    leaf momProductNumber {
+      description "Product number, as stored in database.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_momProductNumber;
+      mandatory true;
+    }
+    leaf scuProductName {
+      description "Product name, as stored in SCU/SUP.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_scuProductName;
+      mandatory true;
+    }
+    leaf scuProductRevision {
+      description "Product revision state, as stored in SCU/SUP.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_scuProductRevision;
+      mandatory true;
+    }
+    leaf momProductName {
+      description "Product name, as stored in database.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcEnclosurePidList_momProductName;
+      mandatory true;
+    }
+  } // end 'grouping struct-ApcEnclosurePidList'
+  grouping struct-ApcProductData {
+    description ".\n";
+    leaf productionDate {
+      description "The production date is represented in two ways:\n\n- the preferred syntax is four-digits for the year, two digits for the month, and two digits for the day.\nExample: 19991231\n\n- the date is also be represented by two digits for the year, followed by the letter W for week, and two digits for the number of the week.\nExample: 99W52";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcProductData_productionDate;
+      mandatory true;
+    }
+    leaf serialNumber {
+      description "The serial number of the product. ";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcProductData_serialNumber;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "The product number of the product.\n\nExamples: ABC 101 001, CXC 123 456, 1/BFD 101 999\n";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcProductData_productNumber;
+      mandatory true;
+    }
+    leaf productName {
+      description "The name of the product.";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcProductData_productName;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "The revision state of the product.\n\nExamples: R1, R1A, R1A02, P7B ";
+      type erienmnrmreqcabinet:ddt-ReqCabinet_ApcProductData_productRevision;
+      mandatory true;
+    }
+  } // end 'grouping struct-ApcProductData'
+  grouping moc-Cabinet-keys {
+    description "Key(s) for MOC Cabinet";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cabinetId;
+      type string;
+    }
+  } // end 'grouping moc-Cabinet-keys'
+  grouping moc-Cabinet {
+    description "This MO represents the cabinet where the node is hosted.\n";
+    leaf userLabel {
+      description .;
+      type erienmnrmreqcabinet:ddt-ReqCabinet_Cabinet_userLabel;
+    }
+    leaf positionRef {
+      description "MO reference. Represents enclosure.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf smokeDetector {
+      description "Specifies if smoke detector is used or not in this cabinet.";
+      yexte:dependencies "Only valid in the node where the attribute supportSystemControl is set to true on the MO EquipmentSupportFunction with a functional MO referencing the Cabinet.";
+      type boolean;
+      default false;
+    }
+    leaf climateControlMode {
+      status deprecated {
+        yexte:status-information "Since 16A. Replaced by climateControlMode on MO Climate.";
+      }
+      description "Specifies in which mode to run the climate control.";
+      yexte:dependencies "Only valid in the node where the attribute supportSystemControl is set to true on the MO EquipmentSupportFunction with a functional MO referencing the Cabinet.";
+      type erienmnrmreqcabinet:enum-ApcClimateControlMode;
+      default NORMAL;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf climateSystem {
+      description "The type of climate system used, and indirectly the number of fan groups in the cabinet. ";
+      yexte:dependencies "Only possible to write when the attribute supportSystemControl is set to true on the MO EquipmentSupportFunction with a functional MO referencing the Cabinet.";
+      type erienmnrmreqcabinet:enum-ApcClimateSystem;
+      default STANDARD;
+    }
+    container productData {
+      description "Enclosure Product Information Data (PID). To guarantee that the data survives a main processor replacement, the data is stored persistently in both the database and in the corresponding Support Control Unit (SCU). Mismatches of stored data generate an alarm. ";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqcabinet:struct-ApcProductData;
+    } // end 'container productData'
+    leaf climateRegulationSystem {
+      description "The type of climate regulation system.";
+      yexte:dependencies "Only possible to write when the attribute supportSystemControl is set to true on the MO EquipmentSupportFunction with a functional MO referencing the Cabinet.";
+      type erienmnrmreqcabinet:enum-ApcClimateRegulationSystem;
+      default NOT_APPLICABLE;
+    }
+    leaf sharedCabinetIdentifier {
+      description .;
+      type erienmnrmreqcabinet:ddt-ReqCabinet_Cabinet_sharedCabinetIdentifier;
+    }
+    leaf cabinetIdentifier {
+      config false;
+      description "Unique identifier of the cabinet. An undefined value is shown as an empty string that indicates no contact with SCU, SUP or support system controlling node.";
+      yexte:dependencies "Reflects the value of attribute productData; productNumber and serialNumber on the FieldReplaceableUnit MO that represents a SCU/SUP.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf alarmInExternalMe {
+      description "In primary node: Whether to distribute alarm status to a secondary node sharing the cabinet or not. \nIn secondary node: Make received alarm visible from primary node or not.\n";
+      type boolean;
+      default false;
+    }
+    action resolveEnclosurePid {
+      description "Resolves the Cabinet Product Data to use for the system when alarm Enclosure Product Data Mismatch is raised. The selected Cabinet Pid is stored persistently in the database and in the SCU/SUP.\nTransaction required: No.";
+      input {
+        leaf selectedPid {
+          mandatory true;
+          description "Cabinet Product Data to use.";
+          type erienmnrmreqcabinet:enum-ApcEnclosurePidSelection;
+        }
+      }
+    }
+    action readUnresolvedEnclosurePid {
+      description "Reads conflicting Cabinet Product Data when alarm Enclosure Product Data Mismatch is raised due to discrepancies between the product data stored in the database and the SCU/SUP.\nTransaction required: No.";
+      output {
+        container result {
+          presence "";
+          uses erienmnrmreqcabinet:struct-ApcEnclosurePidList;
+          erienmyext:enm-type STRUCT;
+        } // end 'container result'
+      }
+    }
+  } // end 'grouping moc-Cabinet'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list Cabinet {
+      key id;
+      description "This MO represents the cabinet where the node is hosted.\n";
+      erienmyext:enm-type MOC;
+      uses moc-Cabinet-keys;
+      container attributes {
+        description "Attributes for Cabinet";
+        uses moc-Cabinet;
+      } // end 'container attributes'
+    } // end 'list Cabinet'
+  }
+}

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>EACC UI Product Staging Test Results</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      table {
+        font-size: 14px;
+      }
+
+      .summary-bar {
+        padding-left: 16px;
+      }
+
+      .action-pill {
+        cursor: pointer;
+      }
+
+      .container-mods {
+        padding-top: 16px;
+      }
+
+      .result-icon,
+      .result-icon-fail,
+      .result-icon-pass {
+        text-align: center;
+        width: 40px;
+      }
+
+      .result-icon-fail {
+        color: var(--bs-red) !important;
+      }
+
+      .result-icon-pass {
+        color: var(--bs-green) !important;
+      }
+
+      .err-message {
+        font-family: 'Courier New', Courier, monospace;
+      }
+    </style>
+    <script>
+      /**
+       * Sets the text of a pill.
+       *
+       * @function _setPill
+       * @param id The # id of the pill.
+       * @param value The value of the text to set.
+       * @private
+       */
+      function _setPill(id, value) {
+        document.querySelector(id).textContent = value;
+      }
+
+      /**
+       * Returns all the keys in the object provided sorted alphabetically.
+       *
+       * @function _getKeys
+       * @param obj The object to retrieve the keys from.
+       * @private
+       */
+      function _getKeys(obj) {
+        const keys = [];
+        for (const key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            keys.push(key);
+          }
+        }
+        return keys.sort();
+      }
+
+      /**
+       * Creates a html element based on name provided.
+       *
+       * @function _create
+       * @param name The name of the element to create.
+       * @private
+       */
+      function _create(name) {
+        return document.createElement(name);
+      }
+
+      fetch('./cypress_tests.json')
+        .then(res => res.json())
+        .then(res => {
+          _setPill('#totalCount', `Total ${res.count}`);
+          _setPill('#passCount', `Pass ${res.passed}`);
+          _setPill('#failCount', `Fail ${res.failed}`);
+
+          const container = document.querySelector('#container');
+
+          for (const suite of _getKeys(res.results)) {
+            const table = _create('table');
+            table.classList.add(
+              'table',
+              'table-bordered',
+              'table-sm',
+              'table-responsive',
+              'table-hover',
+              'table-striped',
+            );
+
+            const thead = _create('thead');
+            const theadTr = _create('tr');
+            theadTr.classList.add('table-secondary');
+
+            const thIcon = _create('th');
+            thIcon.textContent = '🛈';
+            thIcon.classList.add('result-icon');
+
+            const thTitle = _create('th');
+            thTitle.textContent = `${suite} (${res.results[suite].length})`;
+
+            theadTr.appendChild(thIcon);
+            theadTr.appendChild(thTitle);
+            thead.append(theadTr);
+            table.append(thead);
+
+            const tbody = _create('tbody');
+
+            res.results[suite].forEach(result => {
+              const tr = _create('tr');
+
+              const tdIcon = _create('td');
+              tdIcon.setAttribute('colspan', '1');
+
+              if (result.status === 'fail') {
+                tdIcon.textContent = '🗷';
+                tdIcon.classList.add('result-icon-fail');
+              } else {
+                tdIcon.textContent = '🗹';
+                tdIcon.classList.add('result-icon-pass');
+              }
+
+              const td = _create('td');
+              td.textContent = result.title;
+
+              tr.appendChild(tdIcon);
+              tr.appendChild(td);
+              tbody.appendChild(tr);
+
+              if (result.status === 'fail') {
+                const trErr = _create('tr');
+                trErr.classList.add('table-danger');
+
+                const tdErrIcon = _create('td');
+                tdErrIcon.setAttribute('colspan', '1');
+                tdErrIcon.classList.add('result-icon');
+                tdErrIcon.textContent = '»';
+
+                const tdErr = _create('td');
+                tdErr.classList.add('err-message');
+                tdErr.textContent = result.message;
+
+                trErr.appendChild(tdErrIcon);
+                trErr.appendChild(tdErr);
+                tbody.appendChild(trErr);
+              }
+            });
+
+            table.append(tbody);
+
+            container.appendChild(table);
+          }
+        })
+        .catch(err => {
+          /* eslint-disable no-console */
+          console.log(err);
+          /* eslint-enable no-console */
+        });
+    </script>
+  </head>
+  <body>
+    <main>
+      <header class="border-bottom">
+        <a href="#" class="text-dark text-decoration-none">
+          <img
+            src="https://arm1s11-eiffel004.eiffel.gic.ericsson.se:8443//nexus/content/sites/tor/TopologyCollectionsService/latest/images/ericsson_logo.png"
+            alt="Ericsson logo"
+          />
+          <span class="fs-4">EACC UI Product Staging Test Results</span>
+        </a>
+        <br />
+        <div class="summary-bar">
+          <span
+            id="totalCount"
+            class="badge rounded-pill text-bg-primary action-pill"
+            >Total&nbsp;0</span
+          >
+          <span
+            id="passCount"
+            class="badge rounded-pill text-bg-success action-pill"
+            >Pass&nbsp;0</span
+          >
+          <span
+            id="failCount"
+            class="badge rounded-pill text-bg-danger action-pill"
+            >Fail&nbsp;0</span
+          >
+        </div>
+        <br />
+      </header>
+
+      <div id="container" class="container-fluid container-mods"></div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+module ericsson-enm-RmePimCancellationFunction {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmePimCancellationFunction;
+  prefix erienmnrmrmepimcancellationfunction;
+  yexte:ecim-name RmePimCancellationFunction;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6. ";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-RmePimCancellationFunction_PimCancellationFunction_sharedFunctionIdentifier {
+    type int32 {
+      range -1..53;
+    }
+  }
+  typedef ddt-RmePimCancellationFunction_PimCancellationFunction_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-PimCancellationFunction-keys {
+    description "Key(s) for MOC PimCancellationFunction";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name pimCancellationFunctionId;
+      type string;
+    }
+  } // end 'grouping moc-PimCancellationFunction-keys'
+  grouping moc-PimCancellationFunction {
+    description "Represents PIM cancellation function. It calculates PIM generated from DL carriers of one or more SectorCarriers. The PIM is then cancelled in one or more UL carriers participating in the function.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrmepimcancellationfunction:ddt-RmePimCancellationFunction_PimCancellationFunction_userLabel;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmepimcancellationfunction:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmepimcancellationfunction:enum-OperState;
+    }
+    leaf sharedFunctionIdentifier {
+      description "Global identifier for sharing functions between Managed Elements.";
+      type erienmnrmrmepimcancellationfunction:ddt-RmePimCancellationFunction_PimCancellationFunction_sharedFunctionIdentifier;
+      default -1;
+    }
+  } // end 'grouping moc-PimCancellationFunction'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list PimCancellationFunction {
+      key id;
+      description "Represents PIM cancellation function. It calculates PIM generated from DL carriers of one or more SectorCarriers. The PIM is then cancelled in one or more UL carriers participating in the function.";
+      erienmyext:enm-type MOC;
+      uses moc-PimCancellationFunction-keys;
+      container attributes {
+        description "Attributes for PimCancellationFunction";
+        uses moc-PimCancellationFunction;
+      } // end 'container attributes'
+    } // end 'list PimCancellationFunction'
+  }
+}

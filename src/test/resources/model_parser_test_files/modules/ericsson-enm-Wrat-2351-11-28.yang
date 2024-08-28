@@ -1,0 +1,3386 @@
+module ericsson-enm-Wrat {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-Wrat;
+  prefix erienmnrmwrat;
+  yexte:ecim-name Wrat;
+  revision 2351-11-28 {
+    yexte:version 7;
+    yexte:release 71;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-BsctState {
+    description "Whether Base Station Conformance Testing is started or not.";
+    type enumeration {
+      enum STOPPED {
+        value 2;
+      }
+      enum STARTED {
+        value 1;
+      }
+      enum NOT_APPLICABLE {
+        value 0;
+      }
+    }
+  }
+  typedef enum-CarrierAirRateTypeSelector {
+    description "Indicates possible status values of a corresponding AirRateType Selector attribute.";
+    type enumeration {
+      enum ACKNOWLEDGED {
+        value 0;
+      }
+      enum TRANSMITTED {
+        value 1;
+      }
+    }
+  }
+  typedef enum-HsdpaPowerSharingCapability {
+    description "Defines if the Cell is capable of HSDPA dynamic power sharing or not.";
+    type enumeration {
+      enum HSDPA_POWER_SHARING_NON_CAPABLE {
+        value 0;
+      }
+      enum HSDPA_POWER_SHARING_CAPABLE {
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-HsdpaDbMcCapability {
+    description "Defines if the cell is dual band multi carrier capable or not.";
+    type enumeration {
+      enum HSDPA_DB_MC_NON_CAPABLE {
+        value 0;
+      }
+      enum HSDPA_DB_MC_CAPABLE {
+        value 1;
+      }
+    }
+  }
+  typedef enum-EulMcCapability {
+    description "Defines if this local cell is EUL Multi-Carrier capable or not.";
+    type enumeration {
+      enum EUL_MC_NON_CAPABLE {
+        value 0;
+      }
+      enum EUL_MC_CAPABLE {
+        value 1;
+      }
+    }
+  }
+  typedef enum-BbPowerSavingMode {
+    description " Status of Baseband power saving mode.";
+    type enumeration {
+      enum NOT_SUPPORTED {
+        description "Not supported by Baseband hardware.";
+        value 0;
+      }
+      enum IN_POWER_SAVING {
+        description "Baseband in power saving mode.";
+        value 1;
+      }
+      enum OUT_OF_POWER_SAVING {
+        description "Baseband not in power saving mode.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-SchFlowControlState {
+    description "Defines whether flow control is activated (on) or deactivated (off).";
+    type enumeration {
+      enum OFF {
+        description "Flow control is deactivated.";
+        value 0;
+      }
+      enum ON {
+        description "Flow control is activated.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-HsdpaMmPowerSharingCapability {
+    description "Defines if the Cell is capable of HSDPA Mixed Mode Dynamic Power Sharing or not.";
+    type enumeration {
+      enum HSDPA_MM_POWER_SHARING_NON_CAPABLE {
+        value 0;
+      }
+      enum HSDPA_MM_POWER_SHARING_CAPABLE {
+        value 1;
+      }
+    }
+  }
+  typedef enum-CarrierQueueSelectAlgorithm {
+    type enumeration {
+      enum ROUND_ROBIN {
+        value 0;
+      }
+      enum PROPORTIONAL_FAIR_MEDIUM {
+        value 1;
+      }
+      enum PROPORTIONAL_FAIR_HIGH {
+        value 2;
+      }
+      enum PROPORTIONAL_FAIR_LOW {
+        value 3;
+      }
+      enum MAXIMUM_CQI {
+        value 4;
+      }
+      enum EQUAL_RATE {
+        value 5;
+      }
+    }
+  }
+  typedef enum-BsctMode {
+    description "Whether NodeB is in Normal or Base Station Conformance Testing operation mode.";
+    type enumeration {
+      enum NORMAL {
+        value 0;
+      }
+      enum BASE_STATION_CONFORMANCE_TEST {
+        value 1;
+      }
+    }
+  }
+  typedef enum-HsdpaMcCapability {
+    description "Defines if the Cell is multi carrier capable or not.";
+    type enumeration {
+      enum HSDPA_MC_NON_CAPABLE {
+        value 0;
+      }
+      enum HSDPA_MC_CAPABLE {
+        value 1;
+      }
+    }
+  }
+  typedef enum-FeatCtrlState {
+    description "Possible states set by operator for licensed or unlicensed feature.";
+    type enumeration {
+      enum OFF {
+        description "Operator does not allow usage of the feature.";
+        value 0;
+      }
+      enum ON {
+        description "Operator allows usage of the feature.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-CombinedCellConfiguration {
+    description "Defines which combined cell deployment is used.";
+    type enumeration {
+      enum COMBINED_CELL_NORMAL {
+        description "Legacy combined cell is used.";
+        value 0;
+      }
+      enum COMBINED_CELL_INDOOR {
+        description "The indoor deployment combined cell is used.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-BsctTestModel {
+    description "Possible Base Station Conformance Testing models.";
+    type enumeration {
+      enum TEST_MODEL_1 {
+        value 1;
+      }
+      enum TEST_MODEL_2 {
+        value 2;
+      }
+      enum TEST_MODEL_3 {
+        value 3;
+      }
+      enum TEST_MODEL_4 {
+        value 4;
+      }
+      enum TEST_MODEL_5 {
+        value 5;
+      }
+      enum TEST_MODEL_6 {
+        value 6;
+      }
+      enum TEST_MODEL_1_STF11 {
+        status current {
+          yexte:preliminary;
+        }
+        value 7;
+      }
+      enum NOT_APPLICABLE {
+        value 0;
+      }
+    }
+  }
+  typedef enum-SectorLatHemisphere {
+    description "The latitude hemisphere for the Sector.";
+    type enumeration {
+      enum NORTH {
+        value 0;
+      }
+      enum SOUTH {
+        value 1;
+      }
+    }
+  }
+  typedef enum-HsdpaDb3McCapability {
+    description "Defines if the cell is dual band 3x multi carrier capable or not.";
+    type enumeration {
+      enum HSDPA_DB_3MC_CAPABLE {
+        value 1;
+      }
+      enum HSDPA_DB_3MC_NON_CAPABLE {
+        value 0;
+      }
+    }
+  }
+  typedef enum-UsageState {
+    description "The usage state describes the usage of a resource.\nThe allowed values are defined by ITU-T X.731.";
+    type enumeration {
+      enum IDLE {
+        description "The resource is not currently in use.\nDefined by ITU-T X.731";
+        value 0;
+      }
+      enum ACTIVE {
+        description "The resource is in use and it has sufficient spare operating capacity.\nSpare operating capacity to provide for additional users simultaneously.\nDefined by ITU-T X.731";
+        value 1;
+      }
+      enum BUSY {
+        description "The resource is in use, but it has no spare operating capacity.\nSpare operating capacity to provide for additional users at this instant.\nDefined by ITU-T X.731";
+        value 2;
+      }
+    }
+  }
+  typedef enum-NbirSelectAlgorithm {
+    description " Selects which Narrowband Interference Rejection algorithm to use.";
+    type enumeration {
+      enum GENERIC_NBIR {
+        value 0;
+      }
+      enum ADAPTIVE_NOTCH_NBIR {
+        value 1;
+      }
+      enum FIXED_NOTCH_NBIR {
+        value 2;
+      }
+      enum AUTO_GENERIC_ADAPTIVE_NBIR {
+        value 3;
+      }
+      enum AUTO_GENERIC_ADAPTIVE_OFF_NBIR {
+        value 4;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6. ";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "The availability status of the other resource is dependency recovery. ";
+        value 12;
+      }
+    }
+  }
+  typedef enum-IpOptimizedHsTnSettingsStatus {
+    description "Possible status set by operator for IP Optimized HSDPA TN Settings.";
+    type enumeration {
+      enum OFF {
+        description "IP Optimized HSDPA TN Settings is off when low bandwidth IP links are used.";
+        value 0;
+      }
+      enum ON {
+        description "IP Optimized HSDPA TN Settings is on when high bandwidth IP links are used, for example the bandwidth is no less than 20 Mbps.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-BsctTpcDlStepSize {
+    description "FDD transmission power control DL Step Size.\n\nUnit: 0.1 dB";
+    type enumeration {
+      enum 5 {
+        value 0;
+      }
+      enum 10 {
+        value 1;
+      }
+      enum 15 {
+        value 2;
+      }
+      enum 20 {
+        value 3;
+      }
+    }
+  }
+  typedef enum-AdvCellSupAction {
+    description "Recovery action performed when Advanced Cell Supervision feature detects a sleeping cell.";
+    type enumeration {
+      enum NO_ACTION {
+        description "No recovery action is initiated.";
+        value 0;
+      }
+      enum CELL_RESTART {
+        description " Cell restart is initiated automatically, that is, a cell is deleted and then setup again.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-NbirAutoSelectAlgorithm {
+    description " Automatically selected Narrowband Interference Rejection algorithm.";
+    type enumeration {
+      enum NBIR_OFF {
+        value 0;
+      }
+      enum GENERIC_NBIR {
+        value 1;
+      }
+      enum ADAPTIVE_NOTCH_NBIR {
+        value 2;
+      }
+      enum NOT_APPLICABLE {
+        value 3;
+      }
+    }
+  }
+  typedef enum-Hsdpa3McCapability {
+    description "Defines if the cell is 3x multi carrier capable or not.";
+    type enumeration {
+      enum HSDPA_3MC_CAPABLE {
+        value 1;
+      }
+      enum HSDPA_3MC_NON_CAPABLE {
+        value 0;
+      }
+    }
+  }
+  typedef enum-NoiseFloorAlgorithm {
+    description "Indicates which noise floor algoritmh should be used.";
+    type enumeration {
+      enum SLIDING_WINDOW_NOISE_FLOOR {
+        value 0;
+      }
+      enum RECURSIVE_NOISE_FLOOR {
+        value 1;
+      }
+    }
+  }
+  typedef enum-BsctInnerLoopDlpcStatus {
+    description "Whether the inner loop DL power control for DPCH is active or not.";
+    type enumeration {
+      enum INACTIVE {
+        value 0;
+      }
+      enum ACTIVE {
+        value 1;
+      }
+    }
+  }
+  typedef enum-CpcCapability {
+    description "Whether the local cell is CPC capable or not.";
+    type enumeration {
+      enum CPC_NON_CAPABLE {
+        value 0;
+      }
+      enum CPC_CAPABLE {
+        value 1;
+      }
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_maxDlPowerCapability {
+    type int16 {
+      range 0..500;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulMaxAllowedSchRate {
+    type int16 {
+      range 0..6016;
+    }
+  }
+  typedef ddt-Wrat_CommonChannelResourcesUl_numOfPrach {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_uarfcnDl {
+    type int16 {
+      range 0..16383;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_minBitRateMinCqi {
+    type int16 {
+      range 0..30;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_fccRotMarginLow {
+    type int16 {
+      range -550..550;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_maxEAgchPowerDl {
+    type int16 {
+      range -350..150;
+    }
+  }
+  typedef ddt-Wrat_CommonChannelResourcesDl_numOfSccpch {
+    type int16 {
+      range 0..2;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_cqiErrors {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_numOfRxAntennas {
+    type int16 {
+      range "0..0 | 1..1 | 2..2 | 4..4";
+    }
+  }
+  typedef ddt-Wrat_CellResources_numOfPsch {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_configuredMaxTxPower {
+    type int32 {
+      range 0..10000000;
+    }
+  }
+  typedef ddt-Wrat_IubDataStreams_hsRbrDiscardProbability {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_maxEAgchPowerDlTti2 {
+    type int16 {
+      range -350..150;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_eulMaxOwnUuLoad {
+    type int16 {
+      range 0..550;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_hsScchMaxCodePower {
+    type int16 {
+      range -350..150;
+    }
+  }
+  typedef ddt-Wrat_HsPdschCodeCapacities_hsPdschCodesMaxLimit {
+    type uint16 {
+      range 0..720;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulSchedulingWeight {
+    type int32 {
+      range "1..10000 | 65534..65534";
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_maxNumHsPdschCodes {
+    type int16 {
+      range 5..15;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_partOfSectorPower {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_maxDlPowerCapability {
+    type int16 {
+      range 0..500;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_latitude {
+    type int32 {
+      range 0..8388607;
+    }
+  }
+  typedef ddt-Wrat_IubDataStreams_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulInactivityLowRateTime {
+    type int16 {
+      range 0..1000;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_qualityCheckPower {
+    type int16 {
+      range -2..6;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCellGroup_rSiteRef {
+    type string {
+      length 1..35;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_minDlPowerCapability {
+    type int16 {
+      range -300..500;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_extraHsScchCompForSigHsFach {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_throughputPqxHsdpaFach {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_eHichMinCodePower {
+    type int16 {
+      range -350..150;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_minDlPowerCapability {
+    type int16 {
+      range -300..500;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_uarfcnUl {
+    type int16 {
+      range 0..16383;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulInactivityHighRateTime {
+    type int16 {
+      range 0..1000;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_maxUserEHichPowerDlTti2 {
+    type int16 {
+      range -350..150;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_numOfTxAntennas {
+    type int16 {
+      range "1..1 | 2..2";
+    }
+  }
+  typedef ddt-Wrat_NbapCommon_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_extraCompHsFach {
+    type int16 {
+      range "0..200 | 1000..1000";
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_hsdpaMcInactivityTimer {
+    type int16 {
+      range 1..2550;
+    }
+  }
+  typedef ddt-Wrat_CommonChannelResourcesDl_numOfPich {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_DlPowerSharing_extraPowerHsdpaMixedMode {
+    type int16 {
+      range 0..160;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesTotalUl_totalUlCe {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_hsPowerMargin {
+    type int16 {
+      range 0..200;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulLowUsageTime {
+    type int16 {
+      range 10..1000;
+    }
+  }
+  typedef ddt-Wrat_NbapCommon_auditRetransmissionT {
+    type int16 {
+      range 1..150;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_extraHsScchPowerForSrbOnHsdpa {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schCongPeriodGbr {
+    type int16 {
+      range 1..50;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schPowerDeltaCongGbr {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulDchMaxAllowedSchRate {
+    type int16 {
+      range 0..3200;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_fccRotMarginHigh {
+    type int16 {
+      range -550..550;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_eulMinMarginCoverage {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulFachInitialRate {
+    type int16 {
+      range 0..1376;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_eulMaxTdUsers {
+    type int16 {
+      range "0..0 | 2..8";
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schPrioForAbsResSharing {
+    type int16 {
+      range 0..15;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesDl_dlStaticCeMaxLimit {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_CommunicationContexts_noOfCommunicationContexts {
+    type int16 {
+      range 0..9999;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_operatingBand {
+    type int16 {
+      range "1..14 | 19..21";
+    }
+  }
+  typedef ddt-Wrat_CellResources_numOfPccpch {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulMaxTotalProtectedRate {
+    type int16 {
+      range 0..20000;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schWeight {
+    type int16 {
+      range 1..10000;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_bandwidthDl {
+    type int16 {
+      range 38..50;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_eulMaxNoSchEDch {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_geoDatum {
+    type string {
+      length 5..5;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesUl_ulStaticCe {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_IubDataStreams_maxHsRate {
+    type int16 {
+      range 1..10000;
+    }
+  }
+  typedef ddt-Wrat_CommonChannelResourcesDl_numOfFach {
+    type int16 {
+      range 0..2;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schCongThreshNonGbr {
+    type int16 {
+      range 0..20;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_extraCompForSigHsFach {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_bandwidthUl {
+    type int16 {
+      range 38..50;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCellGroup_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_eulNoERgchGroups {
+    type int32 {
+      range 1..20;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_eulLockedNoiseFloor {
+    type int16 {
+      range -1150..-600;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_beamDirection {
+    type string {
+      length 3..3;
+    }
+  }
+  typedef ddt-Wrat_HsPdschCodeCapacities_hsPdschCodesAvailable {
+    type uint16 {
+      range 0..720;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_cellRange {
+    type int32 {
+      range 250..200000;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesDl_dlStaticCe {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schMinPowerNonGbrHsUsers {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_dlPowerOffsetCombinedCell {
+    type int16 {
+      range -160..0;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_hsScchMinCodePower {
+    type int16 {
+      range -350..150;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulLowRate {
+    type int16 {
+      range 0..6016;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_longitude {
+    type int32 {
+      range -8388608..8388607;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_eulMaxRotCoverage {
+    type int16 {
+      range 0..550;
+    }
+  }
+  typedef ddt-Wrat_CommonChannelResourcesUl_numOfRach {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eul2msFirstSchedStep {
+    type int16 {
+      range "20..20 | 160..160";
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_eulNoiseFloorLock {
+    type int16 {
+      range "-1150..-600 | -1..-1";
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_localCellId {
+    type int32 {
+      range 0..268435455;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_eulMcActivationDelayTime {
+    type int16 {
+      range 0..2000;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_eulFachMaxDcchDtchTime {
+    type int16 {
+      range 5..500;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_cqiErrorsAbsent {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesUl_ulStaticCeLimit {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_NbapCommon_l3EstablishSupervisionT {
+    type int16 {
+      range 1..500;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_nbirFixedNotchPosition {
+    type int16 {
+      range -25..25;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_qualityCheckPowerEHich {
+    type int16 {
+      range -350..150;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_txBranchAPower {
+    type int32 {
+      range 1..10000000;
+    }
+  }
+  typedef ddt-Wrat_IubDataStreams_hsDataFrameDelayThreshold {
+    type int16 {
+      range 10..200;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_rSiteRef {
+    type string {
+      length 1..35;
+    }
+  }
+  typedef ddt-Wrat_IubDataStreams_noOfDedicatedStreams {
+    type int16 {
+      range 0..9999;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_numOfBranchWithNbir {
+    type int16 {
+      range 0..4;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_extraPowerForSrbOnHsdpa {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_maxUserEHichERgchPowerDl {
+    type int16 {
+      range -350..150;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schMaxDelay {
+    type int16 {
+      range "-1..-1 | 1..300";
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schNoCongPeriodGbr {
+    type int16 {
+      range 1..50;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_maxNumEulUsers {
+    type int16 {
+      range 1..128;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_maxNumHsdpaUsers {
+    type int16 {
+      range 1..128;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesDl_dlAvailableCe {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesTotalUl_totalUlCeAvailable {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_extraHsScchCompHsFach {
+    type int16 {
+      range "0..200 | 1000..1000";
+    }
+  }
+  typedef ddt-Wrat_CellResources_numOfBch {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_CommonChannelResourcesDl_numOfPch {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_CellResources_numOfPcpich {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_height {
+    type string {
+      length 0..6;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesUl_ulAvailableCe {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_IubDataStreams_noOfCommonStreams {
+    type int16 {
+      range 0..999;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulTargetRate {
+    type int16 {
+      range 0..6016;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_chQualOffset {
+    type int16 {
+      range 0..30;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_throughputPqxHsFach {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-Wrat_Iub_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Wrat_NbapDedicated_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulMaxShoRate {
+    type int16 {
+      range 0..6016;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulNonServHwRate {
+    type int16 {
+      range 0..5760;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schCongThreshGbr {
+    type int16 {
+      range 0..250;
+    }
+  }
+  typedef ddt-Wrat_IubDataStreams_hsRbrWeight {
+    type int16 {
+      range 32..320;
+    }
+  }
+  typedef ddt-Wrat_NodeBSectorCarrier_eulThermalLevelPrior {
+    type int16 {
+      range -1150..-600;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_defaultCqiHsFach {
+    type int16 {
+      range 1..30;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_minBitRate {
+    type int16 {
+      range "-1..-1 | 1..2048";
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulFachMinAllocation {
+    type int16 {
+      range 1..90;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_extraHsScchCompEnhUeDrx {
+    type int16 {
+      range "0..200 | 1000..1000";
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_minSpreadingFactor {
+    type int16 {
+      range "4..4 | 8..8 | 16..16 | 32..32 | 64..64 | 128..128 | 256..256 | 512..512";
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_eulTdSchedulingFactor {
+    type int16 {
+      range 0..15;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_hsdpaMcActivityBufferThreshold {
+    type int16 {
+      range 0..200;
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_eulNoReschUsers {
+    type int16 {
+      range 0..32;
+    }
+  }
+  typedef ddt-Wrat_CeCapacitiesTotalUl_totalUlCeMaxLimit {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Wrat_CellResources_numOfSsch {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_RadioLinks_noOfRadioLinks {
+    type int16 {
+      range 0..999;
+    }
+  }
+  typedef ddt-Wrat_CommonChannelResourcesDl_numOfAich {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_CellResources_numOfScpich {
+    type int16 {
+      range 0..1;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_extraCompEnhUeDrx {
+    type int16 {
+      range "0..200 | 1000..1000";
+    }
+  }
+  typedef ddt-Wrat_NodeBFunction_rSiteRef {
+    type string {
+      length 1..35;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_schNoCongThreshGbr {
+    type int16 {
+      range 0..250;
+    }
+  }
+  typedef ddt-Wrat_Iub_rSiteRef {
+    type string {
+      length 1..35;
+    }
+  }
+  typedef ddt-Wrat_NodeBLocalCell_powerSharingMaxTransmissionPower {
+    type int16 {
+      range 0..530;
+    }
+  }
+  grouping struct-HsPdschCodeCapacities {
+    description "HS-PDSCH code capacity with BB HWAC limit..";
+    leaf hsPdschCodesMaxLimit {
+      description "Number of potentially available HS-PDSCH codes on Baseband unit, at maximum Baseband HWAC level.\nValid for current configuration, i.e. Baseband Unit configured for standards W, L+W, W+G, or L+W+G.";
+      type erienmnrmwrat:ddt-Wrat_HsPdschCodeCapacities_hsPdschCodesMaxLimit;
+      mandatory true;
+    }
+    leaf hsPdschCodesAvailable {
+      description "Number of available HS-PDSCH codes on Baseband unit at current Baseband HWAC level.\nOperator can increase HsPdschCodesAvailable by activating higher Baseband HWAC level, until HsPdschCodesAvailable reaches HsPdschCodesMaxLimit.\nValid for current configuration, i.e. Baseband Unit configured for standards W, L+W, W+G, or L+W+G.";
+      type erienmnrmwrat:ddt-Wrat_HsPdschCodeCapacities_hsPdschCodesAvailable;
+      mandatory true;
+    }
+  } // end 'grouping struct-HsPdschCodeCapacities'
+  grouping struct-CeCapacitiesDl {
+    description "Downlink channel element capacities.";
+    leaf dlAvailableCe {
+      description "Number of channel elements in downlink available on Baseband unit.\nAvailable Baseband HWAC capacity, limit used at grace period.";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesDl_dlAvailableCe;
+      mandatory true;
+    }
+    leaf dlStaticCe {
+      description "Number of channel elements in downlink for R99 traffic.\nLesser of capacity license 'Downlink Channel Elements' or available capacity on Baseband unit (dlAvailableCe).";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesDl_dlStaticCe;
+      mandatory true;
+    }
+    leaf dlStaticCeMaxLimit {
+      description "Maximum DL CE Capacity on Baseband Unit.\nMaximum limit of DL CE achievable by means of Baseband HWAC.";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesDl_dlStaticCeMaxLimit;
+      mandatory true;
+    }
+  } // end 'grouping struct-CeCapacitiesDl'
+  grouping struct-CeCapacitiesTotalUl {
+    description "Total uplink channel element capacities.";
+    leaf totalUlCeMaxLimit {
+      description "Maximum total UL CE capacity on Baseband Unit.\nMaximum limit of total UL CE, both static and dynamic, acheivable by means of Baseband HWAC. Buying this level results in maximum utalization of features \"CE Extension for EUL\" and \"Additional CE Extension for EUL\".";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesTotalUl_totalUlCeMaxLimit;
+      mandatory true;
+    }
+    leaf totalUlCeAvailable {
+      description "Number of available uplink channel elements in total on Baseband unit, both static and dynamic.\nValue indicates licensed hardware activation code limit in license key.";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesTotalUl_totalUlCeAvailable;
+      mandatory true;
+    }
+    leaf totalUlCe {
+      description "Number of uplink channel elements in total, both static and dynamic.\nHigher value is achieved with feature “CE Extension for EUL” and an even higher one by adding feature “Additional CE Extension for EUL\".";
+      yexte:dependencies "Value depends on whether feature “CE Extension for EUL” and feature “Additional CE Extension for EUL” are OPERABLE.";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesTotalUl_totalUlCe;
+      mandatory true;
+    }
+  } // end 'grouping struct-CeCapacitiesTotalUl'
+  grouping struct-CeCapacitiesUl {
+    description "Uplink channel element capacities.";
+    leaf ulAvailableCe {
+      description "Number of channel elements in uplink available on Baseband unit.\nAvailable Baseband HWAC capacity, limit used at grace period.";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesUl_ulAvailableCe;
+      mandatory true;
+    }
+    leaf ulStaticCeLimit {
+      description "Maximum UL CE capacity on Baseband Unit.\nMaximum limit of UL CE acheivable by means of Baseband HWAC.";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesUl_ulStaticCeLimit;
+      mandatory true;
+    }
+    leaf ulStaticCe {
+      description "Number of static channel elements in uplink for R99 and EUL traffic. \nLesser of capacity license ‘Uplink Channel Elements’ or available capacity on Baseband unit (ulAvailableCe).\n";
+      type erienmnrmwrat:ddt-Wrat_CeCapacitiesUl_ulStaticCe;
+      mandatory true;
+    }
+  } // end 'grouping struct-CeCapacitiesUl'
+  grouping moc-NodeBSectorCarrier-keys {
+    description "Key(s) for MOC NodeBSectorCarrier";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nodeBSectorCarrierId;
+      type string;
+    }
+  } // end 'grouping moc-NodeBSectorCarrier-keys'
+  grouping moc-NodeBSectorCarrier {
+    description "This MO models a carrier frequency that is broadcast in a sector.";
+    leaf eulThermalLevelPrior {
+      description "The anticipated uplink noise floor of the unloaded RBS, including feeder and TMA contributions.";
+      yexte:takes-effect "At next setup of cell. If cell is setup and the noise floor is locked, at commit.\nIf cell is setup and the noise floor is unlocked, at next noise floor lock.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_eulThermalLevelPrior;
+      default -1040;
+    }
+    leaf sectorEquipmentFunctionRef {
+      yexte:restricted;
+      description "Reference to a SectorEquipmentFunction MO.";
+      mandatory true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf latitude {
+      description "The latitude of the corresponding sector antenna, according to a certain geodetic datum (see attribute geoDatum). \nAllows a maximum resolution of 2.4 m. The integer value is calculated as follows based on a position expressed in degrees (dd), minutes (mm) and seconds (ss.s), where dd has a value between 0 and 90:\nlatitude = ((dd + mm/60 + ss.s/3600) / 90) x 8388608\nExample: Paris Orly airport has latitude 4542009 according to WGS84.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_latitude;
+    }
+    leaf numOfTxAntennas {
+      description "Number of DL antennas.\nFeatures Psi-Coverage and Combined Cell require same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      mandatory true;
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_numOfTxAntennas;
+    }
+    leaf-list rfBranchTxRef {
+      min-elements 0;
+      max-elements 2;
+      erienmyext:no-notification;
+      description "A list of references to MO RfBranch instances, LDNs.\nThese MOs represents the RF branches the NodeBSectorCarrier shall use for TX.\nIf no reference is specified carrier allocation is based on the RF Branch MOM list (default behavior).";
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      yexte:dependencies "Referenced RfBranch(es) must belong to the same MO SectorEquipmentFunction that is referenced from this NodeBSectorCarrier.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf noiseFloorEstimationMode {
+      description "The noise floor estimation algorithm selection parameter.";
+      type erienmnrmwrat:enum-NoiseFloorAlgorithm;
+      default RECURSIVE_NOISE_FLOOR;
+    }
+    leaf dlPowerOffsetCombinedCell {
+      description "Power offset of PCPICH for this NodeBSectorCarrier.";
+      yexte:takes-effect "At next cell setup";
+      yexte:precondition "Usage state of parent NodeBLocalCell must be idle (cell must not be setup), before setting this attribute.";
+      yexte:dependencies "Ignored unless a Combined Cell configuration, i.e. several NodeBSectorCarriers in the NodeBLocalCell connected to different SectorEquipmentFunctions.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_dlPowerOffsetCombinedCell;
+      default 0;
+    }
+    leaf bandwidthUl {
+      description "UL carrier bandwidth.\nFeature Psi-Coverage requires same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_bandwidthUl;
+      default 50;
+    }
+    leaf cellRange {
+      description "Maximum range for random access detection.\nFor soft handover, RBS adds soft handover margin internally. Note: actual cell range resolution is 3 chips, that is, about 234 m.\nFeature Psi-Coverage requires same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      yexte:takes-effect "Next cell setup.";
+      yexte:dependencies "If between default value and 80 km, either optional feature is required: \"Extended Cell Range 80 km\" or \"Extended Cell Range 200 km\". If more than 80 km, \"Extended Cell Range 200 km\" is required.\nFor a sector carrier that is part of a local cell using more than one sector carrier, the default value must not be exceeded, even if any of the licenses exists.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_cellRange;
+      default 35000;
+    }
+    leaf txPowerPersistentLock {
+      description "Whether attributes configuredMaxTxPower and txBranchAPower are locked or not.\nWhen true, attributes configuredMaxTxPower and txBranchAPower cannot be changed and MO NodeBSectorCarrier cannot be deleted.";
+      yexte:precondition "Once set to true there is no possibility to change the value back to false unless a node re-integration is performed.";
+      type boolean;
+      default false;
+    }
+    leaf numOfBranchWithNbir {
+      config false;
+      description "The number of branches where Narrowband Interference Rejection is currently active.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_numOfBranchWithNbir;
+    }
+    leaf numOfRxAntennas {
+      description "Number of UL antennas.\nFeatures Psi-Coverage and Combined Cell require same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      mandatory true;
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_numOfRxAntennas;
+    }
+    leaf geoDatum {
+      description "Denotes the geodetic (geographic) datum for this sector.\nExample: WGS84 (World Geodetic System 1984).";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_geoDatum;
+      default WGS84;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf longitude {
+      description "The longitude of the corresponding sector antenna, according to a certain geodetic datum (see attribute geoDatum). \nAllows a maximum resolution of 2.4 m. The integer value is calculated as follows based on a position expressed in degrees (ddd), minutes (mm) and seconds (ss.s), where ddd has a value between -180 and 180:\nlongitude = ((ddd + mm/60 + ss.s/3600) / 360) x 16777216\nExample: Paris Orly airport has longitude 110422 according to WGS84.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_longitude;
+    }
+    leaf height {
+      description "Height above ground.\nExample: 1015 = 10.15 meters\nUnit: 1 cm";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_height;
+    }
+    leaf latHemisphere {
+      description "Defines the latitudinal hemisphere.\nExample:  \nParis has latHemisphere = NORTH\n \nCape Town has latHemisphere = SOUTH";
+      type erienmnrmwrat:enum-SectorLatHemisphere;
+      default NORTH;
+    }
+    leaf nbirAlgorithm {
+      description "Narrowband Interference Rejection algorithm to use on cell carrier of Radio Units when feature NBIR is activated.";
+      yexte:dependencies "Ignored unless serviceState = OPERABLE for feature Narrowband Interference Rejection.";
+      type erienmnrmwrat:enum-NbirSelectAlgorithm;
+      default AUTO_GENERIC_ADAPTIVE_NBIR;
+    }
+    leaf-list rfBranchRxRef {
+      min-elements 0;
+      max-elements 4;
+      erienmyext:no-notification;
+      description "A list of references to MOs RfBranch and CcBranch instances, LDNs.\nThese MOs represent the RF branches the NodeBSectorCarrier shall use for RX.\nIf no reference is specified carrier allocation is based on the RF Branch MOM list (default behavior).";
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      yexte:dependencies "Referenced RfBranch(es) or CcBranch(es) must belong to the same MO SectorEquipmentFunction that is referenced from this NodeBSectorCarrier.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf fccRotMarginHigh {
+      description "Rise over Thermal margin relative eulMaxRotCoverage.\nDefines high Rise over Thermal threshold for UL Fast Congestion Control. Stabilizes cell carrier Rise over Threshold by control of EUL serving cell traffic.\nFeature Psi-Coverage requires same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      yexte:dependencies "Ignored unless serviceState = OPERABLE for feature UlFcc.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_fccRotMarginHigh;
+      default 40;
+    }
+    leaf txBranchAPower {
+      description "Maximum absolute output power of carrier branch A. \nWhen numOfTxAntennas=1, txBranchAPower is ignored\nWhen numOfTxAntennas=2 then\n•       if txBranchAPower is not set (empty), output power is evenly distributed between TX branches of a sector carrier.\n•       if txBranchAPower has a value, maximum absolute output power of carrier branch B is equal to configuredMaxTxPower - txBranchAPower.";
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      yexte:precondition "txPowerPersistentLock must be false.";
+      yexte:dependencies "txBranchAPower must be less than configuredMaxTxPower.\nPower relation between carrier branch A and  carrier branch B is not allowed to differ more than 40 dB i.e.\n0.0001<(txBranchAPower/(configuredMaxTxPower-txBranchAPower))<10000.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_txBranchAPower;
+    }
+    leaf eulMaxRotCoverage {
+      description "Maximum Rise over Thermal level allowed to preserve coverage.\nFeature Psi-Coverage requires same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_eulMaxRotCoverage;
+      default 100;
+    }
+    leaf eulNoiseFloorLock {
+      description "Locks the noise floor level for RoT calculation to the given value, when set. The locked level is shown by the attribute eulLockedNoiseFloor.\nAttribute is empty -> The noise floor level is not locked.\nValue = -1 -> The noise floor level is locked to current level.\nIf the cell is setup, the value -1 locks the noise floor to the current estimated noise floor level.\nIf the cell is not setup, the value -1 locks the noise floor to the value given by eulThermalLevelPrior at next cell setup.\nThe level used for the locked noise floor will be lost at next cell deletion.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_eulNoiseFloorLock;
+    }
+    leaf configuredMaxTxPower {
+      description "Maximum absolute output power of sector carrier.\nOutput power is evenly distributed over antenna connectors used for TX transmission by the sector carrier, unless attribute txBranchAPower is set.\nFeature Psi-Coverage requires same attribute value for all NodeBSectorCarriers in given NodeBLocalCell. Total cell power must be equally distributed over all sector carriers.";
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      yexte:precondition "txPowerPersistentLock must be false.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_configuredMaxTxPower;
+      default 20000;
+    }
+    leaf minDlPowerCapability {
+      config false;
+      description "Minimum DL power capability for sector carrier.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_minDlPowerCapability;
+    }
+    leaf partOfSectorPower {
+      status deprecated {
+        yexte:status-information "Since 16B. Replaced by configuredMaxTxPower.";
+      }
+      description "Part of total sector power allocated for sector carrier.\nOutput power is evenly distributed over antenna connectors, used for TX transmission allocated for the sector carrier. If total power for each antenna connector is over 100% at cell unlock, an alarm is generated. Local cell must be locked to prevent transmission.\nFeature Psi-Coverage requires same attribute for all NodeBSectorCarriers in a given NodeBLocalCell. Total cell power must be equally distributed over all NodeBSectorCarriers, and their sum not over 100%.";
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_partOfSectorPower;
+      default 0;
+    }
+    leaf beamDirection {
+      description "Beam direction of the corresponding sector antenna.\nUse value \"000\" to \"359\", to define angel for beam direction.\nExamples:\n• 000 = North\n• 090 = East\n• 180 = South\n• 270 = West\nUnit: 1°";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_beamDirection;
+    }
+    leaf nbirAutoCurrentAlgorithm {
+      config false;
+      description "Current NBIR algorithm when Automatic NBIR is enabled. NOT_APPLICABLE when Automatic NBIR is disabled.(Automatic NBIR is enabled when nbirAlgorithm is AUTO_GENERIC_ADAPTIVE_NBIR or AUTO_GENERIC_ADAPTIVE_OFF_NBIR.)";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-NbirAutoSelectAlgorithm;
+    }
+    leaf eulMaxOwnUuLoad {
+      description "Maximum allowed contribution to UL interference rise from own cell carrier traffic.\nScheduler limits E-DCH power based on this parameter.\nFeature Psi-Coverage requires same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_eulMaxOwnUuLoad;
+      default 100;
+    }
+    leaf fccRotMarginLow {
+      description "Rise over Thermal margin relative eulMaxRotCoverage.\nDefines low Rise over Thermal threshold for UL Fast Congestion Control.  Stabilizes cell carrier Rise over Thermal by control of EUL serving cell traffic.\nFeature Psi-Coverage requires same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      yexte:dependencies "Ignored unless serviceState = OPERABLE for feature UlFcc.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_fccRotMarginLow;
+      default 25;
+    }
+    leaf nbirFixedNotchPosition {
+      description "Defines notch position for each cell carrier when feature Narrowband Interference Rejection is activated and nbirAlgorithm is FIXED_NOTCH_NBIR.";
+      yexte:dependencies "Ignored unless serviceState = OPERABLE for feature Narrowband Interference Rejection.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_nbirFixedNotchPosition;
+      default 25;
+    }
+    leaf eulLockedNoiseFloor {
+      config false;
+      description "The noise floor level used when the noise floor is locked by eulNoiseFloorLock.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_eulLockedNoiseFloor;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+    leaf bandwidthDl {
+      description "DL carrier bandwidth.\nFeature Psi-Coverage requires same attribute value for all NodeBSectorCarriers in given NodeBLocalCell.";
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_bandwidthDl;
+      default 50;
+    }
+    leaf maxDlPowerCapability {
+      config false;
+      description "Maximum DL power capability for sector carrier.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:ddt-Wrat_NodeBSectorCarrier_maxDlPowerCapability;
+    }
+  } // end 'grouping moc-NodeBSectorCarrier'
+  grouping moc-EDchResourcesCell-keys {
+    description "Key(s) for MOC EDchResourcesCell";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name eDchResourcesCellId;
+      type string;
+    }
+  } // end 'grouping moc-EDchResourcesCell-keys'
+  grouping moc-EDchResourcesCell {
+    description "This MO models the Enhanced Uplink Shared Channel resources related to a Node B Local Cell. They are set up through Iub.\n\nThe RDN of this MO is EDchResourcesCell=1.\n\nPersistent: No";
+  } // end 'grouping moc-EDchResourcesCell'
+  grouping moc-IubDataStreams-keys {
+    description "Key(s) for MOC IubDataStreams";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name iubDataStreamsId;
+      type string;
+    }
+  } // end 'grouping moc-IubDataStreams-keys'
+  grouping moc-IubDataStreams {
+    description "This MO models all Iub data streams between the RNC and the Node B for common as well as for dedicated channels.\n\n";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmwrat:ddt-Wrat_IubDataStreams_userLabel;
+    }
+    leaf hsDataFrameDelayThreshold {
+      description "Maximum build-up delay for transport network buffer, a dynamic delay. Measured dynamic delay above this limit is interpreted as IUB congestion detection.";
+      type erienmnrmwrat:ddt-Wrat_IubDataStreams_hsDataFrameDelayThreshold;
+      default 60;
+    }
+    leaf hsRbrDiscardProbability {
+      description "Discard probability for flow where IUB congestion is detected. Used when HSDPA RBR QoS Profiling feature and AQM-based congestion control for HSDPA feature are both activated.";
+      type erienmnrmwrat:ddt-Wrat_IubDataStreams_hsRbrDiscardProbability;
+      default 0;
+    }
+    leaf noOfCommonStreams {
+      erienmyext:no-notification;
+      config false;
+      description "Total number of common data streams and HS-DSCH data streams allocated in Node B.";
+      type erienmnrmwrat:ddt-Wrat_IubDataStreams_noOfCommonStreams;
+    }
+    leaf maxHsRate {
+      description "Maximum HSDPA bit rate over Iub.";
+      type erienmnrmwrat:ddt-Wrat_IubDataStreams_maxHsRate;
+      default 470;
+    }
+    leaf-list hsAqmCongCtrlSpiOnOff {
+      min-elements 16;
+      max-elements 16;
+      description "AQM Based Congestion Control for HSDPA status; activated (ON) or deactivated (OFF) for each scheduling priority class. First value in the sequence is for scheduling priority class 0.";
+      type erienmnrmwrat:enum-SchFlowControlState;
+      default OFF;
+      default ON;
+      default ON;
+      default ON;
+      default ON;
+      default OFF;
+      default OFF;
+      default ON;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+    }
+    leaf-list hsRbrWeight {
+      min-elements 16;
+      max-elements 16;
+      description "Attribute controls relative bitrates that users get. Weight ranges of value are normalized for peak factor around 100% when being calculated or configured. Weight is needed to implement RBR functions. Weight is used by the algorithm HSDPA Flow Control and its AIMD method, which is used for Transport Network limited scenarios.\nFor SPIs where value OFF is set for IubDataStreams::schHsFlowControlOnOff, value 100% is used for hsRbrWeight.\nThis attribute is not supported when AQM-based congestion control for HSDPA is activated.\nThe first value in the sequence represents SPI0 and the last SPI15.";
+      type erienmnrmwrat:ddt-Wrat_IubDataStreams_hsRbrWeight;
+      default 100;
+      default 100;
+      default 50;
+      default 100;
+      default 200;
+      default 100;
+      default 100;
+      default 100;
+      default 100;
+      default 100;
+      default 100;
+      default 100;
+      default 100;
+      default 100;
+      default 100;
+      default 100;
+    }
+    leaf noOfDedicatedStreams {
+      erienmyext:no-notification;
+      config false;
+      description "Total DCH data streams allocated in Node B.";
+      type erienmnrmwrat:ddt-Wrat_IubDataStreams_noOfDedicatedStreams;
+    }
+    leaf-list schHsFlowControlOnOff {
+      min-elements 16;
+      max-elements 16;
+      description "HSDPA flow control status. ON or OFF for each scheduling priority class. First sequence value is for scheduling priority class 0.";
+      type erienmnrmwrat:enum-SchFlowControlState;
+      default OFF;
+      default ON;
+      default ON;
+      default ON;
+      default ON;
+      default OFF;
+      default OFF;
+      default ON;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+      default OFF;
+    }
+  } // end 'grouping moc-IubDataStreams'
+  grouping moc-EDchResources-keys {
+    description "Key(s) for MOC EDchResources";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name eDchResourcesId;
+      type string;
+    }
+  } // end 'grouping moc-EDchResources-keys'
+  grouping moc-EDchResources {
+    description "This MO models the Enhanced Uplink Shared Channel resources. They are set up through Iub.\n\nThe RDN of this MO is EDchResources=1.\n\nPersistent: No";
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+  } // end 'grouping moc-EDchResources'
+  grouping moc-NodeBFunction-keys {
+    description "Key(s) for MOC NodeBFunction";
+    leaf id {
+      erienmyext:no-notification;
+      description " The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nodeBFunctionId;
+      type string;
+    }
+  } // end 'grouping moc-NodeBFunction-keys'
+  grouping moc-NodeBFunction {
+    description "This MO models the radio network resources in a Node B application (WCDMA).\n";
+    leaf bsctModeStatus {
+      config false;
+      description "If NodeB is in Normal or Base Station Conformance Testing operating mode.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-BsctMode;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_userLabel;
+    }
+    leaf-list dualBandSectorGroup1 {
+      min-elements 0;
+      max-elements 2;
+      description "Sector Group 1 in dual-band configuration.\nBy definition, MO class SectorEquipmentFunction is limited to one frequency band. It associates two SectorEquipmentFunction MOs, that represent same geographical area to form one sector group. This information is used in order to determine which cells can operate in dual-band HSDPA multi-carrier fashion.";
+      yexte:takes-effect "At next unlock of Local Cell Group.";
+      yexte:dependencies "Two SectorEquipmentFunction MOs must be referenced. SectorEquipmentFunction must be part of only one sector group.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container ceCapacitiesNodeBTotalUl {
+      description "Total uplink channel element capacities, including both static and dynamic uplink channel elements.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmwrat:struct-CeCapacitiesTotalUl;
+    } // end 'container ceCapacitiesNodeBTotalUl'
+    leaf eulTargetRate {
+      description "The target scheduled grant for a user.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulTargetRate;
+      default 128;
+    }
+    leaf eulMaxAllowedSchRate {
+      description "The maximum allowed scheduled data rate per user.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulMaxAllowedSchRate;
+      default 5120;
+    }
+    leaf-list dualBandSectorGroup2 {
+      min-elements 0;
+      max-elements 2;
+      description "Sector Group 2 in dual-band configuration.\nBy definition, MO class SectorEquipmentFunction is limited to one frequency band. It associates two SectorEquipmentFunction MOs, that represent same geographical area to form one sector group. This information is used in order to determine which cells can operate in dual-band HSDPA multi-carrier fashion.";
+      yexte:takes-effect "At next unlock of Local Cell Group.";
+      yexte:dependencies "Two SectorEquipmentFunction MOs must be referenced. SectorEquipmentFunction must be part of only one sector group.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list dualBandSectorGroup3 {
+      min-elements 0;
+      max-elements 2;
+      description "Sector Group 3 in dual-band configuration.\nBy definition, MO class SectorEquipmentFunction is limited to one frequency band. It associates two SectorEquipmentFunction MOs, that represent same geographical area to form one sector group. This information is used in order to determine which cells can operate in dual-band HSDPA multi-carrier fashion.";
+      yexte:takes-effect "At next unlock of Local Cell Group.";
+      yexte:dependencies "Two SectorEquipmentFunction MOs must be referenced. SectorEquipmentFunction must be part of only one sector group.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list dualBandSectorGroup4 {
+      min-elements 0;
+      max-elements 2;
+      description "Sector Group 4 in dual-band configuration.\nBy definition, MO class SectorEquipmentFunction is limited to one frequency band. It associates two SectorEquipmentFunction MOs, that represent same geographical area to form one sector group. This information is used in order to determine which cells can operate in dual-band HSDPA multi-carrier fashion.";
+      yexte:takes-effect "At next unlock of Local Cell Group.";
+      yexte:dependencies "Two SectorEquipmentFunction MOs must be referenced. SectorEquipmentFunction must be part of only one sector group.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list dualBandSectorGroup5 {
+      min-elements 0;
+      max-elements 2;
+      description "Sector Group 5 in dual-band configuration.\nBy definition, MO class SectorEquipmentFunction is limited to one frequency band. It associates two SectorEquipmentFunction MOs, that represent same geographical area to form one sector group. This information is used in order to determine which cells can operate in dual-band HSDPA multi-carrier fashion.";
+      yexte:takes-effect "At next unlock of Local Cell Group.";
+      yexte:dependencies "Two SectorEquipmentFunction MOs must be referenced. SectorEquipmentFunction must be part of only one sector group.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf release {
+      erienmyext:no-notification;
+      config false;
+      description "The product release of the Node B managed function.";
+      type string;
+    }
+    leaf-list dualBandSectorGroup6 {
+      min-elements 0;
+      max-elements 2;
+      description "Sector Group 6 in dual-band configuration.\nBy definition, MO class SectorEquipmentFunction is limited to one frequency band. It associates two SectorEquipmentFunction MOs, that represent same geographical area to form one sector group. This information is used in order to determine which cells can operate in dual-band HSDPA multi-carrier fashion.";
+      yexte:takes-effect "At next unlock of Local Cell Group.";
+      yexte:dependencies "Two SectorEquipmentFunction MOs must be referenced. SectorEquipmentFunction must be part of only one sector group.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list eulSchedulingWeight {
+      min-elements 16;
+      max-elements 16;
+      description "This is a sequence of 16 weight factors associated with the 16 Scheduling Priority Indicators (SPIs). The weight factors represent the relative bandwidth between users assigned to the different scheduling priorities. The special value 0xFFFE (65534) is used to represent infinity. When eulSchedulingWeight is set to infinity, users with higher SPI values have absolute priority over those with lower SPI.\n[0]: Weight for SPI = 0 \n[1]: Weight for SPI = 1 \n...\n[15]: Weight for SPI = 15";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulSchedulingWeight;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+    }
+    container ceCapacitiesNodeBDl {
+      description "Downlink channel element capacities.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmwrat:struct-CeCapacitiesDl;
+    } // end 'container ceCapacitiesNodeBDl'
+    leaf eulLowRate {
+      description "Defines an EUL scheduling grant below eulTargetRate. A user's grant will at most be reduced to this level in a single step during overload situations.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulLowRate;
+      default 32;
+    }
+    leaf featCtrlDlPowerControlEul {
+      description "Whether unlicensed feature \"Downlink Power Control for Eul\" is ON or OFF.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default ON;
+    }
+    leaf eulNoReschUsers {
+      description "The number of simultaneous users per cell that are allowed to perform rescheduling.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulNoReschUsers;
+      default 5;
+    }
+    leaf rSiteRef {
+      description "A label used for grouping radio nodes located at the same site. Recommended characters: \"a-z\", \"A-Z\", \"0-9\", \"_\", \"-\".";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_rSiteRef;
+    }
+    leaf advCellSupActions {
+      description "Recovery action performed when Advanced Cell Supervision feature detects a sleeping cell.";
+      type erienmnrmwrat:enum-AdvCellSupAction;
+      default NO_ACTION;
+    }
+    leaf eulMaxShoRate {
+      description "Defines the maximum rate that may be allocated in the serving cell for scheduled data to an E-DCH user during a soft handover.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulMaxShoRate;
+      default 5760;
+    }
+    container ceCapacitiesNodeBUl {
+      description "Static uplink channel element capacities.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmwrat:struct-CeCapacitiesUl;
+    } // end 'container ceCapacitiesNodeBUl'
+    leaf eul2msFirstSchedStep {
+      description "Specifies if initial ramp-up step from zero rate stops at the 20 kbps step introduced by the feature 'EUL Single HARQ Process Scheduling' (Per HARQ Process Grant).\nDependencies: The attribute is ignored if the feature 'EUL Single HARQ Process Scheduling' is not active.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eul2msFirstSchedStep;
+      default 160;
+    }
+    leaf eulLowUsageTime {
+      description "Rate measurement period for utilization based grant reduction.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulLowUsageTime;
+      default 400;
+    }
+    leaf eulInactivityHighRateTime {
+      description "Time that the E-DCH user has zero kbps scheduled data rate to be considered \"inactive high rate\" when this user's scheduled grant > eulMinHwSchRate.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulInactivityHighRateTime;
+      default 20;
+    }
+    leaf featCtrlOptimizedAntennaSelection {
+      status deprecated {
+        yexte:status-information "Since 20.Q2. Has no functional behavior. Planned to be removed.";
+      }
+      description "Whether unlicensed feature \"Optimized Antenna Selection\" is ON or OFF.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf eulMaxTotalProtectedRate {
+      description "Maximum protected D-EDCH grant per cell. D-EDCH serving radio links with a protected grant, are protected at minimum grant level. This can avoid E-DCH grant starvation in case Uu headroom is low.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulMaxTotalProtectedRate;
+      default 1280;
+    }
+    leaf eulFachInitialRate {
+      description "Initial granted rate for EUL-FACH users.";
+      yexte:takes-effect "Next time EulFach is activated (NodeBLocalCell::featCtrlEulFach = ON).";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulFachInitialRate;
+      default 134;
+    }
+    leaf ipOptimizedHsTnSettingsOnOff {
+      description "Usage of IP Optimized TN settings for HSDPA flow control.\nImproves throughput when high bandwidth IP links are used.";
+      type erienmnrmwrat:enum-IpOptimizedHsTnSettingsStatus;
+      default OFF;
+    }
+    leaf combinedCellConfiguration {
+      description "The type of combined cell deployment.";
+      type erienmnrmwrat:enum-CombinedCellConfiguration;
+      default COMBINED_CELL_NORMAL;
+    }
+    leaf eulNonServHwRate {
+      description "The amount of hardware resources (in terms of a bit rate) that dynamically may be allocated to a non-serving E-DCH radio link for processing scheduled data.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulNonServHwRate;
+      default 480;
+    }
+    leaf eulDchMaxAllowedSchRate {
+      description "The maximum allowed scheduled data rate per user when a user has both DCH and E-DCH configured.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulDchMaxAllowedSchRate;
+      default 1920;
+    }
+    leaf eulInactivityLowRateTime {
+      status deprecated {
+        yexte:status-information "Since 17A. Not to be used. Ignored by the system.";
+      }
+      description "Time that the E-DCH user has zero kbps scheduled data rate to be considered \"inactive low rate\" when this user's scheduled grant = eulMinHwSchRate.";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulInactivityLowRateTime;
+      default 100;
+    }
+    leaf eulFachMinAllocation {
+      description "The minimum number of pooled static HW resources for EUL-FACH, for each LocalCell Group";
+      yexte:takes-effect "Next time EulFach is activated (NodeBLocalCell::featCtrlEulFach = ON).";
+      type erienmnrmwrat:ddt-Wrat_NodeBFunction_eulFachMinAllocation;
+      default 8;
+    }
+    action bsctSetMode {
+      description "Switches NodeB between Normal and Base Station Conformance Testing operation mode. When set to BASE_STATION_CONFORMANCE_TEST, only test processing is possible, any communication on NBAP will be blocked. It fails if any cell, common channel or dedicated channel have been setup before execution. When set to NORMAL, NodeB is operational for live traffic.";
+      input {
+        leaf mode {
+          mandatory true;
+          description "Operating modes.";
+          type erienmnrmwrat:enum-BsctMode;
+          default NORMAL;
+        }
+      }
+    }
+  } // end 'grouping moc-NodeBFunction'
+  grouping moc-NodeBLocalCell-keys {
+    description "Key(s) for MOC NodeBLocalCell";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nodeBLocalCellId;
+      type string;
+    }
+  } // end 'grouping moc-NodeBLocalCell-keys'
+  grouping moc-NodeBLocalCell {
+    description "This MO models a local cell, that is the equipment and resources in a Node B needed to support an UTRAN cell.\n\nPrecondition: This MO can not be deleted if it has not administrativeState=LOCKED.\n\n";
+    leaf schCongThreshNonGbr {
+      description "Threshold to detect the congestion situation of the non-guaranteed service.\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schCongThreshNonGbr;
+      default 2;
+    }
+    leaf schNoCongThreshGbr {
+      description "Threshold to detect the time that congestion situation of the guaranteed service ends.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schNoCongThreshGbr;
+      default 15;
+    }
+    leaf cqiErrorsAbsent {
+      description "Denotes the repetition factor for triggering consecutive correct CQI reports.\nValue 0 -> the RBS triggered updates are turned off.";
+      yexte:dependencies "Tuning of cqiErrorsAbsent is made together with cqiErrors.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_cqiErrorsAbsent;
+      default 0;
+    }
+    leaf featCtrlHsAdaptiveBler {
+      description "Whether licensed feature 'HSDPA Adaptive BLER' is ON or OFF.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf usageState {
+      erienmyext:no-notification;
+      config false;
+      description " Indicates the usage state of the NodeBLocalCell. The NodeBLocalCell becomes BUSY when the cell has been setup by the RNC.";
+      type erienmnrmwrat:enum-UsageState;
+    }
+    leaf eulMinMarginCoverage {
+      description "The uplink interference contribution from other cells is estimated in the load estimator, but is never allowed to go below the value of this parameter. The unit is load factor, that is, interference power from other cells divided by total interference power.\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_eulMinMarginCoverage;
+      default 0;
+    }
+    leaf eulMcCapability {
+      config false;
+      description "Indicates whether or not this local cell is capable of acting as serving cell for a EUL Multi-Carrier connection.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-EulMcCapability;
+    }
+    leaf featCtrlHsdpaPowerSharing {
+      description "Whether licensed feature 'HSDPA Dynamic Power Sharing' is ON or OFF.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf maxUserEHichERgchPowerDl {
+      description "E-HICH for serving and non serving/E-RGCH have fixed power relative CPICH power. But if feature 'DL Power Control EUL' is active, then the parameter defines the maximum power for E-HICH relative to CPICH for serving E-DCH RL. The parameter value is still fixed for all other cases.\n";
+      yexte:dependencies "maxUserEHichERgchPowerDl >= eHichMinCodePower";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_maxUserEHichERgchPowerDl;
+      default -140;
+    }
+    leaf-list schWeight {
+      min-elements 16;
+      max-elements 16;
+      description "Parameter to define the scheduling weight for scheduling priority class 0 to 15 (the first value in the sequence is for scheduling priority class 0).";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schWeight;
+      default 1;
+      default 10;
+      default 200;
+      default 300;
+      default 450;
+      default 900;
+      default 1000;
+      default 4000;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 1;
+      default 10000;
+    }
+    leaf-list throughputPqxHsdpaFach {
+      min-elements 15;
+      max-elements 15;
+      description "Throughput bandwidth set for the common priority queues for DTCH when data for a HS-FACH user is transmitted, defined per SPI (the first value in the sequence is for SPI 0 and the last one is for SPI 14). A HS-FACH user is a UE which is in RRC state CELL_FACH (on RNC level) and is using transport channel HS-DSCH and not FACH.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_throughputPqxHsdpaFach;
+      default 0;
+      default 0;
+      default 0;
+      default 30;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+    }
+    leaf featCtrlCpc {
+      description "Whether licensed feature 'Continuous Packet Connectivity - CPC' is ON or OFF.";
+      yexte:takes-effect "New connections.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf queueSelectAlgorithm {
+      description "Specifies the scheduling algorithm used in the cell.\n";
+      yexte:dependencies "Values other than PROPORTIONAL_FAIR_MEDIUM and ROUND_ROBIN only have effect if serviceState = OPERABLE on MO FeatureState for feature 'HSDPA Flexible Scheduler'. \nAlgorithm = default value PROPORTIONAL_FAIR_MEDIUM if:\n- serviceState = INOPERABLE and \n- value other than PROPORTIONAL_FAIR_MEDIUM or ROUND_ROBIN is selected";
+      type erienmnrmwrat:enum-CarrierQueueSelectAlgorithm;
+      default PROPORTIONAL_FAIR_MEDIUM;
+    }
+    leaf maxNumHsPdschCodes {
+      description "Maximum number of HS-PDSCH codes allowed per cell.\nAlarm Licensed Capacity Exceeded is given if:\n•         administrativeState=UNLOCKED and\n•         maxNumHsPdschCodes higher than the upper limit and\n•         Emergency Unlock is not activated\nWhere upper limit is: \n•         License key value if Licensed capacity 'Number of HSDPA Codes per cell' is enabled (see licenseState in MO CapacityState) or \n•         default value (maximum 5 HS-PDSCH codes) if license key is disabled.\nDuring Emergency Unlock, maximum 15 HS-PDSCH codes are allowed in each cell.";
+      yexte:takes-effect "Increase takes effect immediately. Decrease takes effect gracefully (if more codes than the new limit are setup by RNC, the new limit will not apply until the RNC has reconfigured the physical shared channel so that less codes than the new limit are used).";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_maxNumHsPdschCodes;
+      default 5;
+    }
+    leaf chQualOffset {
+      description "The parameter is used to offset the channel quality estimation.\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_chQualOffset;
+      default 18;
+    }
+    leaf featCtrlHsdpaMcInactCtrl {
+      description "Whether licensed feature 'Multi-Carrier Inactivity Control' is ON or OFF.";
+      yexte:takes-effect "New connection.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf hsdpaMcActivityBufferThreshold {
+      description "Determines required amount of data in MC PQ data buffer. Used to re-activate secondary serving HS-DSCH cell for UE in MC mode when it is deactivated. If multiple MC-PQs belong to same UE any data buffer can contain required amount of data to perform re-activation.";
+      yexte:dependencies "Ignored unless serviceState = OPERABLE for feature 'Multi-Carrier Inactivity Control' and featCtrlHsdpaMcInactCtrl = ON.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_hsdpaMcActivityBufferThreshold;
+      default 2;
+    }
+    leaf hsdpaMmPowerSharingCapability {
+      config false;
+      description "Whether this local cell is capable of HSDPA Mixed Mode Dynamic Power Sharing or not.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-HsdpaMmPowerSharingCapability;
+    }
+    leaf-list schMaxDelay {
+      min-elements 16;
+      max-elements 16;
+      description "Parameter to define the maximum scheduling delay for scheduling priority class 0 to 15 (the first value in the sequence is for scheduling priority class 0).\nUndefined value: -1";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schMaxDelay;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default 100;
+      default 10;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf powerSharingMaxTransmissionPower {
+      description "Maximum allowed transmission power for the cell in case of power sharing.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_powerSharingMaxTransmissionPower;
+      default 530;
+    }
+    leaf featCtrlFDpchSrbOnHsdpa {
+      description "Whether licensed feature 'Fractional DPCH and SRB on HSDPA' is ON or OFF.";
+      yexte:takes-effect "New connections.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf schMinPowerNonGbrHsUsers {
+      description "Parameter to define the minimum reserved power for the non-guaranteed service in congestion situation. The value is defined as a percentage of maximum transmission power.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schMinPowerNonGbrHsUsers;
+      default 0;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description " Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+    leaf localCellId {
+      description "The identity of the RBS local cell.";
+      mandatory true;
+      yexte:takes-effect "When local cell is idle, i.e. not set up by the RNC.";
+      yexte:dependencies " Value must be the same as in the corresponding RNC MO UtranCell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_localCellId;
+    }
+    leaf hsScchMaxCodePower {
+      description "HS-SCCH maximum code power relative PCPICH power. This parameter also determines the fixed power level for HS-SCCH.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_hsScchMaxCodePower;
+      default -20;
+    }
+    leaf hsdpaMcCapability {
+      config false;
+      description "Indicates whether or not this local cell is capable of acting as serving cell for a HSDPA Multi-Carrier connection.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-HsdpaMcCapability;
+    }
+    leaf bsctPnTransStatus {
+      config false;
+      description "Whether or not PN transmission started.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-BsctState;
+    }
+    leaf hsdpaPowerSharingCapability {
+      config false;
+      description "Indicates whether this local cell is capable of HSDPA dynamic power sharing or not.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-HsdpaPowerSharingCapability;
+    }
+    leaf extraHsScchCompEnhUeDrx {
+      description "Additional compensation applied to the HS-SCCH power calculated with the converted CQI value when data for the Enhanced UE DRX users are transmitted.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_extraHsScchCompEnhUeDrx;
+      default 10;
+    }
+    leaf operatingBand {
+      description "Operating frequency band.";
+      mandatory true;
+      yexte:dependencies "Must correspond to value of attribute uarfncDl.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_operatingBand;
+    }
+    leaf schCongPeriodGbr {
+      description "Minimum time period to define the congestion situation of the guaranteed service.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schCongPeriodGbr;
+      default 50;
+    }
+    leaf bsctBerMeasStatus {
+      config false;
+      description "Whether or not BER measurement started.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-BsctState;
+    }
+    leaf extraCompHsFach {
+      description "Additional compensation applied to the converted CQI value used for TFRC selection when data for the HS-FACH user is transmitted. A HS-FACH user is a UE which is in RRC state CELL_FACH (on RNC level) and is using transport channel HS-DSCH and not FACH.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_extraCompHsFach;
+      default 100;
+    }
+    leaf eulMaxTdUsers {
+      description "Maximum number of simultaneous TD cell users. \nIf 0, feature is deactivated. If 2, feature is activated for 2 users. If 8, feature is activated for 8 users.";
+      yexte:dependencies "Ignored unless serviceState = OPERABLE for feature 'EUL TD Scheduling'.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_eulMaxTdUsers;
+      default 0;
+    }
+    leaf rSiteRef {
+      erienmyext:no-notification;
+      config false;
+      description "A label used for grouping radio nodes located at the same site. ";
+      yexte:dependencies "Propagated from NodeBFunction::rSiteRef.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_rSiteRef;
+    }
+    leaf uarfcnUl {
+      config false;
+      description " Uplink UTRA Absolute Radio Frequency Channel Number. Specifies the channel number for the central uplink frequency.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_uarfcnUl;
+    }
+    leaf cqiAdjustmentOn {
+      description "Turns the CQI adjustment of the UE reported CQI on or off per cell.";
+      type boolean;
+      default true;
+    }
+    leaf hsdpa3McCapability {
+      config false;
+      description "Indicates whether or not this local cell is capable of acting as serving cell for a HSDPA 3x Multi-Carrier connection.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-Hsdpa3McCapability;
+    }
+    leaf featCtrlHsdpaDb3Mc {
+      status current {
+        yexte:preliminary;
+      }
+      description "Whether licensed feature 'Dual Band HSDPA 3x Multi-Carrier' is ON or OFF. ";
+      yexte:takes-effect "New connection.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf featCtrlHsdpaDbMc {
+      description "Whether licensed feature 'Dual Band HSDPA Multi-Carrier' is ON or OFF. ";
+      yexte:takes-effect "New connection.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature. ";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf uarfcnDl {
+      description "Downlink UTRA Absolute Radio Frequency Channel Number. Specifies the channel number for the central downlink frequency.";
+      mandatory true;
+      yexte:takes-effect "At next unlock of Node B Local Cell.";
+      yexte:dependencies "Value must be the same as in the corresponding RNC MO UtranCell. Value must correspond to value of attribute operatingBand.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_uarfcnDl;
+    }
+    leaf extraHsScchPowerForSrbOnHsdpa {
+      description "Extra power used for HS-SCCH for a user with SRB on HS. Relative to the output from the HS-SCCH power control.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_extraHsScchPowerForSrbOnHsdpa;
+      default 20;
+    }
+    leaf hostingDigitalUnit {
+      config false;
+      description "Shows the Baseband on which baseband processing for the cell is located.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf eulNoERgchGroups {
+      description "Number of E-RGCH groups per channelization code and cell.";
+      yexte:takes-effect "At next setup of E-DCH Resources for this cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_eulNoERgchGroups;
+      default 8;
+    }
+    leaf featCtrlHsdpaMc {
+      description "Whether licensed feature 'Multi-Carrier' is ON or OFF.";
+      yexte:takes-effect "New connection.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature. ";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf hsPowerMargin {
+      description "Power margin the HSDPA scheduler is using when allocating remaining power of cell carrier. It is relative the maximum available power of the cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_hsPowerMargin;
+      default 0;
+    }
+    leaf maxDlPowerCapability {
+      config false;
+      description "Maximum downlink power capability for cell. \nFor Combined Cell configuration, value is maximum DL power capability among sector carriers. For Psi-Coverage configuration, value is maximum DL power capability among sector carriers. Value is reported to RNC.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_maxDlPowerCapability;
+    }
+    leaf schNoCongPeriodGbr {
+      description "Minimum time period to define the time that congestion situation of the guaranteed service ends.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schNoCongPeriodGbr;
+      default 25;
+    }
+    leaf cqiErrors {
+      description "Denotes the repetition factor for triggering consecutive erroneous CQI reports.\nValue 0 -> the RBS triggered updates are turned off.";
+      yexte:dependencies "Tuning of cqiErrors is made together with cqiErrorsAbsent.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_cqiErrors;
+      default 0;
+    }
+    leaf featCtrlNbir {
+      description "Whether licensed feature 'Narrowband Interferece Rejection' is ON or OFF.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf featCtrlEnhUeDrx {
+      description "Whether licensed feature 'Battery efficiency for high speed FACH' is ON or OFF.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf hsCoreId {
+      config false;
+      description "Indicates the present HSDPA core ID allocated to the local cell.\nSet after the cell has been setup by the RNC.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf extraHsScchCompForSigHsFach {
+      description "Additional power compensation applied to the HS-SCCH power calculated with the converted CQI value when the signaling data for DCCH and CCCH for the HS-FACH user is transmitted. A HS-FACH user is a UE which is in RRC state CELL_FACH (on RNC level) and is using transport channel HS-DSCH and not FACH.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_extraHsScchCompForSigHsFach;
+      default 10;
+    }
+    leaf schPowerDeltaCongGbr {
+      description "Parameter to define the minimum necessary power for the guaranteed service in congestion situation. The value is defined as a percentage of maximum transmission power.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schPowerDeltaCongGbr;
+      default 15;
+    }
+    leaf eulMaxNoSchEDch {
+      description "The maximum number of simultaneous scheduled E-DCH users.\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_eulMaxNoSchEDch;
+      default 100;
+    }
+    leaf extraPowerForSrbOnHsdpa {
+      description "Extra power used for sending the data during a HSDPA TTI which includes SRB data. Relative to the output from the HS scheduler.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_extraPowerForSrbOnHsdpa;
+      default 20;
+    }
+    leaf extraCompForSigHsFach {
+      description "Additional compensation applied to the converted CQI value used for TFRC selection when the signaling data for DCCH and CCCH for the HS-FACH user is transmitted. A HS-FACH user is a UE which is in RRC state CELL_FACH (on RNC level) and is using transport channel HS-DSCH and not FACH.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_extraCompForSigHsFach;
+      default 10;
+    }
+    leaf administrativeState {
+      description "The administrative state. If set to SHUTTING_DOWN, the state will immediately be brought to LOCKED.";
+      yexte:disturbances "Changing this attribute to LOCKED causes loss of traffic. ";
+      type erienmnrmwrat:enum-AdmState;
+      default LOCKED;
+    }
+    leaf hsScchMinCodePower {
+      description "HS-SCCH minimum transmit code power relative PCPICH reference power.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_hsScchMinCodePower;
+      default -150;
+    }
+    leaf minBitRateMinCqi {
+      description "The minimum CQI adjust value that allows performing minimum bit rate scheduling.\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_minBitRateMinCqi;
+      default 8;
+    }
+    leaf maxNumEulUsers {
+      description "Maximum number of serving EUL users allowed per cell.\nAlarm Licensed Capacity Exceeded is given if:\n•         administrativeState=UNLOCKED and\n•         maxNumEulUsers higher than the upper limit and\n•         Emergency Unlock is not activated\nWhere upper limit is: \n•         License key value if Licensed capacity 'Number of EUL users' is enabled (see licenseState in MO CapacityState) or \n•         default value (maximum 4 EUL users) if license key is disabled.\nDuring Emergency Unlock, maximum 128 EUL users are allowed in each cell.";
+      yexte:takes-effect "Increase takes effect immediately. Decrease takes gradual effect; existing users are allowed to terminate normally until the new limit is reached. No new users are allowed until below limit.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_maxNumEulUsers;
+      default 4;
+    }
+    leaf bsctTestModel {
+      config false;
+      description "Active test model.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-BsctTestModel;
+    }
+    leaf steeredHsCoreId {
+      description "HSDPA cores allocated manually to this local cell.\nDefault -1, means steeredHsCoreId is not set.";
+      yexte:takes-effect "NodeBLocalCell::usageState is BUSY (the cell has been setup by the RNC).";
+      yexte:precondition "NodeBLocalCellGroup::featCtrlSteerHsAllocation is ON.\nNodeBLocalCellGroup::administrativeState is LOCKED.\nNodeBLocalCellGroup::numberOfHsCores has value.";
+      yexte:dependencies "Range is 0 to (numberOfHsCores – 1), numberOfHsCores in NodeBLocalCellGroup MO.\nOne HS core can be allocated to a maximum of 6 cells (master and slave cells in consideration of feature Joint Scheduling). \n";
+      type int32;
+      default -1;
+    }
+    leaf maxEAgchPowerDl {
+      description "Maximum downlink power for an individual E-AGCH channel in the cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_maxEAgchPowerDl;
+      default -140;
+    }
+    leaf featCtrlHsdpaIncrementalRedundancy {
+      description "Whether licensed feature 'HSDPA Incremental Redundancy' is ON or OFF.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf extraCompEnhUeDrx {
+      description "Additional compensation applied to the converted CQI value used for TFRC selection when data for the Enhanced UE DRX users are transmitted.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_extraCompEnhUeDrx;
+      default 10;
+    }
+    leaf qualityCheckPowerEHich {
+      description "Offset to be used in E-HICH power.\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_qualityCheckPowerEHich;
+      default 0;
+    }
+    leaf eulFachMaxDcchDtchTime {
+      description "Maximum number of TTIs user can transmit on C-EDCH for DCCH and DTCH transmissions.";
+      yexte:takes-effect "Next time EulFach is activated (NodeBLocalCell::featCtrlEulFach = ON).";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_eulFachMaxDcchDtchTime;
+      default 40;
+    }
+    leaf featCtrlEulMc {
+      description "Whether licensed feature 'EUL Multi-Carrier' is ON or OFF.";
+      yexte:takes-effect "New connection.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf hsdpaDb3McCapability {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "Indicates whether or not this local cell is capable of acting as serving cell for a Dual Band HSDPA 3x Multi-Carrier connection.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-HsdpaDb3McCapability;
+    }
+    leaf hsdpaMcInactivityTimer {
+      description "Parameter determining the required time of empty multi-carrier (MC) priority queue (PQ) data buffer in order to deactivating the secondary serving HS-DSCH cell for a UE in MC mode. In the case of multiple MC-PQs belonging to the same UE all data buffers should be empty during the required time to perform the deactivation.\n";
+      yexte:dependencies "Ignored unless serviceState = OPERABLE for feature 'Multi-Carrier Inactivity Control' and featCtrlHsdpaMcInactCtrl = ON.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_hsdpaMcInactivityTimer;
+      default 2;
+    }
+    leaf cpcCapability {
+      config false;
+      description "Whether or not this local cell is capable of acting as serving cell for a CPC connection.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-CpcCapability;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_userLabel;
+    }
+    leaf eulTdSchedulingFactor {
+      description "Used to increase the user priorities for EUL TD Scheduled users (EUL 2 ms TTI users within the EUL TD schedule) over CDM users (EUL 10 ms TTI users and EUL 2 ms TTI users outside the EUL TD schedule) which gives preferential treatment of EUL TD Scheduled users over CDM users. \nA value of 0 means that EUL CDM users and EUL TD Scheduled users will be treated equally.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_eulTdSchedulingFactor;
+      default 0;
+    }
+    leaf eulMcActivationDelayTime {
+      description "Activation delay time for secondary UL carrier in serving Node B. \nThis delay ensures that RNC and UE have time to measure secondary carrier before secondary UL carrier activation in serving Node B. This will mitigate interference to neighboring cells from secondary carrier in heterogeneous network case. Delay applies to all EUL Multi-Carrier users with their primary serving E-DCH cell in this cell.\nSet to 20 (1000 ms) for cells that act as primary E-DCH cell, when neighboring cell on corresponding secondary carrier exists, and no corresponding neighboring cell on primary carrier is available. Otherwise, set to 0.\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_eulMcActivationDelayTime;
+      default 0;
+    }
+    leaf featCtrlEulFach {
+      description "Whether licensed feature 'Enhanced Uplink for FACH' is ON or OFF.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf schCongThreshGbr {
+      description "Threshold to detect the congestion situation of the guaranteed service.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schCongThreshGbr;
+      default 5;
+    }
+    leaf maxNumHsdpaUsers {
+      description "Maximum number of HSDPA users allowed per cell.\nAlarm Licensed Capacity Exceeded is given if:\n•         administrativeState=UNLOCKED and\n•         maxNumHsdpaUsers higher than the upper limit and\n•         Emergency Unlock is not activated\nWhere upper limit is: \n•         License key value if Licensed capacity 'Number of HSDPA Users per cell' is enabled (see licenseState in MO CapacityState) or \n•         default value (maximum 16 HSDPA users) if license key is disabled.\nDuring Emergency Unlock, maximum 128 HSDPA users are allowed in each cell.";
+      yexte:takes-effect "Increase takes effect immediately. Decrease takes gradual effect; existing users are allowed to terminate normally until the new limit is reached. No new users are allowed until below limit.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_maxNumHsdpaUsers;
+      default 16;
+    }
+    leaf schPrioForAbsResSharing {
+      description "Parameter to decide the priority class(es) where absolute resource sharing will be applied.\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_schPrioForAbsResSharing;
+      default 15;
+    }
+    leaf maxUserEHichPowerDlTti2 {
+      description " E-HICH (for serving and non serving) have fixed power relative CPICH power. But if feature 'DL Power Control EUL' is active, then the parameter defines the maximum power for E-HICH relative to CPICH for serving E-DCH RL. The parameter value is still fixed for non-Serving RL. Applicable to 2 ms TTI.\n";
+      yexte:dependencies "maxUserEHichPowerDlTti2 >= (eHichMinCodePower + 6 dB)";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_maxUserEHichPowerDlTti2;
+      default -80;
+    }
+    leaf airRateTypeSelector {
+      description "Scheduling index to weight the factor (air rate) in the queue selection procedure.\n";
+      type erienmnrmwrat:enum-CarrierAirRateTypeSelector;
+      default TRANSMITTED;
+    }
+    leaf minSpreadingFactor {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates the minimum spreading factor supported by the cell.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_minSpreadingFactor;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.\n";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf featCtrlHsdpa3Mc {
+      description "Whether licensed feature 'HSDPA 3x Multi-Carrier' is ON or OFF. ";
+      yexte:takes-effect "New connection.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature. ";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf-list throughputPqxHsFach {
+      min-elements 16;
+      max-elements 16;
+      status deprecated {
+        yexte:status-information "Deprecated: Not to be used. Ignored by the system. In 16B replaced by throughputPqxHsdpaFach.";
+      }
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_throughputPqxHsFach;
+      default 0;
+      default 0;
+      default 0;
+      default 30;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+    }
+    leaf featCtrlHsFach {
+      description "Whether licensed feature 'High Speed Downlink for FACH' is ON or OFF.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf maxEAgchPowerDlTti2 {
+      description "Maximum downlink power for an individual E-AGCH channel in the cell. Applicable to 2 ms TTI.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_maxEAgchPowerDlTti2;
+      default -80;
+    }
+    leaf featCtrlHsdpaMmPowerSharing {
+      description "Whether licensed feature 'HSDPA Mixed Mode Dynamic Power Sharing' is ON or OFF.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf bsctSirMeasStatus {
+      config false;
+      description "Whether or not SIR measurement started.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-BsctState;
+    }
+    leaf hsdpaDbMcCapability {
+      config false;
+      description "Indicates whether or not this local cell is capable of acting as serving cell for a Dual Band HSDPA Multi-Carrier connection.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-HsdpaDbMcCapability;
+    }
+    leaf minDlPowerCapability {
+      config false;
+      description "Minimum downlink power capability for the cell. \nFor a Combined Cell configuration, this value is the minimum DL power capability from the carrier with maximum DL power capability. For a Psi-Coverage configuration, this value is the sum of the sector carriers' minimum DL power capabilities.  The value is reported to the RNC.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_minDlPowerCapability;
+    }
+    leaf featCtrlHsdpaDynamicCodeAllocation {
+      description "Whether licensed feature 'HSDPA Dynamic Code Allocation' is ON or OFF.";
+      yexte:takes-effect "New connection.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf-list minBitRate {
+      min-elements 16;
+      max-elements 16;
+      description "The target minimum bit rate of HS priority queues for scheduling priority class 0 to 15 (the first value in the sequence is for scheduling priority class 0). Value -1 disables the function for that scheduling priority class.\nDependencies: Only relevant when NodeBFunction::featureStateHsdpaMinBitRate = ACTIVATED.\nUndefined value: -1\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_minBitRate;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf eHichMinCodePower {
+      description "Minimum downlink power in a cell to be used for an individual E-HICH channel on 10 ms TTI. Note that the minimum power for 2 ms TTI users is 6 dB higher than the value given by this parameter. \n";
+      yexte:dependencies "(eHichMinCodePower =< (maxUserEHichPowerDlTti2 - 6 dB)) and (eHichMinCodePower =< maxUserEHichERgchPowerDl).)\n";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_eHichMinCodePower;
+      default -220;
+    }
+    leaf featCtrlEnhancedLayer2 {
+      description "Whether licensed feature 'Enhanced Layer 2' is ON or OFF.";
+      yexte:takes-effect "New connection.";
+      yexte:dependencies "Value of this attribute is irrelevant if serviceState = INOPERABLE on MO FeatureState for this feature.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf defaultCqiHsFach {
+      description "CQI value used for the transmission of the BCCH specific H-RNTI when data for a HS-FACH user is transmitted. A HS-FACH user is a UE which is in RRC state CELL_FACH (on RNC level) and is using transport channel HS-DSCH and not FACH.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_defaultCqiHsFach;
+      default 1;
+    }
+    leaf qualityCheckPower {
+      description "Feedback from the HS-SCCH received quality.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_qualityCheckPower;
+      default 0;
+    }
+    leaf extraHsScchCompHsFach {
+      description "Additional power compensation applied to the HS-SCCH power calculated with the converted CQI value when data for the HS-FACH user is transmitted. A HS-FACH user is a UE which is in RRC state CELL_FACH (on RNC level) and is using transport channel HS-DSCH and not FACH.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCell_extraHsScchCompHsFach;
+      default 40;
+    }
+    leaf featCtrlImprovedLayer2 {
+      description "Whether unlicensed feature 'Improved Layer 2' is ON or OFF.";
+      yexte:takes-effect "New connection.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    action bsctStartPnTransmission {
+      description "Starts PN transmission on all configured channels. Valid if NodeB is configured with test model for Base Station Conformance Testing before invoking.";
+    }
+    action bsctStartBerMeasurement {
+      description "Starts BER measurement on DCH. Valid if NodeB is configured with test model for Base Station Conformance Testing before invoking.";
+      input {
+        leaf measTime {
+          mandatory true;
+          description "Time in seconds to measure BER. Allowed values: 1, 10, 13, 39, 180, 300, 600.";
+          type int32;
+          default 1;
+        }
+      }
+    }
+    action bsctStopPnTransmission {
+      description "Stops PN transmission on all configured channels. Valid if in Base Station Conformance Testing mode and transmission is started.";
+    }
+    action bsctRelease {
+      description "Releases cell and all channels. Valid if NodeB is setup with bsctSetup and no transmission is ongoing.";
+    }
+    action bsctStopSirMeasurement {
+      description "Stops SIR measurement on DCH. Valid if in Base Station Conformance Testing mode and measurement on channel is started.";
+    }
+    action bsctSetupTPC {
+      description "Sets up cell and channels for test model 2 with TPC test. Valid if NodeB is locked for Base Station Conformance Testing with bsctSetMode.";
+      input {
+        leaf numOfDedicatedChannels {
+          mandatory true;
+          description "Amount of dedicated channels to setup. Allowed value :3";
+          type uint32;
+          default 3;
+        }
+        leaf tpcDlStepSize {
+          mandatory true;
+          description "FDD transmission power control DL Step Size.\nUnit: 0.1dB";
+          type erienmnrmwrat:enum-BsctTpcDlStepSize;
+          default 5;
+        }
+        leaf innerLoopDlpcStatus {
+          mandatory true;
+          description "Inner Loop DL power control Status.";
+          type erienmnrmwrat:enum-BsctInnerLoopDlpcStatus;
+          default ACTIVE;
+        }
+        leaf pCpichPower {
+          mandatory true;
+          description "Primary CPICH power. Allowed value range: [minDlPowerCapability, maxDlPowerCapability].";
+          type int32;
+        }
+        leaf testModel {
+          mandatory true;
+          description "Test model. \nAllowed values:\n0: NOT_APPLICABLE\n2: TEST_MODEL_2\n";
+          type erienmnrmwrat:enum-BsctTestModel;
+          default TEST_MODEL_2;
+        }
+      }
+    }
+    action bsctSetup {
+      description "Sets up cell and channels for given test model. Valid if NodeB is locked for Base Station Conformance Testing with bsctSetMode.";
+      input {
+        leaf numOfDedicatedChannels {
+          mandatory true;
+          description "Amount of dedicated channels to setup.\nAllowed values for different test models:\nTest model 1: 4, 8, 16, 32, 64\nTest model 2: 3\nTest model 3: 4, 8, 16, 32\nTest model 4: 0\nTest model 5: 4, 6, 14, 30\nTest model 6: 4, 30";
+          type uint32;
+        }
+        leaf pCpichPower {
+          mandatory true;
+          description "Primary CPICH power. Allowed value range: [minDlPowerCapability, maxDlPowerCapability].";
+          type int32;
+        }
+        leaf testModel {
+          mandatory true;
+          description "Test model.\nAllowed values:\n0: NOT_APPLICABLE\n1: TEST_MODEL_1\n2: TEST_MODEL_2\n3: TEST_MODEL_3\n4: TEST_MODEL_4\n5: TEST_MODEL_5\n6: TEST_MODEL_6";
+          type erienmnrmwrat:enum-BsctTestModel;
+          default TEST_MODEL_1;
+        }
+      }
+    }
+    action bsctStopBerMeasurement {
+      description "Stops BER measurement on DCH. Valid if in Base Station Conformance Testing mode and measurement on channel is started.";
+    }
+    action bsctStartSirMeasurement {
+      description "Starts SIR measurement on DCH. Valid if NodeB is configured with test model for Base Station Conformance Testing before invoking.";
+    }
+  } // end 'grouping moc-NodeBLocalCell'
+  grouping moc-NbapCommon-keys {
+    description "Key(s) for MOC NbapCommon";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nbapCommonId;
+      type string;
+    }
+  } // end 'grouping moc-NbapCommon-keys'
+  grouping moc-NbapCommon {
+    description "This MO models the Node B Application Part for common procedures.\n";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmwrat:ddt-Wrat_NbapCommon_userLabel;
+    }
+    leaf sctpEndpointRef {
+      yexte:restricted;
+      description "Reference to an SctpEndpoint MO which corresponds to the end point for NBAP common procedure messages.";
+      mandatory true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf auditRetransmissionT {
+      description "Time between successive retransmissions of AUDIT REQUIRED INDICATION messages.";
+      type erienmnrmwrat:ddt-Wrat_NbapCommon_auditRetransmissionT;
+      default 5;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+    leaf l3EstablishSupervisionT {
+      description "Maximum allowed time to establish NBAP communication, that is successful establishment of layer 3 followed by a sucessful audit procedure.";
+      type erienmnrmwrat:ddt-Wrat_NbapCommon_l3EstablishSupervisionT;
+      default 30;
+    }
+  } // end 'grouping moc-NbapCommon'
+  grouping moc-CommonChannelResourcesUl-keys {
+    description "Key(s) for MOC CommonChannelResourcesUl";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name commonChannelResourcesUlId;
+      type string;
+    }
+  } // end 'grouping moc-CommonChannelResourcesUl-keys'
+  grouping moc-CommonChannelResourcesUl {
+    description "This MO models all physical and transport channels related to the uplink common channels. Physical channels: PRACH. Transport channel: RACH.\n\nThe RDN of this MO is CommonChannelResourcesUl=1.\n\nPersistent: No";
+    leaf numOfRach {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of RACHs (Random Access CHannel) in the cell. RACH is an uplink common control channel used by any UE to send messages to the network when no dedicated channels have been established.";
+      type erienmnrmwrat:ddt-Wrat_CommonChannelResourcesUl_numOfRach;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+    leaf numOfPrach {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of PRACHs (Physical Random Access CHannel) in the cell. PRACH is an uplink physical channel used to carry RACH.";
+      type erienmnrmwrat:ddt-Wrat_CommonChannelResourcesUl_numOfPrach;
+    }
+  } // end 'grouping moc-CommonChannelResourcesUl'
+  grouping moc-DlPowerSharing-keys {
+    description "Key(s) for MOC DlPowerSharing";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dlPowerSharingId;
+      type string;
+    }
+  } // end 'grouping moc-DlPowerSharing-keys'
+  grouping moc-DlPowerSharing {
+    description "This MO models the HSDPA Mixed Mode Dynamic Power Sharing of a PA.\n\nThe RDN of this MO is DlPowerSharing=n.\n\nPersistent: Yes";
+    leaf extraPowerHsdpaMixedMode {
+      description "Maximum borrowed power from other standards on the PA referenced by rfBranchTxRef.";
+      yexte:dependencies "Ignored if no MO NodeBLocalCell is referenced by nodeBLocalCellRef.";
+      type erienmnrmwrat:ddt-Wrat_DlPowerSharing_extraPowerHsdpaMixedMode;
+      default 160;
+    }
+    leaf-list nodeBLocalCellRef {
+      min-elements 0;
+      max-elements 4;
+      config false;
+      description "List of NodeBLocalCell MOs using rfBranchTxRef as TX branch and with NodeBLocalCell::featCtrlHsdpaMmPowerSharing = ON.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf rfBranchTxRef {
+      erienmyext:no-notification;
+      config false;
+      description "Refers to RF branch instance corresponding to shared PA.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-DlPowerSharing'
+  grouping moc-CommunicationContexts-keys {
+    description "Key(s) for MOC CommunicationContexts";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name communicationContextsId;
+      type string;
+    }
+  } // end 'grouping moc-CommunicationContexts-keys'
+  grouping moc-CommunicationContexts {
+    description "This MO models all communication contexts in a Node B. A communication context is a concept that describes all connections between one UE and the network.\n\nThe RDN of this MO is CommunicationContexts=1.\n";
+    leaf noOfCommunicationContexts {
+      erienmyext:no-notification;
+      config false;
+      description "Total number of Communication Contexts allocated in the Node B.";
+      type erienmnrmwrat:ddt-Wrat_CommunicationContexts_noOfCommunicationContexts;
+    }
+  } // end 'grouping moc-CommunicationContexts'
+  grouping moc-CellResources-keys {
+    description "Key(s) for MOC CellResources";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cellResourcesId;
+      type string;
+    }
+  } // end 'grouping moc-CellResources-keys'
+  grouping moc-CellResources {
+    description "This MO models all basic physical and transport channels related to a Node B Local Cell. Basic physical channels: PCPICH, SCPICH, PSCH, SSCH and PCCPCH. Transport channels: BCH.\n\nThe RDN of this MO is CellResources=1.\n\nPersistent: No";
+    leaf numOfScpich {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of SCPICHs (Secondary Common Pilot CHannel) in the cell. This is a fixed rate downlink physical channel that carries a predefined symbol sequence. SCPICH is used as phase reference for other downlink physical channels on a second antenna branch in certain MIMO configurations. No transport channel is carried on SCPICH.";
+      type erienmnrmwrat:ddt-Wrat_CellResources_numOfScpich;
+    }
+    leaf numOfPcpich {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of PCPICHs (Primary Common Pilot CHannel) in the cell. This is a fixed rate downlink physical channel that carries a predefined symbol sequence. PCPICH is used as phase reference for other downlink physical channels. No transport channel is carried on PCPICH.";
+      type erienmnrmwrat:ddt-Wrat_CellResources_numOfPcpich;
+    }
+    leaf numOfPccpch {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of PCCPCHs (Primary Common Control Physical CHannel) in the cell. This downlink physical channel carries the transport channel BCH.";
+      type erienmnrmwrat:ddt-Wrat_CellResources_numOfPccpch;
+    }
+    leaf numOfBch {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of BCHs (Broadcast CHannels) in the cell. The BCH is a fixed rate point to multi point downlink channel, used to convey system information in the whole coverage area of the cell.";
+      type erienmnrmwrat:ddt-Wrat_CellResources_numOfBch;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+    leaf numOfSsch {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of SSCHs (Secondary Synchronization CHannel) in the cell. This is a downlink physical channel used to find the scrambling code of the cell. SSCH transmits a sequence of 15 codes, simultaneously with transmission on the PSCH. By identifying the sequence the UE can derive the primary scrambling code of the cell. No transport channel is carried on SSCH.";
+      type erienmnrmwrat:ddt-Wrat_CellResources_numOfSsch;
+    }
+    leaf numOfPsch {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of PSCHs (Primary Synchronization CHannel) in the cell. This is a downlink physical channel used to find the scrambling code of the cell. The PSCH transmits the Primary Synchronization Code, which is the same for every cell in the system and known by each UE. It is sent simultaneously with the transmission on the SSCH. No transport channel is carried on PSCH.";
+      type erienmnrmwrat:ddt-Wrat_CellResources_numOfPsch;
+    }
+  } // end 'grouping moc-CellResources'
+  grouping moc-Iub-keys {
+    description "Key(s) for MOC Iub";
+    leaf id {
+      erienmyext:no-notification;
+      description " The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name iubId;
+      type string;
+    }
+  } // end 'grouping moc-Iub-keys'
+  grouping moc-Iub {
+    description "This MO models the Iub interface. Iub is the interface between a Node B and the associated RNC.\n";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmwrat:ddt-Wrat_Iub_userLabel;
+    }
+    leaf rSiteRef {
+      erienmyext:no-notification;
+      config false;
+      description "A label used for grouping radio nodes located at the same site.";
+      yexte:dependencies "Propagated from NodeBFunction::rSiteRef.";
+      type erienmnrmwrat:ddt-Wrat_Iub_rSiteRef;
+    }
+    leaf ipv4Address {
+      description "Reference to the MO AddressIPv4, which is used to carry Frame Protocol.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf rbsId {
+      description "Used by OSS-RC to identify a Node B and the corresponding Iub in RNC. The attribute is not used by the Node B itself, it only serves as storage for OSS-RC.";
+      mandatory true;
+      type uint32;
+    }
+  } // end 'grouping moc-Iub'
+  grouping moc-NodeBLocalCellGroup-keys {
+    description "Key(s) for MOC NodeBLocalCellGroup";
+    leaf id {
+      erienmyext:no-notification;
+      description " The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nodeBLocalCellGroupId;
+      type string;
+    }
+  } // end 'grouping moc-NodeBLocalCellGroup-keys'
+  grouping moc-NodeBLocalCellGroup {
+    description "This MO models a group of Node B Local Cells that share common baseband equipment cluster. Within the Node B Local Cell Group you can do softer handover.\n";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCellGroup_userLabel;
+    }
+    container hsPdschCodeCapacities {
+      description "HS-PDSCH code capacity with BB HWAC limit.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmwrat:struct-HsPdschCodeCapacities;
+    } // end 'container hsPdschCodeCapacities'
+    container ceCapacitiesTotalUl {
+      description "Total uplink channel element capacities.\nBoth static and dynamic uplink channel elements.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmwrat:struct-CeCapacitiesTotalUl;
+    } // end 'container ceCapacitiesTotalUl'
+    container ceCapacitiesUl {
+      description "Uplink channel element capacities.\nStatic uplink channel elements. ";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmwrat:struct-CeCapacitiesUl;
+    } // end 'container ceCapacitiesUl'
+    leaf bbPowerSavingMode {
+      status deprecated {
+        yexte:status-information "Since 20.Q2, Replaced by PowerSaving::bbPowerSavingStatus. Planned to be removed.";
+      }
+      config false;
+      description "Baseband power saving mode status.";
+      notife:notifiable-state-data true;
+      type erienmnrmwrat:enum-BbPowerSavingMode;
+    }
+    leaf-list multiCarrierPair6 {
+      min-elements 0;
+      max-elements 2;
+      description "Sixth multi-carrier pair.\nTwo local cells of a multi carrier pair are candidates to share downlink carriers as used by features 'Multi-Carrier' and 'Dual Band HSDPA Multi-Carrier'. When a multi carrier pair is specified, the automatic multi carrier pair selection is turned off.";
+      yexte:takes-effect "At next unlock of local cell group.";
+      yexte:dependencies "Two NodeBLocalCell MOs must be referenced. When 'Multi-Carrier' feature is used, they must use the same SectorEquipmentFunction. When 'Dual Band HSDPA Multi-Carrier' feature is used, they must use the same sector group. See attribute dualBandSectorGroup1..6. NodeBLocalCell must be part of only one multi-carrier pair.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf hostingDigitalUnit {
+      config false;
+      description "Shows the Baseband on which baseband processing for the cell is located.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list multiCarrierPair5 {
+      min-elements 0;
+      max-elements 2;
+      description "Fifth multi-carrier pair.\nTwo local cells of a multi carrier pair are candidates to share downlink carriers as used by features 'Multi-Carrier' and 'Dual Band HSDPA Multi-Carrier'. When a multi carrier pair is specified, the automatic multi carrier pair selection is turned off.";
+      yexte:takes-effect "At next unlock of local cell group.";
+      yexte:dependencies "Two NodeBLocalCell MOs must be referenced. When 'Multi-Carrier' feature is used, they must use the same SectorEquipmentFunction. When 'Dual Band HSDPA Multi-Carrier' feature is used, they must use the same sector group. See attribute dualBandSectorGroup1..6. NodeBLocalCell must be part of only one multi-carrier pair.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf rSiteRef {
+      erienmyext:no-notification;
+      config false;
+      description "A label used for grouping radio nodes located at the same site. ";
+      yexte:dependencies "Propagated from NodeBFunction::rSiteRef.";
+      type erienmnrmwrat:ddt-Wrat_NodeBLocalCellGroup_rSiteRef;
+    }
+    leaf-list multiCarrierPair2 {
+      min-elements 0;
+      max-elements 2;
+      description "Second multi-carrier pair.\nTwo local cells of a multi carrier pair are candidates to share downlink carriers as used by features 'Multi-Carrier' and 'Dual Band HSDPA Multi-Carrier'. When a multi carrier pair is specified, the automatic multi carrier pair selection is turned off.";
+      yexte:takes-effect "At next unlock of local cell group.";
+      yexte:dependencies "Two NodeBLocalCell MOs must be referenced. When 'Multi-Carrier' feature is used, they must use the same SectorEquipmentFunction. When 'Dual Band HSDPA Multi-Carrier' feature is used, they must use the same sector group. See attribute dualBandSectorGroup1..6. NodeBLocalCell must be part of only one multi-carrier pair.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf administrativeState {
+      description "The administrative state. If set to SHUTTING_DOWN, the state will immediately be brought to LOCKED.";
+      yexte:dependencies "Can only be set to LOCKED when administrativeState of all contained NodeBLocalCell MO equals LOCKED.\nWhen featCtrlSteerHsAllocation is ON: Can only be set to UNLOCKED when dependencies of steeredHsCoreId, of all contained NodeBLocalCell MO, are fulfilled. And the number of cells (master and slave cells in consideration of feature Joint Scheduling) allocated to one HS core should <= 6.";
+      type erienmnrmwrat:enum-AdmState;
+      default LOCKED;
+    }
+    leaf-list multiCarrierPair1 {
+      min-elements 0;
+      max-elements 2;
+      description "First multi-carrier pair.\nTwo local cells of a multi carrier pair are candidates to share downlink carriers as used by features 'Multi-Carrier' and 'Dual Band HSDPA Multi-Carrier'. When a multi carrier pair is specified, the automatic multi carrier pair selection is turned off.";
+      yexte:takes-effect "At next unlock of local cell group.";
+      yexte:dependencies "Two NodeBLocalCell MOs must be referenced. When 'Multi-Carrier' feature is used, they must use the same SectorEquipmentFunction. When 'Dual Band HSDPA Multi-Carrier' feature is used, they must use the same sector group. See attribute dualBandSectorGroup1..6. NodeBLocalCell must be part of only one multi-carrier pair.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list multiCarrierPair4 {
+      min-elements 0;
+      max-elements 2;
+      description "Fourth multi-carrier pair.\nTwo local cells of a multi carrier pair are candidates to share downlink carriers as used by features 'Multi-Carrier' and 'Dual Band HSDPA Multi-Carrier'. When a multi carrier pair is specified, the automatic multi carrier pair selection is turned off.";
+      yexte:takes-effect "At next unlock of local cell group.";
+      yexte:dependencies "Two NodeBLocalCell MOs must be referenced. When 'Multi-Carrier' feature is used, they must use the same SectorEquipmentFunction. When 'Dual Band HSDPA Multi-Carrier' feature is used, they must use the same sector group. See attribute dualBandSectorGroup1..6. NodeBLocalCell must be part of only one multi-carrier pair.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list multiCarrierPair3 {
+      min-elements 0;
+      max-elements 2;
+      description "Third multi-carrier pair.\nTwo local cells of a multi carrier pair are candidates to share downlink carriers as used by features 'Multi-Carrier' and 'Dual Band HSDPA Multi-Carrier'. When a multi carrier pair is specified, the automatic multi carrier pair selection is turned off.";
+      yexte:takes-effect "At next unlock of local cell group.";
+      yexte:dependencies "Two NodeBLocalCell MOs must be referenced. When 'Multi-Carrier' feature is used, they must use the same SectorEquipmentFunction. When 'Dual Band HSDPA Multi-Carrier' feature is used, they must use the same sector group. See attribute dualBandSectorGroup1..6. NodeBLocalCell must be part of only one multi-carrier pair.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container ceCapacitiesDl {
+      description "Downlink channel element capacities.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmwrat:struct-CeCapacitiesDl;
+    } // end 'container ceCapacitiesDl'
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.\n";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description " Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+    leaf featCtrlSteerHsAllocation {
+      description "Whether unlicensed feature 'Steered HS Allocation' is ON or OFF for the NodeBLocalCellGroup.";
+      type erienmnrmwrat:enum-FeatCtrlState;
+      default OFF;
+    }
+    leaf numberOfHsCores {
+      config false;
+      description "The number of HSDPA cores for the local cell group.\nSet after first local cell is unlocked and enabled.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+  } // end 'grouping moc-NodeBLocalCellGroup'
+  grouping moc-NbapDedicated-keys {
+    description "Key(s) for MOC NbapDedicated";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nbapDedicatedId;
+      type string;
+    }
+  } // end 'grouping moc-NbapDedicated-keys'
+  grouping moc-NbapDedicated {
+    description "This MO models the Node B Application Part for dedicated procedures.\n";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmwrat:ddt-Wrat_NbapDedicated_userLabel;
+    }
+    leaf sctpEndpointRef {
+      yexte:restricted;
+      description "Reference to an SctpEndpoint MO which corresponds to the end point for NBAP dedicated procedure messages.";
+      mandatory true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+  } // end 'grouping moc-NbapDedicated'
+  grouping moc-RadioLinks-keys {
+    description "Key(s) for MOC RadioLinks";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name radioLinksId;
+      type string;
+    }
+  } // end 'grouping moc-RadioLinks-keys'
+  grouping moc-RadioLinks {
+    description "This MO models all radio links on one Node B Local Cell.\n\nThe RDN of this MO is RadioLinks=1.\n";
+    leaf noOfRadioLinks {
+      erienmyext:no-notification;
+      config false;
+      description "Total number of radio links in the cell using the corresponding local cell.";
+      type erienmnrmwrat:ddt-Wrat_RadioLinks_noOfRadioLinks;
+    }
+  } // end 'grouping moc-RadioLinks'
+  grouping moc-CommonChannelResourcesDl-keys {
+    description "Key(s) for MOC CommonChannelResourcesDl";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name commonChannelResourcesDlId;
+      type string;
+    }
+  } // end 'grouping moc-CommonChannelResourcesDl-keys'
+  grouping moc-CommonChannelResourcesDl {
+    description "This MO models all physical and transport channels related to the downlink common channels. Physical channels: SCCPCH, PICH and AICH. Transport channel: FACH and PCH.\n\nThe RDN of this MO is CommonChannelResourcesDl=1.\n\nPersistent: No";
+    leaf numOfPich {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of PICHs (Paging Indication CHannel) in the cell. PICH is a downlink physical channel used to notify UEs that they must listen for paging messages on the PCH. No transport channel is carried on PICH.";
+      type erienmnrmwrat:ddt-Wrat_CommonChannelResourcesDl_numOfPich;
+    }
+    leaf numOfFach {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of FACHs (Forward Access link CHannel) in the cell. FACH is a downlink common transport channel is used by the network to send messages to a specific UE when no dedicated channels have been established.";
+      type erienmnrmwrat:ddt-Wrat_CommonChannelResourcesDl_numOfFach;
+    }
+    leaf numOfAich {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of AICHs (Acquisition Indication CHannel) in the cell. AICH is a fixed rate downlink physical channel that carries the acquisition indications for reception of preambles on RACH. No transport channel is carried on AICH.";
+      type erienmnrmwrat:ddt-Wrat_CommonChannelResourcesDl_numOfAich;
+    }
+    leaf numOfSccpch {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of SCCPCHs (Secondary Common Control Physical CHannel) in the cell. SCCPCH is a downlink physical channel that carries the transport channels FACH or PCH.";
+      type erienmnrmwrat:ddt-Wrat_CommonChannelResourcesDl_numOfSccpch;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+    leaf numOfPch {
+      erienmyext:no-notification;
+      config false;
+      description "Current number of PCHs (Paging CHannel) in the cell. PCH is a downlink common control channel used by the network to broadcast paging messages to find a UE when no dedicated channels have been established.";
+      type erienmnrmwrat:ddt-Wrat_CommonChannelResourcesDl_numOfPch;
+    }
+  } // end 'grouping moc-CommonChannelResourcesDl'
+  grouping moc-HsDschResources-keys {
+    description "Key(s) for MOC HsDschResources";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name hsDschResourcesId;
+      type string;
+    }
+  } // end 'grouping moc-HsDschResources-keys'
+  grouping moc-HsDschResources {
+    description "This MO models the High-Speed Downlink Shared Channel resources. They are set up through Iub.\n\nThe RDN of this MO is HsDschResources=1.\n\nPersistent: No";
+    leaf maxAvailMixedModeExtraPower {
+      config false;
+      description "Maximum value of available extra power borrowed from other RAT(s).\nUndefined value: -1\nUnit: 0.1 W";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmwrat:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmwrat:enum-OperState;
+    }
+  } // end 'grouping moc-HsDschResources'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup/erienmnrmwrat:NodeBLocalCell {
+    list NodeBSectorCarrier {
+      key id;
+      max-elements 6;
+      description "This MO models a carrier frequency that is broadcast in a sector.";
+      erienmyext:enm-type MOC;
+      uses moc-NodeBSectorCarrier-keys;
+      container attributes {
+        description "Attributes for NodeBSectorCarrier";
+        uses moc-NodeBSectorCarrier;
+      } // end 'container attributes'
+    } // end 'list NodeBSectorCarrier'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup/erienmnrmwrat:NodeBLocalCell {
+    list EDchResourcesCell {
+      key id;
+      max-elements 1;
+      description "This MO models the Enhanced Uplink Shared Channel resources related to a Node B Local Cell. They are set up through Iub.\n\nThe RDN of this MO is EDchResourcesCell=1.\n\nPersistent: No";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EDchResourcesCell-keys;
+    } // end 'list EDchResourcesCell'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:Iub {
+    list IubDataStreams {
+      key id;
+      max-elements 1;
+      description "This MO models all Iub data streams between the RNC and the Node B for common as well as for dedicated channels.\n\n";
+      erienmyext:enm-type MOC;
+      uses moc-IubDataStreams-keys;
+      container attributes {
+        description "Attributes for IubDataStreams";
+        uses moc-IubDataStreams;
+      } // end 'container attributes'
+    } // end 'list IubDataStreams'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup/erienmnrmwrat:NodeBLocalCell/erienmnrmwrat:NodeBSectorCarrier {
+    list EDchResources {
+      key id;
+      max-elements 1;
+      description "This MO models the Enhanced Uplink Shared Channel resources. They are set up through Iub.\n\nThe RDN of this MO is EDchResources=1.\n\nPersistent: No";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EDchResources-keys;
+      container attributes {
+        description "Attributes for EDchResources";
+        uses moc-EDchResources;
+      } // end 'container attributes'
+    } // end 'list EDchResources'
+  }
+  augment /erienmnrmcomtop:ManagedElement {
+    list NodeBFunction {
+      key id;
+      max-elements 1;
+      description "This MO models the radio network resources in a Node B application (WCDMA).\n";
+      erienmyext:enm-type MOC;
+      uses moc-NodeBFunction-keys;
+      container attributes {
+        description "Attributes for NodeBFunction";
+        uses moc-NodeBFunction;
+      } // end 'container attributes'
+    } // end 'list NodeBFunction'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup {
+    list NodeBLocalCell {
+      key id;
+      max-elements 18;
+      description "This MO models a local cell, that is the equipment and resources in a Node B needed to support an UTRAN cell.\n\nPrecondition: This MO can not be deleted if it has not administrativeState=LOCKED.\n\n";
+      erienmyext:enm-type MOC;
+      uses moc-NodeBLocalCell-keys;
+      container attributes {
+        description "Attributes for NodeBLocalCell";
+        uses moc-NodeBLocalCell;
+      } // end 'container attributes'
+    } // end 'list NodeBLocalCell'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:Iub {
+    list NbapCommon {
+      key id;
+      max-elements 1;
+      description "This MO models the Node B Application Part for common procedures.\n";
+      erienmyext:enm-type MOC;
+      uses moc-NbapCommon-keys;
+      container attributes {
+        description "Attributes for NbapCommon";
+        uses moc-NbapCommon;
+      } // end 'container attributes'
+    } // end 'list NbapCommon'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup/erienmnrmwrat:NodeBLocalCell/erienmnrmwrat:NodeBSectorCarrier {
+    list CommonChannelResourcesUl {
+      key id;
+      max-elements 1;
+      description "This MO models all physical and transport channels related to the uplink common channels. Physical channels: PRACH. Transport channel: RACH.\n\nThe RDN of this MO is CommonChannelResourcesUl=1.\n\nPersistent: No";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CommonChannelResourcesUl-keys;
+      container attributes {
+        description "Attributes for CommonChannelResourcesUl";
+        uses moc-CommonChannelResourcesUl;
+      } // end 'container attributes'
+    } // end 'list CommonChannelResourcesUl'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction {
+    list DlPowerSharing {
+      key id;
+      description "This MO models the HSDPA Mixed Mode Dynamic Power Sharing of a PA.\n\nThe RDN of this MO is DlPowerSharing=n.\n\nPersistent: Yes";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-DlPowerSharing-keys;
+      container attributes {
+        description "Attributes for DlPowerSharing";
+        uses moc-DlPowerSharing;
+      } // end 'container attributes'
+    } // end 'list DlPowerSharing'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction {
+    list CommunicationContexts {
+      key id;
+      max-elements 1;
+      description "This MO models all communication contexts in a Node B. A communication context is a concept that describes all connections between one UE and the network.\n\nThe RDN of this MO is CommunicationContexts=1.\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CommunicationContexts-keys;
+      container attributes {
+        description "Attributes for CommunicationContexts";
+        uses moc-CommunicationContexts;
+      } // end 'container attributes'
+    } // end 'list CommunicationContexts'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup/erienmnrmwrat:NodeBLocalCell {
+    list CellResources {
+      key id;
+      max-elements 1;
+      description "This MO models all basic physical and transport channels related to a Node B Local Cell. Basic physical channels: PCPICH, SCPICH, PSCH, SSCH and PCCPCH. Transport channels: BCH.\n\nThe RDN of this MO is CellResources=1.\n\nPersistent: No";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CellResources-keys;
+      container attributes {
+        description "Attributes for CellResources";
+        uses moc-CellResources;
+      } // end 'container attributes'
+    } // end 'list CellResources'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction {
+    list Iub {
+      key id;
+      max-elements 1;
+      description "This MO models the Iub interface. Iub is the interface between a Node B and the associated RNC.\n";
+      erienmyext:enm-type MOC;
+      uses moc-Iub-keys;
+      container attributes {
+        description "Attributes for Iub";
+        uses moc-Iub;
+      } // end 'container attributes'
+    } // end 'list Iub'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction {
+    list NodeBLocalCellGroup {
+      key id;
+      max-elements 8;
+      description "This MO models a group of Node B Local Cells that share common baseband equipment cluster. Within the Node B Local Cell Group you can do softer handover.\n";
+      erienmyext:enm-type MOC;
+      uses moc-NodeBLocalCellGroup-keys;
+      container attributes {
+        description "Attributes for NodeBLocalCellGroup";
+        uses moc-NodeBLocalCellGroup;
+      } // end 'container attributes'
+    } // end 'list NodeBLocalCellGroup'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:Iub {
+    list NbapDedicated {
+      key id;
+      max-elements 1;
+      description "This MO models the Node B Application Part for dedicated procedures.\n";
+      erienmyext:enm-type MOC;
+      uses moc-NbapDedicated-keys;
+      container attributes {
+        description "Attributes for NbapDedicated";
+        uses moc-NbapDedicated;
+      } // end 'container attributes'
+    } // end 'list NbapDedicated'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup/erienmnrmwrat:NodeBLocalCell {
+    list RadioLinks {
+      key id;
+      max-elements 1;
+      description "This MO models all radio links on one Node B Local Cell.\n\nThe RDN of this MO is RadioLinks=1.\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-RadioLinks-keys;
+      container attributes {
+        description "Attributes for RadioLinks";
+        uses moc-RadioLinks;
+      } // end 'container attributes'
+    } // end 'list RadioLinks'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup/erienmnrmwrat:NodeBLocalCell {
+    list CommonChannelResourcesDl {
+      key id;
+      max-elements 1;
+      description "This MO models all physical and transport channels related to the downlink common channels. Physical channels: SCCPCH, PICH and AICH. Transport channel: FACH and PCH.\n\nThe RDN of this MO is CommonChannelResourcesDl=1.\n\nPersistent: No";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CommonChannelResourcesDl-keys;
+      container attributes {
+        description "Attributes for CommonChannelResourcesDl";
+        uses moc-CommonChannelResourcesDl;
+      } // end 'container attributes'
+    } // end 'list CommonChannelResourcesDl'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmwrat:NodeBFunction/erienmnrmwrat:NodeBLocalCellGroup/erienmnrmwrat:NodeBLocalCell {
+    list HsDschResources {
+      key id;
+      max-elements 1;
+      description "This MO models the High-Speed Downlink Shared Channel resources. They are set up through Iub.\n\nThe RDN of this MO is HsDschResources=1.\n\nPersistent: No";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-HsDschResources-keys;
+      container attributes {
+        description "Attributes for HsDschResources";
+        uses moc-HsDschResources;
+      } // end 'container attributes'
+    } // end 'list HsDschResources'
+  }
+}

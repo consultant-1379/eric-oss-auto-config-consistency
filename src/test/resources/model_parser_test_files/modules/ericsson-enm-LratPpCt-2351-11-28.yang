@@ -1,0 +1,198 @@
+module ericsson-enm-LratPpCt {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-LratPpCt;
+  prefix erienmnrmlratppct;
+  yexte:ecim-name LratPpCt;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 4;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-Lrat {
+    prefix erienmnrmlrat;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef ddt-LratPpCt_PpControlLink_detailedAvailabilityInfoTemp {
+    type string {
+      length 1..256;
+    }
+  }
+  typedef ddt-LratPpCt_PpControlLink_remoteEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-LratPpCt_PpControlLink_localEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  grouping moc-PpControlLink-keys {
+    description "Key(s) for MOC PpControlLink";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ppControlLinkId;
+      type string;
+    }
+  } // end 'grouping moc-PpControlLink-keys'
+  grouping moc-PpControlLink {
+    description "Control link for the packet processing interface.\n\nSystem created when a packet processing control link is established.\nSystem deleted when a packet processing control link is released.\nThe RDN of this MO is PpControlLink=[Remote Managed Element Identity].";
+    leaf detailedAvailabilityInfoTemp {
+      erienmyext:no-notification;
+      config false;
+      description "Additional Info for the availabilityStatus FAILED and DEPENDENCY_FAILED\nThe FailureCause has the format <causeID> <cause Slogan> [<cause description>]\nExample: 1 TLS LICENSE NOT INSTALLED   The TLS License installation is a prerequisite for Service Discovery.";
+      type erienmnrmlratppct:ddt-LratPpCt_PpControlLink_detailedAvailabilityInfoTemp;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmlratppct:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmlratppct:enum-AvailStatus;
+    }
+    leaf remoteEndPoint {
+      config false;
+      description "The remote IP address used for initialization of the underlying TCP connection.\nThe IP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmlratppct:ddt-LratPpCt_PpControlLink_remoteEndPoint;
+    }
+    leaf localEndPoint {
+      config false;
+      description "The local IP address used for initialization of the underlying TCP connection.\nThe IP address can be an IPv4 or an IPv6 address.";
+      notife:notifiable-state-data true;
+      type erienmnrmlratppct:ddt-LratPpCt_PpControlLink_localEndPoint;
+    }
+  } // end 'grouping moc-PpControlLink'
+  grouping moc-PpControlTermination-keys {
+    description "Key(s) for MOC PpControlTermination";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ppControlTerminationId;
+      type string;
+    }
+  } // end 'grouping moc-PpControlTermination-keys'
+  grouping moc-PpControlTermination {
+    description "Local Termination point of the packet processing control interface.\n\nSystem created when the first packet processing control link is established.\nSystem deleted when the last packet processing control link is released.\n\nThe RDN of this MO is PpControlTermination=1.";
+  } // end 'grouping moc-PpControlTermination'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmlrat:ENodeBFunction/erienmnrmlratppct:PpControlTermination {
+    list PpControlLink {
+      key id;
+      description "Control link for the packet processing interface.\n\nSystem created when a packet processing control link is established.\nSystem deleted when a packet processing control link is released.\nThe RDN of this MO is PpControlLink=[Remote Managed Element Identity].";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PpControlLink-keys;
+      container attributes {
+        description "Attributes for PpControlLink";
+        uses moc-PpControlLink;
+      } // end 'container attributes'
+    } // end 'list PpControlLink'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmlrat:ENodeBFunction {
+    list PpControlTermination {
+      key id;
+      max-elements 1;
+      description "Local Termination point of the packet processing control interface.\n\nSystem created when the first packet processing control link is established.\nSystem deleted when the last packet processing control link is released.\n\nThe RDN of this MO is PpControlTermination=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PpControlTermination-keys;
+    } // end 'list PpControlTermination'
+  }
+}

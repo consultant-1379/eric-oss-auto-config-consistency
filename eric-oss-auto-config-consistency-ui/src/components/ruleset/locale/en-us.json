@@ -1,0 +1,22 @@
+{
+  "RULESETS": "Rulesets",
+  "NO_RULESETS_CREATED": "No rulesets created",
+  "RULESET": "Ruleset",
+  "NAME": "Name",
+  "FILE_DOWNLOAD_FAILED_SHORT": "Unable to download file",
+  "FILE_DOWNLOAD_FAILED_LONG": "Internal Server Error. Try again or contact the system administrator.",
+  "CREATE_RULESET": "Create Ruleset",
+  "EDIT": "Edit",
+  "DELETE": "Delete",
+  "CONFIRM_DELETE": "Confirm delete rule set",
+  "DELETE_RULESET_MESSAGE": "Are you sure you want to continue?",
+  "DELETED_SUCCESS_MESSAGE": "was deleted.",
+  "DELETED_FAILURE_MESSAGE": "Unable to delete ruleset.",
+  "DELETE_RULESET": "Delete ruleset",
+  "DELETE_FAILURE_GENERIC_DESCRIPTION": "Internal Server Error. Try again or contact the system administrator.",
+  "DELETE_FAILURE_404_DESCRIPTION": "Ruleset could not be found or no longer exists.",
+  "DELETE_FAILURE_409_DESCRIPTION": "Make sure '%ruleset_name%' is not used by any job and try again.",
+  "DOWNLOAD": "Download",
+  "REST_403_DESCRIPTION": "Your role does not allow you to perform this operation. Contact the System Administrator to change your access rights.",
+  "ACCESS_DENIED": "Access Denied"
+}

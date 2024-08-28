@@ -1,0 +1,89 @@
+module ericsson-enm-RcsHttpM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsHttpM;
+  prefix erienmnrmrcshttpm;
+  yexte:ecim-name RcsHttpM;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 5;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RcsSysM {
+    prefix erienmnrmrcssysm;
+  }
+  grouping moc-Https-keys {
+    description "Key(s) for MOC Https";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value part of the RDN.";
+      mandatory true;
+      yexte:ecim-name httpsId;
+      type string;
+    }
+  } // end 'grouping moc-Https-keys'
+  grouping moc-Https {
+    description "Configuration for HTTP secure service.\nThe HTTPS service allows secure communication over TLS with the web applications of the system. Basic web-service (port 443) is only using certificates for secure transport. Extended web-service (port 8443) is using certificates for secure transport and login validation.";
+    leaf nodeCredential {
+      description "Node credential to be used when accessing the service.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustCategory {
+      description "Trust category to be used when accessing the service.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-Https'
+  grouping moc-HttpM-keys {
+    description "Key(s) for MOC HttpM";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value part of the RDN.";
+      mandatory true;
+      yexte:ecim-name httpMId;
+      type string;
+    }
+  } // end 'grouping moc-HttpM-keys'
+  grouping moc-HttpM {
+    description "HTTP management.";
+  } // end 'grouping moc-HttpM'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcshttpm:HttpM {
+    list Https {
+      key id;
+      max-elements 1;
+      description "Configuration for HTTP secure service.\nThe HTTPS service allows secure communication over TLS with the web applications of the system. Basic web-service (port 443) is only using certificates for secure transport. Extended web-service (port 8443) is using certificates for secure transport and login validation.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Https-keys;
+      container attributes {
+        description "Attributes for Https";
+        uses moc-Https;
+      } // end 'container attributes'
+    } // end 'list Https'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list HttpM {
+      key id;
+      max-elements 1;
+      description "HTTP management.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-HttpM-keys;
+    } // end 'list HttpM'
+  }
+}

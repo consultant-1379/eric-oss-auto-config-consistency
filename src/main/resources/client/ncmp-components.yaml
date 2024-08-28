@@ -1,0 +1,647 @@
+#
+# COPYRIGHT Ericsson 2021 - 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+#  ============LICENSE_START=======================================================
+#  Copyright (C) 2021 Nordix Foundation
+#  Modifications Copyright (C) 2021 Pantheon.tech
+#  ================================================================================
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#  SPDX-License-Identifier: Apache-2.0
+#  ============LICENSE_END=========================================================
+
+components:
+  schemas:
+    # Common Schemas
+    ErrorMessage:
+      type: object
+      title: Error
+      nullable: false
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        details:
+          type: string
+    # DMI Server Exception Schema
+    DmiErrorMessage:
+      title: DMI Error Message
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Bad Gateway Error Message NCMP"
+        dmi-response:
+          type: object
+          properties:
+            http-code:
+              type: integer
+              example: 400
+            body:
+              type: string
+              example: Bad Request
+    # Request Schemas
+    RestDmiPluginRegistration:
+      type: object
+      properties:
+        dmiPlugin:
+          type: string
+          example: my-dmi-plugin
+          default: ""
+        dmiDataPlugin:
+          type: string
+          example: my-dmi-data-plugin
+          default: ""
+        dmiModelPlugin:
+          type: string
+          example: my-dmi-model-plugin
+          default: ""
+        createdCmHandles:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestInputCmHandle'
+        updatedCmHandles:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestInputCmHandle'
+            example:
+              cmHandle: my-cm-handle
+              cmHandleProperties:
+                add-my-property: add-property
+                update-my-property: updated-property
+                delete-my-property: '~'
+              publicCmHandleProperties:
+                add-my-property: add-property
+                update-my-property: updated-property
+                delete-my-property: '~'
+        removedCmHandles:
+          type: array
+          items:
+            type: string
+          example: [ my-cm-handle1, my-cm-handle2, my-cm-handle3 ]
+    DmiPluginRegistrationErrorResponse:
+      type: object
+      properties:
+        failedCreatedCmHandles:
+          type: array
+          items:
+            $ref: '#/components/schemas/CmHandlerRegistrationErrorResponse'
+        failedUpdatedCmHandles:
+          type: array
+          items:
+            $ref: '#/components/schemas/CmHandlerRegistrationErrorResponse'
+        failedRemovedCmHandles:
+          type: array
+          items:
+            $ref: '#/components/schemas/CmHandlerRegistrationErrorResponse'
+    CmHandlerRegistrationErrorResponse:
+      type: object
+      properties:
+        cmHandle:
+          type: string
+          example: my-cm-handle
+        errorCode:
+          type: string
+          example: '00'
+        errorText:
+          type: string
+          example: 'Unknown error. <error-details>'
+
+    RestInputCmHandle:
+      required:
+        - cmHandle
+      type: object
+      properties:
+        cmHandle:
+          type: string
+          example: my-cm-handle
+        cmHandleProperties:
+          $ref: '#/components/schemas/RestCmHandleProperties'
+        publicCmHandleProperties:
+          $ref: '#/components/schemas/RestCmHandleProperties'
+    RestCmHandleProperties:
+      type: object
+      additionalProperties:
+        type: string
+        example: my-property
+
+    #Response Schemas
+    RestModuleReference:
+      type: object
+      title: Module reference details
+      properties:
+        moduleName:
+          type: string
+          example: my-module-name
+        revision:
+          type: string
+          example: my-module-revision
+
+    RestModuleDefinition:
+      type: object
+      title: Module definitions
+      properties:
+        moduleName:
+          type: string
+          example: my-module-name
+        revision:
+          type: string
+          example: 2020-09-15
+        content:
+          type: string
+          example: |
+            module stores {
+              yang-version 1.1;
+              namespace "org:onap:ccsdk:sample";
+              prefix book-store;
+              revision "2020-09-15" {
+                description
+                "Sample Model";
+              }
+            }
+
+    CmHandleQueryParameters:
+      type: object
+      title: Cm Handle query parameters for executing cm handle search
+      properties:
+        cmHandleQueryParameters:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/ConditionProperties'
+        conditions:
+          deprecated: true
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/OldConditionProperties'
+          description: not necessary, it is just for backward compatibility
+
+    ConditionProperties:
+      properties:
+        conditionName:
+          type: string
+        conditionParameters:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+    OldConditionProperties:
+      deprecated: true
+      properties:
+        name:
+          type: string
+        conditionParameters:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/ModuleNameAsJsonObject'
+    ModuleNameAsJsonObject:
+      properties:
+        moduleName:
+          type: string
+          example: my-module
+
+    RestOutputCmHandle:
+      type: object
+      title: CM handle Details
+      properties:
+        cmHandle:
+          type: string
+          example: my-cm-handle1
+        publicCmHandleProperties:
+          $ref: '#/components/schemas/CmHandlePublicProperties'
+        state:
+          $ref: '#/components/schemas/CmHandleCompositeState'
+    CmHandlePublicProperties:
+      type: array
+      items:
+        type: object
+        additionalProperties:
+          type: string
+          example: Book Type
+    CmHandleCompositeState:
+      type: object
+      properties:
+        cmHandleState:
+          type: string
+          example: ADVISED
+        lockReason:
+          $ref: '#/components/schemas/lock-reason'
+        lastUpdateTime:
+          type: string
+          example: 2022-12-31T20:30:40.000+0000
+        dataSyncEnabled:
+          type: boolean
+          example: false
+        dataSyncState:
+          $ref: '#/components/schemas/dataStores'
+
+    lock-reason:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: LOCKED_MISBEHAVING
+        details:
+          type: string
+          example: locked due to failure in module sync
+
+    dataStores:
+      type: object
+      properties:
+        operational:
+          $ref: '#/components/schemas/sync-state'
+        running:
+          $ref: '#/components/schemas/sync-state'
+
+    sync-state:
+      type: object
+      properties:
+        syncState:
+          type: string
+          example: NONE_REQUESTED
+        lastSyncTime:
+          type: string
+          example: 2022-12-31T20:30:40.000+0000
+
+    RestOutputCmHandlePublicProperties:
+      type: object
+      properties:
+        publicCmHandleProperties:
+          $ref: '#/components/schemas/CmHandlePublicProperties'
+
+    RestOutputCmHandleCompositeState:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/CmHandleCompositeState'
+
+  examples:
+    dataSampleRequest:
+      summary: Sample request
+      description: Sample request body
+      value:
+        test:bookstore:
+          bookstore-name: Chapters
+          categories:
+            - code: '01'
+              name: SciFi
+              books:
+                - authors:
+                    - Iain M. Banks
+                    - Ursula K. Le Guin
+            - code: '02'
+              name: kids
+              books:
+                - authors:
+                    - Philip Pullman
+
+    dataSamplePatchRequest:
+      summary: Sample patch request
+      description: Sample patch request body
+      value:
+        ietf-restconf:yang-patch:
+          patch-id: patch-1
+          edit:
+            - edit-id: edit1
+              operation: merge
+              target: /
+              value:
+                test:bookstore:
+                  bookstore-name: Chapters
+                  categories:
+                    - code: '01'
+                      name: Science
+                      books:
+                        - authors:
+                            - Author1
+                            - Author2
+                    - code: '02'
+                      name: Arts
+                      books:
+                        - authors:
+                            - Author3
+            - edit-id: edit2
+              operation: merge
+              target: /
+              value:
+                test:bookstore:
+                  bookstore-name: Novels
+                  categories:
+                    - code: '03'
+                      name: History
+                      books:
+                        - authors:
+                            - Iain M. Banks
+                            - Ursula K. Le Guin
+                    - code: '04'
+                      name: Fiction
+                      books:
+                        - authors:
+                            - Philip Pullman
+
+    dataSampleResponse:
+      summary: Sample response
+      description: Sample response for selecting 'sample 1'.
+      value:
+        bookstore:
+          categories:
+            - code: '01'
+              books:
+                - authors:
+                    - Iain M. Banks
+                    - Ursula K. Le Guin
+              name: SciFi
+            - code: '02'
+              books:
+                - authors:
+                    - Philip Pullman
+              name: kids
+
+    allCmHandleQueryParameters:
+      value:
+        cmHandleQueryParameters:
+          - conditionName: hasAllModules
+            conditionParameters:
+              - { "moduleName": "my-module-1" }
+              - { "moduleName": "my-module-2" }
+              - { "moduleName": "my-module-3" }
+          - conditionName: hasAllProperties
+            conditionParameters:
+              - { "Color": "yellow" }
+              - { "Shape": "circle" }
+              - { "Size": "small" }
+          - conditionName: cmHandleWithCpsPath
+            conditionParameters:
+              - { "cpsPath": "//state[@cm-handle-state='ADVISED']" }
+    pubPropCmHandleQueryParameters:
+      value:
+        cmHandleQueryParameters:
+          - conditionName: hasAllProperties
+            conditionParameters:
+              - { "Color": "yellow" }
+              - { "Shape": "circle" }
+              - { "Size": "small" }
+    modulesCmHandleQueryParameters:
+      value:
+        cmHandleQueryParameters:
+          - conditionName: hasAllModules
+            conditionParameters:
+              - { "moduleName": "my-module-1" }
+              - { "moduleName": "my-module-2" }
+              - { "moduleName": "my-module-3" }
+    cpsPathCmHandleStateQueryParameters:
+      value:
+        cmHandleQueryParameters:
+          - conditionName: cmHandleWithCpsPath
+            conditionParameters:
+              - { "cpsPath": "//state[@cm-handle-state='LOCKED']" }
+    cpsPathCmHandleDataSyncQueryParameters:
+      value:
+        cmHandleQueryParameters:
+          - conditionName: cmHandleWithCpsPath
+            conditionParameters:
+              - { "cpsPath": "//state[@data-sync-enabled='true']" }
+
+  parameters:
+    cmHandleInPath:
+      name: cm-handle
+      in: path
+      description: The identifier for a network function, network element, subnetwork or any other cm object by managed Network CM Proxy
+      required: true
+      schema:
+        type: string
+        example: my-cm-handle
+    dataSyncEnabled:
+      name: dataSyncEnabled
+      in: query
+      description: Is used to enable or disable the data synchronization flag
+      required: true
+      schema:
+        type: boolean
+        example: true
+    xpathInQuery:
+      name: xpath
+      in: query
+      description: xpath
+      required: false
+      schema:
+        type: string
+        default: /
+    requiredXpathInQuery:
+      name: xpath
+      in: query
+      description: xpath
+      required: true
+      schema:
+        type: string
+    includeDescendantsOptionInQuery:
+      name: include-descendants
+      in: query
+      description: Determines if descendants are included in response
+      required: false
+      schema:
+        type: boolean
+        default: false
+    cpsPathInQuery:
+      name: cps-path
+      in: query
+      description: cps-path
+      required: false
+      schema:
+        type: string
+        default: /
+    dmiPluginIdentifierInQuery:
+      name: dmi-plugin-identifier
+      in: query
+      description: dmi-plugin-identifier
+      required: true
+      schema:
+        type: string
+        example: my-dmi-plugin
+    resourceIdentifierInQuery:
+      name: resourceIdentifier
+      in: query
+      description: The format of resource identifier depend on the associated DMI Plugin implementation. For ONAP DMI Plugin it will be RESTConf paths but it can really be anything.
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+      examples:
+        sample 1:
+          value:
+            resourceIdentifier: \shops\bookstore
+        sample 2:
+          value:
+            resourceIdentifier: \shops\bookstore\categories[@code=1]
+        sample 3:
+          value:
+            resourceIdentifier: parent=shops,child=bookstore
+    optionsParamInQuery:
+      name: options
+      in: query
+      description: options parameter in query, it is mandatory to wrap key(s)=value(s) in parenthesis'()'. The format of options parameter depend on the associated DMI Plugin implementation.
+      required: false
+      schema:
+        type: string
+      allowReserved: true
+      examples:
+        sample 1:
+          value:
+            options: (depth=3)
+        sample 2:
+          value:
+            options: (fields=book)
+        sample 3:
+          value:
+            options: (depth=2,fields=book/authors)
+    topicParamInQuery:
+      name: topic
+      in: query
+      description: topic parameter in query.
+      required: false
+      schema:
+        type: string
+      allowReserved: true
+      examples:
+        sample 1:
+          value:
+            topic: my-topic-name
+    contentParamInHeader:
+      name: Content-Type
+      in: header
+      required: false
+      description: Content parameter for request, if content parameter is null, default value is application/json.
+      schema:
+        type: string
+        default: application/json
+        example: application/yang-data+json
+    datastoreName:
+      name: ncmp-datastore-name
+      in: path
+      description: The type of the requested data
+      required: true
+      schema:
+        type: string
+        example: ncmp-datastore:operational
+
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+          example:
+            status: 400
+            message: Not found error message
+            details: Not found error details
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+          example:
+            status: 401
+            message: Unauthorized error message
+            details: Unauthorized error details
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+          example:
+            status: 403
+            message: Forbidden error message
+            details: Forbidden error details
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+          example:
+            status: 400 BAD_REQUEST
+            message: Bad request error message
+            details: Bad request error details
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+          example:
+            status: 409 CONFLICT
+            message: Conflict error message
+            details: Conflict error details
+    NotImplemented:
+      description: The given path has not been implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+          example:
+            status: 501
+            message: Not implemented error message
+            details: Not implemented error details
+    Ok:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+    Created:
+      description: Created
+      content: { }
+    NoContent:
+      description: No Content
+      content: { }
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorMessage"
+          example:
+            status: 500
+            message: Internal Server Error
+            details: Internal Server Error occurred
+    BadGateway:
+      description: Bad Gateway
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DmiErrorMessage"
+          example:
+            message: "Bad Gateway Error Message NCMP"
+            dmi-response:
+              http-code: 400
+              body: "Bad Request"

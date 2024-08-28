@@ -1,0 +1,76 @@
+module ericsson-enm-RmeOnSiteActivities {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeOnSiteActivities;
+  prefix erienmnrmrmeonsiteactivities;
+  yexte:ecim-name RmeOnSiteActivities;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-TechnicianPresentType {
+    description "Enum used for describing the site status of TP.";
+    type enumeration {
+      enum NOT_PRESENT {
+        value 0;
+      }
+      enum PRESENT {
+        value 1;
+      }
+    }
+  }
+  grouping moc-OnSiteActivities-keys {
+    description "Key(s) for MOC OnSiteActivities";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name onSiteActivitiesId;
+      type string;
+    }
+  } // end 'grouping moc-OnSiteActivities-keys'
+  grouping moc-OnSiteActivities {
+    description "Contains information about activities on a site.\n\nThe RDN of this MO is OnSiteActivities=1.";
+    leaf technicianPresent {
+      config false;
+      description "Indicates that a field technician on site has pushed the Maintenance Button.\nIts value is toggled by pressing the Maintenance button and can be remotely cleared with action NodeSupport::OnSiteActivities::clearTechnicianPresent.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmeonsiteactivities:enum-TechnicianPresentType;
+    }
+    action clearTechnicianPresent {
+      description "Resets the attribute technicianPresent to NOT_PRESENT. \nIntended to be used when the technician has left the RBS site without announcing it.";
+    }
+  } // end 'grouping moc-OnSiteActivities'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list OnSiteActivities {
+      key id;
+      max-elements 1;
+      description "Contains information about activities on a site.\n\nThe RDN of this MO is OnSiteActivities=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-OnSiteActivities-keys;
+      container attributes {
+        description "Attributes for OnSiteActivities";
+        uses moc-OnSiteActivities;
+      } // end 'container attributes'
+    } // end 'list OnSiteActivities'
+  }
+}

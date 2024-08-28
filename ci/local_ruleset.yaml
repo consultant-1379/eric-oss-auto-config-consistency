@@ -1,0 +1,134 @@
+#
+# COPYRIGHT Ericsson 2022 - 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+modelVersion: 2.0
+
+description: "consistency-audit-build"
+
+docker-images:
+  - adp-maven-builder: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-java11mvnbuilder:${env.MVN_BUILDER_TAG}
+  - pipeline-download-injector: armdocker.rnd.ericsson.se/proj-eric-oss-dev-test/data-store-client:0.0.34
+import:
+  common: ../common-properties.yaml
+
+properties:
+  - audit-job-image-product-number: CXU1011685
+
+env:
+  - HOME
+  - MAVEN_CLI_OPTS (default=-Duser.home=${env.HOME} -B)
+  - MAVEN_OPTS (default=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn)
+  - PWD
+  - RELEASE (default=false)
+  - DOCKER_VOLUME_MAPPING_PASSWD (default=--volume ${env.HOME}/mypasswd:/etc/passwd:ro)
+  - PROJ_MVN (default=/proj/mvn)
+  - FUNCTIONAL_USER_USERNAME
+  - FUNCTIONAL_USER_PASSWORD
+  - BUCKET_NAME
+  - DATAFILE_NAME_LA
+  - DATAFILE_TYPE_CRT
+  - DATAFILE_TYPE_KEY
+
+
+  - MVN_BUILDER_TAG (default=latest)
+  - GERRIT_CHANGE_NUMBER (default=$GERRIT_CHANGE_NUMBER)
+  - SELI_ARTIFACTORY_REPO_USER
+  - SELI_ARTIFACTORY_REPO_PASS
+
+  - SONAR_AUTH_TOKEN
+  - SONAR_HOST_URL
+  - SONAR_BRANCH (default="master")
+
+var:
+  - version
+  - version-prefix
+  - commithash
+  - rstate
+  - image-full-name-internal
+
+rules:
+  build:
+    - task: audit-job
+      docker-image: adp-maven-builder
+      docker-flags: &mvn-docker-flags-with-creds
+        - "--env MAVEN_OPTS=${env.MAVEN_OPTS}"
+        - "--env HOME=${env.HOME}"
+        - "--volume ${env.HOME}:${env.HOME}"
+        - "--volume ${env.PROJ_MVN}:/proj/mvn"
+        - "--env SELI_ARTIFACTORY_REPO_USER=${env.SELI_ARTIFACTORY_REPO_USER}"
+        - "--env SELI_ARTIFACTORY_REPO_PASS=${env.SELI_ARTIFACTORY_REPO_PASS}"
+      cmd: mvn ${env.MAVEN_CLI_OPTS} clean install -f consistency-checker/audit-job/ -DskipTests=true
+
+  static-analysis:
+    - task: static-analysis-job
+      docker-image: adp-maven-builder
+      docker-flags: *mvn-docker-flags-with-creds
+      cmd: mvn ${env.MAVEN_CLI_OPTS} -V spotbugs:spotbugs pmd:check checkstyle:check
+
+  image:
+    - task: audit-job
+      cmd: docker build ${env.PWD}
+        --file consistency-checker/audit-job/Dockerfile
+        --tag ${var.image-full-name-internal}/eric-oss-auto-config-consistency-audit-job:${var.version}
+        --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+        --build-arg COMMIT=${var.commithash}
+        --build-arg RSTATE=${var.rstate}
+        --build-arg JAR_FILE=audit-job-${var.version}.jar
+        --build-arg APP_VERSION=${var.version}
+        --build-arg IMAGE_PRODUCT_NUMBER=${audit-job-image-product-number}
+        --build-arg CBOS_IMAGE_REPO=${common.cbos-image-repo}
+        --build-arg CBOS_IMAGE_NAME=${common.cbos-image-name}
+        --build-arg CBOS_IMAGE_TAG=${common.cbos-image-version}
+
+  clean:
+    - task: audit-job
+      docker-image: adp-maven-builder
+      docker-flags: &mvn-docker-flags
+        - "--env MAVEN_OPTS=${env.MAVEN_OPTS}"
+        - "--env HOME=${env.HOME}"
+        - "--volume ${env.HOME}:${env.HOME}"
+        - "--volume ${env.PROJ_MVN}:/proj/mvn"
+      cmd: mvn ${env.MAVEN_CLI_OPTS} clean -f consistency-checker/audit-job/
+
+  test:
+    - task: audit-job
+      docker-image: adp-maven-builder
+      docker-flags: *mvn-docker-flags-with-creds
+      cmd: mvn ${env.MAVEN_CLI_OPTS} clean install jacoco:prepare-agent -f consistency-checker/audit-job/
+
+  ost_bucket:
+    - task: download-files-by-name-in-ost-bucket-la-crt
+      docker-image: pipeline-download-injector
+      docker-flags:
+        - --volume ${env.PWD}:/usr/src/app/out
+        - --workdir /usr/src/app
+      cmd: download-ost-file-by-name --bucket_name ${env.BUCKET_NAME} --datafile_name ${env.DATAFILE_NAME_LA} --datafile_type ${env.DATAFILE_TYPE_CRT} --auth_user ${env.FUNCTIONAL_USER_USERNAME} --auth_pass ${env.FUNCTIONAL_USER_PASSWORD} -gap
+    - task: download-files-by-name-in-ost-bucket-la-key
+      docker-image: pipeline-download-injector
+      docker-flags:
+        - --volume ${env.PWD}:/usr/src/app/out
+        - --workdir /usr/src/app
+      cmd: download-ost-file-by-name --bucket_name ${env.BUCKET_NAME} --datafile_name ${env.DATAFILE_NAME_LA} --datafile_type ${env.DATAFILE_TYPE_KEY} --auth_user ${env.FUNCTIONAL_USER_USERNAME} --auth_pass ${env.FUNCTIONAL_USER_PASSWORD} -gap
+
+#  sonar:
+#    - task: audit-job
+#      docker-image: adp-maven-builder
+#      docker-flags: *mvn-docker-flags-with-creds
+#      cmd: mvn ${} sonar:sonar
+#       -Dsonar.login=${env.SONAR_AUTH_TOKEN}
+#        -Dsonar.host.url=${env.SONAR_HOST_URL}
+#        -Dsonar.branch.name=${var.version-prefix}-${env.GERRIT_CHANGE_NUMBER}
+#        -Dsonar.branch.target=${env.SONAR_BRANCH}

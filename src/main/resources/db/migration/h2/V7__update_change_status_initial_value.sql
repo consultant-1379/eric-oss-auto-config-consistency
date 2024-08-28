@@ -1,0 +1,1 @@
+update audit_results set change_status = 'NOT_APPLIED' where change_status is null;

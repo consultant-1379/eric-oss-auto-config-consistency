@@ -1,0 +1,3 @@
+moId,moType,attributes,cmHandle,fdn
+1,EUtranCellFDD,ulVolteCovMobThr:5;commonCqiPeriodicity:80;cfraEnable:false;pZeroNominalPusch:-80,cmHandle,fdn
+2,ENodeBFunction,zzzTemporary74:0;prachConfigEnabled:false;biasThpWifiMobility:12;dscpLabel:22,cmHandle,fdn

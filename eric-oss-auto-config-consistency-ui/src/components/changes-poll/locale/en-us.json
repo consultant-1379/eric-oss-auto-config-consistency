@@ -1,0 +1,23 @@
+{
+  "MANAGED_OBJECT": "Managed Object",
+  "ZERO_CHANGES_IMPLEMENTED": "No changes implemented",
+  "ZERO_CHANGES_IMPLEMENTED_SUBTITLE": "Applied changes will appear here",
+  "MO_CLASS": "MO Class",
+  "ATTRIBUTE_NAME": "Attribute Name",
+  "INITIAL_VALUE": "Initial Value",
+  "PREFERRED_VALUE": "Preferred Value",
+  "STATUS": "Status",
+  "AUDIT_ID": "Id",
+  "CONFIRM_REVERT_CHANGES": "Confirm revert changes",
+  "REVERT_CONFIRMATION": "change(s) will be reverted",
+  "REVERT": "Revert",
+  "REVERT_STARTED": "Changes sent to be reverted.",
+  "UNABLE_TO_APPLY_REVERT": "Unable to revert changes",
+  "REVERT_FAILURE_LONG_DESCRIPTION": "Internal server error. Try again or contact the system administrator.",
+  "REST_RESPONSE_400_BAD_REQUEST": "The change id's have been sent with an invalid format",
+  "REST_RESPONSE_400_IN_PROGRESS": "The selected change(s) are already in progress.",
+  "REST_RESPONSE_400_LATEST_EXECUTION": "Changes can only be reverted from the latest execution.",
+  "REST_RESPONSE_403_DESCRIPTION": "Your role does not allow you to perform this operation. Contact the System Administrator to change your access rights.",
+  "REST_RESPONSE_404_NOT_FOUND": "The selected change(s) could not be found or no longer exist",
+  "ACCESS_DENIED": "Access Denied"
+}

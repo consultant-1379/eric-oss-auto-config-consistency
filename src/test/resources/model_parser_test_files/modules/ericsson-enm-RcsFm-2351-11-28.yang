@@ -1,0 +1,442 @@
+module ericsson-enm-RcsFm {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsFm;
+  prefix erienmnrmrcsfm;
+  yexte:ecim-name RcsFm;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-SeverityLevel {
+    description "The possible alarm serverities.";
+    type enumeration {
+      enum CRITICAL {
+        description "Aligned with ERICSSON-ALARM-MIB numbering.";
+        value 3;
+      }
+      enum MAJOR {
+        description "Aligned with ERICSSON-ALARM-MIB numbering.";
+        value 4;
+      }
+      enum MINOR {
+        description "Aligned with ERICSSON-ALARM-MIB numbering.";
+        value 5;
+      }
+      enum WARNING {
+        description "Aligned with ERICSSON-ALARM-MIB numbering.";
+        value 6;
+      }
+    }
+  }
+  typedef enum-EventType {
+    description "General category for the alarm.";
+    type enumeration {
+      enum OTHER {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 1;
+      }
+      enum COMMUNICATIONSALARM {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 2;
+      }
+      enum QUALITYOFSERVICEALARM {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 3;
+      }
+      enum PROCESSINGERRORALARM {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 4;
+      }
+      enum EQUIPMENTALARM {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 5;
+      }
+      enum ENVIRONMENTALALARM {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 6;
+      }
+      enum INTEGRITYVIOLATION {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 7;
+      }
+      enum OPERATIONALVIOLATION {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 8;
+      }
+      enum PHYSICALVIOLATION {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 9;
+      }
+      enum SECURITYSERVICEORMECHANISMVIOLATION {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 10;
+      }
+      enum TIMEDOMAINVIOLATION {
+        description "Defined by ITU-T X.733 and X.736.";
+        value 11;
+      }
+    }
+  }
+  typedef enum-NotificationState {
+    description "Filtering state for alarm.";
+    type enumeration {
+      enum NOTIFIED {
+        description "Alarm is notified.";
+        value 0;
+      }
+      enum SUPPRESSED {
+        description "Alarm is suppressed.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-ProbableCause {
+    description "Probable cause as specified in ITU and ETSI recommendations.\nThe values are aligned to the ERICSSON-ALARM-MIB.\n";
+    type uint32;
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC\n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)";
+    type string {
+      length 19..31;
+    }
+  }
+  grouping struct-AdditionalInformation {
+    description "Data structure that contains two items of information, an identifier and a value.";
+    leaf name {
+      description "The identifier.";
+      type string;
+      mandatory true;
+    }
+    leaf value {
+      description "The value or description associated with the identifier.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-AdditionalInformation'
+  grouping moc-FmAlarm-keys {
+    description "Key(s) for MOC FmAlarm";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name fmAlarmId;
+      type string;
+    }
+  } // end 'grouping moc-FmAlarm-keys'
+  grouping moc-FmAlarm {
+    description "An FmAlarm instance represents an active alarm.\nAn alarm is a persistent indication of a fault that clears only when the triggering condition has been resolved.\n";
+    leaf sequenceNumber {
+      erienmyext:no-notification;
+      config false;
+      description "A unique identity for every notification sent.\nThis identity changes at every notification, that is, severity change and information change. It is not the same as the fmAlarmId as multiple notifications may be sent for one alarm instance.";
+      type int64;
+    }
+    leaf originalSeverity {
+      erienmyext:no-notification;
+      config false;
+      description "The perceived severity set when the alarm was raised.\nIt will not change during the alarm's lifetime.";
+      type erienmnrmrcsfm:enum-SeverityLevel;
+    }
+    leaf additionalText {
+      erienmyext:no-notification;
+      config false;
+      description "Extra information about the alarm.\nIt may change during the alarm's lifetime.";
+      type string;
+    }
+    leaf originalEventTime {
+      erienmyext:no-notification;
+      config false;
+      description "The timestamp when the alarm was raised.\nThis attribute is set when the alarm is raised and will not change during the alarm's lifetime.";
+      type erienmnrmrcsfm:ddt-DateTime;
+    }
+    leaf source {
+      erienmyext:no-notification;
+      config false;
+      description "The distinguished name of the alarming object.";
+      type string;
+    }
+    leaf minorType {
+      erienmyext:no-notification;
+      config false;
+      description "The attributes majorType and minorType are the two key attributes used to identify the alarm type.  ";
+      type uint32;
+    }
+    leaf eventType {
+      erienmyext:no-notification;
+      config false;
+      description "General category for the alarm.";
+      type erienmnrmrcsfm:enum-EventType;
+    }
+    leaf originalAdditionalText {
+      erienmyext:no-notification;
+      config false;
+      description "The additional text set when the alarm was raised.\nThis attribute is set when the alarm is raised and will not change during the alarm's lifetime.";
+      type string;
+    }
+    leaf activeSeverity {
+      erienmyext:no-notification;
+      config false;
+      description "The perceived severity of the alarm.\nIt may change during the alarm's lifetime.";
+      type erienmnrmrcsfm:enum-SeverityLevel;
+    }
+    leaf majorType {
+      erienmyext:no-notification;
+      config false;
+      description "The attributes majorType and minorType are the two key attributes used to identify the alarm type.";
+      type uint32;
+    }
+    leaf specificProblem {
+      erienmyext:no-notification;
+      config false;
+      description "Provides further refinement to the information given by probableCause.\nCan be used to find an associated operating instruction (OPI).";
+      type string;
+    }
+    leaf isNotified {
+      erienmyext:no-notification;
+      config false;
+      description "Whether alarm is notified or suppressed.";
+      type erienmnrmrcsfm:enum-NotificationState;
+    }
+    leaf probableCause {
+      erienmyext:no-notification;
+      config false;
+      description "Qualifies and provides further information on the reason for the event.\nA standard set of probableCause values is provided in the ERICSSON-ALARM-PC-MIB.";
+      type erienmnrmrcsfm:ddt-ProbableCause;
+    }
+    list additionalInfo {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Further information about the problem.\nThe information is represented as a set of data structures with two items of information, an identifier and a value. It may change during the alarm's lifetime.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsfm:struct-AdditionalInformation;
+    } // end 'list additionalInfo'
+    leaf lastEventTime {
+      erienmyext:no-notification;
+      config false;
+      description "The timestamp of when the alarm was last updated.\nThis is set at alarm information change or severity change.";
+      type erienmnrmrcsfm:ddt-DateTime;
+    }
+  } // end 'grouping moc-FmAlarm'
+  grouping moc-Fm-keys {
+    description "Key(s) for MOC Fm";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name fmId;
+      type string;
+    }
+  } // end 'grouping moc-Fm-keys'
+  grouping moc-Fm {
+    description "The root MOC of the Fault Management branch.";
+    leaf lastSequenceNo {
+      erienmyext:no-notification;
+      config false;
+      description "The last used sequence number for an alarm state change notification.\nThe sequence numbers are consecutive. With this attribute, an external system can determine if a resynchronization operation is needed, such as following a loss and restore of a communications link.  ";
+      type uint64;
+    }
+    leaf heartbeatInterval {
+      description "The interval in seconds, with which a heartbeat notification is sent to all alarm consumers.";
+      type uint32;
+      default 60;
+    }
+    leaf sumWarning {
+      erienmyext:no-notification;
+      config false;
+      description "Shows the number of active alarms with perceived severity ‘warning’.";
+      type uint32;
+    }
+    leaf sumMinor {
+      erienmyext:no-notification;
+      config false;
+      description "Shows the number of active alarms with perceived severity ‘minor’.";
+      type uint32;
+    }
+    leaf sumMajor {
+      erienmyext:no-notification;
+      config false;
+      description "Shows the number of active alarms with perceived severity ‘major’.";
+      type uint32;
+    }
+    leaf lastChanged {
+      erienmyext:no-notification;
+      config false;
+      description "The timestamp of when any alarm was last changed.\nWith this attribute, an external system can determine if a resynchronization operation is needed, such as following a loss and restore of a communications link.";
+      type erienmnrmrcsfm:ddt-DateTime;
+    }
+    leaf totalActive {
+      erienmyext:no-notification;
+      config false;
+      description "Shows the total number of currently active alarms.\nThis corresponds to the the total number of instantiated FmAlarm objects.";
+      type uint32;
+    }
+    leaf sumCritical {
+      erienmyext:no-notification;
+      config false;
+      description "Shows the number of active alarms with perceived severity 'critical'.";
+      type uint32;
+    }
+  } // end 'grouping moc-Fm'
+  grouping moc-FmAlarmModel-keys {
+    description "Key(s) for MOC FmAlarmModel";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name fmAlarmModelId;
+      type string;
+    }
+  } // end 'grouping moc-FmAlarmModel-keys'
+  grouping moc-FmAlarmModel {
+    description "This is a container for grouping FM alarm types.\n";
+  } // end 'grouping moc-FmAlarmModel'
+  grouping moc-FmAlarmType-keys {
+    description "Key(s) for MOC FmAlarmType";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name fmAlarmTypeId;
+      type string;
+    }
+  } // end 'grouping moc-FmAlarmType-keys'
+  grouping moc-FmAlarmType {
+    description "A specific kind of alarm that can be reported, for example \"power failure\".\nIn an X.733 context it maps to event type, probable cause, and specific problem. The same principle is used for alert types as for alarm types.";
+    leaf majorType {
+      erienmyext:no-notification;
+      config false;
+      description "The attributes majorType and minorType are the two key attributes used to identify the alarm type.";
+      type uint32;
+    }
+    leaf specificProblem {
+      erienmyext:no-notification;
+      config false;
+      description "Provides further refinement to the information given by probableCause.\nCan be used to find an associated operating instruction (OPI).";
+      type string;
+    }
+    leaf configuredSeverity {
+      description "Gives the possibility to configure the perceived severity for all alarms of this type.\nIf set, this value overrides the perceived severity provided by the alarming object. Setting this attribute has no impact on existing alarms, only new and updated ones.";
+      type erienmnrmrcsfm:enum-SeverityLevel;
+    }
+    leaf isNotified {
+      description "Whether the alarm shall be notified or suppressed.";
+      mandatory true;
+      type erienmnrmrcsfm:enum-NotificationState;
+    }
+    leaf probableCause {
+      erienmyext:no-notification;
+      config false;
+      description "Qualifies and provides further information on the reason for the event.\nA standard set of probableCause values is provided in the ERICSSON-ALARM-PC-MIB.";
+      type erienmnrmrcsfm:ddt-ProbableCause;
+    }
+    leaf additionalText {
+      erienmyext:no-notification;
+      config false;
+      description "Extra information that would not be contained by other FmAlarmType attributes. ";
+      type string;
+    }
+    leaf minorType {
+      erienmyext:no-notification;
+      config false;
+      description "The attributes majorType and minorType are the two key attributes used to identify the alarm type.";
+      type uint32;
+    }
+    leaf moClasses {
+      status deprecated {
+        yexte:status-information "This attribute has no purpose and is not used by anyone.";
+      }
+      erienmyext:no-notification;
+      config false;
+      description "A list of the Managed Object classes that can raise this alarm type.\nThis attribute contains a comma seperated list of Managed Object classes types that use this alarm type. It is for information only.";
+      type string;
+    }
+    leaf eventType {
+      erienmyext:no-notification;
+      config false;
+      description "General category for the alarm type.\n";
+      type erienmnrmrcsfm:enum-EventType;
+    }
+    leaf defaultSeverity {
+      erienmyext:no-notification;
+      config false;
+      description "The default perceived severity for all alarms of this type.\nNot set means alarms of this type can be assigned different severities.\n";
+      type erienmnrmrcsfm:enum-SeverityLevel;
+    }
+    leaf isStateful {
+      erienmyext:no-notification;
+      config false;
+      description "True indicates alarm. False indicates alert (stateless alarm).";
+      type boolean;
+    }
+  } // end 'grouping moc-FmAlarmType'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcsfm:Fm {
+    list FmAlarm {
+      key id;
+      description "An FmAlarm instance represents an active alarm.\nAn alarm is a persistent indication of a fault that clears only when the triggering condition has been resolved.\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FmAlarm-keys;
+      container attributes {
+        description "Attributes for FmAlarm";
+        uses moc-FmAlarm;
+      } // end 'container attributes'
+    } // end 'list FmAlarm'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list Fm {
+      key id;
+      max-elements 1;
+      description "The root MOC of the Fault Management branch.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Fm-keys;
+      container attributes {
+        description "Attributes for Fm";
+        uses moc-Fm;
+      } // end 'container attributes'
+    } // end 'list Fm'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcsfm:Fm {
+    list FmAlarmModel {
+      key id;
+      description "This is a container for grouping FM alarm types.\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FmAlarmModel-keys;
+    } // end 'list FmAlarmModel'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcsfm:Fm/erienmnrmrcsfm:FmAlarmModel {
+    list FmAlarmType {
+      key id;
+      description "A specific kind of alarm that can be reported, for example \"power failure\".\nIn an X.733 context it maps to event type, probable cause, and specific problem. The same principle is used for alert types as for alarm types.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FmAlarmType-keys;
+      container attributes {
+        description "Attributes for FmAlarmType";
+        uses moc-FmAlarmType;
+      } // end 'container attributes'
+    } // end 'list FmAlarmType'
+  }
+}

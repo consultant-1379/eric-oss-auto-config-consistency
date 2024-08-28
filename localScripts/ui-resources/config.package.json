@@ -1,0 +1,40 @@
+{
+  "modules": [
+    {
+      "name": "eacc-<SIGNUM>",
+      "version": "1.0.0",
+      "path": "/src/apps/executions",
+      "main": "executions.js"
+    },
+    {
+      "name": "jobs-<SIGNUM>",
+      "version": "1.0.0",
+      "path": "/src/apps/jobs",
+      "main": "jobs.js"
+    },
+    {
+      "name": "executions-<SIGNUM>",
+      "version": "1.0.0",
+      "path": "/src/apps/executions",
+      "main": "executions.js"
+    },
+    {
+      "name": "create-job-<SIGNUM>",
+      "version": "1.0.0",
+      "path": "/src/apps/create-job",
+      "main": "create-job.js"
+    },
+    {
+      "name": "settings-<SIGNUM>",
+      "version": "1.0.0",
+      "path": "/src/apps/settings",
+      "main": "settings.js"
+    },
+    {
+      "name": "execution-reports-<SIGNUM>",
+      "version": "1.0.0",
+      "path": "/src/apps/execution-reports",
+      "main": "execution-reports.js"
+    }
+  ]
+}

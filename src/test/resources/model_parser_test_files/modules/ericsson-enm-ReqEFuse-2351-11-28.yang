@@ -1,0 +1,385 @@
+module ericsson-enm-ReqEFuse {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqEFuse;
+  prefix erienmnrmreqefuse;
+  yexte:ecim-name ReqEFuse;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-ApcFuseState {
+    description "Fuse state.";
+    type enumeration {
+      enum ON {
+        description "Power output state is ON.";
+        value 0;
+      }
+      enum OFF {
+        description "Power output state is OFF.";
+        value 1;
+      }
+      enum TEMPORARY_OFF {
+        description "Power output state is OFF and fuse is set in TEMPORARY_OFF state.";
+        value 2;
+      }
+      enum TRIPPED {
+        description "Power output state is OFF and fuse is set in TRIPPED state.";
+        value 3;
+      }
+      enum NOT_PRESENT {
+        description "Fuse is not present.";
+        value 4;
+      }
+      enum NOT_SUPPORTED {
+        description "Power output state information is not supported by HW.";
+        value 5;
+      }
+    }
+  }
+  typedef enum-ApcEFuseLoadType {
+    description "Load configuration for EFuse.";
+    type enumeration {
+      enum MAIN {
+        description "The e-fuse is configured for main load.";
+        value 0;
+      }
+      enum PRIO {
+        description "The e-fuse is configured for prio load.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ApcFuseType {
+    description "Fuse type.";
+    type enumeration {
+      enum CB {
+        description "Fuse of Circuit Breaker (CB) type.";
+        value 0;
+      }
+      enum ECM {
+        description "Fuse of Electronic Circuit Breaker Module (ECM) type.";
+        value 1;
+      }
+      enum EFUSE {
+        description "Fuse of e-fuse type.";
+        value 2;
+      }
+      enum NOT_SUPPORTED {
+        description "The fuse type information is not supported by HW.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6. ";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-ApcEFuseOutput {
+    description "Output configuration for EFuse.";
+    type enumeration {
+      enum ON {
+        description "Set e-fuse power output to ON";
+        value 0;
+      }
+      enum OFF {
+        description "Set e-fuse power output to OFF";
+        value 1;
+      }
+      enum TEMPORARY_OFF {
+        description "Set e-fuse power output to TEMPORARY_OFF";
+        value 2;
+      }
+    }
+  }
+  typedef enum-ApcIndicatorStatus {
+    description "Possible states for green, yellow and red indicators. Since the semantics of the different indicator states depend on the color of the indicator, the semantics is described as part of the corresponding indicator status attribute description.";
+    type enumeration {
+      enum NOT_APPLICABLE {
+        description "The indicator is not supported. ";
+        value 0;
+      }
+      enum NOT_AVAILABLE {
+        description "The indicator state is currently not available.";
+        value 1;
+      }
+      enum OFF {
+        description "The indicator is off.";
+        value 2;
+      }
+      enum STEADY_ON {
+        description "The indicator is on continuously.";
+        value 3;
+      }
+      enum SLOW_BLINK {
+        description "The indicator blinks slowly.";
+        value 4;
+      }
+      enum FAST_BLINK {
+        description "The indicator blinks quickly.";
+        value 6;
+      }
+      enum DOUBLE_FLASH_AND_STEADY_ON {
+        description "The indicator blinks twice and is then on for a short time. This cycle is then repeated. ";
+        value 7;
+      }
+      enum DOUBLE_FLASH_AND_OFF {
+        description "The indicator blinks twice and is then off for a short time. This cycle is then repeated.";
+        value 8;
+      }
+    }
+  }
+  typedef enum-ApcFuseHoldUp {
+    description "Type of output.\nAn internal consumer is a unit located inside the cabinet. An external consumer is a unit located outside of the cabinet.";
+    type enumeration {
+      enum HOLDUP_STANDARD {
+        description "Output used for internal consumer requiring hold-up functionality.";
+        value 0;
+      }
+      enum STANDARD {
+        description "Output used to feed internal consumer.";
+        value 1;
+      }
+      enum HOLDUP_REMOTE {
+        description "Output used for internal or external consumer requiring hold-up functionality.";
+        value 2;
+      }
+      enum REMOTE {
+        description "Output used to feed internal or external consumer.";
+        value 3;
+      }
+      enum NOT_SUPPORTED {
+        description "Information about type of output is not available on HW.";
+        value 4;
+      }
+    }
+  }
+  grouping moc-EFuse-keys {
+    description "Key(s) for MOC EFuse";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN. \n\nThe ID of the electrical fuse that matches the number on the physical e-fuse.";
+      mandatory true;
+      yexte:ecim-name eFuseId;
+      type string;
+    }
+  } // end 'grouping moc-EFuse-keys'
+  grouping moc-EFuse {
+    description "This MO models an electrical fuse related to power distribution.\nNumber of MO's is created depending on the number of EFuses on the PDU.\n\nThe RDNs of these MOs are EFuse=1, EFuse=2, and so on.\n\nDependencies: Can only exist when FieldReplaceableUnit MO represents a PDU.";
+    leaf loadType {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates if the e-fuse is used for main or prio load.";
+      type erienmnrmreqefuse:enum-ApcEFuseLoadType;
+    }
+    leaf userLabel {
+      description "Label for free use.\nCustomer-defined label that describes equipment powered by this output.";
+      yexte:takes-effect Immediately;
+      type string;
+    }
+    leaf remoteControllable {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates if the e-fuse is possible to control remotely. \n\ntrue: The e-fuse is possible to control remotely.\nfalse: The e-fuse is not possible to control remotely.";
+      type boolean;
+    }
+    leaf limitedOutputCurrentSetting {
+      config false;
+      description "Fuse limitation setting. Given in Ampere. Depends on cable type connected to output. NOT_SUPPORTED is used for units that cannot support this attribute.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf fuseHoldUp {
+      config false;
+      description "Type of output. NOT_SUPPORTED is used for units that cannot support this attribute.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqefuse:enum-ApcFuseHoldUp;
+    }
+    leaf plugInModuleRef {
+      config false;
+      description "Refers to the PlugInModule MO that represent the physical electronic circuitbreaker module this e-fuse is part of.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf fuseState {
+      config false;
+      description "Fuse state. NOT_SUPPORTED is used for units that cannot support this attribute.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqefuse:enum-ApcFuseState;
+    }
+    leaf eFuseIndicator {
+      erienmyext:no-notification;
+      config false;
+      description "The operational status of the e-fuse. The indicator is physically located on the corresponding Power Distribution Unit (PDU).\n\nPossible values:\n• NOT_APPLICABLE = This indicator is not supported.\n• NOT_AVAILABLE = The indicator state is currently not available.\n• OFF = The power is not distributed.\n• STEADY_ON = Power is distributed from the e-fuse port.\n• SLOW_BLINK = E-fuse tripped. ";
+      type erienmnrmreqefuse:enum-ApcIndicatorStatus;
+    }
+    leaf onAtColdStartup {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates if the e-fuse is turned on at cold-startup or not.\n\ntrue: The e-fuse is turned on at cold-startup.\nfalse: The e-fuse is not turned on at cold-startup.";
+      type boolean;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmreqefuse:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmreqefuse:enum-OperState;
+    }
+    leaf fuseRating {
+      config false;
+      description "Maximum fuse rating. Given in Ampere. NOT_SUPPORTED is used for units that cannot support this attribute.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf fuseType {
+      config false;
+      description "Fuse type. NOT_SUPPORTED is used for units that cannot support this attribute.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqefuse:enum-ApcFuseType;
+    }
+    action setLoadType {
+      description "Specifies if the e-fuse must be used for main or prio load.\nTransaction required: No.";
+      input {
+        leaf loadType {
+          mandatory true;
+          description "Specifies if the e-fuse shall be used for main or prio load.";
+          type erienmnrmreqefuse:enum-ApcEFuseLoadType;
+        }
+      }
+    }
+    action setColdStartup {
+      description "Specifies whether or not the e-fuse must be on at cold startup.\nTransaction required: No.";
+      input {
+        leaf onAtColdStartup {
+          mandatory true;
+          description "Specifies if the e-fuse shall be on at cold startup or not.";
+          type boolean;
+        }
+      }
+    }
+    action setRemoteControllable {
+      description "Specifies whether or not the e-fuse can be remote controlled.\nTransaction required: No.";
+      input {
+        leaf remoteControllable {
+          mandatory true;
+          description "Specifies if it shall be possible to control the e-fuse remotely or not.";
+          type boolean;
+        }
+      }
+    }
+    action setOutput {
+      description "Activates or deactivates power output.\nTransaction required: No.";
+      input {
+        leaf powerOutputState {
+          mandatory true;
+          description "Sets power output to ON or OFF.";
+          type erienmnrmreqefuse:enum-ApcEFuseOutput;
+        }
+      }
+    }
+  } // end 'grouping moc-EFuse'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list EFuse {
+      key id;
+      description "This MO models an electrical fuse related to power distribution.\nNumber of MO's is created depending on the number of EFuses on the PDU.\n\nThe RDNs of these MOs are EFuse=1, EFuse=2, and so on.\n\nDependencies: Can only exist when FieldReplaceableUnit MO represents a PDU.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EFuse-keys;
+      container attributes {
+        description "Attributes for EFuse";
+        uses moc-EFuse;
+      } // end 'container attributes'
+    } // end 'list EFuse'
+  }
+}

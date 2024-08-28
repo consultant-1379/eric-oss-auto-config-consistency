@@ -1,0 +1,305 @@
+module ericsson-enm-RtnSctp {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnSctp;
+  prefix erienmnrmrtnsctp;
+  yexte:ecim-name RtnSctp;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 19;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-RedundancyStatus {
+    description "The SCTP redundancy status";
+    type enumeration {
+      enum UNDEFINED {
+        description "The SCTP redundancy undefined status. SCTP association is closed.";
+        value 0;
+      }
+      enum DORMANT {
+        description "All remote IP addresses are inactive. ";
+        value 1;
+      }
+      enum NOT_REDUNDANT {
+        description "Redundancy addresses are unreachable. All remote IP addresses except primary are inactive.";
+        value 2;
+      }
+      enum REDUNDANT {
+        description "At least one remote IP address except primary is active.";
+        value 3;
+      }
+      enum REDUNDANCY_NOT_POSSIBLE {
+        description "SCTP association has only one remote IP address.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-AssociationState {
+    description "The SCTP association state.";
+    type enumeration {
+      enum CLOSED {
+        description "SCTP association is closed.";
+        value 0;
+      }
+      enum ESTABLISHED {
+        description "SCTP association is established.";
+        value 3;
+      }
+    }
+  }
+  typedef ddt-RtnSctp_SctpEndpoint_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnSctp_SctpAssociation_remotePortNumber {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-RtnSctp_SctpAssociation_localPortNumber {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-RtnSctp_SctpEndpoint_portNumber {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-IpAddress {
+    description "Regular expression pattern for IP assigned address, covering both IPv4 and IPv6.\n\nThe type is ((IPv4 address)|(IPv6 address)), without leading 0s.\n\nIpV4 address = ((22[0-3]|2[01][0-9]|1[013456789][0-9]|12[012345689]|1[0-9][0-9]|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))\n\nIPv6 address = (\\s*((((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){7}(([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){6}(:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){5}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,2})|:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){4}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,3})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0))?:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){3}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,4})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,2}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){2}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,5})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,3}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){1}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,6})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,4}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(:(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,7})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,5}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:)))(%.+)?\\s*)\n\nMatching example is: 192.168.21.3\nAnother matching example is: 2001:db8:85a3:8d3:1319:8a2e:370:7348";
+    type string;
+  }
+  grouping moc-SctpEndpoint-keys {
+    description "Key(s) for MOC SctpEndpoint";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name sctpEndpointId;
+      type string;
+    }
+  } // end 'grouping moc-SctpEndpoint-keys'
+  grouping moc-SctpEndpoint {
+    description "Represents logical sender and receiver of SCTP packets.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnsctp:ddt-RtnSctp_SctpEndpoint_userLabel;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nDetails about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnsctp:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnsctp:enum-OperState;
+    }
+    leaf-list localIpAddress {
+      min-elements 1;
+      description "List of references to AddressIPv4 MO or AddressIPv6 MO serving as local addresses for endpoint.";
+      yexte:dependencies "Cannot refer to AddressIPv4 MO with configurationMode DHCP.\nCannot refer to AddressIPv6 MO with configurationMode AUTO, AUTO_NO_DHCPV6 or AUTO_DHCPV6.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf sctpProfile {
+      description "Reference to SctpProfile.";
+      mandatory true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf portNumber {
+      description "Local port number for SCTP endpoint.";
+      mandatory true;
+      type erienmnrmrtnsctp:ddt-RtnSctp_SctpEndpoint_portNumber;
+    }
+  } // end 'grouping moc-SctpEndpoint'
+  grouping moc-SctpAssociation-keys {
+    description "Key(s) for MOC SctpAssociation";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name sctpAssociationId;
+      type string;
+    }
+  } // end 'grouping moc-SctpAssociation-keys'
+  grouping moc-SctpAssociation {
+    description "The SctpAssociation is a representation of the protocol relationship between two SCTP Endpoints. \n\nIt is composed of the two SCTP Endpoints and protocol state information. ";
+    leaf remotePrimaryAddress {
+      erienmyext:no-notification;
+      config false;
+      description "Remote IP address normally used for outgoing traffic.";
+      type erienmnrmrtnsctp:ddt-IpAddress;
+    }
+    leaf localPortNumber {
+      erienmyext:no-notification;
+      config false;
+      description "Local port number of the association.";
+      type erienmnrmrtnsctp:ddt-RtnSctp_SctpAssociation_localPortNumber;
+    }
+    leaf remotePortNumber {
+      erienmyext:no-notification;
+      config false;
+      description "Remote port number of the association.";
+      type erienmnrmrtnsctp:ddt-RtnSctp_SctpAssociation_remotePortNumber;
+    }
+    leaf localPrimaryAddress {
+      erienmyext:no-notification;
+      config false;
+      description "Local IP address normally used for outgoing traffic.";
+      type erienmnrmrtnsctp:ddt-IpAddress;
+    }
+    leaf-list pmtudSctpPduSize {
+      min-elements 0;
+      config false;
+      description "SCTP PDU size determined by Path MTU discovery.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf redundancyStatus {
+      erienmyext:no-notification;
+      config false;
+      description "SCTP redundancy status indicates if there are redundant remote IP addresses available for SCTP traffic. ";
+      type erienmnrmrtnsctp:enum-RedundancyStatus;
+    }
+    leaf associationState {
+      erienmyext:no-notification;
+      config false;
+      description "The SCTP association state.";
+      type erienmnrmrtnsctp:enum-AssociationState;
+    }
+    leaf-list localIpAddress {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "One or several local IP addresses used by the association.";
+      type erienmnrmrtnsctp:ddt-IpAddress;
+    }
+    leaf-list remoteIpAddress {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "One or several remote IP addresses used by the association.";
+      type erienmnrmrtnsctp:ddt-IpAddress;
+    }
+  } // end 'grouping moc-SctpAssociation'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list SctpEndpoint {
+      key id;
+      description "Represents logical sender and receiver of SCTP packets.";
+      erienmyext:enm-type MOC;
+      uses moc-SctpEndpoint-keys;
+      container attributes {
+        description "Attributes for SctpEndpoint";
+        uses moc-SctpEndpoint;
+      } // end 'container attributes'
+    } // end 'list SctpEndpoint'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnsctp:SctpEndpoint {
+    list SctpAssociation {
+      key id;
+      description "The SctpAssociation is a representation of the protocol relationship between two SCTP Endpoints. \n\nIt is composed of the two SCTP Endpoints and protocol state information. ";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SctpAssociation-keys;
+      container attributes {
+        description "Attributes for SctpAssociation";
+        uses moc-SctpAssociation;
+      } // end 'container attributes'
+    } // end 'list SctpAssociation'
+  }
+}

@@ -1,0 +1,61 @@
+module ericsson-enm-RmeMpClusterHandling {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeMpClusterHandling;
+  prefix erienmnrmrmempclusterhandling;
+  yexte:ecim-name RmeMpClusterHandling;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  grouping moc-MpClusterHandling-keys {
+    description "Key(s) for MOC MpClusterHandling";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name mpClusterHandlingId;
+      type string;
+    }
+  } // end 'grouping moc-MpClusterHandling-keys'
+  grouping moc-MpClusterHandling {
+    description "This MO is used for configuration of the cluster of main processors.\n\nThe RDN of this MO is MpClusterHandling=1.";
+    leaf primaryCoreRef {
+      description "A reference to the FieldReplaceableUnit MO representing the field replaceable unit with the main processor that shall have a “primary core” role. This reference must always be present. The unit referred to must have an O&M  interface connected to the transport network.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-MpClusterHandling'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list MpClusterHandling {
+      key id;
+      max-elements 1;
+      description "This MO is used for configuration of the cluster of main processors.\n\nThe RDN of this MO is MpClusterHandling=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-MpClusterHandling-keys;
+      container attributes {
+        description "Attributes for MpClusterHandling";
+        uses moc-MpClusterHandling;
+      } // end 'container attributes'
+    } // end 'list MpClusterHandling'
+  }
+}

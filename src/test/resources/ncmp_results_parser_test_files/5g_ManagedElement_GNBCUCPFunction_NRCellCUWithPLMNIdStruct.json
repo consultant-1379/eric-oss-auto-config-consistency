@@ -1,0 +1,34 @@
+{
+  "ManagedElement": [
+    {
+      "id": "NR45gNodeBRadio00022",
+      "attributes":
+      {
+        "dnPrefix": "test"
+      },
+      "GNBCUCPFunction": [
+        {
+          "id": "1",
+          "NRCellCU": [
+            {
+              "id": "NR45gNodeBRadio00022-1",
+              "attributes": {
+                "cellLocalId": "1",
+                "pSCellCapable": "false",
+                "pLMNIdList": [
+                  {
+                    "mcc": "001",
+                    "mnc": "01"
+                  }
+                ],
+                "smtcDuration": "0",
+                "smtcOffset": "0",
+                "smtcPeriodicity": "0"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

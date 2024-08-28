@@ -1,0 +1,27 @@
+ModelObjectName:AttributeName:Type:DataType:ValueConstraint:TakesEffect:PreCondition
+DataRadioBearer:ulMaxRetxThreshold:leaf:int32:1..1 | 2..2 | 3..3 | 4..4 | 6..6 | 8..8 | 16..16 | 32..32:New connection:
+DynamicBlerTarget:dlActivitySubscrDelay:leaf:int32:1..1440::
+ENodeBFunction:rrcConnReestActive:leaf:boolean:::
+EUtranCellFDD:cellBarred:leaf:enumeration:[enum BARRED, enum NOT_BARRED]::
+EUtranCellFDD:qRxLevMin:leaf:int32:-140..-44::
+EUtranCellTDD:cellCapMinCellSubCap:leaf:int32:0..1000000::
+SectorCarrier:digitalTilt:leaf:int32:-300..300:Next cell unlock:
+IdleModePrioAtRelease:highLoadThreshold:leaf:int32:0..16000::
+Paging:nB:leaf:enumeration:[enum T4, enum T2, enum T, enum T1_2, enum T1_4, enum T1_8, enum T1_16, enum T1_32]:After all the cells in the RBS have been locked, and subsequently been unlocked.:
+PreschedProfile:preschedulingDataSize:leaf:int32:1..5000::
+RATFreqPrio:t320:leaf:int32:5..5 | 10..10 | 20..20 | 30..30 | 60..60 | 120..120 | 180..180:Ongoing connection:
+Rcs:tInactivityTimer:leaf:int32:0..0 | 4..86400:New connection.:
+ReportConfigA5:a5Threshold1Rsrp:leaf:int32:-140..-44:New connection:
+ReportConfigA5UlTrig:hysteresisA5:leaf:int32:0..150:New connection:
+ReportConfigEUtraBestCell:timeToTriggerA3:leaf:int32:0..0 | 40..40 | 64..64 | 80..80 | 100..100 | 128..128 | 160..160 | 256..256 | 320..320 | 480..480 | 512..512 | 640..640 | 1024..1024 | 1280..1280 | 2560..2560 | 5120..5120:New connection:
+ReportConfigSCellA1A2:a1a2ThresholdRsrq:leaf:int32:-195..-30:Ongoing connection:
+ReportConfigSearch:a1a2SearchThresholdRsrp:leaf:int32:-140..-44:New connection:
+ResourcePartitions:rrpAdmCtrlRejPaReqOvlGbr:leaf:boolean::Next cell unlock:
+SecurityHandling:personalDataProtectionEnabled:leaf:boolean::::
+UeMeasControl:rwrToNRAllowed:leaf:boolean:::
+
+
+
+
+
+

@@ -1,0 +1,906 @@
+module ericsson-enm-ResBatteryBackup {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ResBatteryBackup;
+  prefix erienmnrmresbatterybackup;
+  yexte:ecim-name ResBatteryBackup;
+  revision 2351-11-28 {
+    yexte:version 6;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ResEquipmentSupportFunction {
+    prefix erienmnrmresequipmentsupportfunction;
+  }
+  typedef enum-ApcBatteryTestType {
+    description "PERIODIC  \nON_DEMAND  \n";
+    type enumeration {
+      enum PERIODIC {
+        value 0;
+      }
+      enum ON_DEMAND {
+        value 1;
+      }
+    }
+  }
+  typedef enum-ApcBatteryTestInitiation {
+    type enumeration {
+      enum UNDEFINED {
+        value 0;
+      }
+      enum AUTOMATIC_PERIODIC {
+        description "Periodic test if testMode is AUTOMATIC.";
+        value 1;
+      }
+      enum CONFIGURED_PERIODIC {
+        description "Periodic test if testMode is CONFIGURED. ";
+        value 2;
+      }
+      enum MAINS_FAILURE_PERIODIC {
+        description "Periodic test initiated from mains power failure.";
+        value 3;
+      }
+      enum ON_DEMAND {
+        description "Initiated via action startBatteryTest and parameter forced = false. ";
+        value 4;
+      }
+      enum ON_DEMAND_FORCED {
+        description "Initiated via action startBatteryTest and parameter forced = true.";
+        value 5;
+      }
+    }
+  }
+  typedef enum-ApcChargingMode {
+    type enumeration {
+      enum AUTOMATIC {
+        value 0;
+      }
+      enum USER_DEFINED {
+        value 1;
+      }
+    }
+  }
+  typedef enum-ApcBatteryTestOutcome {
+    type enumeration {
+      enum UNDEFINED {
+        description "No automatic evaluation was done due to forced initiation. The test result needs manual evaluation.";
+        value 0;
+      }
+      enum PASSED {
+        description "Test did not indicate underperforming batteries.";
+        value 1;
+      }
+      enum FAILED {
+        description "Test indicated underperforming batteries and an alarm was raised.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef enum-ApcBatteryType {
+    type enumeration {
+      enum UNKNOWN {
+        value 0;
+      }
+      enum TYPE01 {
+        value 1;
+      }
+      enum TYPE02 {
+        value 2;
+      }
+    }
+  }
+  typedef enum-ApcMonth {
+    type enumeration {
+      enum JANUARY {
+        value 1;
+      }
+      enum FEBRUARY {
+        value 2;
+      }
+      enum MARCH {
+        value 3;
+      }
+      enum APRIL {
+        value 4;
+      }
+      enum JUNE {
+        value 6;
+      }
+      enum JULY {
+        value 7;
+      }
+      enum AUGUST {
+        value 8;
+      }
+      enum MAY {
+        value 5;
+      }
+      enum SEPTEMBER {
+        value 9;
+      }
+      enum OCTOBER {
+        value 10;
+      }
+      enum NOVEMBER {
+        value 11;
+      }
+      enum DECEMBER {
+        value 12;
+      }
+    }
+  }
+  typedef enum-ApcBatteryTestState {
+    type enumeration {
+      enum UNDEFINED {
+        value 0;
+      }
+      enum PENDING {
+        description "On demand test is pending.";
+        value 1;
+      }
+      enum IN_PROGRESS {
+        description "Battery test is in progress. ";
+        value 2;
+      }
+    }
+  }
+  typedef enum-ApcBatteryTestMode {
+    type enumeration {
+      enum AUTOMATIC {
+        description "Pre-defined values are used at the periodic test. ";
+        value 0;
+      }
+      enum CONFIGURED {
+        description "User configured values are used at the periodic test.";
+        value 1;
+      }
+      enum DISABLED {
+        description "Periodic tests are disabled. ";
+        value 2;
+      }
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestResult_startDate {
+    type string {
+      length 8..8;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_equalizeChargeTime {
+    type int32 {
+      range 0..24;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_referenceBatteryCapacity {
+    type int32 {
+      range -1..999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_batteryTemperature {
+    type int32 {
+      range -55..125;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_intermittentChargeDisconnectTime {
+    type int32 {
+      range 0..2400;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_boostChargeTriggerVoltage {
+    type int32 {
+      range -500..-420;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_fullyChargedCapacity {
+    type int32 {
+      range -1..999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_floatChargeVoltage {
+    type int32 {
+      range -555..-510;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_stateOfHealth {
+    type int32 {
+      range -1..100;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_increasedChargeVoltage {
+    type int32 {
+      range -585..-555;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_batteryDisconnectLevel {
+    type int32 {
+      range -1..100;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_tempCompMinVoltage {
+    type int32 {
+      range -570..-480;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_chargeMaxCurrent {
+    type int32 {
+      range 20..1000;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_batteryDisconnectTemp {
+    type int32 {
+      range 40..70;
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestResult_measuredConsumedCapacity {
+    type int32 {
+      range -1..99999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_intermittentChargeConnectTime {
+    type int32 {
+      range 0..72;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_tempCompVoltageSlope {
+    type int32 {
+      range -10000..0;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_mainLoadDisconnectLevel {
+    type int32 {
+      range -1..100;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_batteryCurrent {
+    type int32 {
+      range "-9999..-9999 | -1000..1000";
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestResult_estimatedNominalBatteryCapacity {
+    type int32 {
+      range -1..99999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_minimumBackupTime {
+    type int32 {
+      range 0..10080;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_minimumStateOfHealth {
+    type int32 {
+      range 0..100;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_capacityAlarmLevel {
+    type int32 {
+      range -1..100;
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestResult_estimatedBatteryStateOfHealth {
+    type int32 {
+      range -1..100;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_intermittentChargeConnectVoltage {
+    type int32 {
+      range -530..-460;
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestStatus_estimatedRemainingBackupTime {
+    type int32 {
+      range -1..99999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_batteryVoltage {
+    type int32 {
+      range "-600..-380 | 0..0";
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_boostChargeTime {
+    type int32 {
+      range 0..48;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_batteryInstallationDate {
+    type string {
+      length 8..8;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_elevatedChargeVoltage {
+    type int32 {
+      range -573..-555;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_testStartTime {
+    type string {
+      length 5..5;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_testStartDay {
+    type int32 {
+      range 1..31;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_estimatedRemainingBackupTime {
+    type int32 {
+      range -1..999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_batteryDisconnectTempCeaseOffset {
+    type int32 {
+      range 1..20;
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestResult_measuredBackupTime {
+    type int32 {
+      range -1..99999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_batteryDisconnectHighTemp {
+    type int32 {
+      range 40..60;
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestResult_startTime {
+    type string {
+      length 5..5;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_nextScheduledTestDate {
+    type string {
+      length 8..8;
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestStatus_measuredElapsedTime {
+    type int32 {
+      range -1..99999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_equalizeChargeCyclicInterval {
+    type int32 {
+      range 0..365;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_chargingVoltage {
+    type int32 {
+      range -570..-480;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_tempCompMaxVoltage {
+    type int32 {
+      range -570..-480;
+    }
+  }
+  typedef ddt-ResBatteryBackup_ApcBatteryTestStatus_measuredConsumedCapacityInTest {
+    type int32 {
+      range -1..99999999;
+    }
+  }
+  typedef ddt-ResBatteryBackup_BatteryBackup_nominalTemp {
+    type int32 {
+      range 170..280;
+    }
+  }
+  grouping struct-ApcBatteryTestResult {
+    description .;
+    leaf estimatedNominalBatteryCapacity {
+      description "Estimated nominal battery capacity of the tested battery\nDependencies: The parameter value is undefined if a battery backup time test was executed.\nUnit: 1 Ah\nUndefined value: -1\n";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestResult_estimatedNominalBatteryCapacity;
+      mandatory true;
+    }
+    leaf measuredConsumedCapacity {
+      description "Measured total consumed capacity from test start until end of test\nUnit: 1 Ah\nUndefined value: -1";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestResult_measuredConsumedCapacity;
+      mandatory true;
+    }
+    leaf initiation {
+      description "Describes how the battery test was initiated.\n";
+      type erienmnrmresbatterybackup:enum-ApcBatteryTestInitiation;
+      mandatory true;
+    }
+    leaf estimatedBatteryStateOfHealth {
+      description "Estimated state-of-health of the tested battery. State-Of-Health is calculated as: estimatedNominalBatteryCapacity / referenceBatteryCapacity * 100\nDependencies: The parameter value is undefined if a battery backup time test was executed.\nUnit: 1 %\nUndefined value: -1\n";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestResult_estimatedBatteryStateOfHealth;
+      mandatory true;
+    }
+    leaf measuredBackupTime {
+      description "The measured time from test start until end of test\nUnit: 1 minute\nUndefined value: -1\n";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestResult_measuredBackupTime;
+      mandatory true;
+    }
+    leaf startTime {
+      description "The time the battery test was started. Format: \"HH:MM\", 24 h format\nUndefined value: \"--:--\"";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestResult_startTime;
+      mandatory true;
+    }
+    leaf outcome {
+      description "Outcome of the automatic evaluation of the battery test\nPossible values:\n• UNDEFINED\n• PASSED\n• FAILED";
+      yexte:dependencies "For a battery capacity test, the evaluation is done by comparing the estimatedBatteryStateOfHealth with the minimumStateOfHealth, if test mode is set to CONFIGURED. If testMode is set to AUTOMATIC, the estimatedBatteryStateOfHealth is compared with 70%.\nFor a battery backup time test, the evaluation is done by comparing the measuredBackupTime with the minimumBackupTime.\n";
+      type erienmnrmresbatterybackup:enum-ApcBatteryTestOutcome;
+      mandatory true;
+    }
+    leaf startDate {
+      description "The date the battery test was started. Format: \"YYYYMMDD\"\nUndefined value: \"000000\"";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestResult_startDate;
+      mandatory true;
+    }
+  } // end 'grouping struct-ApcBatteryTestResult'
+  grouping struct-ApcBatteryTestStatus {
+    description .;
+    leaf testState {
+      description "Current state of battery test.\n";
+      type erienmnrmresbatterybackup:enum-ApcBatteryTestState;
+      mandatory true;
+    }
+    leaf measuredConsumedCapacityInTest {
+      description "Measured total consumed capacity from test start until execution of this action\nDependencies: The parameter value is undefined if parameter testState is PENDING.\nUnit: 1 Ah\nUndefined value: -1";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestStatus_measuredConsumedCapacityInTest;
+      mandatory true;
+    }
+    leaf estimatedRemainingBackupTime {
+      description "Calculated estimate of remaining backup time\nDependencies: The value is only defined if a battery capacity test is executed. The parameter value is undefined if a battery backup time test is executed. The parameter value is undefined if parameter testState is PENDING.\nUnit: 1 minute\nUndefined value: -1\n";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestStatus_estimatedRemainingBackupTime;
+      mandatory true;
+    }
+    leaf measuredElapsedTime {
+      description "Time from test start until execution of this action\nDependencies: The parameter value is undefined if parameter testState is PENDING.\nUnit: 1 minute\nUndefined value: -1";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_ApcBatteryTestStatus_measuredElapsedTime;
+      mandatory true;
+    }
+  } // end 'grouping struct-ApcBatteryTestStatus'
+  grouping moc-BatteryBackup-keys {
+    description "Key(s) for MOC BatteryBackup";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name batteryBackupId;
+      type string;
+    }
+  } // end 'grouping moc-BatteryBackup-keys'
+  grouping moc-BatteryBackup {
+    description "This MO models a battery backup controlled by a BFU or BPA unit.\nThe functionality represented by this MO is dependent on the existence of a FieldReplaceableUnit MO of type BFU or BPA.\nFrom 18.Q1 the reservedBy attribute must be empty before MO can be deleted..";
+    leaf equalizeChargeTime {
+      description "The time in equalize charge. Value zero (0) means that equalize charging is disabled. To enable equalize charging, the value must be set to a number other than zero (0).";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.\n";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_equalizeChargeTime;
+      default 4;
+    }
+    leaf chargingMode {
+      description "The type of battery charging used. If charging is user-defined, the charging algorithm and parameters must be specified. If chargingMode = AUTOMATIC, the following attributes are not used:\n• floatChargeVoltage\n• tempCompVoltageSlope\n• nominalTemp\n• tempCompMinVoltage\n• tempCompMaxVoltage\n• elevatedChargeVoltage\n• boostChargeTime\n• boostChargeTriggerVoltage\n• equalizeChargeTime\n• equalizeChargeCyclicInterval\n• intermittentChargeConnectVoltage\n• intermittentChargeConnectTime\n• intermittentChargeDisconnectTime";
+      type erienmnrmresbatterybackup:enum-ApcChargingMode;
+      default AUTOMATIC;
+    }
+    leaf increasedChargeVoltage {
+      status deprecated {
+        yexte:status-information "Deprecated since 16A, replaced by ElevatedChargeVoltage";
+      }
+      description "The charge voltage used at boost charging and equalize charging.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_increasedChargeVoltage;
+      default -564;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_userLabel;
+    }
+    leaf extendedSoftwareControl {
+      config false;
+      description "Shows if the software has extended control over battery charging, that is, the BFU has a reduced autonomous behavior.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf batteryDisconnectHighTemp {
+      description "The temperature at which the battery is disconnected. Applies to both main and priority loads. The battery is disconnected when batteryTemperature > batteryDisconnectHighTemp.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_batteryDisconnectHighTemp;
+      default 60;
+    }
+    leaf controlDomainRef {
+      erienmyext:no-notification;
+      description "The cabinet or hwGroup where functions represented by this MO are deployed.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf intermittentChargeDisconnectTime {
+      description "Defines the time until the batteries are disconnected (during this time the batteries are connected). Value zero (0) means that intermittent charging is not enabled.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_intermittentChargeDisconnectTime;
+      default 0;
+    }
+    leaf batteryTemperature {
+      erienmyext:no-notification;
+      config false;
+      description "The current temperature reported by the battery temperature sensor installed on the battery.\nUndefined value represented by nil, indicates no contact with BFU, BFU has no battery or BFU has no temperature sensor.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_batteryTemperature;
+    }
+    leaf nextScheduledTestDate {
+      erienmyext:no-notification;
+      config false;
+      description "Date of next scheduled periodic battery test. Format: \"YYYYMMDD\".";
+      yexte:dependencies "The value is undefined if testMode has the value DISABLED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_nextScheduledTestDate;
+    }
+    leaf floatChargeVoltage {
+      description "The desired battery voltage for charging at 25 degrees Celsius.";
+      yexte:dependencies "This attribute is relevant only when attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_floatChargeVoltage;
+      default -545;
+    }
+    leaf batteryDisconnectLevel {
+      description "The relative level of the total capacity at which batteries are disconnected and node is shut down.\nUndefined value: -1 indicates that no value has been set. Batteries will not be disconnected.\nDuring deprecation period, a setting of the batteryDisconnectLevel is converted and mirrored to deprecated attribute priorityLoadUndervoltageDisconnect of MO PowerDistribution. Since the valid range of priorityLoadUndervoltageDisconnect does not span the entire range of batteryDisconnectLevel, a value of batteryDisconnectLevel that is beyond the upper range of priorityLoadUndervoltageDisconnect will result in a mirrored value that is the maximum value of priorityLoadUndervoltageDisconnect. It is the value of the batteryDisconnectLevel that is used in the application.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_batteryDisconnectLevel;
+      default 5;
+    }
+    leaf chargeMaxCurrent {
+      description "Maximum allowed battery current during charging. The maximum battery current is limited if the maximum current supported by the BFU is lower than this defined value.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_chargeMaxCurrent;
+      default 80;
+    }
+    leaf boostChargeTriggerVoltage {
+      description "Defines the trigger voltage for boost charge. When the trigger voltage is surpassed during discharge, the consecutive charging is boost charging.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_boostChargeTriggerVoltage;
+      default -470;
+    }
+    leaf mainLoadDisconnectLevel {
+      description "The relative level of the total capacity at which the main load is disconnected.\nUndefined value: -1 indicates that no value has been set. Main load will not be disconnected.\nDuring deprecation period, a setting of the mainLoadDisconnectLevel is converted and mirrored to deprecated attribute mainLoadUndervoltageDisconnect of MO PowerDistribution. Since the valid range of mainLoadUndervoltageDisconnect does not span the entire range of mainLoadDisconnectLevel, a value of mainLoadDisconnectLevel that is beyond the upper range of mainLoadUndervoltageDisconnect will result in a mirrored value that is the maximum value of mainLoadUndervoltageDisconnect. It is the value of the mainLoadDisconnectLevel that is used in the application.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_mainLoadDisconnectLevel;
+      default 25;
+    }
+    leaf tempCompMinVoltage {
+      description "The minimum voltage allowed for temperature compensated charging.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_tempCompMinVoltage;
+      default -528;
+    }
+    leaf stateOfHealth {
+      config false;
+      description "State of health of the battery backup system.\nUndefined value: -1 indicates that no value has been retrieved.";
+      notife:notifiable-state-data true;
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_stateOfHealth;
+    }
+    leaf elevatedChargeVoltage {
+      description "The charge voltage used at boost charging and equalize charging.\n";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_elevatedChargeVoltage;
+      default -570;
+    }
+    leaf boostChargeTime {
+      description "The time in boost charge. Value zero (0) means that boost charging is disabled.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_boostChargeTime;
+      default 5;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmresbatterybackup:enum-AvailStatus;
+    }
+    leaf testStartDay {
+      description "The day of month for periodic battery tests.";
+      yexte:dependencies "The attribute is relevant only when testMode has the value CONFIGURED. Combination of testStartDay and testStartMonths must be a valid date.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_testStartDay;
+      default 25;
+    }
+    leaf capacityAlarmLevel {
+      description "The relative level of the total capacity at which an alarm for low remaining battery backup capacity is raised.\nUndefined value: -1 indicates that no value has been set. Alarm will not be raised.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_capacityAlarmLevel;
+      default 40;
+    }
+    leaf testStartTime {
+      description "The time of day to start periodic battery tests. Format: HH:MM, 24-hour format.";
+      yexte:dependencies "The attribute is only relevant if testMode has the value CONFIGURED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_testStartTime;
+      default 01:00;
+    }
+    leaf batteryCurrent {
+      erienmyext:no-notification;
+      config false;
+      description "The total measured battery backup current. When the batteries are charging, the current is positive. When the batteries are discharging, the current is negative.\nUndefined value: -9999 indicates no contact with battery interfacing unit such as a BFU or BPA unit.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_batteryCurrent;
+    }
+    leaf batteryInstallationDate {
+      status deprecated {
+        yexte:status-information "Since 18A. Replaced by installationDate in MO BatteryUnit. Planned to be removed.";
+      }
+      description "The date when the batteries in the battery backup of the RBS were installed and taken into service. Format: YYYYMMDD.\n";
+      yexte:dependencies "The date must not be a future date. Changing this attribute will cause the system to restart battery capacity test calculations and recalculate attribute referenceBatteryCapacity.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_batteryInstallationDate;
+    }
+    leaf batteryTestIsRunning {
+      config false;
+      description "State whether a battery test is running or not.\n\nPossible values:\n- true: A battery test cycle has been started\n- false: Either the battery test is disabled or there is not any ongoing battery test. ";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf batteryDisconnectTempCeaseOffset {
+      description "The offset for the disconnect temperature below which the battery will be reconnected. Applies to both main and priority loads. The battery is reconnected when batteryTemperature < batteryDisconnectedTemp - batteryDisconnectTempCeaseOffset.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_batteryDisconnectTempCeaseOffset;
+      default 5;
+    }
+    leaf estimatedRemainingBackupTime {
+      erienmyext:no-notification;
+      config false;
+      description "Estimated remaining backup time at current load conditions.\nUndefined value: -1 indicates that no value has been retrieved.";
+      yexte:dependencies "Attribute sharedBattery must be set to false and attribute referenceBatteryCapacity must not be undefined. \n";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_estimatedRemainingBackupTime;
+    }
+    leaf minimumStateOfHealth {
+      description "The minimum value for the State-of-Health of the battery backup system. An alarm is raised if stateOfHealth value for the battery backup system is lower than minimumStateOfHealth value.";
+      yexte:dependencies "The attribute is only relevant if sharedBattery is set to false.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_minimumStateOfHealth;
+      default 70;
+    }
+    leaf tempCompVoltageSlope {
+      description "A compensation factor that expresses the amount of voltage changes caused by temperature. Used in temperature compensated charging. Higher temperature gives a lower charging voltage. Fixed battery charging is achieved by assigning this attribute the value zero.\nExample: The default value -96 = -0.096 V per 1 degree Celsius, gives that a 10 degree temperature increase changes the voltage from e.g. -50.000 V to -49.040 V.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_tempCompVoltageSlope;
+      default -96;
+    }
+    leaf batteryVoltage {
+      erienmyext:no-notification;
+      config false;
+      description "The measured battery voltage. It is equal to the attribute systemVoltage, PowerdDistribution MO, when the battery is connected.\n0 means the battery is disconnected. \nUndefined value represented by nil, indicates no contact with the battery interfacing unit, such as a BFU or a BPA unit.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_batteryVoltage;
+    }
+    leaf intermittentChargeConnectTime {
+      description "Defines the period following disconnection after which the battery is reconnected. Used in intermittent charging.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_intermittentChargeConnectTime;
+      default 0;
+    }
+    leaf intermittentChargeConnectVoltage {
+      description "Defines the minimum battery voltage level allowed for a disconnected battery. When minimum level is reached, the battery is reconnected. Used in intermittent charging.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_intermittentChargeConnectVoltage;
+      default -500;
+    }
+    leaf chargingVoltage {
+      status deprecated {
+        yexte:status-information "Deprecated since 16A, replaced by FloatChargeVoltage";
+      }
+      description "The desired battery voltage for charging at 25 degrees Celsius.";
+      yexte:dependencies "This attribute is relevant only when attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_chargingVoltage;
+      default -545;
+    }
+    leaf batteryDisconnectTemp {
+      status deprecated {
+        yexte:status-information "Deprecated since 16A, replaced by BatteryDisconnectHighTemp";
+      }
+      description "The temperature at which the battery is disconnected. Applies to both main and priority loads. The battery is disconnected when batteryTemperature > batteryDisconnectTemp.\n";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_batteryDisconnectTemp;
+      default 60;
+    }
+    leaf fullyChargedCapacity {
+      config false;
+      description "Current maximum capacity of the battery backup system.\nUndefined value: -1 indicates that no value has been retrieved.";
+      notife:notifiable-state-data true;
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_fullyChargedCapacity;
+    }
+    leaf-list testStartMonths {
+      min-elements 1;
+      max-elements 12;
+      description "The months in which periodic battery tests are performed. A battery test is performed in the months listed in the parameter. A month may be listed only once in the parameter.";
+      yexte:dependencies "The attribute is only relevant if attribute testMode has the value CONFIGURED.";
+      type erienmnrmresbatterybackup:enum-ApcMonth;
+      default MARCH;
+      default SEPTEMBER;
+    }
+    leaf referenceBatteryCapacity {
+      erienmyext:no-notification;
+      config false;
+      description "The initial nominal battery capacity. The value is extracted from intelligent batteries as a sum of all installed batteries’ nominal capacity. For batteries that cannot communicate, the value is calculated at the first battery capacity test. If  the capacity value becomes significantly higher at a succeeding battery capacity test, the value is replaced with the highest value.\nUndefined value: -1 indicates that no value has been retrieved.";
+      yexte:dependencies "The value is either the sum of all battery units initial nominal capacity or the result of the first conducted battery capacity test of the battery system. A battery capacity test can only be executed if the attribute sharedBattery = false.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_referenceBatteryCapacity;
+    }
+    leaf testMode {
+      description "The mode of the battery test. ";
+      yexte:disturbances "Depending on values of other BatteryBackup attributes, changing this attribute can start a battery test which can cause loss of traffic.";
+      yexte:dependencies "The following attributes are only relevant if testMode is set to CONFIGURED: testStartDay, testStartTime, testStartMonths and minimumStateOfHealth.";
+      type erienmnrmresbatterybackup:enum-ApcBatteryTestMode;
+      default DISABLED;
+    }
+    leaf nominalTemp {
+      description "Nominal temperature for temperature compensated charging.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_nominalTemp;
+      default 250;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf sharedBattery {
+      description "Indicates if the RBS shares a battery with another RBS or other power consumer on the site. The setting of this attributes has a great impact on the system behavior. ";
+      yexte:dependencies "If sharedBattery is set to True a backup time test will be used as battery test. A battery capacity test cannot be executed if shared batteries are used.";
+      type boolean;
+      default false;
+    }
+    leaf minimumBackupTime {
+      description "The minimum requirement for backup time for the installed batteries when conducting a battery backup time test. An alarm is raised if measured backup time is shorter than minimumBackupTime.";
+      yexte:dependencies "This attribute is only relevant if sharedBattery is set to true.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_minimumBackupTime;
+      default 60;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmresbatterybackup:enum-OperState;
+    }
+    leaf batteryType {
+      status deprecated {
+        yexte:status-information "Deprecated since 16A";
+      }
+      description "The type of battery to which the installed battery conforms. The type is related to the capabilities of the battery.";
+      yexte:dependencies "batteryType = UNKNOWN is valid only when chargingMode = USER_DEFINED.";
+      type erienmnrmresbatterybackup:enum-ApcBatteryType;
+      default TYPE01;
+    }
+    leaf equalizeChargeCyclicInterval {
+      description "The number of days between equalize charging. The cycle is reset at restart.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_equalizeChargeCyclicInterval;
+      default 30;
+    }
+    leaf tempCompMaxVoltage {
+      description "The maximum voltage allowed for temperature compensated charging.";
+      yexte:dependencies "This attribute is only relevant if attribute chargingMode in MO BatteryBackup has the value USER_DEFINED.";
+      type erienmnrmresbatterybackup:ddt-ResBatteryBackup_BatteryBackup_tempCompMaxVoltage;
+      default -569;
+    }
+    action readBatteryTestStatus {
+      description "Action for reading out the status of an ongoing battery test (testState is IN_PROGRESS or PENDING). Valid for on demand test and periodic test. Valid for battery capacity and backup time tests. Updated values can be retrieved by issuing this action regularly during a test. Out parameter values are not stored persistently and can therefore only be read during a test. All out parameter values, except for testState, are undefined in testState PENDING.";
+      output {
+        container result {
+          presence "";
+          uses erienmnrmresbatterybackup:struct-ApcBatteryTestStatus;
+          erienmyext:enm-type STRUCT;
+        } // end 'container result'
+      }
+    }
+    action stopBatteryTest {
+      description "Stops an ongoing battery capacity test or battery backup time test that was started via action startBatteryTest.";
+    }
+    action startBatteryTest {
+      description "Starts an on demand battery capacity test or battery backup time test. A battery capacity test will go into testState PENDING if the batteries are not fully charged and in parameter forced is set to False. The test will in this case be initiated when the batteries are fully charged, if this occurs within 24 h.";
+      input {
+        leaf forced {
+          mandatory true;
+          description "Specifies if forced initiation should be used or not. Forced initiation means that a number of pre-conditions are overridden and that the test can be started even if these pre-conditions are not fulfilled. Overridden pre-conditions:\n- batteries are considered fully charged\n- system is not running on batteries in case of battery time test\nNo alarms are raised as a result of the battery test if parameter forced is set to true. Manual evaluation of the test result is needed.\n\nDependencies: Attribute referenceBatteryCapacity is not updated as a result of the battery test if parameter forced is set to true. ";
+          type boolean;
+        }
+      }
+    }
+    action startEqualizeCharging {
+      description "Starts equalize charging.\n";
+    }
+    action stopEqualizeCharging {
+      description "Stops equalize charging.";
+    }
+    action readBatteryTestResult {
+      description "Action for reading out the result of a finished battery test. Output data is stored persistently. This means that the result can always be read for the last finished on demand test and periodic test separately. The action is valid for battery capacity and backup time tests.";
+      input {
+        leaf testType {
+          mandatory true;
+          description "Type of battery test to read result for.";
+          type erienmnrmresbatterybackup:enum-ApcBatteryTestType;
+        }
+      }
+      output {
+        container result {
+          presence "";
+          uses erienmnrmresbatterybackup:struct-ApcBatteryTestResult;
+          erienmyext:enm-type STRUCT;
+        } // end 'container result'
+      }
+    }
+  } // end 'grouping moc-BatteryBackup'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmresequipmentsupportfunction:EquipmentSupportFunction {
+    list BatteryBackup {
+      key id;
+      description "This MO models a battery backup controlled by a BFU or BPA unit.\nThe functionality represented by this MO is dependent on the existence of a FieldReplaceableUnit MO of type BFU or BPA.\nFrom 18.Q1 the reservedBy attribute must be empty before MO can be deleted..";
+      erienmyext:enm-type MOC;
+      uses moc-BatteryBackup-keys;
+      container attributes {
+        description "Attributes for BatteryBackup";
+        uses moc-BatteryBackup;
+      } // end 'container attributes'
+    } // end 'list BatteryBackup'
+  }
+}

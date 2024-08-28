@@ -1,0 +1,1131 @@
+module ericsson-enm-Grat {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-Grat;
+  prefix erienmnrmgrat;
+  yexte:ecim-name Grat;
+  revision 2351-11-28 {
+    yexte:version 5;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AbisSoState {
+    description "The different states for a Service Object (SO) in the Abis O&M G31 model. \n";
+    type enumeration {
+      enum RESET {
+        description "Value used when the Abis Service Object is in state RESET.\nRESET is the initial state, which also is used by BSC to set the object in a defined state.\n";
+        value 0;
+      }
+      enum STARTED {
+        description "Value used when the Abis Service Object is in state STARTED. ";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AbisLinkState {
+    description "The different states for the Abis links (OML/RSL).";
+    type enumeration {
+      enum DOWN {
+        description "Value used when the Abis OML or RSL is not established or broken.";
+        value 0;
+      }
+      enum UP {
+        description "Value used when the Abis OML or RSL is established.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AbisAoState {
+    description "The different states for an Application Object (AO) in the Abis O&M G31 model. \n";
+    type enumeration {
+      enum RESET {
+        description "Value used when the Abis Application Object is in state RESET.\nRESET is the initial state, which also is used by BSC to set the object in a defined state with previous configuration cleared.";
+        value 0;
+      }
+      enum DISABLED {
+        description "Value used when the Abis Application Object is in state DISABLE.";
+        value 1;
+      }
+      enum ENABLED {
+        description "Value used when the Abis Application Object is in state ENABLE.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-CombinedCellType {
+    description "The different types for a Combined Cell, defines network scenario related to Combined Cell. Extension antenna sites with extension TRXs are used to provide coverage in areas where Main antenna site fails to provide coverage.\nNormally, use the same CombinedCellType value for all TRX in a GsmSector.";
+    type enumeration {
+      enum NON_COMBINED_CELL {
+        description "For TRX without ExtTrx children in combined cell configuration.";
+        value 0;
+      }
+      enum COMBINED_CELL_TYPE1 {
+        description "Combined cell with main antenna site that acts as dominant radio transmitter and defines outer cell coverage border. Radio propagation distance between extension antenna sites and main antenna site is shorter than 2 km.";
+        value 1;
+      }
+      enum COMBINED_CELL_TYPE2 {
+        description "Combined cell with main antenna site that acts as dominant radio transmitter and defines outer cell coverage border. Radio propagation distance between at least one extension antenna site and main antenna site is longer than 2 km.";
+        value 2;
+      }
+      enum COMBINED_CELL_TYPE3 {
+        description "Combined cell with no dominant main antenna site. Outer coverage border of combined cell is defined by aggregated coverage area of main and extension antenna sites. Distance between antenna sites in combined cell are relatively short, from few meters up to maximum distance of 2 km.";
+        value 3;
+      }
+      enum COMBINED_CELL_TYPE4 {
+        description "Combined cell with no dominant main antenna site and used for high speed train. Outer coverage border of combined cell is defined by aggregated coverage area in main and extension antenna sites. Maximum distance between neighboring antenna sites in combined cell is in the order of 1-2 Km.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-AbisOperCondition {
+    description "The different operational conditions for a MO in Abis model towards BSC.";
+    type enumeration {
+      enum OPERATIONAL {
+        description "Normal condition. Abis MO is fully operational. Default after Abis MO is reset.";
+        value 0;
+      }
+      enum DEGRADED {
+        description "Abnormal condition. Abis MO is partially operational; it performs normal service but with reduced functionality or performance.";
+        value 1;
+      }
+      enum NOT_OPERATIONAL {
+        description "Abnormal condition. Abis MO is non-operational and cannot perform normal service.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef enum-TfMode {
+    description "Synchronization mode in the Cluster Group of the TF AO in Abis model towards BSC.\nNormally a result of BSC actions on the Abis OML.";
+    type enumeration {
+      enum MASTER {
+        value 0;
+      }
+      enum STANDALONE {
+        value 1;
+      }
+      enum SLAVE {
+        value 2;
+      }
+      enum UNDEFINED {
+        value 255;
+      }
+    }
+  }
+  typedef ddt-Grat_ExtTrx_rxImbAvgDeltaMeas1 {
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-Grat_Trx_rxImbAvgDeltaMeas2 {
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-Grat_AbisIp_dscpSectorControlUL {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_rxImbAlarmThreshold {
+    type uint8 {
+      range 1..255;
+    }
+  }
+  typedef ddt-Grat_AbisIp_initialRetransmissionPeriod {
+    type uint16 {
+      range 1..10;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_rxImbMinNoOfSamples {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_rxImbSupTimeElapsed {
+    type uint16 {
+      range 0..600;
+    }
+  }
+  typedef ddt-Grat_Trx_arfcnMin {
+    type uint16 {
+      range 0..1023;
+    }
+  }
+  typedef ddt-Grat_Trx_trxIndex {
+    type uint8 {
+      range 0..126;
+    }
+  }
+  typedef ddt-Grat_Trx_rxImbNoOfSamples1 {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Grat_AbisIp_gsmSectorName {
+    type string {
+      length 1..20;
+    }
+  }
+  typedef ddt-Grat_Trx_rxImbNoOfSamples2 {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Grat_AbisIp_retransmissionCap {
+    type uint16 {
+      range 1..10;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_rxImbNoOfSamples1 {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-Grat_Trx_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Grat_Trx_bscMaxTxPower {
+    type uint16 {
+      range 0..700;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Grat_Trx_configuredMaxTxPower {
+    type uint32 {
+      range 0..10000000;
+    }
+  }
+  typedef ddt-Grat_Trx_rxImbMinNoOfSamples {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-Grat_AbisIp_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Grat_Trx_rxImbAvgDeltaMeas1 {
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-Grat_Trx_rxImbSupTimeElapsed {
+    type uint16 {
+      range 0..600;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_maxTxPowerCapability {
+    type uint16 {
+      range 0..700;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_extAntSiteIndex {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-Grat_Trx_noOfTxAntennas {
+    type uint8 {
+      range "1..1 | 2..2";
+    }
+  }
+  typedef ddt-Grat_ExtTrx_rxImbSupWindowSize {
+    type uint16 {
+      range 1..600;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_antSiteIndex {
+    type uint8 {
+      range 1..7;
+    }
+  }
+  typedef ddt-Grat_GsmSector_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Grat_Trx_reservedMaxTxPower {
+    type uint32 {
+      range 0..10000000;
+    }
+  }
+  typedef ddt-Grat_Trx_frequencyBand {
+    type uint8 {
+      range "0..0 | 2..2 | 3..3 | 5..5 | 8..8";
+    }
+  }
+  typedef ddt-Ipv4UnicastAddressStr {
+    description "IPv4 address string, controlled by a regular expression.\n\nAddress is to be specified in dotted-quad decimal notation in accordance with RFC791, without leading 0s.\nIPv4 address within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters. \nValid characters: 0123456789.\n\nRegex:\n(^((22[0-3]|2[01][0-9]|1[013456789][0-9]|12[012345689]|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))$)\n\nExamples: 1.1.1.1, 1.1.255.255 ";
+    type string;
+  }
+  typedef ddt-Grat_BtsFunction_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Grat_AbisIp_maxRetransmission {
+    type uint16 {
+      range 1..10;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_reservedMaxTxPower {
+    type uint32 {
+      range 0..10000000;
+    }
+  }
+  typedef ddt-Grat_Trx_noOfRxAntennas {
+    type uint8 {
+      range "1..1 | 2..2 | 4..4";
+    }
+  }
+  typedef ddt-Grat_ExtTrx_extTrxDistance {
+    type uint16 {
+      range 0..350;
+    }
+  }
+  typedef ddt-Grat_BtsFunction_gsmMcpaIpmCapacity {
+    type uint32;
+  }
+  typedef ddt-Grat_GsmSector_abisClusterGroupId {
+    type uint16 {
+      range 0..16383;
+    }
+  }
+  typedef ddt-Grat_Trx_maxTxPowerCapability {
+    type uint16 {
+      range 0..700;
+    }
+  }
+  typedef ddt-Grat_AbisIp_keepAlivePeriod {
+    type uint16 {
+      range 1..100;
+    }
+  }
+  typedef ddt-Grat_BtsFunction_btsVersion {
+    type string {
+      length 12..12;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_configuredMaxTxPower {
+    type uint32 {
+      range 0..10000000;
+    }
+  }
+  typedef ddt-Grat_Trx_rxImbAlarmThreshold {
+    type uint8 {
+      range 1..255;
+    }
+  }
+  typedef ddt-Grat_ExtTrx_extTrxRadius {
+    type uint8 {
+      range 1..20;
+    }
+  }
+  typedef ddt-Grat_Trx_arfcnMax {
+    type uint16 {
+      range 0..1023;
+    }
+  }
+  typedef ddt-Grat_Trx_rxImbSupWindowSize {
+    type uint16 {
+      range 1..600;
+    }
+  }
+  grouping moc-AbisIp-keys {
+    description "Key(s) for MOC AbisIp";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name abisIpId;
+      type string;
+    }
+  } // end 'grouping moc-AbisIp-keys'
+  grouping moc-AbisIp {
+    description "MO AbisIp handles configuration of L2TP tunnels for GSM Sector.\nThe L2TP tunnels carry Abis traffic over the IP transport network between the GSM Sector and BSC.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmgrat:ddt-Grat_AbisIp_userLabel;
+    }
+    leaf gsmSectorName {
+      description "gsmSectorName is used as identification when BSC is contacted.\nThe gsmSectorName is sent as attribute HostName in L2TP message SCCRQ.\nThe same name must be configured in the BSC.\nDefault gsmSectorName is the same as gsmSectorId, last 20 characters.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_AbisIp_gsmSectorName;
+    }
+    leaf peerIpAddress {
+      erienmyext:no-notification;
+      config false;
+      description "IP address GSM Sector is connected to.\nIs different from bscBrokerAddress if L2TP connection was redirected.";
+      type erienmnrmgrat:ddt-Ipv4UnicastAddressStr;
+    }
+    leaf initialRetransmissionPeriod {
+      description "Initial period from the original transmission to the first retransmission of L2TP control messages.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_AbisIp_initialRetransmissionPeriod;
+      default 1;
+    }
+    leaf retransmissionCap {
+      description "Maximum value of the exponentially increased interval between retransmission of L2TP control messages.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_AbisIp_retransmissionCap;
+      default 4;
+    }
+    leaf ipv4Address {
+      description "Reference to the MO AddressIPv4 which represents the IPv4 address which the GSM Sector uses.";
+      mandatory true;
+      yexte:precondition "administrativeState must equal LOCKED";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf keepAlivePeriod {
+      description "Number of seconds between L2TP keep-alive procedures.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_AbisIp_keepAlivePeriod;
+      default 1;
+    }
+    leaf administrativeState {
+      description "The administrative state.";
+      yexte:disturbances "Changing this attribute to LOCKED causes loss of traffic, due to lost communication to BSC.";
+      type erienmnrmgrat:enum-AdmState;
+      default LOCKED;
+    }
+    leaf dscpSectorControlUL {
+      description "DSCP code for L2TP control connection between the RBS and BSC.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_AbisIp_dscpSectorControlUL;
+      default 46;
+    }
+    leaf bscBrokerIpAddress {
+      description "BSC IP address the GSM Sector contacts when initial contact is made.\n";
+      mandatory true;
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Ipv4UnicastAddressStr;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Operational state of the L2TP control connection.";
+      type erienmnrmgrat:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status of L2TP control connection.\nIt contains details about operationalState.";
+      type erienmnrmgrat:enum-AvailStatus;
+    }
+    leaf maxRetransmission {
+      description "Maximum number of retransmissions of L2TP control messages.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_AbisIp_maxRetransmission;
+      default 5;
+    }
+  } // end 'grouping moc-AbisIp'
+  grouping moc-ExtTrx-keys {
+    description "Key(s) for MOC ExtTrx";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\nRecommendation: naming convention for extTrxId: extTrxId=<antSiteIndex>_<parent main trxIndex> \n";
+      mandatory true;
+      yexte:ecim-name extTrxId;
+      type string;
+    }
+  } // end 'grouping moc-ExtTrx-keys'
+  grouping moc-ExtTrx {
+    description "GSM extension TRX functionality on extension antenna site in a combined cell configuration. Extension antenna sites are used to provide coverage in areas where Main antenna site fails to provide coverage.";
+    leaf-list rfBranchRxRef {
+      min-elements 0;
+      max-elements 2;
+      description "A list of references to MOs RfBranch and CcBranch instances, LDNs.\nThese MOs represent the RF branches the extension TRX shall use for RX.\nIf no reference is specified carrier allocation is based on the rfBranchRef in MO SectorEquipmentFunction. ";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      yexte:dependencies "Referenced RfBranch(es) or CcBranch(es) must be referenced by the same MO SectorEquipmentFunction that is referenced from this extension TRX.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_userLabel;
+    }
+    leaf extTrxRadius {
+      description "Planned size of the downlink radio coverage area for extension site expressed as an “Equal signal strength radius”. “Equal signal strength radius” is the distance from extension antenna site at which an MS is expected to receive equal signal strength contributions from main antenna site and extension antenna site if both main TX and extension TX are sending with nominal TX power.";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_extTrxRadius;
+      default 1;
+    }
+    leaf reservedMaxTxPower {
+      description "Power reserved in MCPA for this extension TRX. ";
+      yexte:precondition "Feature GSM MCPA Intelligent Power Management Baseband must be active; and administrativeState of parent main TRX must equal LOCKED";
+      yexte:dependencies "Value must be equal or lower than attribute configuredMaxTxPower.";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_reservedMaxTxPower;
+    }
+    leaf sectorEquipmentFunctionRef {
+      description "Reference to MO SectorEquipmentFunction instance, LDN.\nMO represents radio and antenna resources used by the extension TRX. ";
+      mandatory true;
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      yexte:dependencies "The attribute frequencyBand in parent main TRX which is also used for this extension TRX must match attribute eUtranFqBands in MO SectorEquipmentFunction.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf rxImbMinNoOfSamples {
+      description "Minimum required number of samples within the supervision window to raise/cease a fault. ";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_rxImbMinNoOfSamples;
+      default 7000;
+    }
+    leaf extTrxDistance {
+      description "Radio propagation distance between main antenna site and extension antenna site.";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_extTrxDistance;
+      default 0;
+    }
+    leaf-list rfBranchTxRef {
+      min-elements 0;
+      max-elements 2;
+      description "List of references to MOs RfBranch instances, LDNs.\nMOs represents the RF branches (MCPA) the extension TRX uses for TX.\nUsed to group extension TRXs to a MCPA.\nIf no reference is specified carrier allocation is based on the RF Branch MOM list, this is default behavior. ";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      yexte:dependencies "Referenced RfBranch(es) must be referenced by the same MO SectorEquipmentFunction that is referenced from this extension TRX.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf configuredMaxTxPower {
+      description "Configured absolute power for this extension TRX. ";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_configuredMaxTxPower;
+      default 20000;
+    }
+    leaf rxImbSupTimeElapsed {
+      erienmyext:no-notification;
+      config false;
+      description "Time elapsed of the supervision window time. ";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_rxImbSupTimeElapsed;
+    }
+    leaf antSiteIndex {
+      description "Used for identifying an Extension Antenna Site in Combined cells site statistics in BSC and OSS/ENM.  \nNormally use the same antSiteIndex value for all MO ExtTrx instances on an Extension Antenna Site.\nRecommendation: Also to be used together with trxIndex attribute of parent main Trx in naming convention for extTrxId. extTrxId=<antSiteIndex>_<parent main trxIndex>.\n";
+      mandatory true;
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_antSiteIndex;
+    }
+    leaf rxImbAlarmThreshold {
+      description "Imbalance between RX branches required to raise/cease of a fault with severity MINOR. ";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_rxImbAlarmThreshold;
+      default 60;
+    }
+    leaf-list rfBranchRx {
+      min-elements 0;
+      max-elements 2;
+      config false;
+      description "References to MO RfBranch(es) instances, LDN.\nMO represents RF branch that extension TRX uses for RX. \nOne reference per used RX RfBranch. \nIndex vise the references can be interpreted as logical antennas. ";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list rfBranchTx {
+      min-elements 0;
+      max-elements 2;
+      erienmyext:no-notification;
+      config false;
+      description "References to MO RfBranch(es) instances, LDN. \nMO represents RF branch (MCPA) the extension TRX uses for TX. \nIdentifies the RF branches (MCPA) for which PM counters are valid.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf maxTxPowerCapability {
+      erienmyext:no-notification;
+      config false;
+      description "Power allocated for extension TRX.";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_maxTxPowerCapability;
+    }
+    leaf rxImbSupWindowSize {
+      description "Time over which RX path imbalance value is averaged in the supervision function. ";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_rxImbSupWindowSize;
+      default 288;
+    }
+    leaf rxImbNoOfSamples1 {
+      erienmyext:no-notification;
+      config false;
+      description "Number of samples the rxImbAvgDeltaMeas1 is based on. ";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_rxImbNoOfSamples1;
+    }
+    leaf extAntSiteIndex {
+      status obsolete {
+        yexte:status-information "Since 18.Q1. Use antSiteIndex instead.";
+      }
+      description "Used for identifying a Extension Antenna Site in Combined cells site statistics in BSC and OSS/ENM. Normally use the same extAntSiteIndex value for all MO ExtTrx instances on an Extension Antenna Site.\nRecommended values 1..7. Value 0 is reserved for Main Antenna Site. Not recommended values 0 and 8..63 will be changed to 7, and these changes will affect PM data from BSC to OSS/ENM.\nRecommendation: Also to be used together with trxIndex attribute of parent main Trx in naming convention for extTrxId. extTrxId=<extAntSiteIndex>_<parent main trxIndex>. ";
+      yexte:precondition "administrativeState of parent main TRX must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_extAntSiteIndex;
+      default 7;
+    }
+    leaf rxImbAvgDeltaMeas1 {
+      erienmyext:no-notification;
+      config false;
+      description "Measured average delta imbalance between RX branches with index 0 and 1 in rfBranchRx attribute. Value updated every 5 minutes with traffic. ";
+      type erienmnrmgrat:ddt-Grat_ExtTrx_rxImbAvgDeltaMeas1;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Operational state.";
+      type erienmnrmgrat:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmgrat:enum-AvailStatus;
+    }
+  } // end 'grouping moc-ExtTrx'
+  grouping moc-Trx-keys {
+    description "Key(s) for MOC Trx";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\nRecommended values: 0-11, to allow trxId and trxIndex (TEI) to have the same numeric value.\n(trxId numeric values >11 is converted to trxIndex <12)";
+      mandatory true;
+      yexte:ecim-name trxId;
+      type string;
+    }
+  } // end 'grouping moc-Trx-keys'
+  grouping moc-Trx {
+    description "This MO represents a GSM TRX and corresponding functionality for a GSM carrier on Air interface.\nGSM uses narrowband (< 200 kHz bandwidth) channels in the air interface (one downlink and one uplink) handled by one TRX.\nA TRX handles normally 1 downlink carrier (TX) and 2 uplink carriers (RX) over a wide bandwidth by using frequency hopping.\nA MO Trx is connected to one SectorEquipmentFunction MO which represents the radio and antenna equipment.\n";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmgrat:ddt-Grat_Trx_userLabel;
+    }
+    leaf combinedCellType {
+      description "Used to configure Combined Cell Type for TRX in a Combined Cell configuration.";
+      yexte:precondition "administrativeState must equal LOCKED.";
+      type erienmnrmgrat:enum-CombinedCellType;
+      default NON_COMBINED_CELL;
+    }
+    leaf reservedMaxTxPower {
+      description "Power reserved in MCPA for this TRX (equally distributed over noOfTxAntennas).";
+      yexte:precondition "Feature GSM MCPA Intelligent Power Management Baseband must be active and administrativeState must equal LOCKED";
+      yexte:dependencies "Value must be equal or lower than attribute configuredMaxTxPower.";
+      type erienmnrmgrat:ddt-Grat_Trx_reservedMaxTxPower;
+    }
+    leaf noOfTxAntennas {
+      description "Number of TX antennas used by the TRX.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_Trx_noOfTxAntennas;
+      default 1;
+    }
+    leaf sectorEquipmentFunctionRef {
+      description "Reference to MO SectorEquipmentFunction instance, LDN.\nMO represents radio and antenna resources used by the TRX.";
+      mandatory true;
+      yexte:precondition "administrativeState must equal LOCKED";
+      yexte:dependencies "The attribute frequencyBand in this TRX must match attribute eUtranFqBands in MO SectorEquipmentFunction.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf arfcnMax {
+      description "Highest frequency the TRX can use for a GSM carrier.\nAbsolute Frequency Number (ARFCN) is a 3GPP defined attribute, which specifies a unique UL and DL frequency pair for each band.\nFrequency range specified by arfcnMin and arfcnMax must fit within the IBW of MCPA HW in the RUS.";
+      mandatory true;
+      yexte:precondition "administrativeState must equal LOCKED";
+      yexte:dependencies "Frequency specified by arfcnMax must be higher than frequency specified by arfcnMin. \nMust match frequencyBand attribute for this TRX.";
+      type erienmnrmgrat:ddt-Grat_Trx_arfcnMax;
+    }
+    leaf-list abisTsState {
+      min-elements 0;
+      max-elements 8;
+      erienmyext:no-notification;
+      config false;
+      description "According to the GSM standard a TRX has 8 TS numbered from 0 to 7 over Abis.\nCurrent state of TS AO in Abis Operation and Maintenance model towards BSC in the following order TS0, TS1, ..., TS6, TS7.\nNormally a result of BSC actions on the Abis OML.";
+      type erienmnrmgrat:enum-AbisAoState;
+    }
+    leaf frequencyBand {
+      description "Used to configure TRX frequency band.\nThe frequency bands are according to 3GPP TS 37.104, Operating bands and Band Categories, (Band 0 is Ericsson defined).\nPossible Values:\n0 = GSM 900 MHz (GSM)\n2 = GSM 1900 MHz (PCS 1900)\n3 = GSM 1800 MHz (DCS 1800)\n5 = GSM 850 MHz (GSM 850)\n8 = GSM 900 MHz Extended (E-GSM)";
+      mandatory true;
+      yexte:precondition "administrativeState must equal LOCKED";
+      yexte:dependencies "Must match arfcnMin and arfcnMax.";
+      type erienmnrmgrat:ddt-Grat_Trx_frequencyBand;
+    }
+    leaf bscMaxTxPower {
+      erienmyext:no-notification;
+      config false;
+      description "Amount of power requested for TRX (equally distributed over noOfTxAntennas) from the BSC.";
+      type erienmnrmgrat:ddt-Grat_Trx_bscMaxTxPower;
+    }
+    leaf-list rfBranchTxRef {
+      min-elements 0;
+      max-elements 2;
+      erienmyext:no-notification;
+      description "List of references to MOs RfBranch instances, LDNs.\nMOs represents the RF branches (MCPA) TRX uses for TX.\nUsed to group TRXs to a MCPA.\nIf no reference is specified carrier allocation is based on the RF Branch MOM list, this is default behavior.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      yexte:dependencies "Referenced RfBranch(es) must belong to the same MO SectorEquipmentFunction that is referenced from this TRX.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list abisTsOperCondition {
+      min-elements 0;
+      max-elements 8;
+      erienmyext:no-notification;
+      config false;
+      description "Operational condition of TS AO in Abis model towards BSC.";
+      type erienmnrmgrat:enum-AbisOperCondition;
+    }
+    leaf abisTrxcState {
+      erienmyext:no-notification;
+      config false;
+      description "State of TRXC SO in Abis model towards BSC.\nNormally a result of BSC actions on Abis OML.";
+      type erienmnrmgrat:enum-AbisSoState;
+    }
+    leaf-list rfBranchRx {
+      min-elements 0;
+      max-elements 4;
+      config false;
+      description "References to MO RfBranch(es) instances, LDN.\nMO represents RF branch that TRX uses for RX. \nOne reference per used RX RfBranch. \nIndex vise the references can be interpreted as logical antennas.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf administrativeState {
+      description "The administrative state.";
+      yexte:disturbances "Changing this attribute to LOCKED causes loss of traffic.";
+      type erienmnrmgrat:enum-AdmState;
+      default LOCKED;
+    }
+    leaf-list rfBranchTx {
+      min-elements 0;
+      max-elements 2;
+      erienmyext:no-notification;
+      config false;
+      description "References to MO RfBranch(es) instances, LDN. \nMO represents RF branch (MCPA) TRX uses for TX. \nIdentifies the RF branches (MCPA) for which PM counters are valid.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf rxImbSupWindowSize {
+      description "Time over which RX path imbalance value is averaged in the supervision function.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_Trx_rxImbSupWindowSize;
+      default 288;
+    }
+    leaf rxImbNoOfSamples1 {
+      erienmyext:no-notification;
+      config false;
+      description "Number of samples the rxImbAvgDeltaMeas1 is based on.";
+      type erienmnrmgrat:ddt-Grat_Trx_rxImbNoOfSamples1;
+    }
+    leaf rxImbNoOfSamples2 {
+      erienmyext:no-notification;
+      config false;
+      description "Number of samples the rxImbAvgDeltaMeas2 is based on.";
+      type erienmnrmgrat:ddt-Grat_Trx_rxImbNoOfSamples2;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmgrat:enum-AvailStatus;
+    }
+    leaf abisTrxRslState {
+      erienmyext:no-notification;
+      config false;
+      description "Link state (RSL) between the TRX and the BSC.";
+      type erienmnrmgrat:enum-AbisLinkState;
+    }
+    leaf-list rfBranchRxRef {
+      min-elements 0;
+      max-elements 4;
+      description "A list of references to MOs RfBranch and CcBranch instances, LDNs.\nThese MOs represent the RF branches the TRX shall use for RX.\nIf no reference is specified carrier allocation is based on the rfBranchRef in MO SectorEquipmentFunction.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      yexte:dependencies "Referenced RfBranch(es) or CcBranch(es) must belong to the same MO SectorEquipmentFunction that is referenced from this TRX.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf abisTrxcOmlState {
+      erienmyext:no-notification;
+      config false;
+      description "Link state (OML) between the SO TRXC and the BSC.";
+      type erienmnrmgrat:enum-AbisLinkState;
+    }
+    leaf rxImbMinNoOfSamples {
+      description "Minimum required number of samples within the supervision window to raise/cease a fault.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_Trx_rxImbMinNoOfSamples;
+      default 7000;
+    }
+    leaf abisRxState {
+      erienmyext:no-notification;
+      config false;
+      description "State of the RX AO in Abis model towards BSC.\nNormally a result of BSC actions on the Abis OML.";
+      type erienmnrmgrat:enum-AbisAoState;
+    }
+    leaf configuredMaxTxPower {
+      description "Configured absolute power for TRX (equally distributed over noOfTxAntennas).";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_Trx_configuredMaxTxPower;
+      default 20000;
+    }
+    leaf abisTrxcOperCondition {
+      erienmyext:no-notification;
+      config false;
+      description "Operational condition of TRXC SO in Abis model towards BSC.";
+      type erienmnrmgrat:enum-AbisOperCondition;
+    }
+    leaf rxImbSupTimeElapsed {
+      erienmyext:no-notification;
+      config false;
+      description "Time elapsed of the supervision window time.";
+      type erienmnrmgrat:ddt-Grat_Trx_rxImbSupTimeElapsed;
+    }
+    leaf rxImbAlarmThreshold {
+      description "Imbalance between RX branches required to raise/cease of a fault with severity MINOR.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_Trx_rxImbAlarmThreshold;
+      default 60;
+    }
+    leaf abisTxState {
+      erienmyext:no-notification;
+      config false;
+      description "State of TX AO in Abis model towards BSC.\nNormally a result of BSC actions on Abis OML.";
+      type erienmnrmgrat:enum-AbisAoState;
+    }
+    leaf trxIndex {
+      config false;
+      description "Used both as OML L3 and OML/RSL/TFP/PGSL L2 address (TEI).\nSet to attribute trxId in this TRX if it is an unique number between 0..11 otherwise lowest unused number in range 0..11 is used.\n(Values 12-126 are reserved for future use)";
+      notife:notifiable-state-data true;
+      type erienmnrmgrat:ddt-Grat_Trx_trxIndex;
+    }
+    leaf maxTxPowerCapability {
+      erienmyext:no-notification;
+      config false;
+      description "Power allocated for TRX, sum for noOfTxAntennas.";
+      type erienmnrmgrat:ddt-Grat_Trx_maxTxPowerCapability;
+    }
+    leaf abisRxOperCondition {
+      erienmyext:no-notification;
+      config false;
+      description "Operational condition of RX AO in Abis model towards BSC.";
+      type erienmnrmgrat:enum-AbisOperCondition;
+    }
+    leaf noOfRxAntennas {
+      description "Number of RX antennas used by the TRX.";
+      yexte:precondition "administrativeState must equal LOCKED";
+      type erienmnrmgrat:ddt-Grat_Trx_noOfRxAntennas;
+      default 2;
+    }
+    leaf rxImbAvgDeltaMeas2 {
+      erienmyext:no-notification;
+      config false;
+      description "Measured average delta imbalance between RX branches with index 2 and 3 in rfBranchRx attribute. Value updated every 5 minutes with traffic.";
+      type erienmnrmgrat:ddt-Grat_Trx_rxImbAvgDeltaMeas2;
+    }
+    leaf rxImbAvgDeltaMeas1 {
+      erienmyext:no-notification;
+      config false;
+      description "Measured average delta imbalance between RX branches with index 0 and 1 in rfBranchRx attribute. Value updated every 5 minutes with traffic.";
+      type erienmnrmgrat:ddt-Grat_Trx_rxImbAvgDeltaMeas1;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Operational state.";
+      type erienmnrmgrat:enum-OperState;
+    }
+    leaf arfcnMin {
+      description "Lowest frequency the TRX can use for a GSM carrier. \nAbsolute Frequency Number (ARFCN) is a 3GPP defined attribute, which specifies a unique UL and DL frequency pair for each band.\nFrequency range specified by arfcnMin and arfcnMax must fit within the IBW of MCPA HW in the RUS.";
+      mandatory true;
+      yexte:precondition "administrativeState must equal LOCKED";
+      yexte:dependencies "Frequency specified by arfcnMin must be lower than frequency specified by arfcnMax. \nMust match frequencyBand attribute for this TRX. ";
+      type erienmnrmgrat:ddt-Grat_Trx_arfcnMin;
+    }
+    leaf abisTxOperCondition {
+      erienmyext:no-notification;
+      config false;
+      description "Operational condition of TX AO in Abis model towards BSC.";
+      type erienmnrmgrat:enum-AbisOperCondition;
+    }
+  } // end 'grouping moc-Trx'
+  grouping moc-BtsFunction-keys {
+    description "Key(s) for MOC BtsFunction";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name btsFunctionId;
+      type string;
+    }
+  } // end 'grouping moc-BtsFunction-keys'
+  grouping moc-BtsFunction {
+    description "MO BtsFunction represents the GSM functionality in the Radio Node.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmgrat:ddt-Grat_BtsFunction_userLabel;
+    }
+    leaf btsVersion {
+      erienmyext:no-notification;
+      config false;
+      description "BTS Version is composed of: <Manufacturer Id><BTS Generation><BTS Revision><BTS Variant>.\nUsed for fleet management by grouping different generations of BTS HW and to see which main GSM BSS SW level that is running.";
+      type erienmnrmgrat:ddt-Grat_BtsFunction_btsVersion;
+    }
+    leaf gsmMcpaIpmCapacity {
+      erienmyext:no-notification;
+      config false;
+      description "Used capacity units for the GSM MCPA Intelligent Power Management Baseband feature.";
+      type erienmnrmgrat:ddt-Grat_BtsFunction_gsmMcpaIpmCapacity;
+    }
+    leaf release {
+      erienmyext:no-notification;
+      config false;
+      description "The product release of the GSM managed function.";
+      type string;
+    }
+  } // end 'grouping moc-BtsFunction'
+  grouping moc-GsmSector-keys {
+    description "Key(s) for MOC GsmSector";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\nSent to the BSC for Sector TG to GSM Sector correlation purposes.";
+      mandatory true;
+      yexte:ecim-name gsmSectorId;
+      type string;
+    }
+  } // end 'grouping moc-GsmSector-keys'
+  grouping moc-GsmSector {
+    description "A GSM Sector is a geographical area with GSM functionality.\nA GSM Sector is mapped to one Sector TG in BSC. \nThe MO GsmSector groups a number of TRXs, each represented by a MO Trx.\nThe GSM Sector is, via its TRXs, tied to one or more SectorEquipmentFunctions with the same antenna location and antenna direction.\nThe GSM Sector can handle TRXs for one or more frequency bands.\nHowever one TRX is always single band and connected to one SectorEquipmentFunction.\nTransport related data is configured in the MO AbisIp.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmgrat:ddt-Grat_GsmSector_userLabel;
+    }
+    leaf abisTfMode {
+      erienmyext:no-notification;
+      config false;
+      description "Synchronization mode in the Cluster Group of the TF AO in Abis model towards BSC.\nNormally a result of BSC actions on the Abis OML.\n";
+      type erienmnrmgrat:enum-TfMode;
+    }
+    leaf abisScfOperCondition {
+      erienmyext:no-notification;
+      config false;
+      description "Operational condition of SCF SO in Abis model towards BSC.";
+      type erienmnrmgrat:enum-AbisOperCondition;
+    }
+    leaf bscTgIdentity {
+      config false;
+      description "BSC TG identity received from BSC over the Abis interface.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf abisTfState {
+      erienmyext:no-notification;
+      config false;
+      description "State of the TF AO in Abis model towards BSC.\nNormally a result of BSC actions on the Abis OML.";
+      type erienmnrmgrat:enum-AbisAoState;
+    }
+    leaf abisAtOperCondition {
+      erienmyext:no-notification;
+      config false;
+      description "Operational condition of AT AO in Abis model towards BSC.";
+      type erienmnrmgrat:enum-AbisOperCondition;
+    }
+    leaf abisScfOmlState {
+      erienmyext:no-notification;
+      config false;
+      description "Link State (OML) between the SCF SO and the BSC.";
+      type erienmnrmgrat:enum-AbisLinkState;
+    }
+    leaf abisTfOperCondition {
+      erienmyext:no-notification;
+      config false;
+      description "Operational condition of TF AO in Abis model towards BSC.";
+      type erienmnrmgrat:enum-AbisOperCondition;
+    }
+    leaf bscNodeIdentity {
+      config false;
+      description "BSC node identity received from BSC over the Abis interface.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf abisScfState {
+      erienmyext:no-notification;
+      config false;
+      description "State of the SCF SO in Abis model towards BSC.\nNormally a result of BSC actions on the Abis OML.";
+      type erienmnrmgrat:enum-AbisSoState;
+    }
+    leaf abisAtState {
+      erienmyext:no-notification;
+      config false;
+      description "State of the Abis Transport (AT) Administration Object (AO) in Abis model towards BSC.\nNormally a result of BSC actions on the Abis OML.";
+      type erienmnrmgrat:enum-AbisAoState;
+    }
+    leaf abisClusterGroupId {
+      erienmyext:no-notification;
+      config false;
+      description "Cluster Group ID of the TF AO in Abis model towards BSC.\nNormally a result of BSC actions on the Abis OML.";
+      type erienmnrmgrat:ddt-Grat_GsmSector_abisClusterGroupId;
+    }
+  } // end 'grouping moc-GsmSector'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgrat:BtsFunction/erienmnrmgrat:GsmSector {
+    list AbisIp {
+      key id;
+      max-elements 1;
+      description "MO AbisIp handles configuration of L2TP tunnels for GSM Sector.\nThe L2TP tunnels carry Abis traffic over the IP transport network between the GSM Sector and BSC.";
+      erienmyext:enm-type MOC;
+      uses moc-AbisIp-keys;
+      container attributes {
+        description "Attributes for AbisIp";
+        uses moc-AbisIp;
+      } // end 'container attributes'
+    } // end 'list AbisIp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgrat:BtsFunction/erienmnrmgrat:GsmSector/erienmnrmgrat:Trx {
+    list ExtTrx {
+      key id;
+      max-elements 11;
+      description "GSM extension TRX functionality on extension antenna site in a combined cell configuration. Extension antenna sites are used to provide coverage in areas where Main antenna site fails to provide coverage.";
+      erienmyext:enm-type MOC;
+      uses moc-ExtTrx-keys;
+      container attributes {
+        description "Attributes for ExtTrx";
+        uses moc-ExtTrx;
+      } // end 'container attributes'
+    } // end 'list ExtTrx'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgrat:BtsFunction/erienmnrmgrat:GsmSector {
+    list Trx {
+      key id;
+      max-elements 12;
+      description "This MO represents a GSM TRX and corresponding functionality for a GSM carrier on Air interface.\nGSM uses narrowband (< 200 kHz bandwidth) channels in the air interface (one downlink and one uplink) handled by one TRX.\nA TRX handles normally 1 downlink carrier (TX) and 2 uplink carriers (RX) over a wide bandwidth by using frequency hopping.\nA MO Trx is connected to one SectorEquipmentFunction MO which represents the radio and antenna equipment.\n";
+      erienmyext:enm-type MOC;
+      uses moc-Trx-keys;
+      container attributes {
+        description "Attributes for Trx";
+        uses moc-Trx;
+      } // end 'container attributes'
+    } // end 'list Trx'
+  }
+  augment /erienmnrmcomtop:ManagedElement {
+    list BtsFunction {
+      key id;
+      max-elements 1;
+      description "MO BtsFunction represents the GSM functionality in the Radio Node.";
+      erienmyext:enm-type MOC;
+      uses moc-BtsFunction-keys;
+      container attributes {
+        description "Attributes for BtsFunction";
+        uses moc-BtsFunction;
+      } // end 'container attributes'
+    } // end 'list BtsFunction'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmgrat:BtsFunction {
+    list GsmSector {
+      key id;
+      description "A GSM Sector is a geographical area with GSM functionality.\nA GSM Sector is mapped to one Sector TG in BSC. \nThe MO GsmSector groups a number of TRXs, each represented by a MO Trx.\nThe GSM Sector is, via its TRXs, tied to one or more SectorEquipmentFunctions with the same antenna location and antenna direction.\nThe GSM Sector can handle TRXs for one or more frequency bands.\nHowever one TRX is always single band and connected to one SectorEquipmentFunction.\nTransport related data is configured in the MO AbisIp.";
+      erienmyext:enm-type MOC;
+      uses moc-GsmSector-keys;
+      container attributes {
+        description "Attributes for GsmSector";
+        uses moc-GsmSector;
+      } // end 'container attributes'
+    } // end 'list GsmSector'
+  }
+}

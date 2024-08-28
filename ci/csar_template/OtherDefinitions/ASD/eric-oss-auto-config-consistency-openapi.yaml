@@ -1,0 +1,801 @@
+#
+# COPYRIGHT Ericsson 2021 - 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+openapi: "3.0.2"
+info:
+  x-api-id: 8608e72f-121d-4049-be33-7eb2d3cf5594
+  x-audience: external-public
+  description: "Ericsson Automated Configuration Consistency"
+  version: "0.1.5"
+  title: "Ericsson Automated Configuration Consistency"
+  license:
+    name: "COPYRIGHT Ericsson 2021"
+    url: "https://www.ericsson.com/en/legal"
+  termsOfService: "https://www.ericsson.com/en/legal"
+  contact:
+    email: "pdlonteamq@pdl.internal.ericsson.com"
+tags:
+  - name: "jobs"
+    description: "Tag for EACC functionalities"
+  - name: "executions"
+    description: "EACC job executions"
+  - name: "rulesets"
+    description: "EACC audit rulesets"
+  - name: "scopes"
+    description: "EACC scopes"
+paths:
+  /v1/jobs:
+    get:
+      tags:
+        - "jobs"
+      summary: "Returns all the Jobs from the DB."
+      operationId: "getJobs"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Job"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+    post:
+      tags:
+        - "jobs"
+      summary: "POST a New EACC Job"
+      operationId: "postJobs"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Job"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+  /v1/jobs/{jobName}:
+    put:
+      tags:
+        - "jobs"
+      summary: "Updates an EACC job"
+      operationId: "putJob"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Job"
+      parameters:
+        - in: path
+          name: jobName
+          required: true
+          schema:
+            type: string
+          description: "Name of the Job"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "409":
+          description: "Conflict"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+    delete:
+      tags:
+        - "jobs"
+      summary: "Deletes an EACC job"
+      operationId: "deleteJob"
+      parameters:
+        - in: path
+          name: jobName
+          required: true
+          schema:
+            type: string
+          description: "Name of the Job"
+      responses:
+        "204":
+          description: "No Content"
+        "404":
+          description: "Not Found"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+  /v1/executions:
+    get:
+      tags:
+        - "executions"
+      summary: "View the status of Executions"
+      operationId: "getExecutions"
+      parameters:
+        - in: query
+          name: jobName
+          schema:
+            type: string
+          description: "Name of the job"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Execution"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+  /v1/executions/{id}/audit-results:
+    get:
+      tags:
+        - "executions"
+      summary: "View Consistency Check audit results"
+      operationId: "getAuditResults"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: "Execution id"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/AuditResult"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+    post:
+      tags:
+        - "executions"
+      summary: "Apply change to fix an inconsistency for the audit result"
+      operationId: "applyChange"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Execution id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApprovedAuditResults"
+      responses:
+        "202":
+          description: "Accepted"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+  /v1/rulesets:
+    get:
+      tags:
+        - "rulesets"
+      summary: "Provides Metadata of all Rulesets"
+      operationId: "listRulesets"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/RulesetMetadata"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+    post:
+      tags:
+        - "rulesets"
+      summary: "Create a new Ruleset"
+      operationId: "createRuleset"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateRuleset"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RulesetMetadata"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "503":
+          description: "Service Unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+  /v1/rulesets/{id}:
+    get:
+      tags:
+        - "rulesets"
+      summary: "Fetches a Ruleset by id"
+      operationId: "getRuleset"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: "Ruleset id"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+    put:
+      tags:
+        - "rulesets"
+      summary: "Updates Ruleset"
+      operationId: "updateRuleset"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UpdateRuleset"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: "Ruleset id"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RulesetMetadata"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "503":
+          description: "Service Unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+    delete:
+      tags:
+        - "rulesets"
+      summary: "Deletes a Ruleset"
+      operationId: "deleteRuleset"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: "Ruleset id"
+      responses:
+        "204":
+          description: "No Content"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "409":
+          description: "Conflict"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+  /v1/scopes:
+    get:
+      tags:
+        - "scopes"
+      summary: "Provides Metadata of all Scopes"
+      operationId: "listScopes"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ScopeMetadata"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+    post:
+      tags:
+        - "scopes"
+      summary: "Create a new Scope"
+      operationId: "createScope"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateScope"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeMetadata"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "413":
+          description: "Payload Too Large"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+  /v1/scopes/{id}:
+    get:
+      tags:
+        - "scopes"
+      summary: "Fetches a Scope by id"
+      operationId: "getScope"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: "Scope id"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+    put:
+      tags:
+        - "scopes"
+      summary: "Updates Scope"
+      operationId: "updateScope"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UpdateScope"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: "Scope id"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeMetadata"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "409":
+          description: "Conflict"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "413":
+          description: "Payload Too Large"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+    delete:
+      tags:
+        - "scopes"
+      summary: "Deletes a Scope"
+      operationId: "deleteScope"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: "Scope id"
+      responses:
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        "409":
+          description: "Conflict"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+        default:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDetails"
+components:
+  schemas:
+    Job:
+      type: object
+      required: ["jobName", "scopeName", "schedule", "rulesetName"]
+      properties:
+        jobName:
+          type: string
+        scopeName:
+          type: string
+        schedule:
+          type: string
+        rulesetName:
+          type: string
+    Execution:
+      type: object
+      required: ["id", "jobName", "createdBy", "executionType", "executionStartedAt", "executionEndedAt", "consistencyAuditStartedAt", "consistencyAuditEndedAt", "executionStatus", "totalNodesAudited", "totalNodesFailed", "totalMosAudited", "totalAttributesAudited", "inconsistenciesIdentified"]
+      properties:
+        id:
+          type: string
+        jobName:
+          type: string
+        createdBy:
+          type: string
+        executionType:
+          type: string
+        executionStartedAt:
+          type: string
+          format: date-time
+        executionEndedAt:
+          type: string
+          format: date-time
+        consistencyAuditStartedAt:
+          type: string
+          format: date-time
+        consistencyAuditEndedAt:
+          type: string
+          format: date-time
+        executionStatus:
+          type: string
+        totalNodesAudited:
+          type: integer
+        totalNodesFailed:
+          type: integer
+        totalMosAudited:
+          type: integer
+        totalAttributesAudited:
+          type: integer
+        inconsistenciesIdentified:
+          type: integer
+    AuditResult:
+      type: object
+      required: [ "id", "managedObjectFdn", "managedObjectType", "attributeName", "currentValue", "preferredValue", "auditStatus", "executionId", "ruleId", "changeStatus" ]
+      properties:
+        id:
+          type: string
+        managedObjectFdn:
+          type: string
+        managedObjectType:
+          type: string
+        attributeName:
+          type: string
+        currentValue:
+          type: string
+        preferredValue:
+          type: string
+        auditStatus:
+          type: string
+        executionId:
+          type: string
+        ruleId:
+          type: string
+        changeStatus:
+          type: string
+    ScopeMetadata:
+      type: object
+      required: ["id", "scopeName", "uri"]
+      properties:
+        id:
+          type: string
+        scopeName:
+          type: string
+        uri:
+          type: string
+    CreateScope:
+      type: object
+      required: ["scopeName", "fileName"]
+      properties:
+        scopeName:
+          type: string
+        filename:
+          type: string
+          format: binary
+    UpdateScope:
+      type: object
+      required: ["fileName"]
+      properties:
+        fileName:
+          type: string
+          format: binary
+    RulesetMetadata:
+      type: object
+      required: ["id", "rulesetName", "uri"]
+      properties:
+        id:
+          type: string
+        rulesetName:
+          type: string
+        uri:
+          type: string
+    ErrorDetails:
+      description: "Provides additional information in an error response"
+      type: object
+      required: ["title", "status", "detail"]
+      properties:
+        title:
+          type: string
+          description: "Short, human-readable summary of the problem"
+        status:
+          type: integer
+          description: "HTTP status code"
+        detail:
+          type: string
+          description: "Optional human-readable explanation of the problem. if present, ought to focus on helping the client correct the problem, rather than giving debugging information"
+        ruleValidationErrors:
+          type: array
+          description: "List of errors found in the ruleset file being uploaded"
+          items:
+            $ref: '#/components/schemas/RuleValidationError'
+    CreateRuleset:
+      type: object
+      required: ["rulesetName", "fileName"]
+      properties:
+        rulesetName:
+          type: string
+        fileName:
+          type: string
+          format: binary
+    UpdateRuleset:
+      type: object
+      required: ["fileName"]
+      properties:
+        fileName:
+          type: string
+          format: binary
+    ApprovedAuditResults:
+      type: object
+      required: ["auditResultIds"]
+      properties:
+        auditResultIds:
+          type: array
+          items:
+            type: string
+    RuleValidationError:
+      type: object
+      required: ["lineNumber", "errorType", "errorDetails", "additionalInfo"]
+      properties:
+        lineNumber:
+          type: integer
+          format: int64
+        errorType:
+          type: string
+        errorDetails:
+          type: string
+        additionalInfo:
+          type: string

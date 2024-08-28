@@ -1,0 +1,434 @@
+module ericsson-enm-RsyncPtpBcOcPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RsyncPtpBcOcPort;
+  prefix erienmnrmrsyncptpbcocport;
+  yexte:ecim-name RsyncPtpBcOcPort;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 1;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RsyncPtp {
+    prefix erienmnrmrsyncptp;
+  }
+  typedef enum-PtpMulticastAddress {
+    description "Specifies which type of multicast address that shall be used.";
+    type enumeration {
+      enum FORWARDABLE {
+        description "Forwardable multicast MAC address 01-1B-19-00-00-00.";
+        value 0;
+      }
+      enum NON_FORWARDABLE {
+        description "Non-forwardable multicast MAC address 01-80-C2-00-00-0E.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "The administrative state of a resource. ";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-DelayMechanism {
+    description "Available delay mechanism modes.\n\nThe delay mechanism modes indicate the propagation delay measuring option used by the port in computing <meanPathDelay>.";
+    type enumeration {
+      enum E2E {
+        value 1;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-PortState {
+    description "Available port states of a PTP port.\n";
+    type enumeration {
+      enum INITIALIZING {
+        value 1;
+      }
+      enum FAULTY {
+        value 2;
+      }
+      enum DISABLED {
+        value 3;
+      }
+      enum LISTENING {
+        value 4;
+      }
+      enum PRE_MASTER {
+        value 5;
+      }
+      enum MASTER {
+        value 6;
+      }
+      enum PASSIVE {
+        value 7;
+      }
+      enum UNCALIBRATED {
+        value 8;
+      }
+      enum SLAVE {
+        value 9;
+      }
+    }
+  }
+  typedef enum-PtpPortStatus {
+    description "Indicates the PTP port status.";
+    type enumeration {
+      enum NO_FAULT {
+        description "No fault is detected.";
+        value 0;
+      }
+      enum UNRESOLVED_SERVER_ADDRESS {
+        description "The server address cannot be resolved.";
+        value 1;
+      }
+      enum NEGOTIATION_FAILED {
+        description "At any time during operation, the grandmaster cancels a previously granted unicast transmission agreement, or the grandmaster does not comply with the requested negotiation service.";
+        value 2;
+      }
+      enum NEGOTIATION_NO_REPLY {
+        description "No reply from the grandmaster to the slave's Unicast Request.";
+        value 3;
+      }
+      enum UNKNOWN {
+        value 99;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_announceMessageInterval {
+    type int8 {
+      range -3..4;
+    }
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_localPriority {
+    type uint8 {
+      range 0..255;
+    }
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_ptpPathTimeError {
+    type uint16 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_pBit {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_asymmetryCompensation {
+    type int32 {
+      range -100000..100000;
+    }
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_syncMessageInterval {
+    type int8 {
+      range -6..0;
+    }
+  }
+  typedef ddt-IpAddress {
+    description "Regular expression pattern for IP assigned address, covering both IPv4 and IPv6.\n\nThe type is ((IPv4 address)|(IPv6 address)), without leading 0s.\n\nIpV4 address = ((22[0-3]|2[01][0-9]|1[013456789][0-9]|12[012345689]|1[0-9][0-9]|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))\n\nIPv6 address = (\\s*((((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){7}(([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){6}(:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){5}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,2})|:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){4}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,3})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0))?:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){3}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,4})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,2}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){2}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,5})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,3}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){1}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,6})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,4}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(:(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,7})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,5}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:)))(%.+)?\\s*)\n\nMatching example is: 192.168.21.3\nAnother matching example is: 2001:db8:85a3:8d3:1319:8a2e:370:7348";
+    type string;
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_durationField {
+    type uint16 {
+      range 60..1000;
+    }
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_associatedGrandmaster {
+    type string;
+  }
+  typedef ddt-RsyncPtpBcOcPort_PtpBcOcPort_dscp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  grouping struct-PortDS {
+    description "This data set describe, the port properties.";
+    leaf announceInterval {
+      description "Indicates the announce message interval in logarithm(base2).";
+      type int8;
+      mandatory true;
+    }
+    leaf peerMeanPathDelay {
+      description "It indicates the peer mean path delay.\nIf the delay mechanism is end to end , the value is zero.";
+      type uint16;
+      mandatory true;
+    }
+    leaf portState {
+      description "It indicates the state of the local port.";
+      type erienmnrmrsyncptpbcocport:enum-PortState;
+      mandatory true;
+    }
+    leaf minDelayReqInterval {
+      description "It indicates the minimum delay request interval expressed as logarith(base2).";
+      type int8;
+      mandatory true;
+    }
+    leaf portClockIdentity {
+      description "It indicates the identity of the local port.";
+      type string;
+      mandatory true;
+    }
+    leaf syncInterval {
+      description "It indicates the synchronization message interval expressed in the logarithm(base2).";
+      type int8;
+      mandatory true;
+    }
+    leaf minPdelayReqInterval {
+      description "It indicates the minimum peer delay request interval expressed as logarithm(base2).";
+      type int8;
+      mandatory true;
+    }
+    leaf delayMechanism {
+      description "Indicates the delay mechanism used by the port.\nPresently the only mechanism supported is E2E.";
+      type erienmnrmrsyncptpbcocport:enum-DelayMechanism;
+      mandatory true;
+    }
+    leaf announceReceiptTimeout {
+      description "Indicates the number of announce message intervals, for which announce messages must be missing to change the state in the clock.";
+      type uint8;
+      mandatory true;
+    }
+    leaf portNumber {
+      description "The value of the portNumber on a PTP node with a single PTP port shall be 1. \nThe values of the port numbers for the N ports on a PTP node supporting N PTP ports shall be 1, 2, …N. The all-zeros and all-ones portNumber values are reserved.\n";
+      type uint16;
+      mandatory true;
+    }
+    leaf versionNumber {
+      description "The 1588 specification version number.";
+      type uint8;
+      mandatory true;
+    }
+  } // end 'grouping struct-PortDS'
+  grouping moc-PtpBcOcPort-keys {
+    description "Key(s) for MOC PtpBcOcPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ptpBcOcPortId;
+      type string;
+    }
+  } // end 'grouping moc-PtpBcOcPort-keys'
+  grouping moc-PtpBcOcPort {
+    description "Represents PTP port to communicate with other 1588 devices.\n\nGrandmaster ordinary clock can have more than one port. Slave-only ordinary clock can only have one port.";
+    container portDS {
+      description "Port Data Set ";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrsyncptpbcocport:struct-PortDS;
+    } // end 'container portDS'
+    leaf syncMessageInterval {
+      description "Synchronization message transmission interval expressed as logarithm of time in seconds (base of 2).\nPositive value indicates time in seconds between messages.\nNegative value indicates number of messages per second.\nExample:\nIf value is -4, 16 messages sent per second.\nIf value is 2, message sent every 4 seconds.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_syncMessageInterval;
+      default -4;
+    }
+    leaf announceMessageInterval {
+      description "Announce message transmission interval expressed as logarithm of time in seconds (base of 2).\nResult indicates time in seconds between messages.\nExample:\nIf value is 4, message is sent every 16 seconds.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_announceMessageInterval;
+      default 1;
+    }
+    leaf ptpMulticastAddress {
+      description "Multicast address.\nIf underlaying transport interface is not EthernetPort MO, this attribute is ignored.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptpbcocport:enum-PtpMulticastAddress;
+      default FORWARDABLE;
+    }
+    leaf pBit {
+      description "PCP value used for transmitted Ethernet frames when they are carried over VLAN.\nIf transportVlan is not set, this attribute is ignored.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_pBit;
+      default 1;
+    }
+    leaf asymmetryCompensation {
+      description "Asymmetry compensation.\n+/- sign specifies uplink delay relative to downlink.\nAttribute is not used in frequency profile.\nAttribute is applicable to slave port.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_asymmetryCompensation;
+      default 0;
+    }
+    leaf dscp {
+      description "DSCP value for PTP related IP packets.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_dscp;
+      default 54;
+    }
+    leaf ptpPortStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Status of PTP port.";
+      type erienmnrmrsyncptpbcocport:enum-PtpPortStatus;
+    }
+    leaf administrativeState {
+      description "The administrative state.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptpbcocport:enum-AdmState;
+      default LOCKED;
+    }
+    leaf transportVlan {
+      description "Reference to underlying encapsulation.\nCan only refer to VlanPort MO.\nUsed when carrying PTP over VLAN.\nIf attribute is not set, PTP is carried over untagged Ethernet.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      yexte:dependencies "Must be NIL, if attribute ptpProfile in BoundaryOrdinaryClock MO is G_8265_1 or G_8275_2.\nCannot refer to VlanPort MO if its attribute isTagged is set to false.\nIf two PtpBcOcPort MOs refer to same EthernetPort MO, transportVlan attributes must have different values. One of them can be NIL, but not both.\nIf NIL, this MO must refer to VlanPort MO, with one of following conditions:\n- VlanPort::encapsulation refers to same EthernetPort MO as this attribute\n- VlanPort::encapsulation refers to LagPort MO, where one value in LagPort MO::encapsulation refers to same EthernetPort MO as this attribute.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf associatedGrandmaster {
+      description "IP address or domain name of associated grandmaster according to G.8265.1 or G.8275.2.\nPTP associated grandmaster and PTP slave must have same IP version.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      yexte:dependencies "All ports created on slave-only ordinary clocks with ptpProfile G_8265_1 or G_8275_2 must have unique combination of IP address, associatedGrandmaster and transportInterface.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_associatedGrandmaster;
+    }
+    leaf cachedIpAddress {
+      erienmyext:no-notification;
+      config false;
+      description "Cached IP address obtained from DNS for PTP frequency grandmaster.";
+      type erienmnrmrsyncptpbcocport:ddt-IpAddress;
+    }
+    leaf durationField {
+      description "Time that packet master transmitting requested Announce and Sync message rates and renewal of Announce and Sync before expiration.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_durationField;
+      default 300;
+    }
+    leaf ptpPathTimeError {
+      description "Time error of PTP path at node interface.\nIf PTP network has full timing support, this attribute must contain maximum absolute time error generated by chain of boundary, transparent clocks and asymmetry of worst case path from grandmaster to node. This corresponds to network limit at reference point C according to G.8271.1 without time error introduced by grandmaster. Latter part is taken from BoundaryOrdinaryClock MO attribute parentDS.grandmasterClockAccuracy. Maximum absolute time error is theoretical sum of worst case of each component.\nAs alternative, attribute can be used to set worst case measured time error of path from grandmaster to node.\nIf BoundaryOrdinaryClock MOs are reserved by AssistingReference MO, this attribute is ignored.\n";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_ptpPathTimeError;
+      default 750;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmrsyncptpbcocport:enum-AvailStatus;
+    }
+    leaf localPriority {
+      description "Local priority used if alternate BMCA is activated.\nLower values take precedence.\nAttribute value is subject to PTP network planning.\nOnly applicable for BC with telecom profile configured for time synchronization according to G.8275.1.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrsyncptpbcocport:ddt-RsyncPtpBcOcPort_PtpBcOcPort_localPriority;
+      default 128;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state. ";
+      type erienmnrmrsyncptpbcocport:enum-OperState;
+    }
+    leaf masterOnly {
+      description "Defines if port can only act as master or both master and slave for PtpBcOcPort MO, only applicable if configured according to G.8275.1.\nIf true, PtpBcOcPort MO can only act as master.\nIf false, PtpBcOcPort MO can act both as master or slave.\nAttribute value is subject to PTP network planning.\nOnly applicable for GM and BC whit telecom profile configured for time synchronization according to G.8275.1.";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type boolean;
+      default false;
+    }
+    leaf transportInterface {
+      description "References to underlying transport entity.\nCan be MO type EthernetPort, AddressIPv4 or AddressIPv6.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      yexte:dependencies "Must refer to EthernetPort MO, if BoundaryOrdinaryClock::ptpProfile attribute has one of following values:\n- IEEE_1588_J3\n- G_8275_1\n- IEEE_1588_TIME_DEFAULT\n- IEEE_1588_TIME_SLOW.\nMust refer to AddressIPv4 MO or AddressIPv6 MO, if BoundaryOrdinaryClock::ptpProfile attribute is set to G_8265_1 or G_8275_2.\nAll ports created on slave-only ordinary clocks with BoundaryOrdinaryClock::ptpProfile attribute set to G_8265_1 or G_8275_2 must have unique combination of IP address, associatedGrandMaster and transportInterface.\nAll BoundaryOrdinaryClock MOs with ptpProfile attribute set to any of following values must have unique combination of BoundaryOrdinaryClock::domainNumber and PtpBcOcPort::transportInterface attributes:\n- IEEE_1588_J3\n- G_8275_1\n- IEEE_1588_TIME_DEFAULT\n- IEEE_1588_TIME_SLOW.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-PtpBcOcPort'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrsyncptp:Ptp/erienmnrmrsyncptp:BoundaryOrdinaryClock {
+    list PtpBcOcPort {
+      key id;
+      description "Represents PTP port to communicate with other 1588 devices.\n\nGrandmaster ordinary clock can have more than one port. Slave-only ordinary clock can only have one port.";
+      erienmyext:enm-type MOC;
+      uses moc-PtpBcOcPort-keys;
+      container attributes {
+        description "Attributes for PtpBcOcPort";
+        uses moc-PtpBcOcPort;
+      } // end 'container attributes'
+    } // end 'list PtpBcOcPort'
+  }
+}

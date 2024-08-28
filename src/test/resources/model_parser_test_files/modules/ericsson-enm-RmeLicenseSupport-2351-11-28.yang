@@ -1,0 +1,617 @@
+module ericsson-enm-RmeLicenseSupport {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeLicenseSupport;
+  prefix erienmnrmrmelicensesupport;
+  yexte:ecim-name RmeLicenseSupport;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 2;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-InstallAreaLicenseKeysResult {
+    description "Enumeration relating to action installAreaLicenseKeys.";
+    type enumeration {
+      enum SUCCESS {
+        description "The action succeeded.";
+        value 0;
+      }
+      enum NOT_READABLE {
+        description "The area license keys string is not readable.";
+        value 1;
+      }
+      enum UNSUPPORTED_VERSION {
+        description "The version of the area license keys string is not supported.";
+        value 2;
+      }
+      enum LICENSE_AREA_ID_MISMATCH {
+        description "The license area identity does not match the license area identity of the node.";
+        value 3;
+      }
+      enum INVALID_SEQUENCE_NUMBER {
+        description "The sequence number is invalid.";
+        value 4;
+      }
+      enum OTHER_FAILURE {
+        description "The action failed for other reasons.";
+        value 5;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ActionResultType {
+    description "Lists the different results of an action.";
+    type enumeration {
+      enum SUCCESS {
+        description "The asynchronous action ended with success.";
+        value 1;
+      }
+      enum FAILURE {
+        description "The asynchronous action ended with failure.";
+        value 2;
+      }
+      enum NOT_AVAILABLE {
+        description "No result is available yet.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-BasicAdmState {
+    description "Basic administrative states for a resource.";
+    type enumeration {
+      enum LOCKED {
+        description " The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ActionStateType {
+    description "Lists the action states.";
+    type enumeration {
+      enum CANCELLING {
+        description "Cancellation is in progress.";
+        value 1;
+      }
+      enum RUNNING {
+        description "The execution of the action is currently in progress.";
+        value 2;
+      }
+      enum FINISHED {
+        description "The action is finished.";
+        value 3;
+      }
+      enum CANCELLED {
+        description "The action has been cancelled and cancellation has been done.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef enum-KeyFileRequestStatus {
+    description "Status of license key file request activity.";
+    type enumeration {
+      enum NOT_STARTED {
+        description "No License Key File request has been recieved. \n";
+        status current {
+          yexte:preliminary;
+        }
+        value 0;
+      }
+      enum KEY_FILE_REQUESTED {
+        description "License key file request pending. ";
+        status current {
+          yexte:preliminary;
+        }
+        value 1;
+      }
+      enum KEY_FILE_REQUEST_SENT {
+        description "Key File Request sent to ENM. \n";
+        status current {
+          yexte:preliminary;
+        }
+        value 2;
+      }
+      enum KEY_FILE_SUCCESSFUL {
+        description "Requested license key file successfully installed. ";
+        status current {
+          yexte:preliminary;
+        }
+        value 3;
+      }
+      enum KEY_FILE_FAILED {
+        description "License key file request failed.";
+        status current {
+          yexte:preliminary;
+        }
+        value 4;
+      }
+      enum CONNECTION_ERROR {
+        description "No connectivity to ENM.";
+        status current {
+          yexte:preliminary;
+        }
+        value 5;
+      }
+      enum REQUIRED_CAPACITY_NOT_GRANTED {
+        description "License key file request denied. Current configuration requires more capacity licenses than contract admits.";
+        status current {
+          yexte:preliminary;
+        }
+        value 6;
+      }
+      enum TIMEOUT {
+        description "License key file request timed out.";
+        status current {
+          yexte:preliminary;
+        }
+        value 7;
+      }
+      enum KEY_FILE_INSTALLATION_FAILURE {
+        description "Installation of requested license key file failed.";
+        status current {
+          yexte:preliminary;
+        }
+        value 8;
+      }
+    }
+  }
+  typedef enum-IlMode {
+    description "Instantaneous Licensing mode selection.";
+    type enumeration {
+      enum FULL_ACTIVATION {
+        description "LKF Refresh and Capacity Expansion are activated.";
+        status current {
+          yexte:preliminary;
+        }
+        value 0;
+      }
+      enum LKF_REFRESH {
+        description "Only LKF Refresh is activated.";
+        status current {
+          yexte:preliminary;
+        }
+        value 1;
+      }
+      enum CAPACITY_EXPANSION {
+        description "Only Capacity Expansion is activated.";
+        status current {
+          yexte:preliminary;
+        }
+        value 2;
+      }
+    }
+  }
+  typedef ddt-ActionInvocationResult {
+    description "This is the datatype for the Asychronous Action Id. ";
+    type uint16;
+  }
+  typedef ddt-EcimPasswordString {
+    description "This type enables secure handling of passwords.";
+    type string;
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC\n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)";
+    type string {
+      length 19..31;
+    }
+  }
+  grouping struct-ExpansionStatus {
+    description "Status for license key file requests due to capacity or HW expansion.";
+    leaf expansionResultInfo {
+      status current {
+        yexte:preliminary;
+      }
+      description "Result of expansion LKF request. Contains useful information for NMS.\nCan contain error message if activity fails.";
+      type string;
+      mandatory true;
+    }
+    leaf activityID {
+      status current {
+        yexte:preliminary;
+      }
+      description "ID of expansion LKF request activity.";
+      type uint16;
+      mandatory true;
+    }
+    leaf expansionStatus {
+      status current {
+        yexte:preliminary;
+      }
+      description "Expansion License Key File request status.";
+      type erienmnrmrmelicensesupport:enum-KeyFileRequestStatus;
+      mandatory true;
+    }
+    leaf timeOfLastStatusUpdate {
+      status current {
+        yexte:preliminary;
+      }
+      description "Date and time when the struct member state was last updated. ";
+      type erienmnrmrmelicensesupport:ddt-DateTime;
+      mandatory true;
+    }
+    leaf expansionProgressInfo {
+      status current {
+        yexte:preliminary;
+      }
+      description "Detailed current status of the activity.";
+      type string;
+      mandatory true;
+    }
+    leaf activityName {
+      status current {
+        yexte:preliminary;
+      }
+      description "Name of expansion LKF request activity.";
+      type string;
+      mandatory true;
+    }
+    leaf-list additionalInfo {
+      min-elements 0;
+      status current {
+        yexte:preliminary;
+      }
+      description "Used for logging significant messages during execution of LKF request.";
+      type string;
+    }
+    leaf timeActivityStarted {
+      status current {
+        yexte:preliminary;
+      }
+      description "Date and time when the current activity started.";
+      type erienmnrmrmelicensesupport:ddt-DateTime;
+      mandatory true;
+    }
+    leaf timeActivityCompleted {
+      status current {
+        yexte:preliminary;
+      }
+      description "Date and time when the activity was completed (successfully or unsuccessfully). ";
+      type erienmnrmrmelicensesupport:ddt-DateTime;
+      mandatory true;
+    }
+  } // end 'grouping struct-ExpansionStatus'
+  grouping struct-AsyncActionProgress {
+    description "Records the progress of an asynchronous action.";
+    leaf result {
+      description "Result state of a completed action.\nThis field has value NOT_AVAILABLE if the action is not finished.";
+      type erienmnrmrmelicensesupport:enum-ActionResultType;
+    }
+    leaf timeOfLastStatusUpdate {
+      description "Date and time when the struct member state was last updated.";
+      type erienmnrmrmelicensesupport:ddt-DateTime;
+      mandatory true;
+    }
+    leaf timeActionCompleted {
+      description "Date and time when the action was completed (successfully or unsuccessfully).";
+      type erienmnrmrmelicensesupport:ddt-DateTime;
+    }
+    leaf-list additionalInfo {
+      min-elements 0;
+      description "Used for logging significant messages during execution of an action.";
+      type string;
+    }
+    leaf actionId {
+      description "Uniquely identifies the invocation of an action.\nIdentifies the invocation of an action when the managed object allows invocation of more than one action at a time.";
+      type erienmnrmrmelicensesupport:ddt-ActionInvocationResult;
+      mandatory true;
+    }
+    leaf progressPercentage {
+      description "Progress of the action.\nThe range is between 0 and 100.";
+      type uint8;
+    }
+    leaf progressInfo {
+      description "Textual information that describes the actual state of the action execution.";
+      type string;
+    }
+    leaf state {
+      description "Current state of the action.";
+      type erienmnrmrmelicensesupport:enum-ActionStateType;
+    }
+    leaf timeActionStarted {
+      description "Date and time when the current action was started.";
+      type erienmnrmrmelicensesupport:ddt-DateTime;
+      mandatory true;
+    }
+    leaf resultInfo {
+      description "Textual description of the outcome/result of the action containing useful information for the NMS.\nIf the action failed, it can contain an error message.";
+      type string;
+    }
+    leaf actionName {
+      description "Name of the invoked asynchronous action.";
+      type string;
+    }
+  } // end 'grouping struct-AsyncActionProgress'
+  grouping moc-InstantaneousLicensing-keys {
+    description "Key(s) for MOC InstantaneousLicensing";
+    leaf id {
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:no-notification;
+      description "The value component of the RDN. ";
+      mandatory true;
+      yexte:ecim-name instantaneousLicensingId;
+      type string;
+    }
+  } // end 'grouping moc-InstantaneousLicensing-keys'
+  grouping moc-InstantaneousLicensing {
+    description "Provides support for Instantaneous Licensing.\n\nThe RDN of this MO is InstantaneousLicensing=1.";
+    leaf mode {
+      status current {
+        yexte:preliminary;
+      }
+      description "Activated mode of Instantanteous Licensing.";
+      type erienmnrmrmelicensesupport:enum-IlMode;
+      default LKF_REFRESH;
+    }
+    leaf euft {
+      status current {
+        yexte:preliminary;
+      }
+      description "End user for foreign trade number.\nIf not previously set, attribute is automatically set by system the first time a license key file is installed.\n\n";
+      type string;
+    }
+    leaf administrativeState {
+      status current {
+        yexte:preliminary;
+      }
+      description "Indicates if Instantaneous Licensing is administratively activated or not.\nSpecification: ITU-T Rec. X.731";
+      type erienmnrmrmelicensesupport:enum-BasicAdmState;
+      default LOCKED;
+    }
+    container progressReport {
+      description "Current status of ongoing action on MO.";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmelicensesupport:struct-AsyncActionProgress;
+    } // end 'container progressReport'
+    leaf swltId {
+      status current {
+        yexte:preliminary;
+      }
+      description "Software license target ID.\nDefines License Configuration Set (LCS) used by this ME.";
+      type string;
+    }
+    leaf operationalState {
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "The operational state.\nSpecification: ITU-T Rec. X.731";
+      notife:notifiable-state-data true;
+      type erienmnrmrmelicensesupport:enum-OperState;
+    }
+    container expansionProgressReport {
+      description "Execution status of license key file request triggered by HW or capacity expansion.";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmelicensesupport:struct-ExpansionStatus;
+    } // end 'container expansionProgressReport'
+    leaf-list availabilityStatus {
+      min-elements 0;
+      status current {
+        yexte:preliminary;
+      }
+      config false;
+      description "The availability status.\nIt contains details about operationalState.\nSpecification: ITU-T Rec. X.731";
+      notife:notifiable-state-data true;
+      type erienmnrmrmelicensesupport:enum-AvailStatus;
+    }
+    action cancel {
+      description "Cancels current refreshKeyFile action.\nAction returns true if action is accepted. Otherwise, false is returned.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action refreshKeyFile {
+      description "Generates and installs key file.\n\nAction returns immediately after invocation. Progress of action can be tracked by attribute progressReport . Action returns error message if cannot start for some reason, for example, if another parallel action is in progress. When action is successfully started, action ID is returned. Action ID is unique for every invocation of action.";
+      output {
+        leaf result {
+          type erienmnrmrmelicensesupport:ddt-ActionInvocationResult;
+        }
+      }
+    }
+  } // end 'grouping moc-InstantaneousLicensing'
+  grouping moc-LicenseSupport-keys {
+    description "Key(s) for MOC LicenseSupport";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name licenseSupportId;
+      type string;
+    }
+  } // end 'grouping moc-LicenseSupport-keys'
+  grouping moc-LicenseSupport {
+    description "The root MOC of the License Support branch.\n\nThe RDN of this MO is LicenseSupport=1.";
+    leaf licenseAreaId {
+      status deprecated {
+        yexte:status-information "Since 19.Q3. Has no functional behaviour.";
+      }
+      description "The identity of license area to which this ME belongs. Updating this attribute uninstalls any license keys associated with the previous licenseAreaId.";
+      type string;
+    }
+    container reportProgress {
+      description "Represents the progress report, including result, of ongoing action.\nThis MO supports only one action execution at a time.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmelicensesupport:struct-AsyncActionProgress;
+    } // end 'container reportProgress'
+    action cancel {
+      description "Cancels ongoing action.\n\n";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action installAreaLicenseKeys {
+      description "This action is not supported.";
+      output {
+        leaf result {
+          type erienmnrmrmelicensesupport:enum-InstallAreaLicenseKeysResult;
+        }
+      }
+    }
+    action initialize {
+      description "This action is not supported.";
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action migrateFingerprint {
+      description "Obsolete since 20.Q2";
+      input {
+        leaf password {
+          description "Password to access the referenced file.\n\nIf authentication is not password based, this parameter will be ignored.\n";
+          type erienmnrmrmelicensesupport:ddt-EcimPasswordString;
+        }
+        leaf fingerprint {
+          mandatory true;
+          description "The new fingerprint.";
+          type string;
+        }
+        leaf uri {
+          description "URI of key file that is to be installed.\n\nURI must be a remote source file (for example sftp://myuser@myhostname.ericsson.local/dir/subdir/rbs006.xml).\n\nIf user name is necessary to access the referenced file then URI can include the user name. URI must not contain password.\n\nGeneric URI syntax is defined by RFC 2396.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type erienmnrmrmelicensesupport:ddt-ActionInvocationResult;
+        }
+      }
+    }
+  } // end 'grouping moc-LicenseSupport'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport/erienmnrmrmelicensesupport:LicenseSupport {
+    list InstantaneousLicensing {
+      key id;
+      max-elements 1;
+      description "Provides support for Instantaneous Licensing.\n\nThe RDN of this MO is InstantaneousLicensing=1.";
+      status current {
+        yexte:preliminary;
+      }
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-InstantaneousLicensing-keys;
+      container attributes {
+        description "Attributes for InstantaneousLicensing";
+        uses moc-InstantaneousLicensing;
+      } // end 'container attributes'
+    } // end 'list InstantaneousLicensing'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list LicenseSupport {
+      key id;
+      max-elements 1;
+      description "The root MOC of the License Support branch.\n\nThe RDN of this MO is LicenseSupport=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-LicenseSupport-keys;
+      container attributes {
+        description "Attributes for LicenseSupport";
+        uses moc-LicenseSupport;
+      } // end 'container attributes'
+    } // end 'list LicenseSupport'
+  }
+}

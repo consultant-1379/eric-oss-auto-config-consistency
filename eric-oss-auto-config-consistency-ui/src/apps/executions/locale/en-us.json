@@ -1,0 +1,19 @@
+{
+  "JOB_EXECUTIONS": "Job Executions",
+  "ZERO_JOBS_EXECUTED": "No jobs have been executed",
+  "VIEW_JOBS": "View Jobs",
+  "CLEAR": "Clear",
+  "EXECUTION_ID": "Execution ID",
+  "JOB_NAME": "Job Name",
+  "EXECUTION_TYPE": "Execution Type",
+  "EXECUTION_START": "Execution Start",
+  "EXECUTION_END": "Execution End",
+  "STATUS": "Status",
+  "ATTRIBUTES_AUDITED": "Attributes Audited",
+  "MOS_AUDITED": "MOs Audited",
+  "INCONSISTENCIES": "Inconsistencies",
+  "VIEW_REPORTS": "View Reports",
+  "CHANGES_IN_PROGRESS_STATUS": "Changes in Progress",
+  "CHANGES_FAILED_STATUS": "Changes Failed"
+
+}

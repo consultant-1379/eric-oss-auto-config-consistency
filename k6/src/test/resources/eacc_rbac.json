@@ -1,0 +1,107 @@
+{
+  "tenant": "master",
+  "roles": [
+    {
+      "name": "eacc-read-only",
+      "attributes": {}
+    },
+    {
+      "name": "eacc-read-write",
+      "attributes": {}
+    }
+  ],
+  "authorization": {
+    "resources": [
+      {
+        "name": "EACC",
+        "type": "urn:eo:resources:extrapp",
+        "ownerManagedAccess": false,
+        "displayName": "Automated Configuration Consistency",
+        "attributes": {},
+        "uris": [
+          "/eacc/**"
+        ],
+        "scopes": [
+          {
+            "name": "PATCH"
+          },
+          {
+            "name": "DELETE"
+          },
+          {
+            "name": "GET"
+          },
+          {
+            "name": "POST"
+          },
+          {
+            "name": "PUT"
+          }
+        ]
+      }
+    ],
+    "policies": [
+      {
+        "name": "Is EACC Admin",
+        "description": "Policy for eacc-read-write that is based on role",
+        "type": "role",
+        "logic": "POSITIVE",
+        "decisionStrategy": "UNANIMOUS",
+        "config": {
+          "roles": "[{\"id\":\"eacc-read-write\",\"required\":false}]"
+        }
+      },
+      {
+        "name": "EACC Read-Write Permission",
+        "description": "Permissions for eacc-read-write",
+        "type": "scope",
+        "logic": "POSITIVE",
+        "decisionStrategy": "UNANIMOUS",
+        "config": {
+          "resources": "[\"EACC\"]",
+          "scopes": "[\"PUT\",\"POST\",\"DELETE\",\"PATCH\"]",
+          "applyPolicies": "[\"Is EACC Admin\"]"
+        }
+      },
+      {
+        "name": "Is EACC Reader",
+        "description": "Policy for eacc-read-only that is based on role",
+        "type": "role",
+        "logic": "POSITIVE",
+        "decisionStrategy": "UNANIMOUS",
+        "config": {
+          "roles": "[{\"id\":\"eacc-read-only\",\"required\":false}]"
+        }
+      },
+      {
+        "name": "EACC Read-Only Permission",
+        "description": "Permission for eacc-read-only",
+        "type": "scope",
+        "logic": "POSITIVE",
+        "decisionStrategy": "AFFIRMATIVE",
+        "config": {
+          "resources": "[\"EACC\"]",
+          "scopes": "[\"GET\"]",
+          "applyPolicies": "[\"Is EACC Reader\",\"Is EACC Admin\"]"
+        }
+      }
+    ],
+    "scopes": [
+      {
+        "name": "GET"
+      },
+      {
+        "name": "POST"
+      },
+      {
+        "name": "DELETE"
+      },
+      {
+        "name": "PUT"
+      },
+      {
+        "name": "PATCH"
+      }
+    ]
+  }
+}

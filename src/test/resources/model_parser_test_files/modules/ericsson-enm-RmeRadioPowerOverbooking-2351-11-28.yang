@@ -1,0 +1,74 @@
+module ericsson-enm-RmeRadioPowerOverbooking {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeRadioPowerOverbooking;
+  prefix erienmnrmrmeradiopoweroverbooking;
+  yexte:ecim-name RmeRadioPowerOverbooking;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-FeatCtrlState {
+    description "Possible states set by operator for licensed or unlicensed feature.";
+    type enumeration {
+      enum OFF {
+        description "Operator does not allow usage of the feature.";
+        value 0;
+      }
+      enum ON {
+        description "Operator allows usage of the feature.";
+        value 1;
+      }
+    }
+  }
+  grouping moc-RadioPowerOverbooking-keys {
+    description "Key(s) for MOC RadioPowerOverbooking";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name radioPowerOverbookingId;
+      type string;
+    }
+  } // end 'grouping moc-RadioPowerOverbooking-keys'
+  grouping moc-RadioPowerOverbooking {
+    description "This MO contains configuration items for feature Radio Power Overbooking.\n\nThe RDN of this MO is RadioPowerOverbooking=1.";
+    leaf featCtrlRadioPowerOverbooking {
+      description "Whether feature \"power overbooking\" is ON or OFF.\nTakes effect: next eUtran cell unlock on eNodeB, or next Utran cell unlock on RNC, or next TRX unlock on BTS.";
+      type erienmnrmrmeradiopoweroverbooking:enum-FeatCtrlState;
+      default OFF;
+    }
+  } // end 'grouping moc-RadioPowerOverbooking'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list RadioPowerOverbooking {
+      key id;
+      max-elements 1;
+      description "This MO contains configuration items for feature Radio Power Overbooking.\n\nThe RDN of this MO is RadioPowerOverbooking=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-RadioPowerOverbooking-keys;
+      container attributes {
+        description "Attributes for RadioPowerOverbooking";
+        uses moc-RadioPowerOverbooking;
+      } // end 'container attributes'
+    } // end 'list RadioPowerOverbooking'
+  }
+}

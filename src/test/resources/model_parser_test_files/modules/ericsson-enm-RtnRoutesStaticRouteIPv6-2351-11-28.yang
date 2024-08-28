@@ -1,0 +1,153 @@
+module ericsson-enm-RtnRoutesStaticRouteIPv6 {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnRoutesStaticRouteIPv6;
+  prefix erienmnrmrtnroutesstaticrouteipv6;
+  yexte:ecim-name RtnRoutesStaticRouteIPv6;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 17;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef ddt-DistanceValueType {
+    description "Distance Value Type.";
+    type int16 {
+      range 1..255;
+    }
+  }
+  typedef ddt-Ipv6RouteAddressAndPrefixLengthStr {
+    description "’IPv6 network address’/’prefix length’ string.\n\nExample: 2001:db8:c0f:fee::/64\n";
+    type string;
+  }
+  typedef ddt-Ipv6AddressStr {
+    description "IPv6 address string, controlled by a regular expression.\n\nAddress should be specified in colon separated hexadecimal notation as described in RFC 4291 section 2.2 items 1-3, but without leading 0s.\nIPv6 addresses shall have a length range of 3-39 characters.\nValid characters: 0123456789abcdefABCDEF:\n\nExample: FF01::101, 2001:DB8:0:0:8:800:200C:417A";
+    type string;
+  }
+  typedef ddt-EcimEmpty {
+    description "This type represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping moc-Dst-keys {
+    description "Key(s) for MOC Dst";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dstId;
+      type string;
+    }
+  } // end 'grouping moc-Dst-keys'
+  grouping moc-Dst {
+    description "Represents IPv6 destination of routes defined by one or more NextHop child MOs.\n";
+    leaf dst {
+      description "IPv6 destination prefix for routes defined by NextHop child MOs.";
+      mandatory true;
+      yexte:dependencies "If attribute reference in NextHop MO refers to Router MO, this attribute must contain IPv6 host address with prefix length 128.";
+      type erienmnrmrtnroutesstaticrouteipv6:ddt-Ipv6RouteAddressAndPrefixLengthStr;
+    }
+  } // end 'grouping moc-Dst'
+  grouping moc-NextHop-keys {
+    description "Key(s) for MOC NextHop";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nextHopId;
+      type string;
+    }
+  } // end 'grouping moc-NextHop-keys'
+  grouping moc-NextHop {
+    description "Contains information about route defined by this MO and its parent Dst MO.\n\nDependencies:\nMax number of NextHop MOs are 10000 within all RouteTableIpv6Static MOs in node.";
+    leaf reference {
+      description "Only applicable if IPsec functionality is supported on node, or if matching flows need to be routed to another Router MO.\nRoute traffic from inner network through IPsec VPN connection, or to route flows to another router.";
+      yexte:dependencies "Only one of attributes address, discard or reference must be set at same time.\nCan refer to InterfaceIPv6 MO that has IpsecTunnel MO as encapsulation reference, or to another\nRouter MO that has InterfaceIPv6 MO with IPv6 address defined in parent Dst MO.\nMust be unique under same Dst MO.\nIf referring to InterfaceIPv6 MO, it must be within same Router MO as InterfaceIPv6 MO.\nIf referring to Router MO, it cannot be within same Router MO as parent of this NextHop MO.\nIf set, only one NextHop MO is allowed under Dst MO.\nIf referring to Router MO, attribute bfdMonitoring must be set to false.\nIf referring to Router MO, attribute dst under parent Dst MO must contain IPv6 host address with prefix length 128.\nIf referring to Router MO, attribute adminDistance must be set to 1.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf discard {
+      description "Packets with destination that matches this route are discarded.";
+      yexte:dependencies "One of attributes address, discard or reference must be set, only one of them at same time.\nOnly one NextHop MO with discard set is allowed under Dst MO.";
+      type erienmnrmrtnroutesstaticrouteipv6:ddt-EcimEmpty;
+    }
+    leaf address {
+      description "IP address of nexthop of this route.";
+      yexte:dependencies "One of attributes address, discard or reference must be set, only one of them at same time.\nMust not coincide with address configured on InterfaceIPv6 MO on this router.\nMust be unique under same Dst MO.";
+      type erienmnrmrtnroutesstaticrouteipv6:ddt-Ipv6AddressStr;
+    }
+    leaf bfdMonitoring {
+      description "Controls whether availability of this route depends on BFD session that monitors nexthop.\nIf set to true, availability of this route depends on session state, if BFD session monitors nexthop.\nIf set to false, availability of this route does not depend on session state, even when BFD session monitors nexthop.\nTo enable BFD monitoring of nexthop, see details in InterfaceIPv6::bfdStaticRoutes and PeerIPv6::bfdStaticRoutes.";
+      yexte:dependencies "If attribute reference refers to Router MO, this attribute must be set to false.";
+      type boolean;
+      default true;
+    }
+    leaf adminDistance {
+      description "Defines priority of this MO relative to other NextHop MOs under the same Dst MO.\nDefines priority of this MO relative to routes to the same destination network learned from dynamic routing protocols.\nUsed to select the preferred path when two or more routes lead to the same destination.";
+      yexte:dependencies "Two NextHop MOs under the same Dst MO cannot have the same adminDistance.\nIf attribute reference refers to Router MO, this attribute must be set to 1.";
+      type erienmnrmrtnroutesstaticrouteipv6:ddt-DistanceValueType;
+      default 1;
+    }
+  } // end 'grouping moc-NextHop'
+  grouping moc-RouteTableIPv6Static-keys {
+    description "Key(s) for MOC RouteTableIPv6Static";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name routeTableIPv6StaticId;
+      type string;
+    }
+  } // end 'grouping moc-RouteTableIPv6Static-keys'
+  grouping moc-RouteTableIPv6Static {
+    description "Contains manually defined IPv6 static routes defined by Dst MOs and their child NextHop MOs.";
+  } // end 'grouping moc-RouteTableIPv6Static'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnroutesstaticrouteipv6:RouteTableIPv6Static {
+    list Dst {
+      key id;
+      description "Represents IPv6 destination of routes defined by one or more NextHop child MOs.\n";
+      erienmyext:enm-type MOC;
+      uses moc-Dst-keys;
+      container attributes {
+        description "Attributes for Dst";
+        uses moc-Dst;
+      } // end 'container attributes'
+    } // end 'list Dst'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnroutesstaticrouteipv6:RouteTableIPv6Static/erienmnrmrtnroutesstaticrouteipv6:Dst {
+    list NextHop {
+      key id;
+      description "Contains information about route defined by this MO and its parent Dst MO.\n\nDependencies:\nMax number of NextHop MOs are 10000 within all RouteTableIpv6Static MOs in node.";
+      erienmyext:enm-type MOC;
+      uses moc-NextHop-keys;
+      container attributes {
+        description "Attributes for NextHop";
+        uses moc-NextHop;
+      } // end 'container attributes'
+    } // end 'list NextHop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list RouteTableIPv6Static {
+      key id;
+      max-elements 1;
+      description "Contains manually defined IPv6 static routes defined by Dst MOs and their child NextHop MOs.";
+      erienmyext:enm-type MOC;
+      uses moc-RouteTableIPv6Static-keys;
+    } // end 'list RouteTableIPv6Static'
+  }
+}

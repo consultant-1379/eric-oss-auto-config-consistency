@@ -1,0 +1,267 @@
+module ericsson-enm-ReqEnergyMeter {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqEnergyMeter;
+  prefix erienmnrmreqenergymeter;
+  yexte:ecim-name ReqEnergyMeter;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 1;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEFuse {
+    prefix erienmnrmreqefuse;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ApcEnergyMeterEnabled {
+    description "Configured energy meter state.";
+    type enumeration {
+      enum DISABLED {
+        description "The energy meter is configured as disabled.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The energy meter is configured as enabled.";
+        value 1;
+      }
+      enum UNDEFINED {
+        description "The state of the energy meter is not yet configured.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6. ";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-ReqEnergyMeter_EnergyMeter_outputVoltage {
+    type int32;
+  }
+  typedef ddt-ReqEnergyMeter_EnergyMeter_inputVoltage {
+    type int32;
+  }
+  typedef ddt-ReqEnergyMeter_EnergyMeter_outputCurrent {
+    type int32;
+  }
+  typedef ddt-ReqEnergyMeter_EnergyMeter_powerLoad {
+    type int32 {
+      range 0..100;
+    }
+  }
+  typedef ddt-ReqEnergyMeter_EnergyMeter_unitPowerConsumption {
+    type int32;
+  }
+  typedef ddt-ReqEnergyMeter_EnergyMeter_outputPower {
+    type int32;
+  }
+  typedef ddt-ReqEnergyMeter_EnergyMeter_inputCurrent {
+    type int32;
+  }
+  grouping moc-EnergyMeter-keys {
+    description "Key(s) for MOC EnergyMeter";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name energyMeterId;
+      type string;
+    }
+  } // end 'grouping moc-EnergyMeter-keys'
+  grouping moc-EnergyMeter {
+    description "This MO displays the energy meter values for a single FieldReplaceableUnit or EFuse with energy measurement capability.";
+    leaf outputPower {
+      erienmyext:no-notification;
+      config false;
+      description "The present output power measured by the FieldReplaceableUnit.\nIf an undefined value is set this indicates that it is not possible to obtain a measurement value.";
+      type erienmnrmreqenergymeter:ddt-ReqEnergyMeter_EnergyMeter_outputPower;
+    }
+    leaf outputVoltage {
+      erienmyext:no-notification;
+      config false;
+      description "The present output voltage level measured by the FieldReplaceableUnit.\nIf an undefined value is set this indicates that it is not possible to obtain a measurement value.";
+      type erienmnrmreqenergymeter:ddt-ReqEnergyMeter_EnergyMeter_outputVoltage;
+    }
+    leaf inputVoltage {
+      erienmyext:no-notification;
+      config false;
+      description "The present input voltage measured by the the FieldReplaceableUnit.\nIf an undefined value is set, this indicates that it is not possible to obtain a measurement value.";
+      type erienmnrmreqenergymeter:ddt-ReqEnergyMeter_EnergyMeter_inputVoltage;
+    }
+    leaf consumedEnergyMeasurementRef {
+      config false;
+      description "Reference to MO ConsumedEnergyMeasurement.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf outputCurrent {
+      erienmyext:no-notification;
+      config false;
+      description "The present output current level measured by the FieldReplaceableUnit.\nIf an undefined value is set this indicates that it is not possible to obtain a measurement value.";
+      type erienmnrmreqenergymeter:ddt-ReqEnergyMeter_EnergyMeter_outputCurrent;
+    }
+    leaf unitPowerConsumption {
+      status deprecated {
+        yexte:status-information "Since 17.Q3. The same information is supplied by PM Counter pmPowerConsumption.";
+      }
+      erienmyext:no-notification;
+      config false;
+      description "The present power consumption measured by the FieldReplaceableUnit.\nIf an undefined value is set this indicates that it is not possible to obtain a measurement value.";
+      type erienmnrmreqenergymeter:ddt-ReqEnergyMeter_EnergyMeter_unitPowerConsumption;
+    }
+    leaf energyMeterEnabled {
+      config false;
+      description "Configured state of the energy meter. The configured state is retained after a restart.\nConfigured state is the desired operational state, not necessarily the actual operational state.\nPossible values:\n• DISABLED = The energy meter is configured as disabled\n• ENABLED = The energy meter is configured as enabled\n• UNDEFINED = The state of the energy meter is not yet configured\nEnergy meters are auto-enabled up to a system defined limit. Additional energy meters must be enabled manually, by executing action setEnergyMeterEnabled.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmreqenergymeter:enum-ApcEnergyMeterEnabled;
+    }
+    leaf powerLoad {
+      erienmyext:no-notification;
+      config false;
+      description "The present power load in percent of the maximum available capacity.\nIf an undefined value is set this indicates that it is not possible to obtain a measurement value.";
+      type erienmnrmreqenergymeter:ddt-ReqEnergyMeter_EnergyMeter_powerLoad;
+    }
+    leaf unitInformation {
+      config false;
+      description "Additional unit specific information.\n\nValid values depending on type:\nPSU with input current limitation (8A, 10A, 12.5A, 15A).\nPSU with output power limitation (1200W, 1800W).\nN/A: Used when no additional information exists.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf inputCurrent {
+      erienmyext:no-notification;
+      config false;
+      description "The present input current measured by the FieldReplaceableUnit.\nIf an undefined value is set this indicates that it is not possible to obtain a measurement value.";
+      type erienmnrmreqenergymeter:ddt-ReqEnergyMeter_EnergyMeter_inputCurrent;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmreqenergymeter:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmreqenergymeter:enum-OperState;
+    }
+    action setEnergyMeterEnabled {
+      description "Configures the energy meter as enabled or disabled. The configuration is reflected in attribute energyMeterEnabled.";
+      input {
+        leaf energyMeterEnabled {
+          mandatory true;
+          description "Whether to configure the energy meter as enabled or disabled.";
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-EnergyMeter'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list EnergyMeter {
+      key id;
+      description "This MO displays the energy meter values for a single FieldReplaceableUnit or EFuse with energy measurement capability.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EnergyMeter-keys;
+      container attributes {
+        description "Attributes for EnergyMeter";
+        uses moc-EnergyMeter;
+      } // end 'container attributes'
+    } // end 'list EnergyMeter'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqefuse:EFuse {
+    list EnergyMeter {
+      key id;
+      description "This MO displays the energy meter values for a single FieldReplaceableUnit or EFuse with energy measurement capability.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EnergyMeter-keys;
+      container attributes {
+        description "Attributes for EnergyMeter";
+        uses moc-EnergyMeter;
+      } // end 'container attributes'
+    } // end 'list EnergyMeter'
+  }
+}

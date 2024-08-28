@@ -1,0 +1,336 @@
+module ericsson-enm-RtnL2EthernetPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnL2EthernetPort;
+  prefix erienmnrmrtnl2ethernetport;
+  yexte:ecim-name RtnL2EthernetPort;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 1;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-LldpTransmit {
+    description "Enables Tx mode of Link Layer Discovery Protocol (LLDP) on specific EthernetPort MO.";
+    type enumeration {
+      enum DISABLED {
+        description "LLDP Tx is disabled on this port.";
+        value 0;
+      }
+      enum ENABLED {
+        description "LLDP Tx is enabled on this port.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "The administrative state of a resource. ";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-EthPortOperatingMode {
+    description "Operating modes specify speed, duplex and master or slave states.";
+    type enumeration {
+      enum ANY {
+        value 1;
+      }
+      enum 10M_HALF {
+        value 2;
+      }
+      enum 10M_FULL {
+        value 3;
+      }
+      enum 100M_HALF {
+        value 4;
+      }
+      enum 100M_FULL {
+        value 5;
+      }
+      enum 1G_FULL {
+        value 6;
+      }
+      enum 1G_FULL_SLAVE {
+        value 7;
+      }
+      enum 1G_FULL_MASTER {
+        value 8;
+      }
+      enum 10G_FULL {
+        value 9;
+      }
+      enum 10G_FULL_MASTER {
+        value 10;
+      }
+      enum 10G_FULL_SLAVE {
+        value 11;
+      }
+      enum 40G_FULL {
+        value 12;
+      }
+      enum 100G_FULL {
+        value 13;
+      }
+      enum 25G_AUTO_FEC {
+        description "25G with auto negotiation of FEC algorithm.\nCan only be used when auto-negotiation is enabled.";
+        value 14;
+      }
+      enum 25G_NO_FEC {
+        description "25G with FEC disabled.";
+        value 15;
+      }
+      enum 25G_RS_FEC {
+        description "25G with Reed-Solomon (RS) FEC enabled.";
+        value 16;
+      }
+      enum 25G_BASER_FEC {
+        description "25G with Firecode (BASE-R) FEC algorithm enabled.";
+        value 17;
+      }
+    }
+  }
+  typedef ddt-RtnL2EthernetPort_EthernetPort_mtu {
+    type int32;
+  }
+  typedef ddt-MacAddressStr {
+    description "MAC address string, controlled by a regular expression.\n\nAddress should be specified in colon separated hexadecimal notation as described in IEEE 802. \nMAC addresses shall have 17 characters.\nValid characters: 0123456789abcdefABCDEF\n\nExample: 00:12:34:56:78:9A";
+    type string {
+      length 17..17;
+    }
+  }
+  typedef ddt-RtnL2EthernetPort_EthernetPort_holdDownTimer {
+    type uint32 {
+      range 100..10000;
+    }
+  }
+  typedef ddt-RtnL2EthernetPort_EthernetPort_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-EthernetPort-keys {
+    description "Key(s) for MOC EthernetPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ethernetPortId;
+      type string;
+    }
+  } // end 'grouping moc-EthernetPort-keys'
+  grouping moc-EthernetPort {
+    description "Represents Ethernet MAC service access point.\n\nDependencies: All EthernetPort MOs must be configured on same FieldReplaceableUnit MO.\nAll EthernetPort MOs must be configured on primary core FieldReplaceableUnit MO.\n\nEthernetPort MO, reserved by LagPort MO, cannot refer to Dot1xSupplicant MO.\nEthernetPort MO, reserved by LagPort MO, cannot have child of MO type Dot1xAuthenticatorPort.\n\nEthernetPort MO, reserved by InterfaceIPv4 MO or InterfaceIPv6 MO, cannot configure Dot1xAuthenticatorPort MO.\n\nVlanPort MO cannot refer this MO if both following apply:\nIf this MO has Dot1xAuthenticatorPort MO as child.\nIf VlanPort MO is reserved by MO type ENodeBFunction, ExternalENodeBFunction, FgwService or FgwTermPoint.\n\nIf Dot1xAuthenticatorPort MO exists, supplicant attribute cannot be set, or if supplicant attribute is set Dot1xAuthenticatorPort MO cannot be created in same EthernetPort MO.\n\nQueueSystem and egress traffic shaping has no effect on low latency traffic.";
+    leaf supplicant {
+      description "Reference to Dot1xSupplicant MO.\nEmpty string means supplicant is not used.";
+      yexte:dependencies "If set, VlanPort MO, used by ENodeBFunction MO or ExternalENodeBFunction MO, cannot refer to this EthernetPort MO.\nIf set, encapsulation attribute must refer to TnPort MO.\nIf set, Dot1xAuthenticatorPort MO cannot be created in same EthernetPort MO.\nIf Dot1xAuthenticatorPort MO is created, this attribute cannot be set in same EthernetPort MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf encapsulation {
+      description "Reference to underlying encapsulation.\nUnderlying encapsulation can be TnPort MO.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Only one EthernetPort MO can refer to same TnPort MO.\nCan only refer to existing TnPort MO.\nMust refer to TnPort MO, if supplicant attribute is set.\nMust refer to TnPort MO, if this MO has child of MO type Dot1xAuthenticatorPort.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnl2ethernetport:ddt-RtnL2EthernetPort_EthernetPort_userLabel;
+    }
+    leaf holdDownTimer {
+      description "Delay until operationalState changes to ENABLED. Starts when physical port comes up.\nWhen attribute is empty, there is no hold-down timer for Ethernet port.";
+      type erienmnrmrtnl2ethernetport:ddt-RtnL2EthernetPort_EthernetPort_holdDownTimer;
+    }
+    leaf egressQosClassification {
+      description "Not supported in this release.\nDSCP to PCP map. Used to classify DSCP tagged packets to PCP value for egress traffic in order to be handled correctly by queue system.\nIt can refer to an DscpPcpMap MO.\nEmpty string means no classification is done on DSCP. That is, PCP value is trusted.\nAttribute is used for specific issues within QoS domain and should most often be empty.";
+      yexte:dependencies "Only one of egressQosMarking or egressQosClassification can be set for each MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf mtu {
+      config false;
+      description "MTU.\nLargest PDU that Ethernet layer can pass on Ethernet port.\nPDU includes Ethernet header, Ethertype, payload and frame check sequence.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnl2ethernetport:ddt-RtnL2EthernetPort_EthernetPort_mtu;
+    }
+    leaf macAddress {
+      config false;
+      description "Assigned individual MAC address.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnl2ethernetport:ddt-MacAddressStr;
+    }
+    leaf admOperatingMode {
+      description "Administrative operating mode of Ethernet port. Used when auto-negotiation is enabled or disabled.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "MASTER and SLAVE options are only valid for external electrical interface ports.\nConfiguration of invalid attributes can result in nonoperational port.\nWhen configuring 1G_FULL or 10G_FULL on external electrical interfaces:\n- if MASTER or SLAVE is not specified and autoNegEnable=true, master or slave mode is auto-negotiated,\n- if MASTER or SLAVE is not specified and autoNegEnable=false, master or slave mode is set to SLAVE.\nANY can be used by auto-negotiation to negotiate:\n- interface rate,\n- master or slave settings,\n- FEC mode.\nANY can be used only if auto-negotiation is enabled (attribute autoNegEnable is set to true).\nANY must not be used with 10G and 25G.\nIf 25G_AUTO_FEC, autoNegEnable attribute shall not be set to false.";
+      type erienmnrmrtnl2ethernetport:enum-EthPortOperatingMode;
+      default 1G_FULL;
+    }
+    leaf egressQosMarking {
+      description "Not supported in this release.\nDSCP to PCP map. Used to re-mark DSCP tagged packets to PCP value for egress traffic.\nIt can refer to DscpPcpMap MO.\nEmpty string means no re-marking is done on DSCP.\nAttribute is used for specific issues within QoS domain and should most often be empty.";
+      yexte:dependencies "Only one of egressQosMarking or egressQosClassification can be set for each MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf administrativeState {
+      description "The administrative state.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrtnl2ethernetport:enum-AdmState;
+      default LOCKED;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nDetails about operationalState.";
+      type erienmnrmrtnl2ethernetport:enum-AvailStatus;
+    }
+    leaf-list ingressQosMarking {
+      min-elements 0;
+      max-elements 2;
+      description "DSCP to DSCP and/or PCP to PCP map used to re-mark DSCP and/or PCP tagged packets.\nEmpty string means no re-marking is done.\nAttribute is used to fix specific issues within QoS domain and should most often be empty.\nIt can refer to DscpDscpMap and/or PcpPcpMap MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmrtnl2ethernetport:enum-OperState;
+    }
+    leaf operOperatingMode {
+      config false;
+      description "Operational speed, duplex, and master or slave state of Ethernet port.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnl2ethernetport:enum-EthPortOperatingMode;
+    }
+    leaf egressQosQueueMap {
+      description "PcpToQueueMap MO used by configuring EthernetPort MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf lldpTransmit {
+      description "Enables Tx mode of Link Layer Discovery Protocol (LLDP) on EthernetPort MO.\nWorks in conjunction with Lldp MO.\nTo activate LLDP Tx for Ethernet port, lldpTransmit must be set to ENABLED and Lldp MO must exist.";
+      yexte:dependencies "Cannot be ENABLED unless networkManagedElementId attribute of ManagedElement MO is set.";
+      type erienmnrmrtnl2ethernetport:enum-LldpTransmit;
+      default DISABLED;
+    }
+    leaf autoNegEnable {
+      description "Whether auto-negotiation of operating mode is enabled or disabled for this Ethernet port.\nIf true, auto-negotiation is enabled.\nIf false, auto-negotiation is disabled.\nIf true, 1Gbps Ethernet over twisted-pair cable can be used with RJ45 connector.\nIf admOperatingMode 25G_AUTO_FEC, this attribute shall not be set to false.\nCan only support:\n- Ethernet over twisted-pair cable with RJ45 connector.\n- 1Gbps over twinaxial copper or fiber-optical cable with SFP connector.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type boolean;
+      default true;
+    }
+  } // end 'grouping moc-EthernetPort'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list EthernetPort {
+      key id;
+      description "Represents Ethernet MAC service access point.\n\nDependencies: All EthernetPort MOs must be configured on same FieldReplaceableUnit MO.\nAll EthernetPort MOs must be configured on primary core FieldReplaceableUnit MO.\n\nEthernetPort MO, reserved by LagPort MO, cannot refer to Dot1xSupplicant MO.\nEthernetPort MO, reserved by LagPort MO, cannot have child of MO type Dot1xAuthenticatorPort.\n\nEthernetPort MO, reserved by InterfaceIPv4 MO or InterfaceIPv6 MO, cannot configure Dot1xAuthenticatorPort MO.\n\nVlanPort MO cannot refer this MO if both following apply:\nIf this MO has Dot1xAuthenticatorPort MO as child.\nIf VlanPort MO is reserved by MO type ENodeBFunction, ExternalENodeBFunction, FgwService or FgwTermPoint.\n\nIf Dot1xAuthenticatorPort MO exists, supplicant attribute cannot be set, or if supplicant attribute is set Dot1xAuthenticatorPort MO cannot be created in same EthernetPort MO.\n\nQueueSystem and egress traffic shaping has no effect on low latency traffic.";
+      erienmyext:enm-type MOC;
+      uses moc-EthernetPort-keys;
+      container attributes {
+        description "Attributes for EthernetPort";
+        uses moc-EthernetPort;
+      } // end 'container attributes'
+    } // end 'list EthernetPort'
+  }
+}

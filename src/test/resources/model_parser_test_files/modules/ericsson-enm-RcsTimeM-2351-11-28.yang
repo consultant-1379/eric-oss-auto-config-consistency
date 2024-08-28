@@ -1,0 +1,283 @@
+module ericsson-enm-RcsTimeM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsTimeM;
+  prefix erienmnrmrcstimem;
+  yexte:ecim-name RcsTimeM;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 4;
+    yexte:correction 5;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RcsSysM {
+    prefix erienmnrmrcssysm;
+  }
+  typedef enum-BasicAdmState {
+    description "Basic administrative states for a resource.";
+    type enumeration {
+      enum LOCKED {
+        description " The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-KeyAlgorithm {
+    description "List of key algorithms supported for NTP.";
+    type enumeration {
+      enum AES128CMAC {
+        value 0;
+      }
+      enum MD5 {
+        value 1;
+      }
+      enum SHA1 {
+        value 2;
+      }
+      enum SHA256 {
+        value 3;
+      }
+    }
+  }
+  typedef ddt-DifferenceFromUTC {
+    description "Time zone difference between the local current time  and Coordinated Universal Time (UTC).\nThe format is as follows:\n[+/-]hh:mm\n\nIt is expressed as positive (that is, with the leading plus sign [+]) if the local time is ahead of or equal to UTC of day and as negative (that is, with the leading minus sign [-]) if it is behind the UTC of day.\nExample: +01:00";
+    type string {
+      length 6..6;
+    }
+  }
+  typedef ddt-IpDNSAddress {
+    description "The IpDNSAddress type represents an IP address or a DNS domain name.\n\nA unicast IPv4 address is presented in three-digit decimal blocks. It is specified in dotted-quad decimal notation (i.e. three-digit decimal blocks) in accordance with RFC791, The blocks are separated by a dot.\n- The unicast IPV4  address is within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\n- The IP address range 127.0.0.0 – 127.255.255.255 is reserved for loopback\n- The IP address range 0– 0.255.255.255 are reserved\n- The IP address range 169.254.1.0 - 169.254.254.255 is used for link-local addresses.\n\nAn  IPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons as described in RFC 4291. If multiple consecutive groups contain only zeros, the use of “::” indicates one or more groups of 16 bits of zeros, as described in RFC 4291, section 2.2 bullet 2. A link-local address will have prefix fe80::/10. The format of the embedded IPv4/IPv6 addresses is described in RFC 6052.\n- IPv6 minimum length = 3 and maximum length = 39.\n- Valid characters: 0123456789abcdefABCDEF:\n\nA domain name is specified in dot separated alphanumeric notation  as described in RFC 1034. The domain name consists of one or more parts, called labels, that are delimited by dots.\n- Domain Name's length: 253 characters\n- Label's length: 63 characters.\n- Valid characters: a-z, A-Z, 0,1,2,3,4,5,6,7,8,9,-\n- The Label’s first character is a letter.\n- Labels shall not start or end with a hyphen.\n- Labels shall not start with a numbers\n- Labels shall end with a number or a letter.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-RcsTimeM_NtpSecurityPolicy_preSharedKey {
+    type string;
+  }
+  typedef ddt-RcsTimeM_NtpSecurityPolicy_keyId {
+    type int64 {
+      range 1..65534;
+    }
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC\n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)";
+    type string {
+      length 19..31;
+    }
+  }
+  grouping moc-TimeM-keys {
+    description "Key(s) for MOC TimeM";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name timeMId;
+      type string;
+    }
+  } // end 'grouping moc-TimeM-keys'
+  grouping moc-TimeM {
+    description "Time management concerns the calendar date and local time of the node.";
+  } // end 'grouping moc-TimeM'
+  grouping moc-NtpSecurityPolicy-keys {
+    description "Key(s) for MOC NtpSecurityPolicy";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name ntpSecurityPolicyId;
+      type string;
+    }
+  } // end 'grouping moc-NtpSecurityPolicy-keys'
+  grouping moc-NtpSecurityPolicy {
+    description "Contains the information about what algorithm this NTP Server supports.";
+    leaf preSharedKey {
+      description "The pre shared key for the NTP authentication.";
+      mandatory true;
+      type erienmnrmrcstimem:ddt-RcsTimeM_NtpSecurityPolicy_preSharedKey;
+    }
+    leaf-list ntpServerRef {
+      min-elements 0;
+      config false;
+      description "Indicates the NtpServer using this NtpSecurityPolicy.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf keyAlgorithm {
+      description "The encryption algorithm used towards the corresponding NTP Server.";
+      mandatory true;
+      type erienmnrmrcstimem:enum-KeyAlgorithm;
+    }
+    leaf keyId {
+      description "The key ID for the NTP authentication.\n\nThis is an integer identifying the cryptographic key used to generate the message authentication code.";
+      mandatory true;
+      type erienmnrmrcstimem:ddt-RcsTimeM_NtpSecurityPolicy_keyId;
+    }
+  } // end 'grouping moc-NtpSecurityPolicy'
+  grouping moc-DateAndTime-keys {
+    description "Key(s) for MOC DateAndTime";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name dateAndTimeId;
+      type string;
+    }
+  } // end 'grouping moc-DateAndTime-keys'
+  grouping moc-DateAndTime {
+    description "Local time and time zone values.";
+    leaf localDateTime {
+      erienmyext:no-notification;
+      config false;
+      description "The local date and time of the ME.\n\nLocal time is standard time in a time zone at a fixed offset from Coordinated Universal Time (UTC), possibly adjusted by Daylight Saving Time (DST) during part of the year.\n";
+      type erienmnrmrcstimem:ddt-DateTime;
+    }
+    leaf dateTimeOffset {
+      config false;
+      description "The offset in hours and minutes from UTC to local time.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcstimem:ddt-DifferenceFromUTC;
+    }
+    leaf tzRevision {
+      config false;
+      description "The revision of the time zone database stored on the ME.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf timeZone {
+      description "The time zone of the ME.\n\nA time zone is a region that has a uniform standard time. The string must match an entry in the ME’s time zone database, for example ‘Europe/Stockholm’.";
+      type string;
+    }
+  } // end 'grouping moc-DateAndTime'
+  grouping moc-Ntp-keys {
+    description "Key(s) for MOC Ntp";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name ntpId;
+      type string;
+    }
+  } // end 'grouping moc-Ntp-keys'
+  grouping moc-Ntp {
+    description "The NTP top class.";
+    leaf-list supportedKeyAlgorithm {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "List of supported key algorithms by the ME.";
+      type erienmnrmrcstimem:enum-KeyAlgorithm;
+    }
+  } // end 'grouping moc-Ntp'
+  grouping moc-NtpServer-keys {
+    description "Key(s) for MOC NtpServer";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name ntpServerId;
+      type string;
+    }
+  } // end 'grouping moc-NtpServer-keys'
+  grouping moc-NtpServer {
+    description "The NTP server configuration data.\n\nThis MOC presents a persistent NTP client mode network association with a specified remote server or local reference clock address. ";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf administrativeState {
+      description "Locks or unlocks the operation of the NTP client function.\n\nThis is a convenience function to permit some or all NtpServer instances to be temporarily locked without the need to delete the object\n";
+      mandatory true;
+      type erienmnrmrcstimem:enum-BasicAdmState;
+    }
+    leaf ntpSecurityPolicy {
+      description "Points to the NTP Security Policy used for this server.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf serverAddress {
+      description "The address of the NTP server with which a persistent client server mode association is made.\n\nThe serverAddress represents either a V4 or a V6 IP address, or a DNS domain name.\n";
+      mandatory true;
+      type erienmnrmrcstimem:ddt-IpDNSAddress;
+    }
+  } // end 'grouping moc-NtpServer'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list TimeM {
+      key id;
+      max-elements 1;
+      description "Time management concerns the calendar date and local time of the node.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-TimeM-keys;
+    } // end 'list TimeM'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcstimem:TimeM/erienmnrmrcstimem:Ntp {
+    list NtpSecurityPolicy {
+      key id;
+      description "Contains the information about what algorithm this NTP Server supports.";
+      erienmyext:enm-type MOC;
+      uses moc-NtpSecurityPolicy-keys;
+      container attributes {
+        description "Attributes for NtpSecurityPolicy";
+        uses moc-NtpSecurityPolicy;
+      } // end 'container attributes'
+    } // end 'list NtpSecurityPolicy'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcstimem:TimeM {
+    list DateAndTime {
+      key id;
+      max-elements 1;
+      description "Local time and time zone values.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-DateAndTime-keys;
+      container attributes {
+        description "Attributes for DateAndTime";
+        uses moc-DateAndTime;
+      } // end 'container attributes'
+    } // end 'list DateAndTime'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcstimem:TimeM {
+    list Ntp {
+      key id;
+      max-elements 1;
+      description "The NTP top class.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Ntp-keys;
+      container attributes {
+        description "Attributes for Ntp";
+        uses moc-Ntp;
+      } // end 'container attributes'
+    } // end 'list Ntp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM/erienmnrmrcstimem:TimeM/erienmnrmrcstimem:Ntp {
+    list NtpServer {
+      key id;
+      description "The NTP server configuration data.\n\nThis MOC presents a persistent NTP client mode network association with a specified remote server or local reference clock address. ";
+      erienmyext:enm-type MOC;
+      uses moc-NtpServer-keys;
+      container attributes {
+        description "Attributes for NtpServer";
+        uses moc-NtpServer;
+      } // end 'container attributes'
+    } // end 'list NtpServer'
+  }
+}

@@ -1,0 +1,12 @@
+moType,attributeName,attributeValue,conditions,priority
+EUtranCellFDD,upperLayerAutoConfEnabled,TRUE,EUtranCellFDD.userLabel like '%dg2%' or EUtranCellFDD.userLabel like '%sync%',20
+EUtranCellFDD,upperLayerAutoConfEnabled,FALSE,EUtranCellFDD.userLabel like '%dg2%' or EUtranCellFDD.userLabel like '%sync%',10
+EUtranCellFDD,outOfCoverageThreshold,5,"EUtranCellFDD.cellCapMinCellSubCap in (400,600)",20
+EUtranCellFDD,outOfCoverageThreshold,10,"EUtranCellFDD.cellCapMinCellSubCap in (400,600, 700)",10
+EUtranCellFDD,outOfCoverageThreshold,20,"EUtranCellFDD.cellCapMinCellSubCap in (400,500,600)",1
+ENodeBFunction,timePhaseMaxDeviationOtdoa,10,ENodeBFunction.forcedSiTunnelingActive = false,
+NRCellDU,ailgDlPrbLoadLevel,1,NRCellDU.cellBarred = 'NOT_BARRED',
+NRCellDU,fddLteCoexistence,FALSE,NRCellDU.endcUlNrLowQualThresh >= 17,
+NRCellDU,dftSOfdmMsg3Enabled,true,FDN like '%gNodeB002%',
+GNBDUFunction,endpointResDepHEnabled,false,,
+NRSectorCarrier,configuredMaxTxPower,2000,,

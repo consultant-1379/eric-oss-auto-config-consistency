@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <title>EACC</title>
+    <style>
+      eui-container:not(:defined) {
+        display: none;
+      }
+    </style>
+    <script type="module">
+      import('es-module-shims');
+      // Import polyfill for firefox and safari
+      if (!window.URLPattern) {
+        import('urlpattern-polyfill');
+      }
+    </script>
+
+    <script type="importmap-shim">
+      {
+        "imports": {
+          "@eui/container": "./libs/shared/@eui/container/index.js",
+          "@eui/theme": "./libs/shared/@eui/theme/index.js",
+          "@eui/navigation-menu": "./libs/@eui/navigation-menu/index.js",
+          "eacc": "/src/apps/executions/executions.js",
+          "jobs": "/src/apps/jobs/jobs.js",
+          "create-job": "/src/apps/create-job/create-job.js",
+          "executions": "/src/apps/executions/executions.js",
+          "execution-reports": "/src/apps/execution-reports/execution-reports.js",
+          "settings": "/src/apps/settings/settings.js"
+        }
+      }
+    </script>
+    <script type="module-shim">
+      import '@eui/container';
+      import { NavigationMenu } from '@eui/navigation-menu';
+      import { Theme, Icon } from '@eui/theme';
+
+      Theme.register('eui-theme');
+      Icon.register('eui-icon');
+      NavigationMenu.register('eui-navigation-menu');
+    </script>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+
+  <body>
+    <script>
+      const body = document.querySelector('body');
+      body.addEventListener('eui-theme-change', event => {
+        const theme = document.querySelector('eui-theme');
+        theme.theme = event.detail.theme;
+      });
+    </script>
+    <eui-theme theme="dark" font-path="./assets/fonts/"></eui-theme>
+    <eui-container default-app="/#eacc/executions">
+      <eui-icon name="econ" slot="system-left"></eui-icon>
+      <span slot="system-left">Ericsson Portal</span>
+      <eui-navigation-menu slot="app-navigation"></eui-navigation-menu>
+    </eui-container>
+    <script>
+      // load the config files into the Container...
+      const loadConfig = async () => {
+        // fetch config.json (public config file)...
+        const config = await fetch('./config.json').then(response =>
+          response.json(),
+        );
+        const euiContainer = document.querySelector('eui-container');
+        euiContainer.metaData = config;
+      };
+      loadConfig();
+    </script>
+  </body>
+</html>

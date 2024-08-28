@@ -1,0 +1,597 @@
+module ericsson-enm-ReqFieldReplaceableUnit {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqFieldReplaceableUnit;
+  prefix erienmnrmreqfieldreplaceableunit;
+  yexte:ecim-name ReqFieldReplaceableUnit;
+  revision 2351-11-28 {
+    yexte:version 5;
+    yexte:release 8;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-RestartReason {
+    description " The restart reason.";
+    type enumeration {
+      enum PLANNED_RECONFIGURATION {
+        description "Restart ordered to perform planned activities such as reconfigurations.";
+        value 0;
+      }
+      enum UNPLANNED_NODE_EXTERNAL_PROBLEMS {
+        description "Restart ordered to resolve node external problems. ";
+        value 1;
+      }
+      enum UNPLANNED_NODE_UPGRADE_PROBLEMS {
+        description "Restart ordered to resolve upgrade problems. ";
+        value 2;
+      }
+      enum UNPLANNED_O_AND_M_ISSUE {
+        description "Restart ordered to resolve O&M issues. ";
+        value 3;
+      }
+      enum UNPLANNED_CYCLIC_RECOVERY {
+        description "Restart ordered to stop further auto recovery attempts. ";
+        value 4;
+      }
+      enum UNPLANNED_LOCKED_RESOURCES {
+        value 5;
+      }
+      enum UNPLANNED_COLD_WITH_HW_TEST {
+        description "Restart ordered to perform HW tests. ";
+        value 6;
+      }
+      enum UNPLANNED_CALL_PROCESSING_DEGRADATION {
+        value 7;
+      }
+      enum UNPLANNED_LOW_COVERAGE {
+        description "Restart ordered to improve Cell Availability. ";
+        value 8;
+      }
+      enum OPERATOR_CLASSIFIED_PROBLEMS {
+        description "Restart ordered to resolve procedural errors or office environmental problems.\nExample: power, grounding, temperature, humidity or security problems. ";
+        value 31;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-RestartRank {
+    description "Restart ranks";
+    type enumeration {
+      enum RESTART_WARM {
+        description "Restarts the MO with the same software. The software is not reloaded from the disk. The traffic is affected least as warm restart is faster and no hardware is reset.";
+        value 0;
+      }
+      enum RESTART_COLD {
+        description "Reloads the software from the disk, restarts the MO, and resets all hardware. The traffic is affected more than for a warm restart.";
+        value 1;
+      }
+      enum RESTART_COLDWTEST {
+        description "Reloads the software from the disk, restarts the MO, and resets and tests the hardware. The traffic is affected most.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef enum-HwTestStatusEnum {
+    description "HwTest Status Enum.";
+    type enumeration {
+      enum NO_TEST_RESULT {
+        description "No result is availabe.";
+        value 0;
+      }
+      enum TEST_RESULT_OK {
+        description "Result is OK.";
+        value 1;
+      }
+      enum TEST_RESULT_CEF {
+        description "Complete entity failure.";
+        value 2;
+      }
+      enum TEST_RESULT_PEF {
+        description "Partial entitiy failure.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-IndicatorStatus {
+    description IndicatorStatus.;
+    type enumeration {
+      enum NOT_APPLICABLE {
+        description "The indicator is not supported.";
+        value 0;
+      }
+      enum NOT_AVAILABLE {
+        description "The indicator state is currently not available.";
+        value 1;
+      }
+      enum OFF {
+        description "The indicator is off.";
+        value 2;
+      }
+      enum STEADY_ON {
+        description "The indicator is on continuously.";
+        value 3;
+      }
+      enum SLOW_BLINK {
+        description "The indicator blinks slowly.";
+        value 4;
+      }
+      enum FAST_BLINK {
+        description "The indicator blinks quickly.";
+        value 6;
+      }
+      enum DOUBLE_FLASH_AND_STEADY_ON {
+        description "The indicator blinks twice and is then on for a short time. This cycle is then repeated.";
+        value 7;
+      }
+      enum DOUBLE_FLASH_AND_OFF {
+        description "The indicator blinks twice and is then off for a short time. This cycle is then repeated.";
+        value 8;
+      }
+    }
+  }
+  typedef ddt-FieldReplaceableUnit_writeRepairDelivNote_trNumber {
+    type string {
+      length 0..10;
+    }
+  }
+  typedef ddt-FieldReplaceableUnit_writeRepairDelivNote_descriptionOfFault {
+    type string {
+      length 1..64;
+    }
+  }
+  typedef ddt-ReqFieldReplaceableUnit_SpecialIndicator_indicatorName {
+    type string {
+      length 0..128;
+    }
+  }
+  typedef ddt-ReqFieldReplaceableUnit_FieldReplaceableUnit_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-FieldReplaceableUnit_writeRepairDelivNote_stateCode {
+    type string {
+      length 1..1;
+    }
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC\n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)";
+    type string {
+      length 19..31;
+    }
+  }
+  typedef ddt-ReqFieldReplaceableUnit_FloorInfo_floorNumber {
+    type int16 {
+      range -101..1000;
+    }
+  }
+  typedef ddt-ReqFieldReplaceableUnit_PositionStruct_latitude {
+    type int32 {
+      range -90000000..90000000;
+    }
+  }
+  typedef ddt-ReqFieldReplaceableUnit_PositionStruct_longitude {
+    type int32 {
+      range -180000000..180000000;
+    }
+  }
+  typedef ddt-ReqFieldReplaceableUnit_PositionStruct_altitude {
+    type int32 {
+      range -8388608..8388607;
+    }
+  }
+  typedef ddt-ReqFieldReplaceableUnit_FloorInfo_heightOfDot {
+    type int16 {
+      range -1..500;
+    }
+  }
+  typedef ddt-FieldReplaceableUnit_writeRepairDelivNote_reference {
+    type string {
+      length 0..8;
+    }
+  }
+  typedef ddt-FieldReplaceableUnit_writeRepairDelivNote_countryCode {
+    type string {
+      length 2..2;
+    }
+  }
+  typedef ddt-FieldReplaceableUnit_writeRepairDelivNote_preparedBy {
+    type string {
+      length 1..15;
+    }
+  }
+  typedef ddt-ReqFieldReplaceableUnit_PositionStruct_geoDatum {
+    type string {
+      length 5..5;
+    }
+  }
+  grouping struct-ProductData {
+    description "Product data.";
+    leaf productionDate {
+      description "The date the product was produced.";
+      type string;
+      mandatory true;
+    }
+    leaf serialNumber {
+      description "Unique number identifying the product instance.";
+      type string;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "The product number of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf productName {
+      description "The name of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "The revision state of the product.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-ProductData'
+  grouping struct-SpecialIndicator {
+    description "Special indicator data.";
+    leaf indicatorName {
+      description "The name of the special indicator.";
+      type erienmnrmreqfieldreplaceableunit:ddt-ReqFieldReplaceableUnit_SpecialIndicator_indicatorName;
+      mandatory true;
+    }
+    leaf indicatorStatus {
+      description "The current status of the special Indicator.";
+      type erienmnrmreqfieldreplaceableunit:enum-IndicatorStatus;
+      mandatory true;
+    }
+  } // end 'grouping struct-SpecialIndicator'
+  grouping struct-PositionStruct {
+    leaf altitude {
+      description "Defines the altitude part of the position of the unit in meters. Use +/- values to denote height or depth. \nUnit: 0.1 meter";
+      type erienmnrmreqfieldreplaceableunit:ddt-ReqFieldReplaceableUnit_PositionStruct_altitude;
+      default 0;
+    }
+    leaf latitude {
+      description "Defines the latitude part of the position of the unit. Use +/- values to denote north or south. \nUnit: 0.000001 degrees";
+      type erienmnrmreqfieldreplaceableunit:ddt-ReqFieldReplaceableUnit_PositionStruct_latitude;
+      default 0;
+    }
+    leaf geoDatum {
+      description "Denotes the geodetic datum for this position.\nExample: WGS84 (World Geodetic System 1984) ";
+      type erienmnrmreqfieldreplaceableunit:ddt-ReqFieldReplaceableUnit_PositionStruct_geoDatum;
+      default WGS84;
+    }
+    leaf longitude {
+      description "Defines the longitude part of the position of the unit. Use +/- values to denote east or west.";
+      type erienmnrmreqfieldreplaceableunit:ddt-ReqFieldReplaceableUnit_PositionStruct_longitude;
+      default 0;
+    }
+  } // end 'grouping struct-PositionStruct'
+  grouping struct-HwTestResult {
+    description "HwTest Result.";
+    leaf timeStamp {
+      description "Indicates when the test was executed.";
+      type erienmnrmreqfieldreplaceableunit:ddt-DateTime;
+    }
+    leaf hwTestStatus {
+      description "Indicates the status of the last hardware test.";
+      type erienmnrmreqfieldreplaceableunit:enum-HwTestStatusEnum;
+    }
+  } // end 'grouping struct-HwTestResult'
+  grouping struct-FloorInfo {
+    description "Floor number and height above floor level.\n";
+    leaf heightOfDot {
+      description "Height of DOT above floor level. \n";
+      type erienmnrmreqfieldreplaceableunit:ddt-ReqFieldReplaceableUnit_FloorInfo_heightOfDot;
+      default -1;
+    }
+    leaf floorNumber {
+      description "Floor number where radio DOT is installed.\n";
+      type erienmnrmreqfieldreplaceableunit:ddt-ReqFieldReplaceableUnit_FloorInfo_floorNumber;
+      default -101;
+    }
+  } // end 'grouping struct-FloorInfo'
+  grouping moc-FieldReplaceableUnit-keys {
+    description "Key(s) for MOC FieldReplaceableUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name fieldReplaceableUnitId;
+      type string;
+    }
+  } // end 'grouping moc-FieldReplaceableUnit-keys'
+  grouping moc-FieldReplaceableUnit {
+    description " This MO models a Field Replaceable Unit (FRU).";
+    leaf operationalIndicator {
+      erienmyext:no-notification;
+      config false;
+      description "The operational status of the FRU as shown by the optical operational indicator on the unit.\nPossible values:\n• NOT_APPLICABLE = Indicator not supported.\n• NOT_AVAILABLE = Indicator state currently not available.\n• OFF = No power.\n• STEADY_ON = Operational, unit can perform its intended purpose.\n• SLOW_BLINK = Dependent resource missing, unit is non-operational. \n• FAST_BLINK = Initial boot test or transitory activity.\n• DOUBLE_FLASH_AND_STEADY_ON = Loading software, unit is operational during software loading.\n• DOUBLE_FLASH_AND_OFF = Loading software, unit is non-operational during software loading.";
+      type erienmnrmreqfieldreplaceableunit:enum-IndicatorStatus;
+    }
+    leaf userLabel {
+      description " Label for free use.";
+      type erienmnrmreqfieldreplaceableunit:ddt-ReqFieldReplaceableUnit_FieldReplaceableUnit_userLabel;
+    }
+    container hwTestResult {
+      description "The test result from the latest restart of the FRU (with rank RESTART_COLDWTEST).";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqfieldreplaceableunit:struct-HwTestResult;
+    } // end 'container hwTestResult'
+    leaf statusIndicator {
+      erienmyext:no-notification;
+      config false;
+      description "The status of the managed element as shown by the optical status indicator on the unit.\n\nPossible values:\n• NOT_APPLICABLE = The indicator is not supported.\n• NOT_AVAILABLE = The indicator state is currently not available.\n• OFF = No faults exist in the managed element.\n• STEADY_ON = A fault exists in the managed element.";
+      type erienmnrmreqfieldreplaceableunit:enum-IndicatorStatus;
+    }
+    leaf positionRef {
+      description "Specifies position of the FRU. Refers to a Cabinet MO, a Shelf MO, a HwGroup MO, or it is empty, for example in an External Radio.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    list specialIndicator {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "The current status of special indicators on the unit.\nThe possible status values and semantics of these vary depending on the name of the indicator.\n\nPossible values:\nSupport Unit Fault Indicator\n• OFF = No associated support unit is faulty or inaccessible.\n• STEADY_ON = One or more associated support units are faulty or inaccessible.\n\nBattery Fault Indicator\n• NOT_AVAILABLE = The indicator state is currently unavailable.\n• OFF = The battery is connected and no fault exists in the unit.\n• STEADY_ON = The battery is potentially faulty and must be examined.\n• SLOW_BLINK = The battery is manually disconnected or the circuit breaker has tripped and the battery is disconnected from the system voltage.\n\nPower Distribution Fault Indicator\n• NOT_AVAILABLE = The indicator state is currently not available.\n• OFF = No power distribution fault.\n• STEADY_ON = The PDU has lost contact with at least one ECM in the same sub-rack\n• SLOW_BLINK = Power distribution fault.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqfieldreplaceableunit:struct-SpecialIndicator;
+    } // end 'list specialIndicator'
+    container floorInformation {
+      description "Floor number and height above floor level.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqfieldreplaceableunit:struct-FloorInfo;
+    } // end 'container floorInformation'
+    container positionCoordinates {
+      description "The position of the FieldReplaceableUnit expressed as coordinates.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqfieldreplaceableunit:struct-PositionStruct;
+    } // end 'container positionCoordinates'
+    leaf-list supportUnitRef {
+      min-elements 0;
+      config false;
+      description "Reference to support units connected to this FieldReplaceableUnit.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container productData {
+      description "The product data of the installed Unit.\nIf the corresponding hardware unit is not installed yet, the struct contains empty strings.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqfieldreplaceableunit:struct-ProductData;
+    } // end 'container productData'
+    leaf isSharedWithExternalMe {
+      description "Indicates if the unit represented by this MO is managed also by another ManagedElement, to which it is physically connected. The attribute needs to be set correctly to ensure proper Operation & Maintenance of the shared unit. It should be noted that the attribute has no relation to the number of radio standards handled by the unit.";
+      yexte:takes-effect Immediately;
+      type boolean;
+    }
+    leaf climateZoneRef {
+      status deprecated {
+        yexte:status-information "Since 16A, replaced by positionRef. Has no functional behavior.";
+      }
+      description "Specifies in which climate controlled zone this FRU is. Either referring to a Cabinet MO (when in a cabinet), or being empty (for instance in the case of an External Radio).";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list positionInformation {
+      min-elements 0;
+      max-elements 255;
+      description "Position of FieldReplaceableUnit. Examples of usage:\n- On shelf\n- On wall\n- In building\n- On pole\n- Close to cabinet or shelf\n- Not on shelf but inside or outside cabinet\n- Part of hardware group\n- At remote site\nIf unit is located in building, attribute floorInformation gives more details about position. Attribute positionCoordinates can give more details about geographical position.\nOtherwise this attribute can be used, for example, to provide address of remote site, or to indicate that unit is installed in connection to a specific shelf.";
+      type string;
+    }
+    leaf administrativeState {
+      description "The administrative state.";
+      type erienmnrmreqfieldreplaceableunit:enum-AdmState;
+      default LOCKED;
+    }
+    leaf faultIndicator {
+      erienmyext:no-notification;
+      config false;
+      description "The fault status of the FRU as shown by the optical fault indicator on the unit.\n\nPossible values:\n• NOT_APPLICABLE = The indicator is not supported.\n• NOT_AVAILABLE = The indicator state is currently not available.\n• OFF = No hardware fault.\n• STEADY_ON = Hardware fault.";
+      type erienmnrmreqfieldreplaceableunit:enum-IndicatorStatus;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description " Contains a list of MO instances that reserve this MO instance.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqfieldreplaceableunit:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      type erienmnrmreqfieldreplaceableunit:enum-AvailStatus;
+    }
+    leaf maintenanceIndicator {
+      erienmyext:no-notification;
+      config false;
+      description "The maintenance status of the FRU as shown by the optical maintenance indicator on the unit.\n\nPossible values:\n• NOT_APPLICABLE = The indicator is not supported.\n• NOT_AVAILABLE = The indicator state is currently not available.\n• OFF = Non-maintenance mode (unit unlocked).\n• STEADY_ON = Full maintenance mode (unit locked).\n• SLOW_BLINK = Removing ongoing traffic in the unit.\n• FAST_BLINK = Alarms suppressed in the managed element.";
+      type erienmnrmreqfieldreplaceableunit:enum-IndicatorStatus;
+    }
+    action resetUnitInstallation {
+      description "Uninstalls the corresponding FieldReplaceableUnit. Applicable only to FieldReplaceableUnits of type Radio Dot, and only when the unit has been physically removed. The action sets the availability status of the MO to NOT_INSTALLED.";
+    }
+    action restartUnit {
+      description "Restarts the FRU.";
+      input {
+        leaf restartReason {
+          mandatory true;
+          description "The reason for the restart.";
+          type erienmnrmreqfieldreplaceableunit:enum-RestartReason;
+        }
+        leaf restartInfo {
+          description "A free text field where extra information can be added.";
+          type string;
+        }
+        leaf restartRank {
+          mandatory true;
+          description "The restart rank.";
+          type erienmnrmreqfieldreplaceableunit:enum-RestartRank;
+        }
+      }
+    }
+    action writeRepairDelivNote {
+      description "Writes HW log entry. Only one HW log entry is allowed for each unit. The existing entries in the HW log are not updated.";
+      input {
+        leaf reference {
+          mandatory true;
+          description "Complaint reference.";
+          type erienmnrmreqfieldreplaceableunit:ddt-FieldReplaceableUnit_writeRepairDelivNote_reference;
+        }
+        leaf preparedBy {
+          mandatory true;
+          description "Name of operator preparing the log entry.";
+          type erienmnrmreqfieldreplaceableunit:ddt-FieldReplaceableUnit_writeRepairDelivNote_preparedBy;
+        }
+        leaf descriptionOfFault {
+          mandatory true;
+          description "Specific description of the fault observed. It is also important that other external factors are described as well. For product safety reasons also specify fore, water damage and so on.";
+          type erienmnrmreqfieldreplaceableunit:ddt-FieldReplaceableUnit_writeRepairDelivNote_descriptionOfFault;
+        }
+        leaf countryCode {
+          mandatory true;
+          description "Two letter country code.";
+          type erienmnrmreqfieldreplaceableunit:ddt-FieldReplaceableUnit_writeRepairDelivNote_countryCode;
+        }
+        leaf stateCode {
+          mandatory true;
+          description "The HW status when the failure occured:\nR = Repaired unit failed during installation or test.\nS = Unit in service failure occured.\nT = New unit failed during installation or test.";
+          type erienmnrmreqfieldreplaceableunit:ddt-FieldReplaceableUnit_writeRepairDelivNote_stateCode;
+        }
+        leaf trNumber {
+          mandatory true;
+          description "If the unit has a connection with a trouble report, a reference to this must be supplied.";
+          type erienmnrmreqfieldreplaceableunit:ddt-FieldReplaceableUnit_writeRepairDelivNote_trNumber;
+        }
+      }
+    }
+  } // end 'grouping moc-FieldReplaceableUnit'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list FieldReplaceableUnit {
+      key id;
+      description " This MO models a Field Replaceable Unit (FRU).";
+      erienmyext:enm-type MOC;
+      uses moc-FieldReplaceableUnit-keys;
+      container attributes {
+        description "Attributes for FieldReplaceableUnit";
+        uses moc-FieldReplaceableUnit;
+      } // end 'container attributes'
+    } // end 'list FieldReplaceableUnit'
+  }
+}

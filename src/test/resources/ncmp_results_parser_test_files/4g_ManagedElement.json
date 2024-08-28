@@ -1,0 +1,13 @@
+{
+  "ManagedElement":
+  [
+    {
+      "id": "LTE04dg2ERBS00082",
+      "attributes":
+      {
+        "dnPrefix": "test",
+        "siteLocation" : "athlone"
+      }
+    }
+  ]
+}

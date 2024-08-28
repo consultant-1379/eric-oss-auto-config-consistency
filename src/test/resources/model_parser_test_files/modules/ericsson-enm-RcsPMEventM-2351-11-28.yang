@@ -1,0 +1,685 @@
+module ericsson-enm-RcsPMEventM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsPMEventM;
+  prefix erienmnrmrcspmeventm;
+  yexte:ecim-name RcsPMEventM;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-SessionState {
+    description "Actual job state for an event job.";
+    type enumeration {
+      enum ACTIVATING {
+        description "The job is switching from STOPPED to ACTIVE.";
+        value 0;
+      }
+      enum ACTIVE {
+        description "The job is producing events as intended.";
+        value 1;
+      }
+      enum DEACTIVATING {
+        description "The job is switching from ACTIVE to STOPPED.";
+        value 3;
+      }
+      enum STOPPED {
+        description "The job is passive, either by request or due to other reasons (e.g. overload conditions).";
+        value 2;
+      }
+      enum FAILED {
+        description "The job is permanently failed and deactivated.\nIn this state it will not respond to further attempts to activate it. The job may however leave the FAILED state and enter the STOPPED state if the failure reason is removed.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-CompressionTypes {
+    description "Supported common File Compression Type(s).";
+    type enumeration {
+      enum GZIP {
+        description "GNU zip file compression type.";
+        value 0;
+      }
+    }
+  }
+  typedef enum-TimePeriod {
+    description "The different time periods associated with Event Job.";
+    type enumeration {
+      enum ONE_MIN {
+        description "This represents a one-minute time period.";
+        value 3;
+      }
+      enum FIVE_MIN {
+        description "This represents a five-minute time period.";
+        value 4;
+      }
+      enum FIFTEEN_MIN {
+        description "This represents a 15-minute time period.";
+        value 5;
+      }
+      enum THIRTY_MIN {
+        description "This represents a 30-minute time period.";
+        value 6;
+      }
+      enum ONE_HOUR {
+        description "This represents a one-hour time period.";
+        value 7;
+      }
+      enum TWELVE_HOUR {
+        description "This represents a 12-hour (720-minute)  time period.";
+        value 8;
+      }
+      enum ONE_DAY {
+        description "This represents a 24-hour (1440-minute)  time period.";
+        value 9;
+      }
+      enum TEN_SECONDS {
+        description "This represents a 10-second time period.";
+        value 1;
+      }
+      enum THIRTY_SECONDS {
+        description "This represents a 30-second time period.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-EventStatus {
+    description "Identifies the status of the Event Type";
+    type enumeration {
+      enum PRELIMINARY {
+        description "The event is available and stepped in this version of the Managed Element, but is not yet approved. ";
+        value 0;
+      }
+      enum USED {
+        description "The event is approved, available and stepped in this version of the Managed Element. ";
+        value 1;
+      }
+      enum DEPRECATED {
+        description "The event is available in this version of the Managed Element, but as it is planned for removal it is not recommended for use";
+        value 2;
+      }
+    }
+  }
+  typedef enum-JobControl {
+    description "The level of MS control of the PMEvent job.";
+    type enumeration {
+      enum FULL {
+        description "MS has Full control of the PMEvent Job.\nMS can create, delete, start and stop a job.";
+        value 0;
+      }
+      enum STARTSTOP {
+        description "<p>MS has Restricted control of the PMEvent Job. MS can stop and start a job, but cannot delete or create it.</p><p>The selection of this option for predefined jobs will indicate that no event can be added or removed. Updates can only to be done to the request state, destination attributes and job group under EventJob MOC. eventGroupRef and eventTypeRef are not modifiable in this condition.</p>";
+        value 1;
+      }
+      enum VIEWONLY {
+        description "MS can only view the PMEvent job.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-JobState {
+    description "Job state that has been requested.";
+    type enumeration {
+      enum ACTIVE {
+        description "The job is requested to be activated.";
+        value 1;
+      }
+      enum STOPPED {
+        description "The job is requested to be stopped.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-FilterMethod {
+    description "Method of filter classification.";
+    type enumeration {
+      enum SINGLE_SELECT {
+        description "Select one value only from a defined set of options.";
+        value 0;
+      }
+      enum MULTI_SELECT {
+        description "Select multiple values from a predefined set, separated by a space.";
+        value 1;
+      }
+      enum INTERVAL {
+        description "Select an interval value within the specified range.";
+        value 2;
+      }
+      enum DISTINGUISHED_NAMES {
+        description "Select one or more Distinguished Names (DNs).";
+        value 3;
+      }
+      enum REGEXP {
+        description "Regular expression.";
+        value 4;
+      }
+    }
+  }
+  typedef ddt-IpDNSAddress {
+    description "The IpDNSAddress type represents an IP address or a DNS domain name.\n\nA unicast IPv4 address is presented in three-digit decimal blocks. It is specified in dotted-quad decimal notation (i.e. three-digit decimal blocks) in accordance with RFC791, The blocks are separated by a dot.\n- The unicast IPV4  address is within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\n- The IP address range 127.0.0.0 – 127.255.255.255 is reserved for loopback\n- The IP address range 0– 0.255.255.255 are reserved\n- The IP address range 169.254.1.0 - 169.254.254.255 is used for link-local addresses.\n\nAn  IPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons as described in RFC 4291. If multiple consecutive groups contain only zeros, the use of “::” indicates one or more groups of 16 bits of zeros, as described in RFC 4291, section 2.2 bullet 2. A link-local address will have prefix fe80::/10. The format of the embedded IPv4/IPv6 addresses is described in RFC 6052.\n- IPv6 minimum length = 3 and maximum length = 39.\n- Valid characters: 0123456789abcdefABCDEF:\n\nA domain name is specified in dot separated alphanumeric notation  as described in RFC 1034. The domain name consists of one or more parts, called labels, that are delimited by dots.\n- Domain Name's length: 253 characters\n- Label's length: 63 characters.\n- Valid characters: a-z, A-Z, 0,1,2,3,4,5,6,7,8,9,-\n- The Label’s first character is a letter.\n- Labels shall not start or end with a hyphen.\n- Labels shall not start with a numbers\n- Labels shall end with a number or a letter.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-DerivedString {
+    description "A derived string with valid values as given below.\nregexp [a-zA-Z0-9-]+\n";
+    type string;
+  }
+  typedef ddt-DerivedStringName {
+    description "A derived string with valid values as given below.\nregexp [a-zA-Z0-9_  -]+";
+    type string;
+  }
+  grouping struct-ManagedObjectClass {
+    description "This struct represents a Managed Object Class (MOC).";
+    leaf moClassName {
+      description "This struct member contains the MOC name.";
+      type string;
+      mandatory true;
+    }
+    leaf mimName {
+      description "This struct member contains the name of the Management Information Model(MIM) that contains the MOC.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-ManagedObjectClass'
+  grouping struct-EventFilter {
+    description "Struct used to specify the event filter criteria.";
+    leaf filterValue {
+      description "Filter value.";
+      type string;
+      mandatory true;
+    }
+    leaf filterName {
+      description "Filter name.\nThis member contains the name of the referenced EventFilterType MO instance, found in key attribute eventTypeFilterId.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-EventFilter'
+  grouping moc-FilePullCapabilities-keys {
+    description "Key(s) for MOC FilePullCapabilities";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name filePullCapabilitiesId;
+      type string;
+    }
+  } // end 'grouping moc-FilePullCapabilities-keys'
+  grouping moc-FilePullCapabilities {
+    description "Event capabilities specific to file pull.";
+    leaf-list supportedReportingPeriods {
+      min-elements 1;
+      config false;
+      description "Specifies the list of reporting periods supported by the ME.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspmeventm:enum-TimePeriod;
+    }
+    leaf maxNoOfEventFiles {
+      config false;
+      description "Specifies the maximum number of Result Output Period (ROP) files that are maintained in the ME. \nIf a new file is created and the limit is exceeded, the oldest file is deleted. \nThis is an upper-system limit, and support for it cannot be guaranteed in high-load conditions.";
+      notife:notifiable-state-data true;
+      type uint16;
+    }
+    leaf alignedReportingPeriod {
+      config false;
+      description "The managed element will align its reporting periods to the hour if set to true.";
+      notife:notifiable-state-data true;
+      type boolean;
+      default true;
+    }
+    leaf finalROP {
+      config false;
+      description "Indicates if an event file for the last ROP is expected.\nWhen an event job is stopped, this attribute specifies whether a result file for the last ROP is expected (true), or not expected (false).";
+      notife:notifiable-state-data true;
+      type boolean;
+      default false;
+    }
+    leaf outputDirectory {
+      config false;
+      description "Specifies the absolute file path to the Managed Element file system.\nEvent files are fetched form this location.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list supportedCompressionTypes {
+      min-elements 0;
+      max-elements 2;
+      config false;
+      description "Supported file compression type or types.\n\nIf this attribute is not present, compression of event data files is not supported.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspmeventm:enum-CompressionTypes;
+    }
+  } // end 'grouping moc-FilePullCapabilities'
+  grouping moc-EventCapabilities-keys {
+    description "Key(s) for MOC EventCapabilities";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name eventCapabilitiesId;
+      type string;
+    }
+  } // end 'grouping moc-EventCapabilities-keys'
+  grouping moc-EventCapabilities {
+    description "Event capabilities.";
+    leaf fileName {
+      description "Specifies the name of the Event Definition file.\nThis file is stored in the path specified in fileLocation attribute.";
+      type string;
+    }
+    leaf maxNoOfJobs {
+      config false;
+      description "This attribute defines the total maximum number of Event Jobs supported by the application.\n\n";
+      notife:notifiable-state-data true;
+      type uint16;
+    }
+    leaf fileLocation {
+      description "Specifies the location or path where the Event Definition file will be stored.";
+      type string;
+    }
+    leaf fileVersion {
+      description "Specifies the version of the Event Definition file.";
+      type string;
+    }
+  } // end 'grouping moc-EventCapabilities'
+  grouping moc-PmEventM-keys {
+    description "Key(s) for MOC PmEventM";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name pmEventMId;
+      type string;
+    }
+  } // end 'grouping moc-PmEventM-keys'
+  grouping moc-PmEventM {
+    description "The Performance Management (PM) Event Management fragment.\nIt is used to manage the event jobs on the Managed Element. \nOnce an event job is activated the events can be collected and sent via streaming and/or file transfer.";
+  } // end 'grouping moc-PmEventM'
+  grouping moc-EventType-keys {
+    description "Key(s) for MOC EventType";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name eventTypeId;
+      type string;
+    }
+  } // end 'grouping moc-EventType-keys'
+  grouping moc-EventType {
+    description "Defines the event type that can be generated by the Managed Element.";
+    leaf triggerDescription {
+      erienmyext:no-notification;
+      config false;
+      description "Contains information about what causes the event to be raised.";
+      type string;
+    }
+    leaf eventStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates the status of the Event Type";
+      type erienmnrmrcspmeventm:enum-EventStatus;
+    }
+    leaf periodicity {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates the periodicity for periodic events. For non-periodic event it will not be set.";
+      type uint64;
+    }
+  } // end 'grouping moc-EventType'
+  grouping moc-EventProducer-keys {
+    description "Key(s) for MOC EventProducer";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.\nThis is non-empty sequence of characters matching the regexp [a-zA-Z0-9-]+\n";
+      mandatory true;
+      yexte:ecim-name eventProducerId;
+      type erienmnrmrcspmeventm:ddt-DerivedString;
+    }
+  } // end 'grouping moc-EventProducer-keys'
+  grouping moc-EventProducer {
+    description "Event Producer.\nAllows for multiple types of Event Producer within an Application describing distinct Event functions and capabilities.\n\n";
+    leaf generation {
+      erienmyext:no-notification;
+      config false;
+      description "Determines if Event Producer concerns GSM, UMTS, EPS, combined (GSM+UMTS+EPS), IMS or 5GS measurements. Values are defined in 3GPP standard 32:404";
+      type string;
+    }
+    leaf eventProducerName {
+      config false;
+      description "The name of the Event Producer.\nThis will be human readable and will have value regexp [a-zA-Z0-9-_  ]+";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspmeventm:ddt-DerivedStringName;
+    }
+    leaf associatedFunction {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates the Managed Function that is associated to the Event Producer";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-EventProducer'
+  grouping moc-EventFilterType-keys {
+    description "Key(s) for MOC EventFilterType";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name eventFilterTypeId;
+      type string;
+    }
+  } // end 'grouping moc-EventFilterType-keys'
+  grouping moc-EventFilterType {
+    description "Describes the available Event Filter Type definitions.";
+    leaf filterMethod {
+      erienmyext:no-notification;
+      config false;
+      description "Method of filter classification.";
+      type erienmnrmrcspmeventm:enum-FilterMethod;
+    }
+    leaf defaultValue {
+      erienmyext:no-notification;
+      config false;
+      description "Defined format of filter type value.";
+      type string;
+    }
+    leaf valueSpec {
+      erienmyext:no-notification;
+      config false;
+      description "Specifies the possible values.";
+      type string;
+    }
+    leaf description {
+      erienmyext:no-notification;
+      config false;
+      description "Event Filter Type description.";
+      type string;
+    }
+  } // end 'grouping moc-EventFilterType'
+  grouping moc-EventJob-keys {
+    description "Key(s) for MOC EventJob";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name eventJobId;
+      type string;
+    }
+  } // end 'grouping moc-EventJob-keys'
+  grouping moc-EventJob {
+    description "Defines the information to be used to activate and configure an event job on the Managed Element.";
+    leaf streamOutputEnabled {
+      description "Indicates if event data output will be streamed.";
+      mandatory true;
+      type boolean;
+    }
+    list eventFilter {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Event filter or filters to be applied.\n\nThis specifies the event criteria which must be valid for the events to be collected and what contents some events shall have.\n(Examples of what may be specified in a filter:  the CellId in a Cell Trace, UE fraction, events related to QoS values, message encoding format, etc).\n\nThe filters supported are specified in the EventGroup::validFilters attribute. \n\nThe following conditions apply:\nThe order the filters are set does not matter.\nOnly one filter of each type shall be set.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcspmeventm:struct-EventFilter;
+    } // end 'list eventFilter'
+    leaf reportingPeriod {
+      description "Specifies how often event data will be made available. \nOnly applicable when fileOutputEnabled =true.\nThe value must be valid according to the supportedReportingPeriods set by the Managed Element.";
+      type erienmnrmrcspmeventm:enum-TimePeriod;
+    }
+    leaf streamDestinationIpAddress {
+      description "The address of the server that event data should be streamed to.\nOnly required if streamOutputEnabled = true.";
+      type erienmnrmrcspmeventm:ddt-IpDNSAddress;
+    }
+    leaf requestedJobState {
+      description "The requested state of the job. It represents the state that the job has been ordered to reach.\n";
+      type erienmnrmrcspmeventm:enum-JobState;
+      default ACTIVE;
+    }
+    leaf fileCompressionType {
+      description "Compression Type to be applied to file output.\nOnly valid when fileOutputEnabled = true.\nIf this attribute is not set, no compression will be applied to the file output.\nCan only be assigned a value according to the capability supportedCompressionTypes in the FilePullCapabilities MOC.";
+      type erienmnrmrcspmeventm:enum-CompressionTypes;
+    }
+    leaf description {
+      description "Describes the content and purpose of the job.";
+      type string;
+    }
+    leaf currentJobState {
+      config false;
+      description "The current state of the job.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspmeventm:enum-SessionState;
+    }
+    leaf fileOutputEnabled {
+      description "Indicates if event data output will be written to file.";
+      mandatory true;
+      type boolean;
+    }
+    leaf-list eventGroupRef {
+      min-elements 0;
+      description "The Event Group or Event Groups selected for the job.\nThis attribute is set when an entire group or entire groups of events are \nto be  selected for the job.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf jobGroup {
+      description "Multiple jobs which end up in common set of files, have same jobGroup.\nSo, this identifies the job grouping. A jobGroup string is a non-empty sequence of characters matching the regexp [a-zA-Z0-9-]+";
+      type erienmnrmrcspmeventm:ddt-DerivedString;
+    }
+    leaf streamCompressionType {
+      description "Compression Type to be applied to stream output.\nOnly valid when streamOutputEnabled = true.\nIf this attribute is not set, no compression will be applied to the stream output.\nCan only be assigned a value according to the capability supportedCompressionTypes in the StreamingCapabilities MOC.";
+      type erienmnrmrcspmeventm:enum-CompressionTypes;
+    }
+    leaf-list eventTypeRef {
+      min-elements 0;
+      description "The Event Type or Event Types selected for the job.\nThis attribute is set when an individual event or a subset of the events\nwithin a group or groups are to be selected for the job.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf jobControl {
+      config false;
+      description "Describes the level of MS control of the event job.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspmeventm:enum-JobControl;
+      default FULL;
+    }
+    leaf streamDestinationPort {
+      description "The server port that event data shall be streamed to.\nOnly required if streamOutputEnabled = true.";
+      type uint16;
+    }
+  } // end 'grouping moc-EventJob'
+  grouping moc-EventGroup-keys {
+    description "Key(s) for MOC EventGroup";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name eventGroupId;
+      type string;
+    }
+  } // end 'grouping moc-EventGroup-keys'
+  grouping moc-EventGroup {
+    description "Represents a group of related Event Types.";
+    leaf generation {
+      config false;
+      description "The Switching domain or domains to which this measurement is applicable. For e.g. GSM, UMTS, EPS, GSM/UMTS.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    container moClass {
+      description "The Managed Object Class that generates events belonging to the event group.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcspmeventm:struct-ManagedObjectClass;
+    } // end 'container moClass'
+    leaf description {
+      erienmyext:no-notification;
+      config false;
+      description "Describes the content and purpose of the event group.";
+      type string;
+    }
+    leaf eventGroupVersion {
+      erienmyext:no-notification;
+      config false;
+      description "Event Group version identifier.\nUnique version identifier associated with a change to the contents of the Event Group, where new Event Types have been added.";
+      type string;
+    }
+    leaf-list validFilters {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Defines valid filter type definitions for this Event Group.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-EventGroup'
+  grouping moc-StreamingCapabilities-keys {
+    description "Key(s) for MOC StreamingCapabilities";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name streamCapabilitiesId;
+      type string;
+    }
+  } // end 'grouping moc-StreamingCapabilities-keys'
+  grouping moc-StreamingCapabilities {
+    description "Streaming capabilities.";
+    leaf-list supportedCompressionTypes {
+      min-elements 0;
+      max-elements 2;
+      config false;
+      description "Supported stream compression type or types.\n\nIf this attribute is not present, the compression of event data streams is not supported..";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspmeventm:enum-CompressionTypes;
+    }
+  } // end 'grouping moc-StreamingCapabilities'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspmeventm:PmEventM/erienmnrmrcspmeventm:EventProducer {
+    list FilePullCapabilities {
+      key id;
+      max-elements 1;
+      description "Event capabilities specific to file pull.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FilePullCapabilities-keys;
+      container attributes {
+        description "Attributes for FilePullCapabilities";
+        uses moc-FilePullCapabilities;
+      } // end 'container attributes'
+    } // end 'list FilePullCapabilities'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspmeventm:PmEventM/erienmnrmrcspmeventm:EventProducer {
+    list EventCapabilities {
+      key id;
+      max-elements 1;
+      description "Event capabilities.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EventCapabilities-keys;
+      container attributes {
+        description "Attributes for EventCapabilities";
+        uses moc-EventCapabilities;
+      } // end 'container attributes'
+    } // end 'list EventCapabilities'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list PmEventM {
+      key id;
+      max-elements 1;
+      description "The Performance Management (PM) Event Management fragment.\nIt is used to manage the event jobs on the Managed Element. \nOnce an event job is activated the events can be collected and sent via streaming and/or file transfer.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PmEventM-keys;
+    } // end 'list PmEventM'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspmeventm:PmEventM/erienmnrmrcspmeventm:EventProducer/erienmnrmrcspmeventm:EventGroup {
+    list EventType {
+      key id;
+      description "Defines the event type that can be generated by the Managed Element.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EventType-keys;
+      container attributes {
+        description "Attributes for EventType";
+        uses moc-EventType;
+      } // end 'container attributes'
+    } // end 'list EventType'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspmeventm:PmEventM {
+    list EventProducer {
+      key id;
+      description "Event Producer.\nAllows for multiple types of Event Producer within an Application describing distinct Event functions and capabilities.\n\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EventProducer-keys;
+      container attributes {
+        description "Attributes for EventProducer";
+        uses moc-EventProducer;
+      } // end 'container attributes'
+    } // end 'list EventProducer'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspmeventm:PmEventM/erienmnrmrcspmeventm:EventProducer {
+    list EventFilterType {
+      key id;
+      description "Describes the available Event Filter Type definitions.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EventFilterType-keys;
+      container attributes {
+        description "Attributes for EventFilterType";
+        uses moc-EventFilterType;
+      } // end 'container attributes'
+    } // end 'list EventFilterType'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspmeventm:PmEventM/erienmnrmrcspmeventm:EventProducer {
+    list EventJob {
+      key id;
+      description "Defines the information to be used to activate and configure an event job on the Managed Element.";
+      erienmyext:enm-type MOC;
+      uses moc-EventJob-keys;
+      container attributes {
+        description "Attributes for EventJob";
+        uses moc-EventJob;
+      } // end 'container attributes'
+    } // end 'list EventJob'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspmeventm:PmEventM/erienmnrmrcspmeventm:EventProducer {
+    list EventGroup {
+      key id;
+      description "Represents a group of related Event Types.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-EventGroup-keys;
+      container attributes {
+        description "Attributes for EventGroup";
+        uses moc-EventGroup;
+      } // end 'container attributes'
+    } // end 'list EventGroup'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspmeventm:PmEventM/erienmnrmrcspmeventm:EventProducer {
+    list StreamingCapabilities {
+      key id;
+      max-elements 1;
+      description "Streaming capabilities.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-StreamingCapabilities-keys;
+      container attributes {
+        description "Attributes for StreamingCapabilities";
+        uses moc-StreamingCapabilities;
+      } // end 'container attributes'
+    } // end 'list StreamingCapabilities'
+  }
+}

@@ -1,0 +1,54 @@
+module ericsson-enm-LratMp {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-LratMp;
+  prefix erienmnrmlratmp;
+  yexte:ecim-name LratMp;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 9030;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  grouping moc-MpProcessingResource-keys {
+    description "Key(s) for MOC MpProcessingResource";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name mpProcessingResourceId;
+      type string;
+    }
+  } // end 'grouping moc-MpProcessingResource-keys'
+  grouping moc-MpProcessingResource {
+    description "Represents the MP processing resource in a DU or Baseband used for the eNB application in the RBS. MO is created automatically when the first EUtranCell is unlocked. In DU, attribute autoConfigurationAllowed must be set to TRUE in MO ManagedElementData, to enable the auto-configuration function. MO can be deleted manually.\n\nThe RDN of this MO is MpProcessingResource=1.";
+  } // end 'grouping moc-MpProcessingResource'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list MpProcessingResource {
+      key id;
+      max-elements 1;
+      description "Represents the MP processing resource in a DU or Baseband used for the eNB application in the RBS. MO is created automatically when the first EUtranCell is unlocked. In DU, attribute autoConfigurationAllowed must be set to TRUE in MO ManagedElementData, to enable the auto-configuration function. MO can be deleted manually.\n\nThe RDN of this MO is MpProcessingResource=1.";
+      erienmyext:enm-type MOC;
+      uses moc-MpProcessingResource-keys;
+    } // end 'list MpProcessingResource'
+  }
+}

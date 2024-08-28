@@ -1,0 +1,140 @@
+module ericsson-enm-RmeSds {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeSds;
+  prefix erienmnrmrmesds;
+  yexte:ecim-name RmeSds;
+  revision 2351-11-28 {
+    yexte:version 5;
+    yexte:release 0;
+    yexte:correction 3;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-IpDNSAddress {
+    description "The IpDNSAddress type represents an IP address or a DNS domain name.\n\nA unicast IPv4 address is presented in three-digit decimal blocks. It is specified in dotted-quad decimal notation (i.e. three-digit decimal blocks) in accordance with RFC791, The blocks are separated by a dot. \n- The unicast IPV4  address is within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\n- The IP address range 127.0.0.0 – 127.255.255.255 is reserved for loopback\n- The IP address range 0– 0.255.255.255 are reserved\n- The IP address range 169.254.1.0 - 169.254.254.255 is used for link-local addresses.\n\nAn  IPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons as described in RFC 4291. If multiple consecutive groups contain only zeros, the use of “::” indicates one or more groups of 16 bits of zeros, as described in RFC 4291, section 2.2 bullet 2. A link-local address will have prefix fe80::/10. The format of the embedded IPv4/IPv6 addresses is described in RFC 6052.\n- IPv6 minimum length = 3 and maximum length = 39.\n- Valid characters: 0123456789abcdefABCDEF:\n\nA domain name is specified in dot separated alphanumeric notation  as described in RFC 1034. The domain name consists of one or more parts, called labels, that are delimited by dots.\n- Domain Name's length: 253 characters\n- Label's length: 63 characters.\n- Valid characters: a-z, A-Z, 0,1,2,3,4,5,6,7,8,9,-\n- The Label’s first character is a letter.\n- Labels shall not start or end with a hyphen.\n- Labels shall not start with a numbers\n- Labels shall end with a number or a letter.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-RmeSds_SdCluster_serviceArea {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping struct-SdCluster {
+    description "Connection details for a specific GSSD cluster.";
+    leaf serviceArea {
+      description "The name of the service area that this GSDS cluster represents.";
+      type erienmnrmrmesds:ddt-RmeSds_SdCluster_serviceArea;
+      default vrcs;
+    }
+    leaf port {
+      description "Port to be used for the GSDS cluster.";
+      type uint32;
+      mandatory true;
+    }
+    leaf host {
+      description "Hostname to be used for the GSDS cluster.";
+      type erienmnrmrmesds:ddt-IpDNSAddress;
+      mandatory true;
+    }
+    leaf-list hostIPs {
+      min-elements 0;
+      max-elements 5;
+      description "Ip Addresses of the GSDS cluster. If set, host attribute will be ignored. The value of hostIPs must be 5 IP addresses.";
+      type erienmnrmrmesds:ddt-IpDNSAddress;
+    }
+  } // end 'grouping struct-SdCluster'
+  grouping moc-ServiceDiscovery-keys {
+    description "Key(s) for MOC ServiceDiscovery";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name serviceDiscoveryId;
+      type string;
+    }
+  } // end 'grouping moc-ServiceDiscovery-keys'
+  grouping moc-ServiceDiscovery {
+    description "Configuration data for Service Discovery clients. \n\nThis MO must be created for the service discovery function to be active in the node.";
+    leaf localAddress {
+      description "Local address used by the service discovery client to connect to service discovery servers.\nIn non-standalone mode, where node has been configured to use an external vSD cluster:\n- primaryGsds.host must be set to DNS. \n- localAddress must be set to fronthaul.\nIn standalone mode, where node is configured as standalone gNodeB:\n- primaryGsds.host must be set to localhost.\n- localAddress is left empty in all normal cases.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container secondaryGsds {
+      description "Connection information for the secondary GSDS cluster.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmesds:struct-SdCluster;
+    } // end 'container secondaryGsds'
+    leaf nodeCredential {
+      description "Node Credential for front haul network.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container primaryGsds {
+      description "Connection information for the primary GSDS cluster.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmesds:struct-SdCluster;
+    } // end 'container primaryGsds'
+    leaf trustCategory {
+      description "Trust Category for front haul network.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf statusSecondary {
+      config false;
+      description "Operational state of the secondary GSDS cluster.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmesds:enum-OperState;
+    }
+    leaf statusPrimary {
+      config false;
+      description "Operational state of the primary GSDS cluster.";
+      notife:notifiable-state-data true;
+      type erienmnrmrmesds:enum-OperState;
+    }
+  } // end 'grouping moc-ServiceDiscovery'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list ServiceDiscovery {
+      key id;
+      max-elements 1;
+      description "Configuration data for Service Discovery clients. \n\nThis MO must be created for the service discovery function to be active in the node.";
+      erienmyext:enm-type MOC;
+      uses moc-ServiceDiscovery-keys;
+      container attributes {
+        description "Attributes for ServiceDiscovery";
+        uses moc-ServiceDiscovery;
+      } // end 'container attributes'
+    } // end 'list ServiceDiscovery'
+  }
+}

@@ -1,0 +1,4 @@
+moType,attributeName,attributeValue,conditions,priority
+EUtranCellFDD,cellCapMinCellSubCap,1000,,
+EUtranCellFDD,cellCapMinMaxWriProt,true,"EUtranCellFDD.cellCapMinCellSubCap in 98)",
+EUtranCellFDD,cfraEnable,true,,

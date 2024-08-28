@@ -1,0 +1,8 @@
+moType,attributeName,attributeValue,conditions,priority
+ENodeBFunction,forcedSiTunnelingActive,true,ENodeBFunction.userLabel like '%dg2%',
+EUtranCellFDD,cellCapMinCellSubCap,2000,"EUtranCellFDD.cellCapMinCellSubCap in (104,106,108)",2
+EUtranCellFDD,cellCapMinCellSubCap,1000,"EUtranCellFDD.cellCapMinCellSubCap in (98,100,102)",10
+EUtranCellFDD,cellCapMinCellSubCap,3000,"EUtranCellFDD.cellCapMinCellSubCap in (110,112,114)",8
+EUtranCellFDD,cellCapMinMaxWriProt,true,EUtranCellFDD.cellCapMinMaxWriProt = true and FDN like '%LTE06dg2ERBS00030%',10
+EUtranCellFDD,cellCapMinMaxWriProt,false,EUtranCellFDD.cellCapMinMaxWriProt = false,5
+EUtranCellFDD,cfraEnable,true,,

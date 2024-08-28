@@ -1,0 +1,84 @@
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: eric-oss-auto-config-consistency
+  title: Ericsson Automated Configuration Consistency
+  description: "Ericsson Automated Configuration Consistency (EACC) rApp provides self-service analytics to enable users to uncover baseline consistency errors and visualize overview of configuration management. EACC has: - Support for parameters rulesets and allows local modifications and additions - Support for scheduling of CM consistency audit which outputs any detected inconsistencies - Automated correction of inconsistencies for selected MO classes and attributes for selected nodes with ability to rollback changes if KPI degradation detected."
+  annotations:
+    backstage.io/source-location: url:https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.apps/eric-oss-auto-config-consistency
+    gerrit/component: OSS/com.ericsson.oss.apps/eric-oss-auto-config-consistency
+    jira.com/project-keys: IDUN
+    # Filters require component to include "Automation Apps" and EACC in the title to be picked up
+    jira.com/filter-ids: 228514,228519,228518,228515,228517,228516
+    jenkins:
+      fem1s11-eiffel216.eiffel.gic.ericsson.se:8443/eric-oss-auto-config-consistency_PreCodeReview_Hybrid/,
+      fem1s11-eiffel216.eiffel.gic.ericsson.se:8443/eric-oss-auto-config-consistency_Publish_Hybrid/,
+      fem5s11-eiffel052.eiffel.gic.ericsson.se:8443/AutoApp-eAcc-Pre-Onboarding-Testing/,
+      fem5s11-eiffel052.eiffel.gic.ericsson.se:8443/AutoApp-eAcc-Post-Instantiation-Testing/
+    sonarqube.org/project-key: com.ericsson.oss.apps:eric-oss-auto-config-consistency
+    spinnaker.io/application-name: autoapp-eacc-e2e-cicd
+    spinnaker.io/pipelines: eric-oss-eacc-E2E-Flow
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=eric-oss-auto-config-consistency'
+  tags:
+    - development-started
+    - ericsson-intelligent-controller
+
+  links:
+    - title: EACC rApp Confluence
+      url: https://eteamspace.internal.ericsson.com/display/IDUN/EACC+rApp
+      icon: dashboard
+    - title: Team Quantum Confluence
+      url: https://eteamspace.internal.ericsson.com/display/IDUN/Team+Quantum
+      icon: dashboard
+    - title: EACC CSARs
+      url: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-generic-local/csars/rapps/eric-oss-auto-config-consistency/
+      icon: dashboard
+  
+  roles:
+    microservice-architect: enatvin
+    scrum-master: eeidocd
+    product-owner: ecilosh
+    security-master: ehenger
+#    ci-spoc: signum
+#    test-expert: signum
+    line-manager: eeitgy
+  approval: # Used to highlight the 'freshness' of the component. When updated, be sure to update approver signum and date
+    date: 12-02-2024 # dd-mm-yyyy
+    approver: ebeecon
+spec:
+  lifecycle: production
+  owner: ra-son-team-quantum-mandl
+  type: microservice
+  domain: oss-apps
+  providesApis:
+    - eric-oss-auto-config-consistency-api
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: eric-oss-auto-config-consistency-api
+  title: Ericsson Automated Configuration Consistency API
+spec:
+  type: openapi
+  lifecycle: production
+  owner: ra-son-team-quantum-mandl
+  domain: oss-apps
+  definition:
+    $text: https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.apps/eric-oss-auto-config-consistency/+/refs/heads/master/src/main/resources/v1/eric-oss-auto-config-consistency-openapi.yaml

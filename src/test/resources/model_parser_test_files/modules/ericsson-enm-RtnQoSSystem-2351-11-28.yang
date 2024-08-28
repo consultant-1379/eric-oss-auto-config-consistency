@@ -1,0 +1,1375 @@
+module ericsson-enm-RtnQoSSystem {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnQoSSystem;
+  prefix erienmnrmrtnqossystem;
+  yexte:ecim-name RtnQoSSystem;
+  revision 2351-11-28 {
+    yexte:version 5;
+    yexte:release 7;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL2EthernetPort {
+    prefix erienmnrmrtnl2ethernetport;
+  }
+  typedef ddt-RtnQoSSystem_DscpSetToPCP_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnQoSSystem_QueueRed_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-QueueSizeInBytes {
+    description "Data type for attribute queueSize. ";
+    type uint64 {
+      range 0..250000000;
+    }
+  }
+  typedef ddt-RtnQoSSystem_DscpSetToPCP_pcp {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQoSSystem_DscpToPCPMap_defaultPCP {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQoSSystem_DscpSetToPCP_dscpSet {
+    type string;
+  }
+  typedef ddt-RtnQoSSystem_SchedulerSp_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnQoSSystem_DscpToPCPMap_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-CirInKbpsForShaper {
+    description "Data type for attribute committedInformationRate for Shaper. ";
+    type uint64 {
+      range "0..0 | 100..25000000";
+    }
+  }
+  typedef ddt-MinThreshInPercentForRed {
+    description "Data type for the attribute minThreshold expressed in percent for RED.";
+    type uint32 {
+      range 1..100;
+    }
+  }
+  typedef ddt-ExponentForRed {
+    description "The data type for the averaging weight factor used by the RED drop mechanism.";
+    type uint32 {
+      range 1..8;
+    }
+  }
+  typedef ddt-RtnQoSSystem_Shaper_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-CbsInBytesForShaper {
+    description "Data type for attribute committedBurstSize for Shaper. ";
+    type uint64;
+  }
+  typedef ddt-RtnQoSSystem_PcpToQueueMap_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnQoSSystem_PcpSetToQueue_pcpSet {
+    type string;
+  }
+  typedef ddt-RtnQoSSystem_QueueTailDrop_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-MaxThreshInPercentForRed {
+    description "Data type for the attribute maxThreshold expressed in percent for RED.";
+    type uint32 {
+      range 1..100;
+    }
+  }
+  typedef ddt-RtnQoSSystem_SchedulerDwrr_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping struct-CirInShaper {
+    description "Union to wrap different unit forms for attribute committedInformationRate in Shaper. ";
+    leaf kbps {
+      description "committedInformationRate expressed in kbps.";
+      type erienmnrmrtnqossystem:ddt-CirInKbpsForShaper;
+    }
+  } // end 'grouping struct-CirInShaper'
+  grouping struct-MinThresholdForRed {
+    description "The minimum threshold for RED.";
+    leaf percent {
+      description "Minimum threshold expressed in percent of the maximum queue size.";
+      type erienmnrmrtnqossystem:ddt-MinThreshInPercentForRed;
+    }
+  } // end 'grouping struct-MinThresholdForRed'
+  grouping struct-CbsInShaper {
+    description "Union to wrap different unit forms for attribute committedBurstSize in Shaper. ";
+    leaf bytes {
+      description "committedBurstSize expressed in bytes.";
+      type erienmnrmrtnqossystem:ddt-CbsInBytesForShaper;
+    }
+  } // end 'grouping struct-CbsInShaper'
+  grouping struct-MaxThresholdForRed {
+    description "The maximum threshold for RED.";
+    leaf percent {
+      description "Maximum threshold expressed in percent of the maximum queue size.";
+      type erienmnrmrtnqossystem:ddt-MaxThreshInPercentForRed;
+    }
+  } // end 'grouping struct-MaxThresholdForRed'
+  grouping struct-QueueSizeForRed {
+    description "The queue size for RED.";
+    leaf bytes {
+      description "queueSize expressed in bytes.";
+      type erienmnrmrtnqossystem:ddt-QueueSizeInBytes;
+    }
+  } // end 'grouping struct-QueueSizeForRed'
+  grouping struct-QueueSizeForTailDrop {
+    description "The queue size for TailDrop.";
+    leaf bytes {
+      description "queueSize expressed in bytes.";
+      type erienmnrmrtnqossystem:ddt-QueueSizeInBytes;
+    }
+  } // end 'grouping struct-QueueSizeForTailDrop'
+  grouping moc-SchedulerSp-keys {
+    description "Key(s) for MOC SchedulerSp";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name schedulerSpId;
+      type string;
+    }
+  } // end 'grouping moc-SchedulerSp-keys'
+  grouping moc-SchedulerSp {
+    description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+    leaf userLabel {
+      description "Label for free use. ";
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_SchedulerSp_userLabel;
+    }
+    leaf order {
+      description "If parent is SchedulerDwrr MO or SchedulerSP MO, this attribute indicates unique index amongst its children.\nIf parent is SchedulerSP MO, this index denotes scheduling priority.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type uint16;
+      default 0;
+    }
+  } // end 'grouping moc-SchedulerSp'
+  grouping moc-QueueRed-keys {
+    description "Key(s) for MOC QueueRed";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name queueRedId;
+      type string;
+    }
+  } // end 'grouping moc-QueueRed-keys'
+  grouping moc-QueueRed {
+    description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+    leaf exponentWeight {
+      description "The averaging weight factor used by the RED drop mechanism.\nThe weight factor is used when calculating the average queue length and it is represented as the parameter n in the following formula:\naverage_queue_length = old_average_queue_length * (1 - 2^-n) + current_queue_length * 2^-n, where 2^-n means: 2 raised to the power of –n.\nThe averaging weight factor controls the sensitivity to bursts and rapid changes in the current queue length. Setting the averaging weight factor too high causes the average queue length to respond too slowly to changes in the current queue size, thus not reacting to congestion. Setting the averaging weight factor too low causes the average queue length to respond too fast to changes in the actual queue size, thus overreacting to bursts and dropping packets unnecessarily.\nGuideline: The egress bandwidth and the average packet size should influence the choice of this attribute value.";
+      type erienmnrmrtnqossystem:ddt-ExponentForRed;
+      default 8;
+    }
+    leaf userLabel {
+      description "Label for free use. ";
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_QueueRed_userLabel;
+    }
+    container queueSize {
+      description "Maximum queue length. ";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnqossystem:struct-QueueSizeForRed;
+    } // end 'container queueSize'
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container minThreshold {
+      description "The minimum threshold for RED.\n\nWhen the average queue length is above the minimum threshold, RED starts dropping packets. The rate of packet drop increases linearly as the average queue length increases until the average queue length reaches the maximum threshold.\n\nWhen the average queue length is above the maximum threshold, all packets are dropped.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnqossystem:struct-MinThresholdForRed;
+    } // end 'container minThreshold'
+    container maxThreshold {
+      description "The maximum threshold for RED.\n\nWhen the average queue length is above the minimum threshold, RED starts dropping packets. The rate of packet drop increases linearly as the average queue length increases until the average queue length reaches the maximum threshold.\n\nWhen the average queue length is above the maximum threshold, all packets are dropped.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnqossystem:struct-MaxThresholdForRed;
+    } // end 'container maxThreshold'
+    leaf order {
+      description "If parent is SchedulerDwrr MO or SchedulerSP MO, this attribute indicates unique index amongst its children.\nIf parent is SchedulerSP MO, this index denotes scheduling priority.";
+      type uint16;
+      default 0;
+    }
+  } // end 'grouping moc-QueueRed'
+  grouping moc-DscpSetToPCP-keys {
+    description "Key(s) for MOC DscpSetToPCP";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dscpSetToPCPId;
+      type string;
+    }
+  } // end 'grouping moc-DscpSetToPCP-keys'
+  grouping moc-DscpSetToPCP {
+    description "Mapping of a set of DSCP values to a PCP.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_DscpSetToPCP_userLabel;
+    }
+    leaf dscpSet {
+      description "A set of DSCP values.";
+      mandatory true;
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_DscpSetToPCP_dscpSet;
+    }
+    leaf pcp {
+      description "The PCP value.";
+      mandatory true;
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_DscpSetToPCP_pcp;
+    }
+  } // end 'grouping moc-DscpSetToPCP'
+  grouping moc-DscpToPCPMap-keys {
+    description "Key(s) for MOC DscpToPCPMap";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dscpToPCPMapId;
+      type string;
+    }
+  } // end 'grouping moc-DscpToPCPMap-keys'
+  grouping moc-DscpToPCPMap {
+    description "A DSCP to PCP map.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_DscpToPCPMap_userLabel;
+    }
+    leaf defaultPCP {
+      description "The default PCP is chosen if no match on DSCP value can be found.";
+      mandatory true;
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_DscpToPCPMap_defaultPCP;
+    }
+  } // end 'grouping moc-DscpToPCPMap'
+  grouping moc-SchedulerDwrr-keys {
+    description "Key(s) for MOC SchedulerDwrr";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name schedulerDwrrId;
+      type string;
+    }
+  } // end 'grouping moc-SchedulerDwrr-keys'
+  grouping moc-SchedulerDwrr {
+    description "Represents Deficit Weighted Round Robin (DWRR) scheduler.\n\nIn hierarchical QoS context, SchedulerDwrr MO can contain multiple MO types as SchedulerDwrr, SchedulerSp, Shaper, QueueRed and QueueTailDrop as its children to construct hierarchical tree.\n\nDependencies:\nSchedulerDwrr MO can have maximum 8 children.";
+    leaf-list schedulingWeight {
+      min-elements 0;
+      description "Scheduling weight.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type uint32;
+    }
+    leaf userLabel {
+      description "Label for free use. ";
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_SchedulerDwrr_userLabel;
+    }
+    leaf order {
+      description "If parent is SchedulerDwrr MO or SchedulerSP MO, this attribute indicates unique index amongst its children.\nIf parent is SchedulerSP MO, this index denotes scheduling priority.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type uint16;
+      default 0;
+    }
+  } // end 'grouping moc-SchedulerDwrr'
+  grouping moc-Shaper-keys {
+    description "Key(s) for MOC Shaper";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name shaperId;
+      type string;
+    }
+  } // end 'grouping moc-Shaper-keys'
+  grouping moc-Shaper {
+    description "Represents traffic shaping entity supporting: 1B1R.";
+    container committedBurstSize {
+      description "Committed burst size.\n\nIf set to less than 4000 bytes, shaper still allows 4000 bytes bursting.\nIf set to more than 64000 bytes, shaper still allows maximum 64000 bytes bursting.\n\nUnit: 1 bytes";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnqossystem:struct-CbsInShaper;
+    } // end 'container committedBurstSize'
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_Shaper_userLabel;
+    }
+    container committedInformationRate {
+      description "Committed information rate.\n\nIf set to less than 1000 kbps, shaper still allows 1000 kbps sending, only applicable for Baseband node with port capacity of 25 Gbps.\n\nUnit: 1 kbps";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnqossystem:struct-CirInShaper;
+    } // end 'container committedInformationRate'
+    leaf order {
+      description "If parent is SchedulerDwrr MO or SchedulerSP MO, this attribute indicates unique index amongst its children.\nIf parent is SchedulerSP MO, this index denotes scheduling priority.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type uint16;
+      default 0;
+    }
+  } // end 'grouping moc-Shaper'
+  grouping moc-PcpToQueueMap-keys {
+    description "Key(s) for MOC PcpToQueueMap";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name pcpToQueueMapId;
+      type string;
+    }
+  } // end 'grouping moc-PcpToQueueMap-keys'
+  grouping moc-PcpToQueueMap {
+    description "PCP to queue map.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_PcpToQueueMap_userLabel;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf defaultQueue {
+      description "The default queue is chosen if no match on PCP value can be found.";
+      mandatory true;
+      yexte:dependencies "Attribute defaultQueue shall point to a QueueTailDrop or QueueRed created within the same QueueSystem.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-PcpToQueueMap'
+  grouping moc-QoSClassifier-keys {
+    description "Key(s) for MOC QoSClassifier";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name qosClassifierId;
+      type string;
+    }
+  } // end 'grouping moc-QoSClassifier-keys'
+  grouping moc-QoSClassifier {
+    description "Container of QoS Classifier schemes.";
+  } // end 'grouping moc-QoSClassifier'
+  grouping moc-PcpSetToQueue-keys {
+    description "Key(s) for MOC PcpSetToQueue";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name pcpSetToQueueId;
+      type string;
+    }
+  } // end 'grouping moc-PcpSetToQueue-keys'
+  grouping moc-PcpSetToQueue {
+    description "Mapping of a set of PCP values to a queue.";
+    leaf pcpSet {
+      description "A set of PCP values.";
+      mandatory true;
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_PcpSetToQueue_pcpSet;
+    }
+    leaf queue {
+      description "A reference to the queue.";
+      mandatory true;
+      yexte:dependencies "Attribute queue shall point to a QueueTailDrop or QueueRed created within the same QueueSystem.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-PcpSetToQueue'
+  grouping moc-QueueSystem-keys {
+    description "Key(s) for MOC QueueSystem";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name queueSystemId;
+      type string;
+    }
+  } // end 'grouping moc-QueueSystem-keys'
+  grouping moc-QueueSystem {
+    description "Quality of Service (QoS) queue system.\n\nBandwidth and sizes (burst sizes, queue sizes) include the complete Ethernet frame.\n\nDependencies: Must have one child element.";
+  } // end 'grouping moc-QueueSystem'
+  grouping moc-QueueTailDrop-keys {
+    description "Key(s) for MOC QueueTailDrop";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name queueTailDropId;
+      type string;
+    }
+  } // end 'grouping moc-QueueTailDrop-keys'
+  grouping moc-QueueTailDrop {
+    description "Represents queue using tail-drop packet-dropping strategy.";
+    leaf userLabel {
+      description "Label for free use. ";
+      type erienmnrmrtnqossystem:ddt-RtnQoSSystem_QueueTailDrop_userLabel;
+    }
+    container queueSize {
+      description "Maximum queue length.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnqossystem:struct-QueueSizeForTailDrop;
+    } // end 'container queueSize'
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf order {
+      description "If parent is SchedulerDwrr MO or SchedulerSP MO, this attribute indicates unique index amongst its children.\nIf parent is SchedulerSP MO, this index denotes scheduling priority.";
+      type uint16;
+      default 0;
+    }
+  } // end 'grouping moc-QueueTailDrop'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem {
+    list SchedulerSp {
+      key id;
+      max-elements 1;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr {
+    list SchedulerSp {
+      key id;
+      max-elements 8;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr {
+    list SchedulerSp {
+      key id;
+      max-elements 8;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list SchedulerSp {
+      key id;
+      max-elements 8;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list SchedulerSp {
+      key id;
+      max-elements 8;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list SchedulerSp {
+      key id;
+      max-elements 8;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list SchedulerSp {
+      key id;
+      max-elements 8;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper {
+    list SchedulerSp {
+      key id;
+      max-elements 1;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper {
+    list SchedulerSp {
+      key id;
+      max-elements 1;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper {
+    list SchedulerSp {
+      key id;
+      max-elements 1;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper {
+    list SchedulerSp {
+      key id;
+      max-elements 1;
+      description "Represents Strict Priority (SP) scheduler.\n\nIn hierarchical QoS context, scheduler can contain multiple queues, and/or schedulers, and/or shapers as its children to construct hierarchical tree.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerSp-keys;
+      container attributes {
+        description "Attributes for SchedulerSp";
+        uses moc-SchedulerSp;
+      } // end 'container attributes'
+    } // end 'list SchedulerSp'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem {
+    list QueueRed {
+      key id;
+      max-elements 1;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueRed {
+      key id;
+      max-elements 8;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueRed {
+      key id;
+      max-elements 8;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueRed {
+      key id;
+      max-elements 8;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueRed {
+      key id;
+      max-elements 8;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueRed {
+      key id;
+      max-elements 8;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueRed {
+      key id;
+      max-elements 8;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueRed {
+      key id;
+      max-elements 4;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper {
+    list QueueRed {
+      key id;
+      max-elements 1;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper {
+    list QueueRed {
+      key id;
+      max-elements 1;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper {
+    list QueueRed {
+      key id;
+      max-elements 1;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper {
+    list QueueRed {
+      key id;
+      max-elements 1;
+      description "Represents queue using Random Early Detection (RED) packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueRed-keys;
+      container attributes {
+        description "Attributes for QueueRed";
+        uses moc-QueueRed;
+      } // end 'container attributes'
+    } // end 'list QueueRed'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:QoSClassifier/erienmnrmrtnqossystem:DscpToPCPMap {
+    list DscpSetToPCP {
+      key id;
+      description "Mapping of a set of DSCP values to a PCP.";
+      erienmyext:enm-type MOC;
+      uses moc-DscpSetToPCP-keys;
+      container attributes {
+        description "Attributes for DscpSetToPCP";
+        uses moc-DscpSetToPCP;
+      } // end 'container attributes'
+    } // end 'list DscpSetToPCP'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:QoSClassifier {
+    list DscpToPCPMap {
+      key id;
+      max-elements 1;
+      description "A DSCP to PCP map.";
+      erienmyext:enm-type MOC;
+      uses moc-DscpToPCPMap-keys;
+      container attributes {
+        description "Attributes for DscpToPCPMap";
+        uses moc-DscpToPCPMap;
+      } // end 'container attributes'
+    } // end 'list DscpToPCPMap'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem {
+    list SchedulerDwrr {
+      key id;
+      max-elements 1;
+      description "Represents Deficit Weighted Round Robin (DWRR) scheduler.\n\nIn hierarchical QoS context, SchedulerDwrr MO can contain multiple MO types as SchedulerDwrr, SchedulerSp, Shaper, QueueRed and QueueTailDrop as its children to construct hierarchical tree.\n\nDependencies:\nSchedulerDwrr MO can have maximum 8 children.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerDwrr-keys;
+      container attributes {
+        description "Attributes for SchedulerDwrr";
+        uses moc-SchedulerDwrr;
+      } // end 'container attributes'
+    } // end 'list SchedulerDwrr'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp {
+    list SchedulerDwrr {
+      key id;
+      max-elements 4;
+      description "Represents Deficit Weighted Round Robin (DWRR) scheduler.\n\nIn hierarchical QoS context, SchedulerDwrr MO can contain multiple MO types as SchedulerDwrr, SchedulerSp, Shaper, QueueRed and QueueTailDrop as its children to construct hierarchical tree.\n\nDependencies:\nSchedulerDwrr MO can have maximum 8 children.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerDwrr-keys;
+      container attributes {
+        description "Attributes for SchedulerDwrr";
+        uses moc-SchedulerDwrr;
+      } // end 'container attributes'
+    } // end 'list SchedulerDwrr'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper {
+    list SchedulerDwrr {
+      key id;
+      max-elements 1;
+      description "Represents Deficit Weighted Round Robin (DWRR) scheduler.\n\nIn hierarchical QoS context, SchedulerDwrr MO can contain multiple MO types as SchedulerDwrr, SchedulerSp, Shaper, QueueRed and QueueTailDrop as its children to construct hierarchical tree.\n\nDependencies:\nSchedulerDwrr MO can have maximum 8 children.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerDwrr-keys;
+      container attributes {
+        description "Attributes for SchedulerDwrr";
+        uses moc-SchedulerDwrr;
+      } // end 'container attributes'
+    } // end 'list SchedulerDwrr'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper {
+    list SchedulerDwrr {
+      key id;
+      max-elements 1;
+      description "Represents Deficit Weighted Round Robin (DWRR) scheduler.\n\nIn hierarchical QoS context, SchedulerDwrr MO can contain multiple MO types as SchedulerDwrr, SchedulerSp, Shaper, QueueRed and QueueTailDrop as its children to construct hierarchical tree.\n\nDependencies:\nSchedulerDwrr MO can have maximum 8 children.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerDwrr-keys;
+      container attributes {
+        description "Attributes for SchedulerDwrr";
+        uses moc-SchedulerDwrr;
+      } // end 'container attributes'
+    } // end 'list SchedulerDwrr'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper {
+    list SchedulerDwrr {
+      key id;
+      max-elements 1;
+      description "Represents Deficit Weighted Round Robin (DWRR) scheduler.\n\nIn hierarchical QoS context, SchedulerDwrr MO can contain multiple MO types as SchedulerDwrr, SchedulerSp, Shaper, QueueRed and QueueTailDrop as its children to construct hierarchical tree.\n\nDependencies:\nSchedulerDwrr MO can have maximum 8 children.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerDwrr-keys;
+      container attributes {
+        description "Attributes for SchedulerDwrr";
+        uses moc-SchedulerDwrr;
+      } // end 'container attributes'
+    } // end 'list SchedulerDwrr'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper {
+    list SchedulerDwrr {
+      key id;
+      max-elements 1;
+      description "Represents Deficit Weighted Round Robin (DWRR) scheduler.\n\nIn hierarchical QoS context, SchedulerDwrr MO can contain multiple MO types as SchedulerDwrr, SchedulerSp, Shaper, QueueRed and QueueTailDrop as its children to construct hierarchical tree.\n\nDependencies:\nSchedulerDwrr MO can have maximum 8 children.";
+      erienmyext:enm-type MOC;
+      uses moc-SchedulerDwrr-keys;
+      container attributes {
+        description "Attributes for SchedulerDwrr";
+        uses moc-SchedulerDwrr;
+      } // end 'container attributes'
+    } // end 'list SchedulerDwrr'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem {
+    list Shaper {
+      key id;
+      max-elements 1;
+      description "Represents traffic shaping entity supporting: 1B1R.";
+      erienmyext:enm-type MOC;
+      uses moc-Shaper-keys;
+      container attributes {
+        description "Attributes for Shaper";
+        uses moc-Shaper;
+      } // end 'container attributes'
+    } // end 'list Shaper'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr {
+    list Shaper {
+      key id;
+      max-elements 8;
+      description "Represents traffic shaping entity supporting: 1B1R.";
+      erienmyext:enm-type MOC;
+      uses moc-Shaper-keys;
+      container attributes {
+        description "Attributes for Shaper";
+        uses moc-Shaper;
+      } // end 'container attributes'
+    } // end 'list Shaper'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr {
+    list Shaper {
+      key id;
+      max-elements 8;
+      description "Represents traffic shaping entity supporting: 1B1R.";
+      erienmyext:enm-type MOC;
+      uses moc-Shaper-keys;
+      container attributes {
+        description "Attributes for Shaper";
+        uses moc-Shaper;
+      } // end 'container attributes'
+    } // end 'list Shaper'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp {
+    list Shaper {
+      key id;
+      max-elements 4;
+      description "Represents traffic shaping entity supporting: 1B1R.";
+      erienmyext:enm-type MOC;
+      uses moc-Shaper-keys;
+      container attributes {
+        description "Attributes for Shaper";
+        uses moc-Shaper;
+      } // end 'container attributes'
+    } // end 'list Shaper'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:QoSClassifier {
+    list PcpToQueueMap {
+      key id;
+      description "PCP to queue map.";
+      erienmyext:enm-type MOC;
+      uses moc-PcpToQueueMap-keys;
+      container attributes {
+        description "Attributes for PcpToQueueMap";
+        uses moc-PcpToQueueMap;
+      } // end 'container attributes'
+    } // end 'list PcpToQueueMap'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem {
+    list QoSClassifier {
+      key id;
+      max-elements 1;
+      description "Container of QoS Classifier schemes.";
+      erienmyext:enm-type MOC;
+      uses moc-QoSClassifier-keys;
+    } // end 'list QoSClassifier'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:QoSClassifier/erienmnrmrtnqossystem:PcpToQueueMap {
+    list PcpSetToQueue {
+      key id;
+      description "Mapping of a set of PCP values to a queue.";
+      erienmyext:enm-type MOC;
+      uses moc-PcpSetToQueue-keys;
+      container attributes {
+        description "Attributes for PcpSetToQueue";
+        uses moc-PcpSetToQueue;
+      } // end 'container attributes'
+    } // end 'list PcpSetToQueue'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort {
+    list QueueSystem {
+      key id;
+      max-elements 1;
+      description "Quality of Service (QoS) queue system.\n\nBandwidth and sizes (burst sizes, queue sizes) include the complete Ethernet frame.\n\nDependencies: Must have one child element.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueSystem-keys;
+    } // end 'list QueueSystem'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem {
+    list QueueTailDrop {
+      key id;
+      max-elements 1;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueTailDrop {
+      key id;
+      max-elements 8;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueTailDrop {
+      key id;
+      max-elements 8;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueTailDrop {
+      key id;
+      max-elements 8;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueTailDrop {
+      key id;
+      max-elements 8;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueTailDrop {
+      key id;
+      max-elements 8;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr {
+    list QueueTailDrop {
+      key id;
+      max-elements 8;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper/erienmnrmrtnqossystem:SchedulerSp {
+    list QueueTailDrop {
+      key id;
+      max-elements 4;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:Shaper {
+    list QueueTailDrop {
+      key id;
+      max-elements 1;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper {
+    list QueueTailDrop {
+      key id;
+      max-elements 1;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:SchedulerDwrr/erienmnrmrtnqossystem:Shaper {
+    list QueueTailDrop {
+      key id;
+      max-elements 1;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort/erienmnrmrtnqossystem:QueueSystem/erienmnrmrtnqossystem:SchedulerSp/erienmnrmrtnqossystem:Shaper {
+    list QueueTailDrop {
+      key id;
+      max-elements 1;
+      description "Represents queue using tail-drop packet-dropping strategy.";
+      erienmyext:enm-type MOC;
+      uses moc-QueueTailDrop-keys;
+      container attributes {
+        description "Attributes for QueueTailDrop";
+        uses moc-QueueTailDrop;
+      } // end 'container attributes'
+    } // end 'list QueueTailDrop'
+  }
+}

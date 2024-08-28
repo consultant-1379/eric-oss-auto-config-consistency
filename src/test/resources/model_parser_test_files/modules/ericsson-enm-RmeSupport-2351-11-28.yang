@@ -1,0 +1,70 @@
+module ericsson-enm-RmeSupport {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeSupport;
+  prefix erienmnrmrmesupport;
+  yexte:ecim-name RmeSupport;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  grouping moc-NodeSupport-keys {
+    description "Key(s) for MOC NodeSupport";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying this MO.";
+      mandatory true;
+      yexte:ecim-name nodeSupportId;
+      type string;
+    }
+  } // end 'grouping moc-NodeSupport-keys'
+  grouping moc-NodeSupport {
+    description "Top MO for the NodeSupport branch";
+    leaf userLabel {
+      description "Used for product free-text description. ";
+      type string;
+    }
+    leaf supportFunction {
+      config false;
+      description "A read-only attribute boolean supportFunction, default true, always set to true. \nFor use by management systems to distinguish supportFunction implementations.\n";
+      notife:notifiable-state-data true;
+      type boolean;
+      default true;
+    }
+    leaf release {
+      config false;
+      description "The product release of the SupportFunction.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-NodeSupport'
+  augment /erienmnrmcomtop:ManagedElement {
+    list NodeSupport {
+      key id;
+      max-elements 1;
+      description "Top MO for the NodeSupport branch";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-NodeSupport-keys;
+      container attributes {
+        description "Attributes for NodeSupport";
+        uses moc-NodeSupport;
+      } // end 'container attributes'
+    } // end 'list NodeSupport'
+  }
+}

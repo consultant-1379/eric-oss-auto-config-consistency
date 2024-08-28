@@ -1,0 +1,417 @@
+module ericsson-enm-RtnEthernetOam {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnEthernetOam;
+  prefix erienmnrmrtnethernetoam;
+  yexte:ecim-name RtnEthernetOam;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 3;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-MaintenanceDomainType {
+    description "Type and format of maintenance domain name.";
+    type enumeration {
+      enum NO_NAME {
+        description "No format specified, maintenanceDomainName has no meaning.";
+        value 0;
+      }
+      enum DNS_BASED {
+        description "Domain name specified as globally unique text string of 1 to 43 characters derived from DNS name.\nDomain name is case-sensitive regarding DNS-based maintenance domains.";
+        value 1;
+      }
+      enum MAC {
+        description "Domain name given as MAC address + 2 octet (unsigned) integer, separated by dot (.).\n\nExample: 12:23:34:45:56:67.123";
+        value 2;
+      }
+      enum STRING {
+        description "Domain name specified as string of 1 to 43 characters.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-RemoteMepState {
+    description "State of remote MEP state machine.";
+    type enumeration {
+      enum RMEP_IDLE {
+        description "Momentary state during reset.";
+        value 0;
+      }
+      enum RMEP_START {
+        description "Timer has not expired since state machine was reset, and no valid CCM has yet been received.";
+        value 1;
+      }
+      enum RMEP_FAILED {
+        description "Timer has expired since state machine was last reset, and since latest valid CCM was received.";
+        value 2;
+      }
+      enum RMEP_OK {
+        description "Timer has not expired since valid CCM was received.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-MaintenanceAssociationType {
+    description "Type and format of maintenance association name.";
+    type enumeration {
+      enum PRIMARY_VID {
+        description "Maintenance association name used in CFM messages, given by attribute vid.";
+        value 0;
+      }
+      enum STRING {
+        description "Maintenance association name is specified as a string of 1 to 45 characters.";
+        value 1;
+      }
+      enum INTEGER {
+        description "Maintenance association name is specified as integer (0-65535) within quotation marks.";
+        value 2;
+      }
+    }
+  }
+  typedef ddt-RtnEthernetOam_EthernetOamRemoteMep_mepIdentifier {
+    type int32 {
+      range 1..8191;
+    }
+  }
+  typedef ddt-RtnEthernetOam_EthernetOamLocalMep_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnEthernetOam_EthernetOamLocalMep_mepIdentifier {
+    type int32 {
+      range 1..8191;
+    }
+  }
+  typedef ddt-RtnEthernetOam_EthernetOamLocalMep_ccmInterval {
+    type int32 {
+      range "100..100 | 1000..1000 | 10000..10000 | 60000..60000 | 600000..600000";
+    }
+  }
+  typedef ddt-RtnEthernetOam_EthernetOamRemoteMep_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnEthernetOam_EthernetOamLocalMep_maintenanceDomainLevel {
+    type int32 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnEthernetOam_EthernetOamLocalMep_pcp {
+    type int32 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnEthernetOam_EthernetOamLocalMep_maintenanceDomainName {
+    type string {
+      length 0..43;
+    }
+  }
+  grouping struct-MepDefect {
+    description "Maintenance association End Point (MEP) defects.";
+    leaf errorCcmDefect {
+      description "Connection error defect detected, when local MEP has received at least one invalid CCM.";
+      type boolean;
+      mandatory true;
+    }
+    leaf remoteCcmDefect {
+      description "Remote defect detected, when local MEP has not received valid CCMs from at least one of its defined remote MEPs.";
+      type boolean;
+      mandatory true;
+    }
+    leaf rdiCcmDefect {
+      description "RDI defect detected, when remote MEP, for which timer has not expired since valid CCM was received, has reported RDI bit in its latest CCM.";
+      type boolean;
+      mandatory true;
+    }
+    leaf xConCcmDefect {
+      description "Cross-connect defect detected, when local MEP has received at least one CCM from either another MAID or from lower MD level.";
+      type boolean;
+      mandatory true;
+    }
+  } // end 'grouping struct-MepDefect'
+  grouping struct-EthernetOamAlarmConfig {
+    description "Specification of the defects that raise the Ethernet OAM Service Fault alarm. ";
+    leaf xConAlarmTrigger {
+      status current {
+        yexte:preliminary;
+      }
+      description "Specifies whether the alarm is raised for a cross-connect defect.";
+      type boolean;
+      default false;
+    }
+    leaf remoteAlarmTrigger {
+      status current {
+        yexte:preliminary;
+      }
+      description "Specifies whether the alarm is raised for a remote defect.";
+      type boolean;
+      default false;
+    }
+    leaf rdiAlarmTrigger {
+      status current {
+        yexte:preliminary;
+      }
+      description "Specifies whether the alarm is raised for an RDI defect. ";
+      type boolean;
+      default false;
+    }
+    leaf errorAlarmTrigger {
+      status current {
+        yexte:preliminary;
+      }
+      description "Specifies whether the alarm is raised for a configuration error defect. ";
+      type boolean;
+      default false;
+    }
+  } // end 'grouping struct-EthernetOamAlarmConfig'
+  grouping moc-EthernetOamRemoteMep-keys {
+    description "Key(s) for MOC EthernetOamRemoteMep";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ethernetOamRemoteMepId;
+      type string;
+    }
+  } // end 'grouping moc-EthernetOamRemoteMep-keys'
+  grouping moc-EthernetOamRemoteMep {
+    description "Ethernet OAM Remote Maintenance association End Point.\n\nRepresents MEP for Ethernet OAM service in another node.\n\nFacilitates supervision of CCM from specific remote MEP.";
+    leaf remoteMepState {
+      config false;
+      description "State of remote MEP state machine.\nState machine monitors reception of valid CCMs from remote MEP.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnethernetoam:enum-RemoteMepState;
+    }
+    leaf userLabel {
+      description "Label for free use. \n";
+      type erienmnrmrtnethernetoam:ddt-RtnEthernetOam_EthernetOamRemoteMep_userLabel;
+    }
+    leaf macAddress {
+      erienmyext:no-notification;
+      config false;
+      description "MAC address of remote MEP discovered from incoming CCM frames.\nIf no valid CCM has been received from remote MEP, attribute has value 00:00:00:00:00:00 .";
+      type string;
+    }
+    leaf rdi {
+      config false;
+      description "Whether RDI bit was set in latest valid CCM received from remote MEP.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf failedOrOkTime {
+      erienmyext:no-notification;
+      config false;
+      description "Time when Remote MEP state machine last entered either \"RMEP_FAILED\" or \"RMEP_OK\" state. Time is expressed as string containing Date and Time (UTC) in format yyyy-mm-dd hh:mm:ss\nExample: 2015-01-01 00:00:00 ";
+      type string;
+    }
+    leaf mepIdentifier {
+      description "Identifier of remote MEP.\nMust be unique among all EthernetOamRemoteMep MOs for EthernetOamLocalMep MO.";
+      mandatory true;
+      type erienmnrmrtnethernetoam:ddt-RtnEthernetOam_EthernetOamRemoteMep_mepIdentifier;
+    }
+  } // end 'grouping moc-EthernetOamRemoteMep'
+  grouping moc-EthernetOamLocalMep-keys {
+    description "Key(s) for MOC EthernetOamLocalMep";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ethernetOamLocalMepId;
+      type string;
+    }
+  } // end 'grouping moc-EthernetOamLocalMep-keys'
+  grouping moc-EthernetOamLocalMep {
+    description "Ethernet OAM Local Maintenance association End Point.\n\nRepresents MEP for Ethernet OAM service. MEP is local to DU.\n\nEthernet OAM Service includes support for Connectivity Fault Management (CFM) capabilities for detecting, isolating, and reporting L2 connectivity faults.\n";
+    leaf encapsulation {
+      description "Reference to underlying encapsulation that can be MO type EthernetPort, VlanPort or LagPort.";
+      mandatory true;
+      yexte:dependencies "VlanPort MO, to which this encapsulation refers, must be referenced by MO type InterfaceIPv4, InterfaceIPv6, or Bridge.\nIf maintenanceAssociationType is set to PRIMARY_VID this attribute must refer to VlanPort MO, where attribute isTagged must be set to true.\nEthernetOamLocalMep MO cannot refer to VlanPort MO with lowLatencySwitching set to true.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnethernetoam:ddt-RtnEthernetOam_EthernetOamLocalMep_userLabel;
+    }
+    leaf maintenanceDomainLevel {
+      description "MD level.\nSpecifies nesting relationship between maintenance domains.\nFor each value of this attribute, only one EthernetOamLocalMep MO can be configured for each MO type VlanPort, EthernetPort, or LagPort, that is referred by encapsulation attribute.\n";
+      mandatory true;
+      yexte:dependencies "All EthernetOamLocalMep MOs with same encapsulation that refers to MO type VlanPort, EthernetPort or LagPort MO, must have unique maintenanceDomainLevel.";
+      type erienmnrmrtnethernetoam:ddt-RtnEthernetOam_EthernetOamLocalMep_maintenanceDomainLevel;
+    }
+    leaf ccmInterval {
+      description "CCM interval to be used.";
+      type erienmnrmrtnethernetoam:ddt-RtnEthernetOam_EthernetOamLocalMep_ccmInterval;
+      default 1000;
+    }
+    leaf maintenanceAssociationType {
+      description "Type and format of maintenanceAssociationName.\nIf this attribute is set to PRIMARY_VID, encapsulation must refer to a VlanPort MO, where isTagged attribute must be set to true.";
+      type erienmnrmrtnethernetoam:enum-MaintenanceAssociationType;
+      default INTEGER;
+    }
+    leaf mepIdentifier {
+      description "Specifies the local MEP Identifier.";
+      type erienmnrmrtnethernetoam:ddt-RtnEthernetOam_EthernetOamLocalMep_mepIdentifier;
+      default 1;
+    }
+    leaf ccmEnabled {
+      description "Whether MO transmits and receives CCM messages. ";
+      type boolean;
+      default false;
+    }
+    container ethernetOamAlarmConfig {
+      description "Which defects raise CfmFault alarm.";
+      status current {
+        yexte:preliminary;
+      }
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnethernetoam:struct-EthernetOamAlarmConfig;
+    } // end 'container ethernetOamAlarmConfig'
+    leaf maintenanceDomainType {
+      description "Type and format of maintenanceDomainName.";
+      type erienmnrmrtnethernetoam:enum-MaintenanceDomainType;
+      default NO_NAME;
+    }
+    leaf maintenanceAssociationName {
+      description "MA name.\nIf maintenanceAssociationType is PRIMARY_VID, this attribute is not used. Primary VID, defined by underlying VlanPort MO, is used to identify CFM messages.\nMaximum length of maintenanceDomainName + maximum length of maintenanceAssociationName is 44 octets.";
+      yexte:dependencies "If maintenanceAssociationType is set to PRIMARY_VID this attribute must be empty.\nIf maintenanceDomainType is set to NO_NAME this attribute must be at most 45 characters.\nIf maintenanceDomainType is set to DNS_BASED or STRING, combined length of maintenanceAssociationName and maintenanceDomainName must be at most 44 chars.\nIf maintenanceDomainType is set to MAC, combined length of maintenanceAssociationName and maintenanceDomainName must be at most 44 characters, where maintenanceDomainName has 8 characters.\nIf maintenanceAssociationType is set to STRING this attribute length must be more than 0 characters.\nIf maintenanceAssociationType is set to INTEGER this attribute must be integer within range 0-65535.\n";
+      type string;
+    }
+    container mepDefect {
+      description "Indication of current defects.\n\nSpecification: IEEE 802.1Q-2014";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnethernetoam:struct-MepDefect;
+    } // end 'container mepDefect'
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmrtnethernetoam:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmrtnethernetoam:enum-OperState;
+    }
+    leaf pcp {
+      description "Priority value for frames originated from MEP.\nReplies to CFM requests from other nodes are assigned same PCP value as request message.";
+      type erienmnrmrtnethernetoam:ddt-RtnEthernetOam_EthernetOamLocalMep_pcp;
+      default 7;
+    }
+    leaf maintenanceDomainName {
+      description "MD name.";
+      yexte:dependencies "If maintenanceDomainType is set to NO_NAME this attribute must be empty.\nIf maintenanceAssociationType is set to PRIMARY_VID or INTEGER this attribute must be at most 42 characters.\nIf maintenanceDomainType is set to DNS_BASED or STRING, combined length of maintenanceAssociationName and maintenanceDomainName must be at most 44 chars.\nIf maintenanceDomainType is set to MAC, combined length of maintenanceAssociationName and maintenanceDomainName must be at most 44 characters, where maintenanceDomainName has 8 characters.\nIf maintenanceDomainType is set to STRING or DNS_BASED  this attribute length must be more than 0 characters.\nIf maintenanceDomainType is set to MAC  this attribute must have format 11:22:33:44:55:66.1234.";
+      type erienmnrmrtnethernetoam:ddt-RtnEthernetOam_EthernetOamLocalMep_maintenanceDomainName;
+    }
+  } // end 'grouping moc-EthernetOamLocalMep'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnethernetoam:EthernetOamLocalMep {
+    list EthernetOamRemoteMep {
+      key id;
+      max-elements 510;
+      description "Ethernet OAM Remote Maintenance association End Point.\n\nRepresents MEP for Ethernet OAM service in another node.\n\nFacilitates supervision of CCM from specific remote MEP.";
+      erienmyext:enm-type MOC;
+      uses moc-EthernetOamRemoteMep-keys;
+      container attributes {
+        description "Attributes for EthernetOamRemoteMep";
+        uses moc-EthernetOamRemoteMep;
+      } // end 'container attributes'
+    } // end 'list EthernetOamRemoteMep'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list EthernetOamLocalMep {
+      key id;
+      max-elements 16;
+      description "Ethernet OAM Local Maintenance association End Point.\n\nRepresents MEP for Ethernet OAM service. MEP is local to DU.\n\nEthernet OAM Service includes support for Connectivity Fault Management (CFM) capabilities for detecting, isolating, and reporting L2 connectivity faults.\n";
+      erienmyext:enm-type MOC;
+      uses moc-EthernetOamLocalMep-keys;
+      container attributes {
+        description "Attributes for EthernetOamLocalMep";
+        uses moc-EthernetOamLocalMep;
+      } // end 'container attributes'
+    } // end 'list EthernetOamLocalMep'
+  }
+}

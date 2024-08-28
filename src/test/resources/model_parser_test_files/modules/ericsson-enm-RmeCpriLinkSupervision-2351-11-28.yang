@@ -1,0 +1,66 @@
+module ericsson-enm-RmeCpriLinkSupervision {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeCpriLinkSupervision;
+  prefix erienmnrmrmecprilinksupervision;
+  yexte:ecim-name RmeCpriLinkSupervision;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 3;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef ddt-RmeCpriLinkSupervision_CpriLinkSupervision_cpriLinkFilterTime {
+    type int16;
+  }
+  grouping moc-CpriLinkSupervision-keys {
+    description "Key(s) for MOC CpriLinkSupervision";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cpriLinkSupervisionId;
+      type string;
+    }
+  } // end 'grouping moc-CpriLinkSupervision-keys'
+  grouping moc-CpriLinkSupervision {
+    description "This MO class contains configuration items for the CPRI link supervision service.";
+    leaf-list cpriLinkFilterTime {
+      min-elements 0;
+      max-elements 10000;
+      description "Filter time for CPRI link disturbances. If CPRI link disturbance is not recovered within filter time, loss of traffic can occur. Value of 400 is defined as default. Leave at default 400 in all normal cases. Lower value increases traffic resource vulnerability to CPRI disturbance. If configured value is higher than 450, SW limits the value to 450 internally.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type erienmnrmrmecprilinksupervision:ddt-RmeCpriLinkSupervision_CpriLinkSupervision_cpriLinkFilterTime;
+      default 400;
+    }
+  } // end 'grouping moc-CpriLinkSupervision'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list CpriLinkSupervision {
+      key id;
+      max-elements 1;
+      description "This MO class contains configuration items for the CPRI link supervision service.";
+      erienmyext:enm-type MOC;
+      uses moc-CpriLinkSupervision-keys;
+      container attributes {
+        description "Attributes for CpriLinkSupervision";
+        uses moc-CpriLinkSupervision;
+      } // end 'container attributes'
+    } // end 'list CpriLinkSupervision'
+  }
+}

@@ -1,0 +1,1464 @@
+#
+# COPYRIGHT Ericsson 2021 - 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+openapi: "3.0.2"
+
+servers:
+  - url: http://eacc/v1
+
+info:
+  x-api-id: 8608e72f-121d-4049-be33-7eb2d3cf5594
+  x-audience: external-public
+  description: |
+    Ericsson Automated Configuration Consistency (EACC) provides self-service analytics 
+    to enable users to uncover baseline consistency errors. EACC supports the scheduling 
+    of CM consistency audits which detect inconsistencies based on user-supplied rules. 
+    These inconsistencies can be corrected manually by the user. 
+    Any changes can also be manually rolled back by the user.
+  version: 0.1.5
+  title: Ericsson Automated Configuration Consistency
+  license:
+    name: COPYRIGHT Ericsson 2024
+    url: https://www.ericsson.com/en/legal
+  termsOfService: https://www.ericsson.com/en/legal
+  contact:
+    email: pdlonteamq@pdl.internal.ericsson.com
+tags:
+  - name: rulesets
+    description: Defines the rules that are used by a configuration consistency check.
+  - name: scopes
+    description: Defines the Scope that is used by a configuration consistency check.
+  - name: jobs
+    description: Defines when the configuration consistency check is scheduled, what rules to apply and the Scope of the consistency check.
+  - name: executions
+    description: Information on each of the configuration consistency executions and the audit results.
+paths:
+  /v1/rulesets:
+    get:
+      tags:
+        - rulesets
+      summary: Get metadata for all Rulesets.
+      description: Get metadata for all Rulesets. An empty list is returned if no Rulesets exist.
+      operationId: listRulesets
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RulesetMetadata'
+              example:
+                [
+                  {
+                    "id": "e0399094-0b34-4ccd-bcf7-a904293594c5",
+                    "rulesetName": "ruleset1",
+                    "uri": "v1/rulesets/e0399094-0b34-4ccd-bcf7-a904293594c5"
+                  },
+                  {
+                    "id": "fcbd87fd-8586-4588-926c-d2d6f9dfd584",
+                    "rulesetName": "ruleset2",
+                    "uri": "v1/rulesets/fcbd87fd-8586-4588-926c-d2d6f9dfd584"
+                  }
+                ]
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to get rulesets.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    post:
+      tags:
+        - rulesets
+      summary: Create a new Ruleset.
+      description: Create a new Ruleset comprised of the Ruleset name and a CSV file containing the rules.
+      operationId: createRuleset
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateRuleset'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesetMetadata'
+              example:
+                {
+                  "id": "e0399094-0b34-4ccd-bcf7-a904293594c5",
+                  "rulesetName": "ruleset1",
+                  "uri": "v1/rulesets/e0399094-0b34-4ccd-bcf7-a904293594c5"
+                }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/RuleErrorDetails'
+              example: {
+                "title": "Problems found in ruleset.",
+                "status": 400,
+                "detail": "Ruleset cannot contain any invalid MO types, attributes or values.",
+                "ruleValidationErrors": [ {
+                  "lineNumber": 5,
+                  "errorType": "Invalid MO.",
+                  "errorDetails": "MO not found in Managed Object Model.",
+                  "additionalInfo": ""
+                } ]
+              }
+        "413":
+          $ref: '#/components/responses/413'
+        "503":
+          $ref: '#/components/responses/503'
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to create ruleset.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+  /v1/rulesets/{id}:
+    get:
+      tags:
+        - rulesets
+      summary: Get a Ruleset.
+      description: Returns the rules in CSV format for the specified ID.
+      operationId: getRuleset
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/rulesetId'
+      responses:
+        "200":
+          description: OK
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+              example: |
+                "moType","attributeName","attributeValue","conditions","priority"
+                "EUtranCellFDD","upperLayerAutoConfEnabled","true","EUtranCellFDD.userLabel like '%dg2%'",
+                "EUtranCellFDD","outOfCoverageThreshold","20","EUtranCellFDD.cellCapMinCellSubCap in (98,100,102)",20
+                "EUtranCellFDD","outOfCoverageThreshold","19","EUtranCellFDD.cellCapMinCellSubCap in (92,94,96)",10
+                "ENodeBFunction","timePhaseMaxDeviationOtdoa","10","ENodeBFunction.forcedSiTunnelingActive = false",
+                "NRCellDU","ailgDlPrbLoadLevel","1","",
+                "NRCellDU","fddLteCoexistence","false","",
+                "GNBDUFunction","endpointResDepHEnabled","false","",
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Error parsing ID. Provided ID is invalid.",
+                "status": 400,
+                "detail": "Provide a valid Ruleset ID."
+              }
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to find ruleset. Ruleset doesn't exist.",
+                "status": 404,
+                "detail": "Enter a valid Ruleset ID."
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to get ruleset.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    put:
+      tags:
+        - rulesets
+      summary: Update a Ruleset.
+      description: |
+        Update a Ruleset for the specified ID by providing a CSV file containing the rules. 
+        This overwrites the existing rules.
+        A Ruleset cannot be updated if it is used in a Job that is involved in an ongoing execution.
+      operationId: updateRuleset
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateRuleset'
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/contentTypeInHeader'
+        - $ref: '#/components/parameters/rulesetId'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RulesetMetadata'
+              example:
+                {
+                  "id": "e0399094-0b34-4ccd-bcf7-a904293594c5",
+                  "rulesetName": "ruleset1",
+                  "uri": "v1/rulesets/e0399094-0b34-4ccd-bcf7-a904293594c5"
+                }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/RuleErrorDetails'
+              example: {
+                "title": "Problems found in ruleset.",
+                "status": 400,
+                "detail": "Ruleset cannot contain any invalid MO types, attributes or values.",
+                "ruleValidationErrors": [ {
+                  "lineNumber": 5,
+                  "errorType": "Invalid MO.",
+                  "errorDetails": "MO not found in Managed Object Model.",
+                  "additionalInfo": ""
+                } ]
+              }
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to find ruleset. Ruleset doesn't exist.",
+                "status": 404,
+                "detail": "Enter a valid Ruleset ID."
+              }
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Cannot update ruleset as it is used by an ongoing execution.",
+                "status": 409,
+                "detail": "Ruleset in use."
+              }
+
+        "413":
+          $ref: '#/components/responses/413'
+        "503":
+          $ref: '#/components/responses/503'
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to update ruleset.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    delete:
+      tags:
+        - rulesets
+      summary: Delete a Ruleset
+      description: Delete a Ruleset for the specified ID. A Ruleset can only be deleted if is not used in a Job.
+      operationId: deleteRuleset
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/rulesetId'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Error parsing ID. Provided ID is invalid.",
+                "status": 400,
+                "detail": "Provide a valid Ruleset ID."
+              }
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Ruleset with provided ID does not exist.",
+                "status": 404,
+                "detail": "Provide a valid Ruleset ID."
+              }
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Ruleset with provided ID is used in a Job configuration.",
+                "status": 409,
+                "detail": "Only Rulesets not associated with a Job configuration can be deleted."
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to delete ruleset.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+  /v1/scopes:
+    get:
+      tags:
+        - scopes
+      summary: Get Metadata of all Scopes.
+      description: Get metadata for all Scopes. An empty list is returned if no Scopes exist.
+      operationId: listScopes
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScopeMetadata'
+              example:
+                [
+                  {
+                    "id": "dedbfc30-41d5-46ff-ad39-ba36aebe2dbd",
+                    "scopeName": "market1",
+                    "uri": "v1/scopes/dedbfc30-41d5-46ff-ad39-ba36aebe2dbd"
+                  },
+                  {
+                    "id": "6e57b373-cdb5-4d05-961f-17bef897ba9a",
+                    "scopeName": "market2",
+                    "uri": "v1/scopes/6e57b373-cdb5-4d05-961f-17bef897ba9a"
+                  }
+                ]
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to get scopes.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    post:
+      tags:
+        - scopes
+      summary: Create a new Scope.
+      description: Create a new Scope comprised of the Scope name and a CSV file containing the ManagedElement FDNs.
+      operationId: createScope
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateScope'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopeMetadata'
+              example:
+                {
+                  "id": "dedbfc30-41d5-46ff-ad39-ba36aebe2dbd",
+                  "scopeName": "market1",
+                  "uri": "v1/scopes/dedbfc30-41d5-46ff-ad39-ba36aebe2dbd"
+                }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "File does not match the csv format.",
+                "status": 400,
+                "detail": "Fill in all required fields with the appropriate information."
+              }
+        "413":
+          $ref: '#/components/responses/413'
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to create scope.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+  /v1/scopes/{id}:
+    get:
+      tags:
+        - scopes
+      summary: Get a Scope.
+      description: Returns the ManagedElement FDNs for the Scope in CSV format for the specified ID.
+      operationId: getScope
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/scopeId'
+      responses:
+        "200":
+          description: OK
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+              example: |
+                fdn
+                "SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR03gNodeBRadio00001,ManagedElement=NR03gNodeBRadio00001"
+                "SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR03gNodeBRadio00002,ManagedElement=NR03gNodeBRadio00002"
+                "SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR03gNodeBRadio00003,ManagedElement=NR03gNodeBRadio00003"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Error parsing ID. Provided ID is invalid.",
+                "status": 400,
+                "detail": "Provide a valid ID."
+              }
+        "404":
+          $ref: '#/components/responses/404_scope'
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to get scope.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    put:
+      tags:
+        - scopes
+      summary: Update a Scope.
+      description: |
+        Update a Scope for the specified ID by providing a CSV file containing the ManagedElement FDNs. 
+        This overwrites the existing ManagedElements in the Scope.
+        A Scope cannot be updated if it is used in a Job that is involved in an ongoing execution.
+      operationId: updateScope
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateScope'
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/contentTypeInHeader'
+        - $ref: '#/components/parameters/scopeId'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopeMetadata'
+              example:
+                {
+                  "id": "dedbfc30-41d5-46ff-ad39-ba36aebe2dbd",
+                  "scopeName": "market1",
+                  "uri": "v1/scopes/dedbfc30-41d5-46ff-ad39-ba36aebe2dbd"
+                }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "File does not match the csv format.",
+                "status": 400,
+                "detail": "Fill in all required fields with the appropriate information."
+              }
+        "404":
+          $ref: '#/components/responses/404_scope'
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Cannot update scope as it is used by an ongoing execution.",
+                "status": 409,
+                "detail": "Scope in use."
+              }
+        "413":
+          $ref: '#/components/responses/413'
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to update scope.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    delete:
+      tags:
+        - scopes
+      summary: Delete a Scope
+      description: Delete a Scope for the specified ID. A Scope can only be deleted if is not used in a Job.
+      operationId: deleteScope
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/scopeId'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Error parsing ID. Provided ID is invalid.",
+                "status": 400,
+                "detail": "Provide a valid ID."
+              }
+        "404":
+          $ref: '#/components/responses/404_scope'
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Scope with provided ID is used in a Job configuration.",
+                "status": 409,
+                "detail": "Only Scopes not associated with a Job configuration can be deleted."
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to delete scope.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+  /v1/jobs:
+    get:
+      tags:
+        - jobs
+      summary: Return all the Jobs
+      description: Get all the Jobs defined in EACC
+      operationId: getJobs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+              example:
+                [
+                  {
+                    "jobName": "job_market1",
+                    "scopeName": "market1",
+                    "schedule": "0 38 14 19 2 *",
+                    "rulesetName": "ruleset1"
+                  },
+                  {
+                    "jobName": "job_market2",
+                    "scopeName": "market2",
+                    "schedule": "0 50 6 20 2 *",
+                    "rulesetName": "ruleset2"
+                  }
+                ]
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to get job(s).",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    post:
+      tags:
+        - jobs
+      summary: Create a Job
+      description: Create a Job in EACC defining the schedule, rules and Scope of the configuration consistency check.
+      operationId: postJobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+            example:
+              {
+                "jobName": "job_market1",
+                "scopeName": "market1",
+                "schedule": "0 38 14 19 2 *",
+                "rulesetName": "ruleset1"
+              }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+              example:
+                {
+                  "jobName": "job_market1",
+                  "scopeName": "market1",
+                  "schedule": "0 38 14 19 2 *",
+                  "rulesetName": "ruleset1"
+                }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed.",
+                "status": 400,
+                "detail": "Invalid jobName: job already exists"
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to create job.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+  /v1/jobs/{jobName}:
+    put:
+      tags:
+        - jobs
+      summary: Update a Job
+      description: |
+        Update a Job in EACC to change the schedule, rules or Scope of the configuration consistency check.
+        The Job name cannot be modified and if it is included in the payload it will be ignored.
+        A Job cannot be updated if there is an ongoing execution involving the Job.
+      operationId: putJob
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+            example:
+              {
+                "jobName": "job_market1",
+                "scopeName": "market1",
+                "schedule": "0 38 15 19 2 *",
+                "rulesetName": "ruleset1"
+              }
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/contentTypeInHeader'
+        - $ref: '#/components/parameters/jobName'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+              example:
+                {
+                  "jobName": "job_market1",
+                  "scopeName": "market1",
+                  "schedule": "0 38 15 19 2 *",
+                  "rulesetName": "ruleset1"
+                }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed",
+                "status": 400,
+                "detail": "Invalid resource identifier in url: Only lower case alphanumeric, underscores and dashes allowed, with between 4 - 100 characters."
+              }
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed",
+                "status": 404,
+                "detail": "Invalid jobName: jobName does not exist"
+              }
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Cannot update job as it is used by an ongoing execution.",
+                "status": 409,
+                "detail": "Job in use."
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to update job.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    delete:
+      tags:
+        - jobs
+      summary: Delete a Job.
+      description: Delete a Job in EACC.
+      operationId: deleteJob
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/jobName'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed",
+                "status": 400,
+                "detail": "Invalid resource identifier in url: Only lower case alphanumeric, underscores and dashes allowed, with between 4 -100 characters."
+              }
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed",
+                "status": 404,
+                "detail": "Invalid jobName: jobName does not exist"
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to delete job.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+  /v1/executions:
+    get:
+      tags:
+        - executions
+      summary: Get all the executions or executions for the specified Job name.
+      description: |
+        Get all the configuration consistency executions or executions for the specified Job 
+        with a summary of the results. An empty list is returned if no executions exist.
+      operationId: getExecutions
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - in: query
+          name: jobName
+          schema:
+            type: string
+          description: Name of the Job
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/Execution'
+              example: [
+                {
+                  "id": "1",
+                  "jobName": "job_market1",
+                  "executionType": "Open Loop",
+                  "executionStartedAt": "2024-02-19T14:38:00Z",
+                  "executionEndedAt": "2024-02-19T14:38:05Z",
+                  "consistencyAuditStartedAt": "2024-02-19T14:38:00Z",
+                  "consistencyAuditEndedAt": "2024-02-19T14:38:05Z",
+                  "executionStatus": "Changes Successful",
+                  "totalNodesAudited": 6,
+                  "totalNodesFailed": 0,
+                  "totalMosAudited": 46,
+                  "totalAttributesAudited": 86,
+                  "inconsistenciesIdentified": 15
+                } ]
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed",
+                "status": 400,
+                "detail": "Invalid resource identifier in url: Only lower case alphanumeric, underscores and dashes allowed, with between 4 -100 characters."
+              }
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed",
+                "status": 404,
+                "detail": "Invalid jobName: jobName does not exist"
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to get execution(s).",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+  /v1/executions/{id}/audit-results:
+    get:
+      tags:
+        - executions
+      summary: Get the configuration consistency audit result.
+      description: |
+        Get the configuration consistency audit results for the specified execution ID, with optional pagination
+        parameters and support for filtering of the data.
+      operationId: getAuditResults
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/executionId'
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+          description: Page Number, defaults to first page if not set
+        - in: query
+          name: pageSize
+          required: false
+          schema:
+            type: integer
+          description: Page Size, defaults to all data if not set.
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+          description: |
+            Filter to apply. The filter format is '\<filterKey\>:\<filterValue\>'
+            or if the property should match one in a list of values then the format is 
+            '\<filterKey\>:(\<filterValue1\>,\<filterValue2\>,...)'.
+            If filtering on multiple filterKeys then the format is
+            '\<filter1Key\>:\<filter1Value\>$\<filter2Key\>:\<filter2Value\>'.
+            The filter string should be appropriately URL encoded.
+            Note the filters are delimited by a $ symbol.
+            The filterKey can be one of auditStatus, changeStatus or managedObjectFdn.
+            If filtering on the managedObjectFdn then support is also provided for
+            partial matching using the % character in the filterValue. If % is 
+            included at the start of the filterValue then the filter matches any
+            managedObjectFdn ending with the value. If % is included at the end 
+            of the filterValue then the filter matches any managedObjectFdn starting 
+            with the value. If % is included at both ends then the filter matches any
+            managedObjectFdn containing the filterValue. The search for list of managedObjectFdn
+            is not supported.
+          examples:
+            matchingLikeValue:
+              value: filter=managedObjectFdn:%EUtranCellFDD%
+            matchingLeftLikeValue:
+              value: filter=managedObjectFdn:%EUtranCellFDD
+            matchingRightLikeValue:
+              value: filter=managedObjectFdn:EUtranCellFDD%
+            matchSingleValue:
+              value: filter=auditStatus:Inconsistent
+            matchListOfValues:
+              value: filter=managedObjectType(NRCellDU,EUtranCellFDD)
+            matchMultipleFilterKeys:
+              value: filter=auditStatus:Inconsistent$managedObjectFdn:SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR03gNodeBRadio00001,ManagedElement=NR03gNodeBRadio00001,GNBDUFunction=1,NRCellDU=NR03gNodeBRadio00001-1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditResults'
+              example: {
+                "totalElements": 15,
+                "totalPages": 8,
+                "currentPage": 1,
+                "perPage": 2,
+                "hasNext": true,
+                "hasPrev": false,
+                "results": [
+                  {
+                    "id": "1",
+                    "managedObjectFdn": "SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR03gNodeBRadio00001,ManagedElement=NR03gNodeBRadio00001,GNBDUFunction=1,NRCellDU=NR03gNodeBRadio00001-1",
+                    "managedObjectType": "NRCellDU",
+                    "attributeName": "ailgDlPrbLoadLevel",
+                    "currentValue": "0",
+                    "preferredValue": "1",
+                    "auditStatus": "Consistent",
+                    "executionId": "1",
+                    "ruleId": "5",
+                    "changeStatus": ""
+                  },
+                  {
+                    "id": "2",
+                    "managedObjectFdn": "SubNetwork=Europe,SubNetwork=Ireland,MeContext=NR03gNodeBRadio00001,ManagedElement=NR03gNodeBRadio00001,GNBDUFunction=1,NRCellDU=NR03gNodeBRadio00001-2",
+                    "managedObjectType": "NRCellDU",
+                    "attributeName": "ailgDlPrbLoadLevel",
+                    "currentValue": "1",
+                    "preferredValue": "1",
+                    "auditStatus": "Inconsistent",
+                    "executionId": "1",
+                    "ruleId": "5",
+                    "changeStatus": "Implementation complete"
+                  } ]
+              }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed",
+                "status": 400,
+                "detail": "Execution ID can only contain numeric characters."
+              }
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Execution ID does not exist.",
+                "status": 404,
+                "detail": "Provide a valid Execution ID."
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to get audit results.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+    post:
+      tags:
+        - executions
+      summary: Apply or revert changes in the configuration consistency audit result.
+      description: |
+        Apply changes to fix inconsistencies reported in the audit result or revert changes that 
+        were previously applied. One or more changes can be specified by giving a list of audit 
+        result IDs or alternatively all inconsistencies can be specified.
+      operationId: applyChange
+      parameters:
+        - $ref: '#/components/parameters/acceptInHeader'
+        - $ref: '#/components/parameters/contentTypeInHeader'
+        - $ref: '#/components/parameters/executionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovedAuditResults'
+            examples:
+              selectedChanges:
+                value:
+                  auditResultIds: [ "1", "2", "3" ]
+                  operation: APPLY_CHANGE
+              selectedChangesReversion:
+                value:
+                  auditResultIds: [ "1", "2", "3" ]
+                  approveForAll: false
+                  operation: REVERT_CHANGE
+              allChangesReversion:
+                value:
+                  auditResultIds: [ ]
+                  approveForAll: true
+                  operation: REVERT_CHANGE
+      responses:
+        "202":
+          description: Accepted
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Execution ID does not exist.",
+                "status": 404,
+                "detail": "Provide a valid Execution ID."
+              }
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Validation failed",
+                "status": 400,
+                "detail": "Execution ID can only contain numeric characters."
+              }
+        default:
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+              example: {
+                "title": "Failed to apply change.",
+                "status": 500,
+                "detail": "Database operation failed."
+              }
+
+components:
+  # Common params
+  parameters:
+    jobName:
+      name: jobName
+      in: path
+      description: Name of the job
+      required: true
+      schema:
+        type: string
+    executionId:
+      name: id
+      in: path
+      description: ID of the execution
+      required: true
+      schema:
+        type: string
+    scopeId:
+      name: id
+      in: path
+      description: ID of the Scope
+      required: true
+      schema:
+        type: string
+    rulesetId:
+      name: id
+      in: path
+      description: ID of the ruleset
+      required: true
+      schema:
+        type: string
+    acceptInHeader:
+      name: Accept
+      in: header
+      required: false
+      schema:
+        type: string
+        example: application/json
+        default: application/json
+    contentTypeInHeader:
+      name: Content-Type
+      in: header
+      required: false
+      schema:
+        type: string
+        example: application/json
+        default: application/json
+
+  # Common error responses
+  responses:
+    "404_scope":
+      description: Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+          example: {
+            "title": "Scope with provided ID does not exist.",
+            "status": 404,
+            "detail": "Provide a valid Scope ID."
+          }
+    "413":
+      description: Payload Too Large
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+          example: {
+            "title": "Maximum upload size exceeded.",
+            "status": 413,
+            "detail": "File is too large: the request was rejected because its size (58534393) exceeds the configured maximum (20971520)"
+          }
+    "503":
+      description: Service Unavailable
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+          example: {
+            "title": "Failed to create/update ruleset. Service not ready.",
+            "status": 503,
+            "detail": "Model Discovery has not yet completed and therefore cannot validate the ruleset."
+          }
+
+  schemas:
+    RulesetMetadata:
+      type: object
+      required: [ id, rulesetName, uri ]
+      properties:
+        id:
+          type: string
+          description: The Ruleset ID.
+        rulesetName:
+          type: string
+          description: The Ruleset name.
+        uri:
+          type: string
+          description: The URI of the Ruleset.
+    CreateRuleset:
+      type: object
+      required: [ rulesetName, fileName ]
+      properties:
+        rulesetName:
+          type: string
+          description: Use lower case alphanumeric, underscores and dashes up to a maximum of 100 characters.
+        fileName:
+          type: string
+          format: binary
+          description: |
+            A CSV file containing the rules. See the User Guide for information on the format of this file.
+    UpdateRuleset:
+      type: object
+      required: [ fileName ]
+      properties:
+        fileName:
+          type: string
+          format: binary
+          description: A CSV file containing the rules.
+    ScopeMetadata:
+      type: object
+      required: [ id, scopeName, uri ]
+      properties:
+        id:
+          type: string
+          description: The Scope ID.
+        scopeName:
+          type: string
+          description: The Scope name.
+        uri:
+          type: string
+          description: The URI of the Scope.
+    CreateScope:
+      type: object
+      required: [ scopeName, fileName ]
+      properties:
+        scopeName:
+          type: string
+          description: Use lower case alphanumeric, underscores and dashes up to a maximum of 255 characters.
+        filename:
+          type: string
+          format: binary
+          description: |
+            A CSV file containing the ManagedElement FDNs. See the User Guide for information on the format of this file.
+    UpdateScope:
+      type: object
+      required: [ fileName ]
+      properties:
+        fileName:
+          type: string
+          format: binary
+          description: |
+            A CSV file containing the ManagedElement FDNs. See the User Guide for information on the format of this file.
+    Job:
+      type: object
+      required: [ jobName, scopeName, schedule, rulesetName ]
+      properties:
+        jobName:
+          type: string
+          description: The name of the Job.
+        scopeName:
+          type: string
+          description: The Scope to be used in the Job.
+        schedule:
+          type: string
+          description: The schedule defined as a cron expression
+        rulesetName:
+          type: string
+          description: The Ruleset to be used in the Job.
+    Execution:
+      type: object
+      required: [ id, jobName, executionType, executionStartedAt, executionEndedAt, consistencyAuditStartedAt, consistencyAuditEndedAt, executionStatus, totalNodesAudited, totalNodesFailed, totalMosAudited, totalAttributesAudited, inconsistenciesIdentified ]
+      properties:
+        id:
+          type: string
+          description: The execution ID.
+        jobName:
+          type: string
+          description: The job name for this execution.
+        executionType:
+          type: string
+          description: |
+            Type of execution.
+        executionStartedAt:
+          type: string
+          format: date-time
+          description: The execution start time.
+        executionEndedAt:
+          type: string
+          format: date-time
+          description: The execution end time.
+        consistencyAuditStartedAt:
+          type: string
+          format: date-time
+          description: The audit start time.
+        consistencyAuditEndedAt:
+          type: string
+          format: date-time
+          description: The audit end time.
+        executionStatus:
+          type: string
+          description: |
+            Shows the status of the execution. One of "Audit in Progress", "Audit Successful", "Audit Partially Successful", 
+            "Audit Failed", "Changes in Progress", "Changes Failed", "Changes Successful", "Changes Partially Successful",
+            "Reversion in Progress", "Reversion Failed", "Reversion Successful" or "Reversion Partially Successful".
+        totalNodesAudited:
+          type: integer
+          description: The total number of nodes audited.
+        totalNodesFailed:
+          type: integer
+          description: The number of nodes that the audit could not be completed for.
+        totalMosAudited:
+          type: integer
+          description: The total number of Managed Objects audited.
+        totalAttributesAudited:
+          type: integer
+          description: The total number of attributes audited.
+        inconsistenciesIdentified:
+          type: integer
+          description: The total number of inconsistencies found in the audit.
+    PaginatedAuditResults:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+          description: The total number of audit results for the execution.
+        totalPages:
+          type: integer
+          description: The total number of pages of audit results for the execution.
+        currentPage:
+          type: integer
+          description: The current page of the audit results.
+        perPage:
+          type: integer
+          description: The number of audit results in the page.
+        hasNext:
+          type: boolean
+          description: True if the are more pages, otherwise false.
+        hasPrev:
+          type: boolean
+          description: True if the are previous pages, otherwise false.
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditResult'
+    AuditResult:
+      type: object
+      required: [ id, managedObjectFdn, managedObjectType, attributeName, currentValue, preferredValue, auditStatus, executionId, ruleId, changeStatus ]
+      properties:
+        id:
+          type: string
+          description: The audit ID. This is only unique within the execution.
+        managedObjectFdn:
+          type: string
+          description: The FDN of the Managed Object of the individual audit result.
+        managedObjectType:
+          type: string
+          description: The Managed Object type of the individual audit result.
+        attributeName:
+          type: string
+          description: The attribute name of the individual audit result.
+        currentValue:
+          type: string
+          description: The current value of the attribute.
+        preferredValue:
+          type: string
+          description: The value that the attribute should, have based on the rule.
+        auditStatus:
+          type: string
+          description: The status of the individual audit and can be either "Consistent" or "Inconsistent".
+        executionId:
+          type: string
+          description: The execution ID that this individual audit result is related to.
+        ruleId:
+          type: string
+          description: |
+            The rule ID which is used for this individual audit result. The rule ID itself is the ordinal number of
+            the rule in the CSV file provided in the Ruleset.
+        changeStatus:
+          type: string
+          description: |
+            The status of the change or revert. One of "Implementation in progress", "Implementation complete",
+            "Implementation failed", "Reversion in progress", "Reversion complete" or "Reversion failed".
+            If no change is applied then this will contain an empty string.
+    ApprovedAuditResults:
+      type: object
+      required: [ auditResultIds ]
+      properties:
+        auditResultIds:
+          type: array
+          items:
+            type: string
+          description: A list of the individual audit result IDs.
+        approveForAll:
+          type: boolean
+          default: false
+          description: |
+            If set to true then all individual audit results in the execution are changed or reverted. Otherwise
+            the list of audit result IDs in the auditResultIds array are used.
+        operation:
+          $ref: '#/components/schemas/Operation'
+    Operation:
+      type: string
+      description: The operation to apply on the audit result.
+      default: APPLY_CHANGE
+      enum:
+        - APPLY_CHANGE
+        - REVERT_CHANGE
+
+    ErrorDetails:
+      description: Provides additional information in an error response.
+      type: object
+      required: [ title, status, detail ]
+      properties:
+        title:
+          $ref: '#/components/schemas/ErrorTitle'
+        status:
+          $ref: '#/components/schemas/ErrorStatus'
+        detail:
+          $ref: '#/components/schemas/ErrorDetail'
+    RuleErrorDetails:
+      description: Provides additional information in an error response.
+      type: object
+      required: [ title, status, detail ]
+      properties:
+        title:
+          $ref: '#/components/schemas/ErrorTitle'
+        status:
+          $ref: '#/components/schemas/ErrorStatus'
+        detail:
+          $ref: '#/components/schemas/ErrorDetail'
+        ruleValidationErrors:
+          type: array
+          description: |
+            List of errors found in the Ruleset file being uploaded. Contains an empty list if the 
+            issue is not a problem with the content of the file.
+          items:
+            type: object
+            required: [ lineNumber, errorType, errorDetails, additionalInfo ]
+            properties:
+              lineNumber:
+                type: integer
+                format: int64
+                description: The line number in the CSV file in which the error is located.
+              errorType:
+                type: string
+                description: Slogan identifying the type of error.
+              errorDetails:
+                type: string
+                description: Human-readable explanation of the error.
+              additionalInfo:
+                type: string
+                description: Additional information if relevant otherwise an empty string.
+    ErrorTitle:
+      type: string
+      description: Short, human-readable summary of the problem.
+    ErrorStatus:
+      type: integer
+      description: HTTP status code.
+    ErrorDetail:
+      description: |
+        Optional human-readable explanation of the problem. if present, ought to focus on helping the client 
+        correct the problem, rather than giving debugging information.
+

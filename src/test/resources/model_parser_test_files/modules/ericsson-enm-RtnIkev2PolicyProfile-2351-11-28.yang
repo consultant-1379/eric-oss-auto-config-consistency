@@ -1,0 +1,232 @@
+module ericsson-enm-RtnIkev2PolicyProfile {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnIkev2PolicyProfile;
+  prefix erienmnrmrtnikev2policyprofile;
+  yexte:ecim-name RtnIkev2PolicyProfile;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 15;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-IkeIntegrityAlgorithm {
+    description "Ike integrity algorithms.";
+    type enumeration {
+      enum AUTH_HMAC_MD5_96 {
+        value 1;
+      }
+      enum AUTH_HMAC_SHA1_96 {
+        value 2;
+      }
+      enum AUTH_AES_XCBC_96 {
+        value 5;
+      }
+      enum AUTH_HMAC_SHA2_256_128 {
+        value 12;
+      }
+      enum AUTH_HMAC_SHA2_384_192 {
+        value 13;
+      }
+    }
+  }
+  typedef enum-PseudoRandomFunction {
+    description "Available pseudo-random functions.";
+    type enumeration {
+      enum PRF_HMAC_MD5 {
+        value 1;
+      }
+      enum PRF_HMAC_SHA1 {
+        value 2;
+      }
+      enum PRF_AES128_XCBC {
+        value 4;
+      }
+      enum PRF_HMAC_SHA2_256 {
+        value 5;
+      }
+      enum PRF_HMAC_SHA2_384 {
+        value 6;
+      }
+    }
+  }
+  typedef enum-IkeEncryptionAlgorithm {
+    description "Ike encryption algorithms.";
+    type enumeration {
+      enum ENCR_3DES {
+        value 3;
+      }
+      enum ENCR_AES_CBC_128 {
+        value 1024;
+      }
+      enum ENCR_AES_CBC_256 {
+        value 1026;
+      }
+      enum AES_GCM_16_128 {
+        value 1034;
+      }
+      enum AES_GCM_16_256 {
+        value 1035;
+      }
+    }
+  }
+  typedef enum-DiffieHellmanGroup {
+    description "Diffie-Hellman groups.";
+    type enumeration {
+      enum MODP_1024_GROUP_2 {
+        value 2;
+      }
+      enum MODP_2048_GROUP_14 {
+        value 14;
+      }
+      enum ECP_256_GROUP_19 {
+        value 19;
+      }
+      enum ECP_384_GROUP_20 {
+        value 20;
+      }
+    }
+  }
+  typedef ddt-RtnIkev2PolicyProfile_Ikev2PolicyProfile_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnIkev2PolicyProfile_Ikev2PolicyProfile_dpdTime {
+    type uint32 {
+      range 30..1800;
+    }
+  }
+  typedef ddt-RtnIkev2PolicyProfile_Ikev2PolicyProfile_ikeSaLifetime {
+    type uint32 {
+      range 60..5000;
+    }
+  }
+  typedef ddt-RtnIkev2PolicyProfile_Ikev2PolicyProfile_ikeDscp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  grouping struct-Ikev2Proposal {
+    description "Holds IKEv2 transform proposal used during IKE SA negotiation.\nIt contains set of cryptographic algorithms used by IKE SA.";
+    leaf diffieHellmanGroup {
+      description "Diffie-Hellman group.\nIf not set (nil), node sends all Diffie-Hellman groups supported by node in proposal. In this case, node sends value based on Diffie-Hellman group 19 in initial exchange.";
+      type erienmnrmrtnikev2policyprofile:enum-DiffieHellmanGroup;
+    }
+    leaf integrityAlgorithm {
+      description "Algorithm for integrity check.\nIf not set (nil), node sends all integrity algorithms supported by node in proposal.";
+      type erienmnrmrtnikev2policyprofile:enum-IkeIntegrityAlgorithm;
+    }
+    leaf encryptionAlgorithm {
+      description "Encryption algorithm.\nIf not set (nil), node sends all encryption algorithms supported by node in proposal.";
+      yexte:dependencies "If AES_GSM, integrityAlgorithm must not be set.";
+      type erienmnrmrtnikev2policyprofile:enum-IkeEncryptionAlgorithm;
+    }
+    leaf pseudoRandomFunction {
+      description "Type of pseudo-random function.\nIf not set (nil), node sends all PRF algorithms supported by node in proposal.";
+      type erienmnrmrtnikev2policyprofile:enum-PseudoRandomFunction;
+    }
+  } // end 'grouping struct-Ikev2Proposal'
+  grouping moc-Ikev2PolicyProfile-keys {
+    description "Key(s) for MOC Ikev2PolicyProfile";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ikev2PolicyProfileId;
+      type string;
+    }
+  } // end 'grouping moc-Ikev2PolicyProfile-keys'
+  grouping moc-Ikev2PolicyProfile {
+    description "Contains common parameters used by IKE SA negotiation in the node.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnikev2policyprofile:ddt-RtnIkev2PolicyProfile_Ikev2PolicyProfile_userLabel;
+    }
+    leaf dpdTime {
+      description "Max time  to detect that IKE SA is down.\nIf node detects that IKE SA is down, alarm is raised. Node tries continually re-establish IKE SA.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrtnikev2policyprofile:ddt-RtnIkev2PolicyProfile_Ikev2PolicyProfile_dpdTime;
+      default 60;
+    }
+    leaf credential {
+      description "If certificate based authentication is used, attribute refers to NodeCredential MO including IPsec node certificate to be used in IKE SA negotiation.\nIf credential and trustCategory not specified, pre-shared key-based authentication is used. Referring Ikev2Session MO must have pre-shared keys installed.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Either both credential and trustCategory must be set or neither of them.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf ikev2Fragmentation {
+      description "IKEv2 fragmentation functionality.\nIKEv2 fragmentation is only applicable if both peers enable fragmentation.\nIf false, fragmentation is disabled.\nIf true, fragmentation is enabled.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type boolean;
+      default false;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf ikeDscp {
+      description "DSCP value that node uses when transmitting IKE messages.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrtnikev2policyprofile:ddt-RtnIkev2PolicyProfile_Ikev2PolicyProfile_ikeDscp;
+      default 48;
+    }
+    leaf ikeSaLifetime {
+      description "Lifetime for IKE SA.\nNode initiates re-keying according to soft lifetime in order to complete process before lifetime expires.\nSoft lifetime is calculated as (0.8+0.1*R)*ikeSaLifetime, where R is random factor between 0 and 1.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrtnikev2policyprofile:ddt-RtnIkev2PolicyProfile_Ikev2PolicyProfile_ikeSaLifetime;
+      default 1440;
+    }
+    leaf trustCategory {
+      description "Reference to TrustCategory MO containing list of trusted certificates used in IKE SA negotiation.\nReferred TrustCategory MO must contain CA certificates for both peer node and this node.\nThis attribute must be set if certificate based authentication is used.\nIf credential and trustCategory not set, pre-shared key based authentication is used. Referring Ikev2Session MO must have pre-shared keys installed.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Either both credential and trustCategory must be set or neither of them.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    list ikev2Proposal {
+      min-elements 0;
+      max-elements 2;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Ordered list of IKE proposals, used for IKE SA negotiation. Each proposal contains a set of cryptographic algorithms that can be used for IKE SA.\n\nIf attribute is not set, the node generates proposal based on all node-supported algorithms.\n\nFirst proposal in list has highest priority.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnikev2policyprofile:struct-Ikev2Proposal;
+    } // end 'list ikev2Proposal'
+  } // end 'grouping moc-Ikev2PolicyProfile'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list Ikev2PolicyProfile {
+      key id;
+      max-elements 8;
+      description "Contains common parameters used by IKE SA negotiation in the node.";
+      erienmyext:enm-type MOC;
+      uses moc-Ikev2PolicyProfile-keys;
+      container attributes {
+        description "Attributes for Ikev2PolicyProfile";
+        uses moc-Ikev2PolicyProfile;
+      } // end 'container attributes'
+    } // end 'list Ikev2PolicyProfile'
+  }
+}

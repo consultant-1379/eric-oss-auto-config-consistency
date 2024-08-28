@@ -1,0 +1,168 @@
+module ericsson-enm-RtnDot1xAuthenticatorPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnDot1xAuthenticatorPort;
+  prefix erienmnrmrtndot1xauthenticatorport;
+  yexte:ecim-name RtnDot1xAuthenticatorPort;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL2EthernetPort {
+    prefix erienmnrmrtnl2ethernetport;
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-Dot1xStatusType {
+    description "Port dot1x status.";
+    type enumeration {
+      enum UNAUTHORIZED {
+        description "Port is not authorized. Traffic disabled.";
+        value 0;
+      }
+      enum AUTHORIZED {
+        description "Port is authorized. Traffic enabled.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-RtnDot1xAuthenticatorPort_Dot1xAuthenticatorPort_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-Dot1xAuthenticatorPort-keys {
+    description "Key(s) for MOC Dot1xAuthenticatorPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dot1xAuthenticatorPortId;
+      type string;
+    }
+  } // end 'grouping moc-Dot1xAuthenticatorPort-keys'
+  grouping moc-Dot1xAuthenticatorPort {
+    description "Represents IEEE 802.1X authenticator.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtndot1xauthenticatorport:ddt-RtnDot1xAuthenticatorPort_Dot1xAuthenticatorPort_userLabel;
+    }
+    leaf authenticationServer {
+      description "Reference to AuthenticationServer MO to reach authentication server.";
+      mandatory true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf dot1xStatus {
+      config false;
+      description "Port dot1x status.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtndot1xauthenticatorport:enum-Dot1xStatusType;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtndot1xauthenticatorport:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtndot1xauthenticatorport:enum-OperState;
+    }
+  } // end 'grouping moc-Dot1xAuthenticatorPort'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl2ethernetport:EthernetPort {
+    list Dot1xAuthenticatorPort {
+      key id;
+      max-elements 1;
+      description "Represents IEEE 802.1X authenticator.";
+      erienmyext:enm-type MOC;
+      uses moc-Dot1xAuthenticatorPort-keys;
+      container attributes {
+        description "Attributes for Dot1xAuthenticatorPort";
+        uses moc-Dot1xAuthenticatorPort;
+      } // end 'container attributes'
+    } // end 'list Dot1xAuthenticatorPort'
+  }
+}

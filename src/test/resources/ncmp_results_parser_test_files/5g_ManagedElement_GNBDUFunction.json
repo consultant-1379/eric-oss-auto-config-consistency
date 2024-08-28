@@ -1,0 +1,19 @@
+{
+  "ManagedElement":
+  [
+    {
+      "id": "NR01gNodeBRadio00007",
+      "attributes": {
+        "dnPrefix": "test"
+      },
+      "GNBDUFunction": [
+        {
+          "id": "1",
+          "attributes": {
+            "endpointResDepHEnabled": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

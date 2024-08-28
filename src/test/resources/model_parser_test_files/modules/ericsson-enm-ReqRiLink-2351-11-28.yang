@@ -1,0 +1,254 @@
+module ericsson-enm-ReqRiLink {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqRiLink;
+  prefix erienmnrmreqrilink;
+  yexte:ecim-name ReqRiLink;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-RbsTransportType {
+    description "The transport type and protocol of the Radio Interface(RI) link. Change of this parameter during network runtime will trigger restart of CPRI link.";
+    type enumeration {
+      enum CPRI_OVER_DWDM_LINEAR {
+        description "CPRI over DWDM in Linear configuration";
+        value 1;
+      }
+      enum CPRI_OVER_DWDM_RING {
+        description "CPRI over DWDM in Ring configuration";
+        value 2;
+      }
+      enum CPRI_OVER_CWDM_LINEAR {
+        description "CPRI over CWDM in Linear configuration";
+        value 3;
+      }
+      enum CPRI_OVER_CWDM_RING {
+        description "CPRI over CWDM in Ring configuration";
+        value 4;
+      }
+      enum CPRI_OVER_MICROWAVE_PTOP {
+        description "CPRI over Microwave in Point to Point configuration";
+        value 5;
+      }
+      enum CPRI_OVER_MICROWAVE_PTOM {
+        description "CPRI over Microwave in Point to Multi-point configuration";
+        value 6;
+      }
+      enum CPRI_OVER_GIGABIT_ETHERNET {
+        description "CPRI over Gigabit ehternet configuration";
+        value 7;
+      }
+      enum NOT_SET {
+        description "Operator does not set the transport type";
+        value 0;
+      }
+      enum CPRI_OVER_DIRECT_CABLE {
+        description "CPRI over Direct Cable configuration";
+        value 8;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef enum-FronthaulDeviceLineRate {
+    description "Line rate of CPRI link. Used if fronthaul device is adopted.";
+    type enumeration {
+      enum NOT_SET {
+        description "Line rate not set by operator.";
+        value 0;
+      }
+      enum CPRI_LINE_RATE_2 {
+        description "Line rate is CPRI line rate option 2, 1.2288 Gbps.";
+        value 1;
+      }
+      enum CPRI_LINE_RATE_3 {
+        description "Line rate is CPRI line rate option 3, 2.4575 Gbps";
+        value 2;
+      }
+      enum CPRI_LINE_RATE_5 {
+        description "Line rate is CPRI line rate option 5, 4.9152 Gbps";
+        value 3;
+      }
+      enum CPRI_LINE_RATE_7 {
+        description "Line rate is CPRI line rate option 7, 9.8304 Gbps";
+        value 4;
+      }
+      enum CPRI_LINE_RATE_8 {
+        description "Line rate is CPRI line rate option 8, 10.1376 Gbps";
+        value 5;
+      }
+    }
+  }
+  typedef ddt-ReqRiLink_RiLink_linkRate {
+    type int32 {
+      range 0..25700;
+    }
+  }
+  typedef ddt-ReqRiLink_RiLink_linkTag {
+    type int64 {
+      range 0..4294967295;
+    }
+  }
+  grouping moc-RiLink-keys {
+    description "Key(s) for MOC RiLink";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name riLinkId;
+      type string;
+    }
+  } // end 'grouping moc-RiLink-keys'
+  grouping moc-RiLink {
+    description "This Managed Object (MO) is used to configure and monitor a Radio Interface (RI) link. It contains references to the two Radio Interface Ports (RiPort) comprising the link.\nOn a link to an ORadio, the link end on the BB refers to an RiPort and the link end on the ORadio refers to an ORiPort.\n\nThe two port references must be provisioned to make the configuration of the radio interface connection complete.";
+    leaf fronthaulDeviceLineRate {
+      description "Line rate of CPRI link. Used if fronthaul device is adopted.";
+      type erienmnrmreqrilink:enum-FronthaulDeviceLineRate;
+      default NOT_SET;
+    }
+    leaf linkRate {
+      erienmyext:no-notification;
+      config false;
+      description "The negotiated link rate for a CPRI or Ethernet link.";
+      type erienmnrmreqrilink:ddt-ReqRiLink_RiLink_linkRate;
+    }
+    leaf transportType {
+      description "The transport type and protocol of the Radio Interface(RI) link.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type erienmnrmreqrilink:enum-RbsTransportType;
+      default NOT_SET;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrilink:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrilink:enum-AvailStatus;
+    }
+    leaf linkTag {
+      config false;
+      description "CPRI link tag (32 bits).\nThe linkTag contains two parts - Node identity part (24 bits) followed by Link identity part (8 bits). \nThe node identity part is from the nodeTag attribute of CpriLinkTagging MO.\nIf 0, there is no linkTag set for this CPRI link.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrilink:ddt-ReqRiLink_RiLink_linkTag;
+    }
+    leaf riPortRef2 {
+      description "Refers to the other RiPort on the unit to which the link is connected.\nWhen the link is to an ORadio, the link end on the ORadio is an ORiPort MO instead of an RiPort MO.";
+      mandatory true;
+      yexte:dependencies "When the link is to an ORadio, one of riPortRef1 and riPortRef2 refers to an RiPort MO, while the other refers to an ORiPort MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf riPortRef1 {
+      description "Refers to one RiPort on the unit to which the link is connected. \nWhen the link is to an ORadio, the link end on the ORadio is an ORiPort MO instead of an RiPort MO.";
+      mandatory true;
+      yexte:dependencies "When the link is to an ORadio, one of riPortRef1 and riPortRef2 refers to an RiPort MO, while the other refers to an ORiPort MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-RiLink'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list RiLink {
+      key id;
+      description "This Managed Object (MO) is used to configure and monitor a Radio Interface (RI) link. It contains references to the two Radio Interface Ports (RiPort) comprising the link.\nOn a link to an ORadio, the link end on the BB refers to an RiPort and the link end on the ORadio refers to an ORiPort.\n\nThe two port references must be provisioned to make the configuration of the radio interface connection complete.";
+      erienmyext:enm-type MOC;
+      uses moc-RiLink-keys;
+      container attributes {
+        description "Attributes for RiLink";
+        uses moc-RiLink;
+      } // end 'container attributes'
+    } // end 'list RiLink'
+  }
+}

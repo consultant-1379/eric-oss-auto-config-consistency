@@ -1,0 +1,1219 @@
+module ericsson-enm-RtnQosProfiles {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnQosProfiles;
+  prefix erienmnrmrtnqosprofiles;
+  yexte:ecim-name RtnQosProfiles;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 5;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp50 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp51 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp1 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp2 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp0 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp5 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp6 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp3 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp4 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp49 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp9 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp7 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp8 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp45 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp46 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp47 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp48 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp41 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp42 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp43 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp44 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_defaultPcp {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_pcp0 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp40 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_pcp3 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_pcp4 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_pcp1 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_pcp2 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_defaultPcp {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp38 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp39 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_defaultPcp {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp34 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_pcp7 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp35 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp36 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_pcp5 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp37 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMap_pcp6 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp30 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp31 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp32 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp33 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_pcp6 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_pcp0 {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_pcp7 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_pcp1 {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_pcp4 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_pcp5 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp27 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_pcp2 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_pcp4 {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp28 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_pcp3 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_pcp5 {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp29 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_pcp0 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_pcp2 {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpPcpMapDefault_pcp1 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_pcp3 {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp23 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp24 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp25 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_pcp6 {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp26 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_PcpPcpMap_pcp7 {
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_defaultDscp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp63 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp20 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp21 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp22 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp60 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp61 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp62 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp16 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp17 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp18 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp19 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp12 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp56 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp13 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp57 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp14 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp58 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp15 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp59 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp52 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp53 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp10 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp54 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp11 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnQosProfiles_DscpDscpMap_dscp55 {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  grouping moc-DscpDscpMap-keys {
+    description "Key(s) for MOC DscpDscpMap";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dscpDscpMapId;
+      type string;
+    }
+  } // end 'grouping moc-DscpDscpMap-keys'
+  grouping moc-DscpDscpMap {
+    description "A DSCP to DSCP map.\nUsed for remarking of the DSCP value.";
+    leaf-list dscp39 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 39.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp39;
+    }
+    leaf-list dscp38 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 38.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp38;
+    }
+    leaf-list dscp37 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 37.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp37;
+    }
+    leaf-list dscp47 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 47.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp47;
+    }
+    leaf-list dscp46 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 46.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp46;
+    }
+    leaf-list dscp45 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 45.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp45;
+    }
+    leaf-list dscp44 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 44.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp44;
+    }
+    leaf-list dscp43 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 43.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp43;
+    }
+    leaf-list dscp42 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 42.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp42;
+    }
+    leaf-list dscp41 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 41.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp41;
+    }
+    leaf-list dscp40 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 40.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp40;
+    }
+    leaf-list dscp29 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 29.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp29;
+    }
+    leaf-list dscp28 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 28.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp28;
+    }
+    leaf-list dscp27 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 27.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp27;
+    }
+    leaf-list dscp26 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 26.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp26;
+    }
+    leaf-list dscp36 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 36.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp36;
+    }
+    leaf-list dscp35 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 35.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp35;
+    }
+    leaf-list dscp34 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 34.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp34;
+    }
+    leaf-list dscp33 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 33.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp33;
+    }
+    leaf-list dscp32 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 32.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp32;
+    }
+    leaf-list dscp31 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 31.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp31;
+    }
+    leaf-list dscp30 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 30.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp30;
+    }
+    leaf-list dscp2 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 2.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp2;
+    }
+    leaf-list dscp3 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 3.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp3;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type string;
+    }
+    leaf-list dscp0 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 0.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp0;
+    }
+    leaf-list dscp1 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 1.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp1;
+    }
+    leaf-list dscp19 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 19.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp19;
+    }
+    leaf-list dscp18 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 18.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp18;
+    }
+    leaf-list dscp17 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 17.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp17;
+    }
+    leaf-list dscp16 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 16.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp16;
+    }
+    leaf-list dscp15 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 15.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp15;
+    }
+    leaf-list dscp59 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 59.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp59;
+    }
+    leaf-list dscp8 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 8.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp8;
+    }
+    leaf-list dscp9 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 9.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp9;
+    }
+    leaf-list dscp6 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 6.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp6;
+    }
+    leaf-list dscp7 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 7.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp7;
+    }
+    leaf-list dscp4 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 4.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp4;
+    }
+    leaf-list dscp5 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 5.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp5;
+    }
+    leaf-list dscp61 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 61.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp61;
+    }
+    leaf-list dscp60 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 60.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp60;
+    }
+    leaf-list dscp25 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 25.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp25;
+    }
+    leaf-list dscp24 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 24.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp24;
+    }
+    leaf-list dscp23 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 23.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp23;
+    }
+    leaf-list dscp22 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 22.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp22;
+    }
+    leaf-list dscp21 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 21.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp21;
+    }
+    leaf-list dscp20 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 20.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp20;
+    }
+    leaf-list dscp63 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 63.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp63;
+    }
+    leaf-list dscp62 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 62.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp62;
+    }
+    leaf-list dscp49 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 49.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp49;
+    }
+    leaf-list dscp48 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 48.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp48;
+    }
+    leaf defaultDscp {
+      description "The DSCP value to be used for non-mapped DSCP values.\nIf not defined, no remarking is made for otherwise non-mapped DSCP values.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_defaultDscp;
+    }
+    leaf-list dscp50 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 50.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp50;
+    }
+    leaf-list dscp14 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 14.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp14;
+    }
+    leaf-list dscp58 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 58.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp58;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list dscp13 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 13.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp13;
+    }
+    leaf-list dscp57 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 57.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp57;
+    }
+    leaf-list dscp12 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 12.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp12;
+    }
+    leaf-list dscp56 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 56.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp56;
+    }
+    leaf-list dscp11 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 11.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp11;
+    }
+    leaf-list dscp55 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 55.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp55;
+    }
+    leaf-list dscp10 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 10.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp10;
+    }
+    leaf-list dscp54 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 54.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp54;
+    }
+    leaf-list dscp53 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 53.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp53;
+    }
+    leaf-list dscp52 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 52.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp52;
+    }
+    leaf-list dscp51 {
+      min-elements 0;
+      max-elements 64;
+      description "Set of DSCP values that shall be remarked to DSCP 51.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpDscpMap_dscp51;
+    }
+  } // end 'grouping moc-DscpDscpMap'
+  grouping moc-QosProfiles-keys {
+    description "Key(s) for MOC QosProfiles";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name qosProfilesId;
+      type string;
+    }
+  } // end 'grouping moc-QosProfiles-keys'
+  grouping moc-QosProfiles {
+    description "Mapping of a set of DSCP values to a PCP.";
+  } // end 'grouping moc-QosProfiles'
+  grouping moc-DscpPcpMap-keys {
+    description "Key(s) for MOC DscpPcpMap";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dscpPcpMapId;
+      type string;
+    }
+  } // end 'grouping moc-DscpPcpMap-keys'
+  grouping moc-DscpPcpMap {
+    description "A DSCP to PCP map.";
+    leaf-list pcp1 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 1.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_pcp1;
+    }
+    leaf-list pcp2 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 2.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_pcp2;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_userLabel;
+    }
+    leaf-list pcp3 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 3.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_pcp3;
+    }
+    leaf-list pcp4 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 4.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_pcp4;
+    }
+    leaf-list pcp0 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 0.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_pcp0;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list pcp5 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 5.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_pcp5;
+    }
+    leaf-list pcp6 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 6.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_pcp6;
+    }
+    leaf-list pcp7 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 7.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_pcp7;
+    }
+    leaf defaultPcp {
+      description "The PCP value that should be used for non-mapped DSCP values.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMap_defaultPcp;
+      default 0;
+    }
+  } // end 'grouping moc-DscpPcpMap'
+  grouping moc-DscpPcpMapDefault-keys {
+    description "Key(s) for MOC DscpPcpMapDefault";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dscpPcpMapDefaultId;
+      type string;
+    }
+  } // end 'grouping moc-DscpPcpMapDefault-keys'
+  grouping moc-DscpPcpMapDefault {
+    description "Default DSCP to PCP map.";
+    leaf-list pcp1 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 1.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_pcp1;
+    }
+    leaf-list pcp2 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 2.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_pcp2;
+      default 10;
+      default 12;
+      default 14;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_userLabel;
+    }
+    leaf-list pcp3 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 3.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_pcp3;
+      default 18;
+      default 20;
+      default 22;
+    }
+    leaf-list pcp4 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 4.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_pcp4;
+      default 8;
+      default 16;
+      default 26;
+      default 28;
+    }
+    leaf-list pcp0 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 0.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_pcp0;
+      default 0;
+    }
+    leaf-list pcp5 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 5.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_pcp5;
+      default 34;
+      default 36;
+      default 38;
+      default 46;
+    }
+    leaf-list pcp6 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 6.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_pcp6;
+      default 32;
+      default 40;
+      default 48;
+    }
+    leaf-list pcp7 {
+      min-elements 0;
+      description "The set of DSCP values that shall be mapped to PCP 7.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_pcp7;
+      default 51;
+      default 54;
+    }
+    leaf defaultPcp {
+      description "The PCP value that should be used for non-mapped DSCP values.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_DscpPcpMapDefault_defaultPcp;
+      default 0;
+    }
+  } // end 'grouping moc-DscpPcpMapDefault'
+  grouping moc-PcpPcpMap-keys {
+    description "Key(s) for MOC PcpPcpMap";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name pcpPcpMapId;
+      type string;
+    }
+  } // end 'grouping moc-PcpPcpMap-keys'
+  grouping moc-PcpPcpMap {
+    description "A PCP to PCP map.\nUsed for remarking of the PCP value.";
+    leaf-list pcp1 {
+      min-elements 0;
+      max-elements 8;
+      description "Set of PCP values that shall be remarked to PCP 1.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_pcp1;
+    }
+    leaf-list pcp2 {
+      min-elements 0;
+      max-elements 8;
+      description "Set of PCP values that shall be remarked to PCP 2.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_pcp2;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_userLabel;
+    }
+    leaf-list pcp3 {
+      min-elements 0;
+      max-elements 8;
+      description "Set of PCP values that shall be remarked to PCP 3.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_pcp3;
+    }
+    leaf-list pcp4 {
+      min-elements 0;
+      max-elements 8;
+      description "Set of PCP values that shall be remarked to PCP 4.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_pcp4;
+    }
+    leaf-list pcp0 {
+      min-elements 0;
+      max-elements 8;
+      description "Set of PCP values that shall be remarked to PCP 0.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_pcp0;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list pcp5 {
+      min-elements 0;
+      max-elements 8;
+      description "Set of PCP values that shall be remarked to PCP 5.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_pcp5;
+    }
+    leaf-list pcp6 {
+      min-elements 0;
+      max-elements 8;
+      description "Set of PCP values that shall be remarked to PCP 6.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_pcp6;
+    }
+    leaf-list pcp7 {
+      min-elements 0;
+      max-elements 8;
+      description "Set of PCP values that shall be remarked to PCP 7.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_pcp7;
+    }
+    leaf defaultPcp {
+      description "The PCP value to be used for non-mapped PCP values.\nIf not defined, no remarking is made for otherwise non-mapped PCP values.";
+      type erienmnrmrtnqosprofiles:ddt-RtnQosProfiles_PcpPcpMap_defaultPcp;
+    }
+  } // end 'grouping moc-PcpPcpMap'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnqosprofiles:QosProfiles {
+    list DscpDscpMap {
+      key id;
+      description "A DSCP to DSCP map.\nUsed for remarking of the DSCP value.";
+      erienmyext:enm-type MOC;
+      uses moc-DscpDscpMap-keys;
+      container attributes {
+        description "Attributes for DscpDscpMap";
+        uses moc-DscpDscpMap;
+      } // end 'container attributes'
+    } // end 'list DscpDscpMap'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list QosProfiles {
+      key id;
+      max-elements 1;
+      description "Mapping of a set of DSCP values to a PCP.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-QosProfiles-keys;
+    } // end 'list QosProfiles'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnqosprofiles:QosProfiles {
+    list DscpPcpMap {
+      key id;
+      description "A DSCP to PCP map.";
+      erienmyext:enm-type MOC;
+      uses moc-DscpPcpMap-keys;
+      container attributes {
+        description "Attributes for DscpPcpMap";
+        uses moc-DscpPcpMap;
+      } // end 'container attributes'
+    } // end 'list DscpPcpMap'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnqosprofiles:QosProfiles {
+    list DscpPcpMapDefault {
+      key id;
+      max-elements 1;
+      description "Default DSCP to PCP map.";
+      status current {
+        yexte:preliminary;
+      }
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-DscpPcpMapDefault-keys;
+      container attributes {
+        description "Attributes for DscpPcpMapDefault";
+        uses moc-DscpPcpMapDefault;
+      } // end 'container attributes'
+    } // end 'list DscpPcpMapDefault'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnqosprofiles:QosProfiles {
+    list PcpPcpMap {
+      key id;
+      description "A PCP to PCP map.\nUsed for remarking of the PCP value.";
+      erienmyext:enm-type MOC;
+      uses moc-PcpPcpMap-keys;
+      container attributes {
+        description "Attributes for PcpPcpMap";
+        uses moc-PcpPcpMap;
+      } // end 'container attributes'
+    } // end 'list PcpPcpMap'
+  }
+}

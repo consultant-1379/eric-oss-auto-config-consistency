@@ -1,0 +1,60 @@
+{
+    "id": "eacc-route-001",
+    "predicates": [
+        {
+            "name": "Path",
+            "args": {
+                "_genkey_0": "/eacc/*/rulesets/**",
+                "_genkey_1": "/eacc/*/scopes/**",
+                "_genkey_2": "/eacc/*/jobs/**",
+                "_genkey_3": "/eacc/*/executions/**"
+            }
+        },
+        {
+            "name": "Host",
+            "args": {
+                "_genkey_0": "$HOSTNAME"
+            }
+        }
+    ],
+    "filters": [
+        {
+            "name": "RewritePath",
+            "args": {
+                "_genkey_0": "/eacc/(?<segment>.*)",
+                "_genkey_1": "/$\\{segment}"
+            }
+        },
+        {
+            "name": "AddRequestHeader",
+            "args": {
+                "_genkey_0": "X-RateLimit-Map-Name",
+                "_genkey_1": "eacc-route-rate-limiter"
+            }
+        },
+        {
+            "name": "AddRequestHeader",
+            "args": {
+                "_genkey_0": "X-RateLimit-Max-Access",
+                "_genkey_1": "25"
+            }
+        },
+        {
+            "name": "AddRequestHeader",
+            "args": {
+                "_genkey_0": "X-RateLimit-Reset-Time",
+                "_genkey_1": "1"
+            }
+        },
+        {
+            "name": "RateLimitFilter",
+            "args": {}
+        },
+        {
+            "name": "AddTokenHeaderFilter",
+            "args": {}
+        }
+    ],
+    "uri": "http://eric-oss-auto-config-consistency:8080",
+    "order": 0
+}

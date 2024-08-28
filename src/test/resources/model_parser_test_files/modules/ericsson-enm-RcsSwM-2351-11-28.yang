@@ -1,0 +1,612 @@
+module ericsson-enm-RcsSwM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsSwM;
+  prefix erienmnrmrcsswm;
+  yexte:ecim-name RcsSwM;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 4;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-UpgradeType {
+    description "Special upgrade modes that may be supported by activate function in some managed element types.";
+    type enumeration {
+      enum HARD {
+        description "Traffic-disrupting hard upgrade mode.";
+        value 0;
+      }
+      enum SOFT {
+        description "Non traffic-disrupting upgrade mode.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ActionResultType {
+    description "Lists the different results of an action.";
+    type enumeration {
+      enum SUCCESS {
+        description "The asynchronous action ended with success.";
+        value 1;
+      }
+      enum FAILURE {
+        description "The asynchronous action ended with failure.";
+        value 2;
+      }
+      enum NOT_AVAILABLE {
+        description "No result is available yet.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-ActionStateType {
+    description "Lists the action states.";
+    type enumeration {
+      enum CANCELLING {
+        description "Cancellation is in progress.";
+        value 1;
+      }
+      enum RUNNING {
+        description "The execution of the action is currently in progress.";
+        value 2;
+      }
+      enum FINISHED {
+        description "The action is finished.";
+        value 3;
+      }
+      enum CANCELLED {
+        description "The action has been cancelled and cancellation has been done.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-SwMTimeoutFallbackCapability {
+    description "Fallback support.";
+    type enumeration {
+      enum SUPPORTED {
+        description "Shows that the fallback capability is supported.";
+        value 1;
+      }
+      enum NOT_SUPPORTED {
+        description "Shows that the fallback capability is not supported.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-UpgradePackageState {
+    description "Lists possible states of the Upgrade Package.";
+    type enumeration {
+      enum INITIALIZED {
+        description "The Upgrade Package is initialized.\nThe administrative data and activation steps of the UP can be read.In this state, only the prepare() action can be called.";
+        value 1;
+      }
+      enum PREPARE_IN_PROGRESS {
+        description "Prepare action in progress.\nIn this state, only the cancel() action can be called. If the prepare() action completes successfully, the UP moves to state PREPARE_COMPLETED . If the prepare() action fails, or cancel() is called, the UP moves back to state INITIALIZED .";
+        value 2;
+      }
+      enum PREPARE_COMPLETED {
+        description "Prepare action has finished successfully.\nIn this state, only the verify() or the activate() action can be called. If the activate() action is called, the UP moves to state ACTIVATION_IN_PROGRESS .";
+        value 3;
+      }
+      enum ACTIVATION_IN_PROGRESS {
+        description "Activation is in progress.\nIn this state, only the cancel() action can be called. If the cancel() action is called, the UP moves to state DEACTIVATION_IN_PROGRESS. If the activation step completes successfully, the UP moves to state ACTIVATION_STEP_COMPLETED .";
+        value 4;
+      }
+      enum ACTIVATION_STEP_COMPLETED {
+        description "The previous activation step completed successfully.\nThere are still more activation steps left. In this state, only the activate() or the cancel() action can be called. If the cancel() action is called, the UP moves to state DEACTIVATION_IN_PROGRESS . If the activate() action is called, the ME starts the activation of the next activation step and the UP moves to state ACTIVATION_IN_PROGRESS . If the fallback timer expires in this state, the UP moves to state DEACTIVATION_IN_PROGRESS .";
+        value 5;
+      }
+      enum WAITING_FOR_COMMIT {
+        description "The last activation step completed successfully.\nThe operator must confirm the upgrade. In this state, only the confirm() or the cancel() action can be called. If the cancel() action is called, the UP moves to state DEACTIVATION_IN_PROGRESS. If the confirm() action is called, the UP moves to state COMMIT_COMPLETED .\n";
+        value 6;
+      }
+      enum COMMIT_COMPLETED {
+        description "The upgrade is confirmed.The whole upgrade procedure has completed.";
+        value 7;
+      }
+      enum DEACTIVATION_IN_PROGRESS {
+        description "Deactivation of the UP is in progress.\nThis can be the result of a cancel() action, or the fallback timer has expired. In this state, no action can be called. At the end of fallback operation, the UP moves back to state PREPARE_COMPLETED.";
+        value 8;
+      }
+    }
+  }
+  typedef enum-ActionCapabilityState {
+    description "Indicates the readiness of Software Management function for executing actions.";
+    type enumeration {
+      enum CAPABLE {
+        description "The Software Management function is in a state where it is capable to execute all actions.";
+        value 1;
+      }
+      enum WAIT {
+        description "The Software Management function is in a state where some actions are unavailable.";
+        value 2;
+      }
+    }
+  }
+  typedef ddt-ActionInvocationResult {
+    description "This is the datatype for the Asychronous Action Id. ";
+    type uint16;
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC\n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)";
+    type string {
+      length 19..31;
+    }
+  }
+  typedef ddt-EcimPasswordString {
+    description "This type enables secure handling of passwords.";
+    type string;
+  }
+  typedef ddt-EcimEmpty {
+    description "Represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping struct-ProductData {
+    description "Represents an Ericsson software product.\nThe product name, product number, and product revision represent product information stored in PRIM realization part.";
+    leaf productionDate {
+      description "Production date of the product.";
+      type erienmnrmrcsswm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf description {
+      description "Free text description of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "Product number of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf type {
+      description "Free text description of the product type.";
+      type string;
+      mandatory true;
+    }
+    leaf productName {
+      description "Name of the product.";
+      type string;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "Revision state of the product.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-ProductData'
+  grouping struct-AsyncActionProgressWithSteps {
+    description "The progress of an ongoing action.\nSome actions can have 1 or more breakpoints.Breakpoints allow an action to be divided into defined steps. A breakpoint is an intentional stop of an executing action, for example, the  Activate action in the ECIM SwM MOM. The activate action puts an upgrade package into operation. A breakpoint represents a part of the upgrade,after which the functionality of the ME can be observed manually.In other words, the breakpoints give the operator an option to verify manually that the upgrade step has been executed correctly. The ProgressReport MOC models a standard action. This MOC struct has the same attributes as the ProgressReport MOC, plus two extra attributes, step and stepProgressPercentage.step stores the current execution action step. stepProgressPercentage stores the progress percentage of the currently executing action step.";
+    leaf timeActionCompleted {
+      description "The date and time when the action completed successfully or unsuccessfully.";
+      type erienmnrmrcsswm:ddt-DateTime;
+    }
+    leaf resultInfo {
+      description "Textual description of the outcome or result of the action.\n It contains useful information for the NMS. For example, it can contain an error message if the action failed. This information is for display only. It is not recommended to build any logic on the content of this field.";
+      type string;
+    }
+    leaf result {
+      description "Result of completed action.This field has a value NOT_AVAILABLE if the action is not finished.";
+      type erienmnrmrcsswm:enum-ActionResultType;
+    }
+    leaf timeOfLastStatusUpdate {
+      description "The date and time of the last MO Struct update. The last date and time when any attribute changed.";
+      type erienmnrmrcsswm:ddt-DateTime;
+    }
+    leaf stepProgressPercentage {
+      description "This represents the progress percentage of the currently executing step.\nIt goes from 0 to 100 percentage for each and every step.";
+      type int8;
+      mandatory true;
+    }
+    leaf-list additionalInfo {
+      min-elements 0;
+      description "Used to log significant messages during execution of an action.\nIt contains information about the history of the execution.This field contains the log entries as an array. It can be empty.This information is for display only. It is not recommended to build any logic on the content of this field.";
+      type string;
+    }
+    leaf actionId {
+      description "Id of the action. Each action has an action id. The Id is used to query the progress of an action.";
+      type uint16;
+    }
+    leaf progressPercentage {
+      description "This represents the overall progress for completion of the action. Range is between 0 and 100.\n It calculates the percentage with regard to time.";
+      type uint8;
+      mandatory true;
+    }
+    leaf step {
+      description "Current execution action step number.\n \n";
+      type int16;
+      mandatory true;
+    }
+    leaf progressInfo {
+      description "Description of the actual state of the execution, which can be useful or required by NMS.\nThis information is for display only. It is not recommended to build any logic on the content of this field.";
+      type string;
+      mandatory true;
+    }
+    leaf state {
+      description "Current state of the action.";
+      type erienmnrmrcsswm:enum-ActionStateType;
+      mandatory true;
+    }
+    leaf timeActionStarted {
+      description "The date and time when the current action started.";
+      type erienmnrmrcsswm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf actionName {
+      description "Name of the invoked action, for example, prepare(), verify(), activate() on UpgradePackage MO.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-AsyncActionProgressWithSteps'
+  grouping struct-ActivationStep {
+    description "Activation step details.";
+    leaf serialNumber {
+      description "Activation step number.The position of the activation step in the activation procedure.Starts at 1.";
+      type int16;
+      mandatory true;
+    }
+    leaf name {
+      description "Activation step name.";
+      type string;
+      mandatory true;
+    }
+    leaf description {
+      description "Textual description of the activation step.\nIt can describe the role, meaning, or interpretation of the activation step, or any information which is useful to the operator.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-ActivationStep'
+  grouping struct-EcimPassword {
+    description "Stores the password.";
+    leaf password {
+      description "Holds the password or passphrase text.";
+      type string;
+      mandatory true;
+    }
+    leaf cleartext {
+      description "Indicates whether or not the password is entered in cleartext.";
+      type erienmnrmrcsswm:ddt-EcimEmpty;
+    }
+  } // end 'grouping struct-EcimPassword'
+  grouping struct-AsyncActionProgress {
+    description "Records the progress of an asynchronous action.";
+    leaf result {
+      description "Result state of a completed action.\nThis field has value NOT_AVAILABLE if the action is not finished.";
+      type erienmnrmrcsswm:enum-ActionResultType;
+    }
+    leaf timeOfLastStatusUpdate {
+      description "Date and time when the struct member state was last updated.";
+      type erienmnrmrcsswm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf timeActionCompleted {
+      description "Date and time when the action was completed (successfully or unsuccessfully).";
+      type erienmnrmrcsswm:ddt-DateTime;
+    }
+    leaf-list additionalInfo {
+      min-elements 0;
+      description "Used for logging significant messages during execution of an action.";
+      type string;
+    }
+    leaf actionId {
+      description "Uniquely identifies the invocation of an action.\nIdentifies the invocation of an action when the managed object allows invocation of more than one action at a time.";
+      type erienmnrmrcsswm:ddt-ActionInvocationResult;
+      mandatory true;
+    }
+    leaf progressPercentage {
+      description "Progress of the action.\nThe range is between 0 and 100.";
+      type uint8;
+    }
+    leaf progressInfo {
+      description "Textual information that describes the actual state of the action execution.";
+      type string;
+    }
+    leaf state {
+      description "Current state of the action.";
+      type erienmnrmrcsswm:enum-ActionStateType;
+    }
+    leaf timeActionStarted {
+      description "Date and time when the current action was started.";
+      type erienmnrmrcsswm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf resultInfo {
+      description "Textual description of the outcome/result of the action containing useful information for the NMS.\nIf the action failed, it can contain an error message.";
+      type string;
+    }
+    leaf actionName {
+      description "Name of the invoked asynchronous action.";
+      type string;
+    }
+  } // end 'grouping struct-AsyncActionProgress'
+  grouping moc-UpgradePackage-keys {
+    description "Key(s) for MOC UpgradePackage";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name upgradePackageId;
+      type string;
+    }
+  } // end 'grouping moc-UpgradePackage-keys'
+  grouping moc-UpgradePackage {
+    description "Controls the change process of the software configuration of a ME.\n An instance of UpgradePackage (UP) represents a specific change\nof software configuration from the existing one to the new one identified by the attribute administrativeData. The execution of the change process described by UP class is the normal way to change the content of the SW inventory. An UP can be seen as a modification agent. It can add new, remove, or modify functionality. The sequence in which a Software upgrade executes is as follows: \n1. Prepare\n2. Verify, which is optional\n3. Activate \n4. Confirm\nWhen the upgrade package MO is created the upgrade control file is downloaded to specify the administrative data and the activation steps for this upgrade.";
+    list administrativeData {
+      min-elements 1;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "The product identification of the software versions that are activated when an upgrade is completed.\nIf the resulting software version after activation is unknown or uncertain, the administrativeData can be empty.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsswm:struct-ProductData;
+    } // end 'list administrativeData'
+    leaf userLabel {
+      description "Free-text description of the Upgrade Package.";
+      type string;
+    }
+    container password {
+      description "Password to the server that provides the UpgradePackage.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsswm:struct-EcimPassword;
+    } // end 'container password'
+    leaf ignoreBreakPoints {
+      description "Influences the behavior of the activate() action.\nFalse means there is a breakpoint between each activation step. Activation process stops at each breakpoint. True means execution ignores breakpoints between activation steps and instead executes the end-to-end activation process. This invokes all activation steps in sequence, assuming no errors occur.";
+      type boolean;
+      default true;
+    }
+    leaf created {
+      config false;
+      description "Date and time  this Upgrade Package instance is created.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsswm:ddt-DateTime;
+    }
+    leaf creatorActionId {
+      erienmyext:no-notification;
+      config false;
+      description "The Id of the action that created this UpgradePackage MO.\nDefault value 0 shows that the ME does not record this information.";
+      type uint16;
+    }
+    leaf state {
+      config false;
+      description "Current state of Upgrade Package.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsswm:enum-UpgradePackageState;
+    }
+    container reportProgress {
+      description "Represents the progress report, including the result, of the ongoing action.\nThis MO supports only one action execution at a time.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsswm:struct-AsyncActionProgressWithSteps;
+    } // end 'container reportProgress'
+    list activationStep {
+      min-elements 1;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "List of activation steps in the activation procedure. \nIt is possible to stop after each step, perform supervision, and continue with the procedure.The upgrade procedure consists of at least one activation step.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsswm:struct-ActivationStep;
+    } // end 'list activationStep'
+    leaf uri {
+      description "A URI that points to the directory where the UP can be found.\nThe URI can be local, for example, file://data/dir/subdir. It can also be remote, for example, ftp://hostname/dir/subdir.";
+      type string;
+    }
+    action cancel {
+      description "Cancel can be invoked during any long-lasting operation.\nStops the operation and restores the consistent state that existed before the long-lasting operation started. Furthermore, cancel() can also be invoked when the UP is in state WAITING_FOR_COMMIT or ACTIVATION_STEP_COMPLETED without having a long-lasting operation in progress. Calling cancel() in this state orders the ME to restore the state that existed before the activation procedure started. The action returns immediately after invocation. The consequences of the action can be tracked by attribute progressReport. The action returns false if the action is refused by the ME. If the action is invoked in a state where the action has no meaning, the ME is expected to return false. In all other cases, it returns true. This action can be invoked when the UP state is PREPARE_IN_PROGRESS, ACTIVATION_IN_PROGRESS, ACTIVATION_STEP_COMPLETED, or WAITING_FOR_COMMIT.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action confirm {
+      description "Stops the activation fallback timer and confirms the upgrade. \nThe action returns when the synchronous action is completed. This action can be invoked when the state is WAITING_FOR_COMMIT. The action returns true on success, false on failure.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action prepare {
+      description "Prepares the Managed Element for activation of the current upgrade package.\nExecuting prepare() does not have any negative impact on the in-service performance of the Managed Element. The action returns immediately after invocation. The progress of the action can be tracked by attribute progressReport. The action returns false if the action could not start for any reason, for example, another parallel action is in progress. In all other cases, it returns true.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action activate {
+      description "Current upgrade package is taken into operation fully or partially. \nPartial activation occurs if the UCF defines activation steps and attribute ignoreBreakPoints is false. The ME upgrade engine notifies the operator that the activation step is completed. The next activation step starts when the operator invokes an activate action. Each UP must have at least 1 activation step. When attribute ignoreBreakPoints=true, all activation steps are executed in sequence. When an activation step is complete, the ME executes the next activation step. That means there is no operator invocation when an activation step is complete. The time for observation of correct operation of the ME, after each completed step, is always monitored by a supervision timer. The invocation of activate() can be monitored by a supervision timer. If the supervision timer expires before invocation of activate() or confirm(), the activation fails and the ME falls back to state PREPARE_COMPLETED. The action returns immediately after invocation. The progress of the action can be tracked by attribute progressReport. The action returns false if the action could not start for any reason, for example, another parallel action is in progress. In all other cases, it returns true. This action can be invoked when the state is PREPARE_COMPLETED or ACTIVATION_STEP_COMPLETED. If the action is invoked in a state where the action has no meaning, ME is expected to return an error message.";
+      input {
+        leaf upgradeType {
+          description "Specifies optional activation mode, where supported, for example SOFT or HARD.";
+          type erienmnrmrcsswm:enum-UpgradeType;
+          default HARD;
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action verify {
+      description "Verifies the ability to activate the current upgrade package.\nThe action returns immediately after invocation. The progress of the action can be tracked by attribute progressReport. The action returns false if the action could not start for any reason, for example, another parallel action is in progress. In all other cases, it returns true. This action can be invoked when the state is PREPARE_COMPLETED. If the action is invoked in a state where the action has no meaning, the ME is expected to return an error message.This action can be called as an option in the whole upgrade procedure. The action can be called more than once if required.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-UpgradePackage'
+  grouping moc-SwM-keys {
+    description "Key(s) for MOC SwM";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name swMId;
+      type string;
+    }
+  } // end 'grouping moc-SwM-keys'
+  grouping moc-SwM {
+    description "The root structural element of SW management activities.";
+    leaf localFileStorePath {
+      config false;
+      description "URI of the directory where the UPs are stored on the ME.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf userLabel {
+      description "Used for free-text description. ";
+      type string;
+    }
+    leaf fallbackTimer {
+      description "Maximum interval in seconds within which the next action must be invoked to avoid fallback.\n\nThe maximum number of seconds allowed to elapse between the finish of an activation step and the start of the next new activate() action or new confirm() action. This attribute holds the value to which attribute timeRemainingBeforeFallback is set after the action activate() is successfully completed. For RadioNode and RadioTNode only positive non zero values are allowed.";
+      type int16;
+      default 1800;
+    }
+    leaf actionCapable {
+      config false;
+      description "Shows whether the Software Management function is in a state of readiness to execute actions.\nThe Managed Element sets it to WAIT during any operations and maintenance activity that causes one or more of the Software Management function related actions to become unavailable. The Management System should wait until the state returns to CAPABLE before invoking any Software Management action.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcsswm:enum-ActionCapabilityState;
+    }
+    leaf actionCapableInfo {
+      config false;
+      description "Additional information relating to actionCapable. \nProvides free-text information if available about the managed element operation or maintenance activity causing actionCapable to be at state WAIT.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf defaultUri {
+      description "Uniform resource indicator for the location of upgrade packages.\nSet during initial configuration of the system to provide the external source of UP software in case the UpgradePackage::uri attribute is unset. It has the same format as UpgradePackage::uri.";
+      type string;
+    }
+    leaf timeoutFallbackCapability {
+      erienmyext:no-notification;
+      config false;
+      description "Shows whether fallback capability is supported or not.\nIf fallback capability is not supported, setting SwM fallbackTimer has no effect and automatic fallback does not occur.";
+      type erienmnrmrcsswm:enum-SwMTimeoutFallbackCapability;
+    }
+    container reportProgress {
+      description "Represents the progress report, including the result, of the ongoing action.\nThis MO supports only one action execution at a time.\n";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsswm:struct-AsyncActionProgress;
+    } // end 'container reportProgress'
+    leaf timeRemainingBeforeFallback {
+      erienmyext:no-notification;
+      config false;
+      description "Remaining number of seconds before performing fallback.\nValue -1 indicates an infinite number of seconds. Fallback means that the system returns to state PREPARE_COMPLETED .";
+      type int16;
+    }
+    container defaultPassword {
+      description "Password for the default URI.\n\nSet during initial installation of the system in order to prove access to the external UP software storage if the UpgradePackage::password attribute is unset. It has the same format as the UpgradePackage::password attribute.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsswm:struct-EcimPassword;
+    } // end 'container defaultPassword'
+    action cancel {
+      description "Cancel can be invoked during any long-lasting operation.\nIt stops the operation and restores the consistent state that existed before the long-lasting operation started. The action returns immediately after invocation. The consequences of the action can be tracked by attribute progressReport. The action returns false if the action is refused by the ME. In all other cases, it returns true.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action createUpgradePackage {
+      description "Creates a new UpgradePackage MO that represents a UP specified by a URI.\nThis action includes all activities to initialize the UP MO. After the UP MO is created, all descriptive information is available, for example, administrativeData, number or names of activation step data. This action can be invoked when there is no other action in progress on this MO. The action returns immediately after invocation. The progress of the action can be tracked by attribute progressReport . The action returns 0 if the action cannot start for any reason, for example, another parallel action is in progress. The action also returns 0 if the ME cannot handle the URI, for example, it does not support the protocol specified in the URI. In all other cases, it returns the id of the action. The action id is different and unique for every invocation of the action.";
+      input {
+        leaf password {
+          description "A password to the server that provides the UP.\nIf authentication is not password-based, this parameter is ignored.";
+          type erienmnrmrcsswm:ddt-EcimPasswordString;
+        }
+        leaf uri {
+          mandatory true;
+          description "Contains a URI that points to a directory that contains the UP content.\nThe generic URI syntax is defined by RFC 2396. The URI must not contain any password. The password must be provided in the second parameter of this action. The URI can be local absolute, for example, file:///data/dir/subdir. It can also be remote, for example, sftp://hostname/dir/subdir.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type uint16;
+        }
+      }
+    }
+    action removeSoftwareVersion {
+      description "Removes a SW version as much as possible.\nIt does not disturb node functionality. Files shared with other SW versions are not deleted.\nThe active SW version cannot be removed. This action can only be invoked when there is no other action in progress on this MO. The action returns false if any of these conditions are violated.";
+      input {
+        leaf swVersion {
+          mandatory true;
+          description "The value component of the RDN of the SwVersion MO in ECIM_SWIM to be removed.";
+          erienmyext:enm-type MOREF;
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action removeUpgradePackage {
+      description "Removes an UpgradePackage.\nThis action removes the UpgradePackage MO specified as action parameter. It also removes all files temporarily stored in the ME and associated with the UP. The action returns immediately after invocation. The progress of the action can be tracked by attribute progressReport. This action can be invoked when there is no other action in progress on this MO. The action returns false if the action could not start for any reason, for example, another parallel action is in progress. In all other cases, it returns true.";
+      input {
+        leaf upgradePackage {
+          mandatory true;
+          description "An UpgradePackage MO to be removed.";
+          erienmyext:enm-type MOREF;
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-SwM'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcsswm:SwM {
+    list UpgradePackage {
+      key id;
+      description "Controls the change process of the software configuration of a ME.\n An instance of UpgradePackage (UP) represents a specific change\nof software configuration from the existing one to the new one identified by the attribute administrativeData. The execution of the change process described by UP class is the normal way to change the content of the SW inventory. An UP can be seen as a modification agent. It can add new, remove, or modify functionality. The sequence in which a Software upgrade executes is as follows: \n1. Prepare\n2. Verify, which is optional\n3. Activate \n4. Confirm\nWhen the upgrade package MO is created the upgrade control file is downloaded to specify the administrative data and the activation steps for this upgrade.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-UpgradePackage-keys;
+      container attributes {
+        description "Attributes for UpgradePackage";
+        uses moc-UpgradePackage;
+      } // end 'container attributes'
+    } // end 'list UpgradePackage'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list SwM {
+      key id;
+      max-elements 1;
+      description "The root structural element of SW management activities.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SwM-keys;
+      container attributes {
+        description "Attributes for SwM";
+        uses moc-SwM;
+      } // end 'container attributes'
+    } // end 'list SwM'
+  }
+}

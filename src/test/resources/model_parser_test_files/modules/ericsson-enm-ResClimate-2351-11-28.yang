@@ -1,0 +1,240 @@
+module ericsson-enm-ResClimate {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ResClimate;
+  prefix erienmnrmresclimate;
+  yexte:ecim-name ResClimate;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 5;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ResEquipmentSupportFunction {
+    prefix erienmnrmresequipmentsupportfunction;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ApcClimateControlMode {
+    type enumeration {
+      enum NORMAL {
+        description "Default mode.";
+        value 0;
+      }
+      enum BATTERY_LIFE_EXTENSION {
+        description "Improves battery life time. Can cause increased acoustic noise. Only applicable for RBS with internal batteries.";
+        value 1;
+      }
+      enum BOOST {
+        description "Boosted cooling mode can cause increased acoustic noise and is applicable for RBS with integrated equipment not participating in climate control.";
+        value 2;
+      }
+      enum ECO {
+        description "Optimized for minimizing power consumption. Applicable for RBS 6601.";
+        value 3;
+      }
+      enum ENHANCED {
+        description "Enhanced cooling. Applicable for RBS 6101, RBS 6102, RBS 6120, RBS 6201, RBS 6301, and RBS 6131.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef ddt-ResClimate_ApcEnhancedModeSetup_externalFanStartTemp {
+    type int32 {
+      range 15..40;
+    }
+  }
+  typedef ddt-ResClimate_Climate_fanSpeedSupervision {
+    type int32 {
+      range "0..0 | 6..6 | 12..12 | 24..24";
+    }
+  }
+  typedef ddt-ResClimate_ApcEnhancedModeSetup_internalFanRampUpTemp {
+    type int32 {
+      range 15..40;
+    }
+  }
+  typedef ddt-ResClimate_Climate_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ResClimate_Climate_cabinetTemperature {
+    type int32 {
+      range -55..125;
+    }
+  }
+  typedef ddt-ResClimate_Climate_boostInternalThreshold {
+    type int32 {
+      range 10..40;
+    }
+  }
+  grouping struct-ApcEnhancedModeSetup {
+    description .;
+    leaf internalFanRampUpTemp {
+      description "Temperature at which internal fans ramp up. If empty, cabinet default is used.";
+      type erienmnrmresclimate:ddt-ResClimate_ApcEnhancedModeSetup_internalFanRampUpTemp;
+      mandatory true;
+    }
+    leaf externalFanStartTemp {
+      description "Temperature at which external fans start. If empty, cabinet default is used.";
+      type erienmnrmresclimate:ddt-ResClimate_ApcEnhancedModeSetup_externalFanStartTemp;
+      mandatory true;
+    }
+  } // end 'grouping struct-ApcEnhancedModeSetup'
+  grouping moc-Climate-keys {
+    description "Key(s) for MOC Climate";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name climateId;
+      type string;
+    }
+  } // end 'grouping moc-Climate-keys'
+  grouping moc-Climate {
+    description "This MO represents the logical resource providing configuration and supervision support for the climate control function.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmresclimate:ddt-ResClimate_Climate_userLabel;
+    }
+    leaf controlDomainRef {
+      erienmyext:no-notification;
+      description "The cabinet or the shelf where functions represented by this MO are deployed.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf climateControlMode {
+      description "Documentation: Specifies the mode to run the climate control.";
+      yexte:dependencies "Only valid in the node where the attribute supportSystemControl is set to true on a parent MO EquipmentSupportFunction.";
+      type erienmnrmresclimate:enum-ApcClimateControlMode;
+    }
+    leaf boostInternalThreshold {
+      description "Threshold at which cabinet temperatures contribute to fan speed regulation. If empty, cabinet default is used.";
+      yexte:dependencies "Only applicable when the attribute climateControlMode is set to BOOST.";
+      type erienmnrmresclimate:ddt-ResClimate_Climate_boostInternalThreshold;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmresclimate:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "Defines the operational state.";
+      type erienmnrmresclimate:enum-OperState;
+    }
+    leaf fanSpeedSupervision {
+      description "Time period for fan speed supervision.\nIf fan speed is continuously high (>= 90%) during time period, an alarm is raised.\nUse '6' if located near households. Use '24' if fan speed supervision is needed and noise level does not matter, no neighbors.\nValid values:\n0: fan speed supervision off\n6, 12, 24: time period in hours\n";
+      type erienmnrmresclimate:ddt-ResClimate_Climate_fanSpeedSupervision;
+      default 12;
+    }
+    leaf cabinetTemperature {
+      erienmyext:no-notification;
+      config false;
+      description "Temperature from SCU temp sensor.\nUndefined value represented by 999, indicates invalid temperature readings from the SCU.";
+      type erienmnrmresclimate:ddt-ResClimate_Climate_cabinetTemperature;
+    }
+    container enhancedModeSetup {
+      description "Setup for Enhanced Climate Control Mode.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmresclimate:struct-ApcEnhancedModeSetup;
+    } // end 'container enhancedModeSetup'
+  } // end 'grouping moc-Climate'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmresequipmentsupportfunction:EquipmentSupportFunction {
+    list Climate {
+      key id;
+      description "This MO represents the logical resource providing configuration and supervision support for the climate control function.";
+      erienmyext:enm-type MOC;
+      uses moc-Climate-keys;
+      container attributes {
+        description "Attributes for Climate";
+        uses moc-Climate;
+      } // end 'container attributes'
+    } // end 'list Climate'
+  }
+}

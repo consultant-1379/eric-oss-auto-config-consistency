@@ -1,0 +1,101 @@
+module ericsson-enm-RtnRoutesPeerIPv4 {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnRoutesPeerIPv4;
+  prefix erienmnrmrtnroutespeeripv4;
+  yexte:ecim-name RtnRoutesPeerIPv4;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 7;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-BfdStaticRoutesInterfaceType {
+    description "State of bfdStaticRoutes.";
+    type enumeration {
+      enum DISABLED {
+        value 0;
+      }
+      enum ENABLED {
+        value 1;
+      }
+    }
+  }
+  typedef ddt-RouteKeyAttributeType {
+    description "Route KeyAttribute Type.";
+    type string;
+  }
+  typedef ddt-Ipv4FqdnAddressStr {
+    description "IPv4 address or fully qualified domain name.\n\nIPv4 address is specified in dotted-quad decimal notation in accordance with RFC791, without leading zeros.\nIPv4 address can be unicast address within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\nValid characters:\n0123456789\n\nExample:\n1.1.1.1,\n1.1.255.255\n\nValid fully qualified domain name:\n- has maximum length 253 characters.\n- is not case-sensitive.\n- consists of one or more labels separated by dots (\".\").\n\nMinimum length of each label is one character and maximum length is 63 characters.\nValid characters for label are:\n- letters 'a' - 'z', 'A' - 'Z', digits '0' - '9', and character '-' (hyphen).\n- first and last character in each label cannot be '-' (hyphen).\n\nExample:\nmyhost.ericsson.com\n\nIf string is valid IPv4 address, it is interpreted as IPv4 address.\nIf string is not valid IPv4 address, it is interpreted as fully qualified domain name.";
+    type string {
+      length 1..253;
+    }
+  }
+  grouping moc-PeerIPv4-keys {
+    description "Key(s) for MOC PeerIPv4";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name peerIPv4Id;
+      type erienmnrmrtnroutespeeripv4:ddt-RouteKeyAttributeType;
+    }
+  } // end 'grouping moc-PeerIPv4-keys'
+  grouping moc-PeerIPv4 {
+    description "Provides IPv4 peer information.";
+    leaf address {
+      description "IPv4 address or fully qualified domain name of peer.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Must not coincide with address configured on AddressIPv4 MO in this Router MO.\nMust be unique among all PeerIPv4 MO addresses within same Router MO.\nDomain name is only valid for IPsec.\nMust be IPv4 address, if this MO is referred by DhcpRelayIPv4 MO.\nNeeds to be in connected subnet in order for BFD session to be setup. No BFD session is setup if domain name is used.\nIf domain name is used, DnsClient MO must be configured in same Router MO. If domain name is resolved to multiple IPv4 addresses, detection of unreachable peer is delayed.";
+      type erienmnrmrtnroutespeeripv4:ddt-Ipv4FqdnAddressStr;
+    }
+    leaf bfdProfile {
+      description "Reference to BfdProfile MO containing BFD parameters used for BFD sessions towards this IP peer.";
+      yexte:dependencies "Referred BfdProfile MO must belong to Transport MO or same Router MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf bfdStaticRoutes {
+      description "Enables/disables BFD monitoring of static routes with this peer as netxthop.\nIf set to ENABLED, BFD monitoring is enabled for static routes where address of NextHop MO is equal to address of this PeerIPv4 MO.\nIf bfdProfile is set on this MO, BFD session uses parameters configured in referred BfdProfile MO.\nIf bfdProfile is not set on this MO, BFD session uses parameters configured in BfdProfile MO referred from InterfaceIPv4 MO bfdProfile attribute.\nIf bfdProfile is not set on this MO and neither InterfaceIPv4 MO, BFD monitoring is not enabled.\nIf set to DISABLED, BFD monitoring is disabled for static routes where address of NextHop MO is equal to address of this PeerIPv4 MO. This overrides bfdStaticRoutes attribute on InterfaceIPv4 MO.\nIf not set, BFD monitoring can still be enabled towards this peer by setting bfdStaticRoutes attribute to ENABLED on InterfaceIPv4 MO. bfdProfile on this PeerIPv4 MO is in this case not used.\nIf BFD monitoring is enabled, all static routes with this peer as nexthop are monitored, unless explicitly disabled per NextHop MO.\nBFD monitoring of PBR nexthops is not controlled by this attribute.\nIf this attribute is set to ENABLED (that is BFD monitoring for static routes is enabled for this peer) and bfdProfile is set in this PeerIPv4 MO, BfdProfile MO referred from this PeerIPv4 MO is used also for PBR nexthops.\n";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrtnroutespeeripv4:enum-BfdStaticRoutesInterfaceType;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-PeerIPv4'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list PeerIPv4 {
+      key id;
+      description "Provides IPv4 peer information.";
+      erienmyext:enm-type MOC;
+      uses moc-PeerIPv4-keys;
+      container attributes {
+        description "Attributes for PeerIPv4";
+        uses moc-PeerIPv4;
+      } // end 'container attributes'
+    } // end 'list PeerIPv4'
+  }
+}

@@ -1,0 +1,58 @@
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+ARG CBOS_IMAGE_TAG
+ARG CBOS_IMAGE_REPO
+ARG CBOS_IMAGE_NAME
+
+FROM ${CBOS_IMAGE_REPO}/${CBOS_IMAGE_NAME}:${CBOS_IMAGE_TAG} AS cbos
+ARG CBOS_IMAGE_TAG
+ARG CBOS_REPO_URL=https://arm.sero.gic.ericsson.se/artifactory/proj-ldc-repo-rpm-local/common_base_os/sles/${CBOS_IMAGE_TAG}
+RUN zypper ar -C -G -f $CBOS_REPO_URL?ssl_verify=no \
+    COMMON_BASE_OS_SLES_REPO \
+    && zypper install -l -y java-11-openjdk-headless \
+    && zypper clean --all \
+    && zypper rr COMMON_BASE_OS_SLES_REPO
+
+FROM cypress/included:12.0.0 as cypres
+COPY --from=cbos /usr/lib64/jvm/jre-11-openjdk/ /usr/lib64/jvm/jre-11-openjdk/
+
+ENV PATH="$PATH:/usr/lib64/jvm/jre-11-openjdk/bin/"
+
+WORKDIR /eacc_client
+
+ARG STUBS_VERSION
+ARG MAPPINGS_DIR=target/stubs/META-INF/com.ericsson.oss.apps/eric-oss-auto-config-consistency/${STUBS_VERSION}/mappings
+
+COPY ./$MAPPINGS_DIR /eacc_client/wiremock/mappings
+
+RUN find /eacc_client/wiremock/mappings/negative/cases/ -type f ! -name 'NegativeRuleSetsContract_1.json' -delete
+
+ARG UI_DIRECTORY=eric-oss-auto-config-consistency-ui
+
+# copy frontend code
+COPY ./$UI_DIRECTORY /eacc_client
+
+# Install NPM dependencies
+RUN npm run install:all
+RUN npm run lint
+RUN npm ci
+RUN npm run build:dev
+
+RUN [ "chmod", "+x", "/eacc_client/docker/unit_test.sh" ]
+RUN [ "chmod", "+x", "/eacc_client/docker/cypress_test.sh" ]
+
+ENTRYPOINT [ "sh", "/eacc_client/docker/cypress_test.sh" ]

@@ -1,0 +1,232 @@
+module ericsson-enm-RtnIPv4ACLPolicy {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnIPv4ACLPolicy;
+  prefix erienmnrmrtnipv4aclpolicy;
+  yexte:ecim-name RtnIPv4ACLPolicy;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 7;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-FragmentType {
+    description "Type of IP fragment. \n";
+    type enumeration {
+      enum NOTFRAGMENTED {
+        description "The entry matches no fragment at all.";
+        status obsolete;
+        value 0;
+      }
+      enum FRAGFIRST {
+        description "The entry matches the first fragment.\nOptional to support - Flag: if-feature FragmentTypeFragFirst. ";
+        status obsolete;
+        value 1;
+      }
+      enum FRAGLAST {
+        description "The entry matches the last fragment.\nOptional to support - Flag: if-feature FragmentTypeFragLast.";
+        status obsolete;
+        value 2;
+      }
+      enum FRAGMENT {
+        description "The entry matches all fragments. FO > 0 or MF != 0.  ";
+        value 3;
+      }
+      enum INITIAL {
+        description "The entry matches complete (unfragmented) packets as well as initial fragments, FO==0. ";
+        value 4;
+      }
+      enum NONINITIAL {
+        description "The entry matches non-initial fragments.  FO>0. ";
+        value 5;
+      }
+    }
+  }
+  typedef enum-AclAction {
+    description "ACL actions. \n";
+    type enumeration {
+      enum PERMIT {
+        description "Allow the packet that matches the ACL to flow. \n";
+        value 0;
+      }
+      enum DENY {
+        description "Drop the packet if it matches the ACL. \n";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-IpDscpStrST {
+    description "Smart type for IpDscp, covering a single value or a range.\nRegexp : ^((BT)|((BT)(\\.\\.)(BT)))$ where BT=[0-9]|[1-5][0-9]|6[0-3]\n\nA DSCP value. Can be a single value [dd] or a range [dd..dd], where dd represents an integer in {0..63}.\n\nExample: 1 or 5..10 ";
+    type string;
+  }
+  typedef ddt-IcmpType {
+    description "Regular expression pattern for IP ACL ICMP Type [0-255], covering single and range. \n\nRegexp : ^((BT)|((BT)(\\.\\.)(BT)))$ where BT=[0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5] ";
+    type string;
+  }
+  typedef ddt-Priority {
+    description "Priority of a policy rule.\nPriority values shall be unique amongst policy rules under the same policy.\nRule: valid values are 0 and positive integers.\nNote: 0 is the highest priority, larger values give lower priority.\n\nMaximum possible range: 0..65535";
+    type uint16;
+  }
+  typedef ddt-L4PortStrST {
+    description "Regular expression pattern type for transport protocol port [0-65535] inputs.\n\nCovering list of values, ranges.\nRegexp=^((BT)|((BT)(\\.\\.)(BT)))$ where BT=[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5].";
+    type string;
+  }
+  typedef ddt-RtnIPv4ACLPolicy_AclEntryIpv4_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnIPv4ACLPolicy_AclIpv4_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-Ipv4AclAddressAndPrefixLengthStr {
+    description "'IPv4 address'/'prefix length' string, specifying an IPv4 subnet.\n\nAddress should be specified in dotted-quad decimal notation in accordance with RFC791, without leading 0s.\nIPv4 address within range [0-255].[0-255].[0-255].[0-255], 7-15 characters. Prefix is a number 0 to 32.\nAny subnet can be specified, regardless of it lies within a valid or normally invalid address range.\n\nExample: 1.1.2.2/28";
+    type string;
+  }
+  typedef ddt-IpProtocolNumberStrST {
+    description "Regular expression pattern for IP protocol numbers [0-255], covering a single value or a range.\n\nRegexp : ^((BT)|((BT)(\\.\\.)(BT)))$ where BT=[0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5]\n\nExample: 1 or 5..10\n";
+    type string;
+  }
+  grouping moc-AclIpv4-keys {
+    description "Key(s) for MOC AclIpv4";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name aclIpv4Id;
+      type string;
+    }
+  } // end 'grouping moc-AclIpv4-keys'
+  grouping moc-AclIpv4 {
+    description "Represents ordered list of ACL entries. See attribute priority in AclEntryIpv4 MO for details on ordering.";
+    leaf userLabel {
+      description "Label for free use. \n";
+      type erienmnrmrtnipv4aclpolicy:ddt-RtnIPv4ACLPolicy_AclIpv4_userLabel;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-AclIpv4'
+  grouping moc-AclEntryIpv4-keys {
+    description "Key(s) for MOC AclEntryIpv4";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name aclEntryIpv4Id;
+      type string;
+    }
+  } // end 'grouping moc-AclEntryIpv4-keys'
+  grouping moc-AclEntryIpv4 {
+    description "This MOC is used to configure entry in Access Control List.\n\nIt contains set of filters for ACL entry as well as action and priority. All filters refer to fields in IP protocol header.\nWhen ACL entries are configured, ACL entry must be added for default action, otherwise non-matching packets will be silently discarded.";
+    leaf-list icmpType {
+      min-elements 0;
+      max-elements 4;
+      description "ICMP type filter.\nThe ACL entry matches if any element in the list matches.\nIf the value list is empty, any ICMP types match this entry.";
+      yexte:dependencies "It can be non-empty only if ipProtocol contains one single-value element, equal to ICMP (1).";
+      type erienmnrmrtnipv4aclpolicy:ddt-IcmpType;
+    }
+    leaf userLabel {
+      description "Label for free use. \n";
+      type erienmnrmrtnipv4aclpolicy:ddt-RtnIPv4ACLPolicy_AclEntryIpv4_userLabel;
+    }
+    leaf-list addrDst {
+      min-elements 0;
+      max-elements 4;
+      description "Destination IP Address filter.\nThe value is a list of IPv4 subnets: Value/prefix-length.\nThe ACL entry matches if any address in the list matches.\nIf the value list is empty, any IP address matches this entry.";
+      type erienmnrmrtnipv4aclpolicy:ddt-Ipv4AclAddressAndPrefixLengthStr;
+    }
+    leaf-list dscp {
+      min-elements 0;
+      max-elements 4;
+      description "DSCP field filter.\nThe value is a list of DSCP values: Ranges [dd..dd] or single-values [dd], where dd represents an integer in {0..63}.\nThe ACL entry matches if any DSCP value in the list matches.\nIf the value list is empty, any DSCP value will match this entry.";
+      type erienmnrmrtnipv4aclpolicy:ddt-IpDscpStrST;
+    }
+    leaf-list portSrc {
+      min-elements 0;
+      max-elements 4;
+      description "Transport layer source port filter (UDP, TCP or SCTP only).\nThe value is a list of port numbers: Ranges [ddddd..ddddd] or single values [ddddd], where ddddd represents an integer in the range {0..65535}.\nThis attribute can be non-empty only if the protocol is non-empty and if it contains elements that are single values equal to UDP (17), TCP (6), or SCTP (132)\nThe ACL entry matches if any port number in the list matches.\nIf the value list is empty, any port number matches this entry.\n";
+      type erienmnrmrtnipv4aclpolicy:ddt-L4PortStrST;
+    }
+    leaf-list addrSrc {
+      min-elements 0;
+      max-elements 4;
+      description "Source IP Address filter.\nThe value is a list of IPv4 subnets: Value/prefix-length.\nThe ACL entry matches if any address in the list matches.\nIf the value list is empty, any IP address matches this entry.";
+      type erienmnrmrtnipv4aclpolicy:ddt-Ipv4AclAddressAndPrefixLengthStr;
+    }
+    leaf-list portDst {
+      min-elements 0;
+      max-elements 4;
+      description "Transport layer destination port filter (UDP, TCP or SCTP only).\nThe value is a list of port numbers: Ranges [ddddd..ddddd] or single values [ddddd], where ddddd represents an integer in the range {0..65535}.\nThis attribute can be non-empty only if the protocol is non-empty and if it contains elements that are single values equal to UDP (17), TCP (6), or SCTP (132).\nThe ACL entry matches if any port number in the list matches.\nIf the value list is empty, any port number matches this entry.\n";
+      type erienmnrmrtnipv4aclpolicy:ddt-L4PortStrST;
+    }
+    leaf action {
+      description "The action of the ACL entry.\nThe value can be either PERMIT or DENY.\nWhen a packet matches the filters in this entry, the action is executed.\nWhen the attribute has the value DENY, the packet is dropped silently. When the attribute has the value PERMIT, the packet is accepted.";
+      mandatory true;
+      type erienmnrmrtnipv4aclpolicy:enum-AclAction;
+    }
+    leaf fragmentType {
+      description "Fragment type filter.\nThe value is a fragment type.\nIf the value is empty, state-less handling of fragments is performed.";
+      type erienmnrmrtnipv4aclpolicy:enum-FragmentType;
+    }
+    leaf-list ipProtocol {
+      min-elements 0;
+      max-elements 4;
+      description "Protocol number filter.\nThe value is a list of ranges [ddd..ddd] or single-values [ddd], where ddd represents an integer in the range {0..255}.\nThe ACL entry matches if any protocol number in the list matches.\nIf the value list is empty, any protocol number matches this entry.";
+      type erienmnrmrtnipv4aclpolicy:ddt-IpProtocolNumberStrST;
+    }
+    leaf priority {
+      description "Priority of this ACL entry relative to the other entries in the list.";
+      mandatory true;
+      yexte:dependencies "The attribute values of the AclEntryIpv4 instances must be unique within the same AclIpv4 MO.";
+      type erienmnrmrtnipv4aclpolicy:ddt-Priority;
+    }
+  } // end 'grouping moc-AclEntryIpv4'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list AclIpv4 {
+      key id;
+      description "Represents ordered list of ACL entries. See attribute priority in AclEntryIpv4 MO for details on ordering.";
+      erienmyext:enm-type MOC;
+      uses moc-AclIpv4-keys;
+      container attributes {
+        description "Attributes for AclIpv4";
+        uses moc-AclIpv4;
+      } // end 'container attributes'
+    } // end 'list AclIpv4'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnipv4aclpolicy:AclIpv4 {
+    list AclEntryIpv4 {
+      key id;
+      description "This MOC is used to configure entry in Access Control List.\n\nIt contains set of filters for ACL entry as well as action and priority. All filters refer to fields in IP protocol header.\nWhen ACL entries are configured, ACL entry must be added for default action, otherwise non-matching packets will be silently discarded.";
+      erienmyext:enm-type MOC;
+      uses moc-AclEntryIpv4-keys;
+      container attributes {
+        description "Attributes for AclEntryIpv4";
+        uses moc-AclEntryIpv4;
+      } // end 'container attributes'
+    } // end 'list AclEntryIpv4'
+  }
+}

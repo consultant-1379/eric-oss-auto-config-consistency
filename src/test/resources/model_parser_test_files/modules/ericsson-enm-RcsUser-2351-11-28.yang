@@ -1,0 +1,199 @@
+module ericsson-enm-RcsUser {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsUser;
+  prefix erienmnrmrcsuser;
+  yexte:ecim-name RcsUser;
+  revision 2351-11-28 {
+    yexte:version 6;
+    yexte:release 0;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RcsSecM {
+    prefix erienmnrmrcssecm;
+  }
+  typedef ddt-RcsUser_MaintenanceUserSecurity_noOfFailedLoginAttempts {
+    type uint8 {
+      range 3..10;
+    }
+  }
+  typedef ddt-RcsUser_MaintenanceUserSecurity_loginDelay {
+    type uint8 {
+      range 1..60;
+    }
+  }
+  typedef ddt-RcsUser_MaintenanceUserSecurity_userLockoutPeriod {
+    type uint16 {
+      range 1..60;
+    }
+  }
+  typedef ddt-RcsUser_MaintenanceUserSecurity_failedLoginAttemptPeriod {
+    type uint16 {
+      range 1..20;
+    }
+  }
+  typedef ddt-EcimEmpty {
+    description "Represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping struct-EcimPassword {
+    description "Stores the password.";
+    leaf password {
+      description "Holds the password or passphrase text.";
+      type string;
+      mandatory true;
+    }
+    leaf cleartext {
+      description "Indicates whether or not the password is entered in cleartext.";
+      type erienmnrmrcsuser:ddt-EcimEmpty;
+    }
+  } // end 'grouping struct-EcimPassword'
+  grouping moc-MaintenanceUserSecurity-keys {
+    description "Key(s) for MOC MaintenanceUserSecurity";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name maintenanceUserSecurityId;
+      type string;
+    }
+  } // end 'grouping moc-MaintenanceUserSecurity-keys'
+  grouping moc-MaintenanceUserSecurity {
+    description "This MO provides an action for shutting down all other sessions than maintenance user sessions.\nThis is necessary in order to configure attributes in this MO as well as adding or removing MaintenanceUser MOs.\nThis MO also provides attributes for configuring login parameters of maintenance users.\nNote:If the user has no login failures in the last FailedLoginAttemptPeriod or the user is not locked then the changes to the attributes FailedLoginAttemptPeriod,loginDelay,noOfFailedLoginAttempts and userLockoutPeriod take effect immediately, otherwise old values are used.";
+    leaf userLockoutPeriod {
+      description "The period of time a user is locked out after which the lock will be removed automatically. ";
+      type erienmnrmrcsuser:ddt-RcsUser_MaintenanceUserSecurity_userLockoutPeriod;
+      default 5;
+    }
+    leaf noOfFailedLoginAttempts {
+      description "The maximum number of failed login attempts allowed, within failedLoginAttemptPeriod.\nIf the number is exceeded, the user will be locked out.\nIf not defined, incremental delay with no lockout applies. ";
+      type erienmnrmrcsuser:ddt-RcsUser_MaintenanceUserSecurity_noOfFailedLoginAttempts;
+      default 5;
+    }
+    leaf failedLoginAttemptPeriod {
+      description "The period of time over which the number of failed login attempts is measured.\nThe user becomes locked when the last consecutive failed login attempts reaches noOfFailedLoginAttempts within this period.";
+      type erienmnrmrcsuser:ddt-RcsUser_MaintenanceUserSecurity_failedLoginAttemptPeriod;
+      default 5;
+    }
+    leaf loginDelay {
+      description "Delay between each login attempt.\nIf not defined, incremental increase in delay i.e. 1,2,4,8,16,32,32,... seconds applies.";
+      type erienmnrmrcsuser:ddt-RcsUser_MaintenanceUserSecurity_loginDelay;
+      default 5;
+    }
+    action unlockUser {
+      description " This action will unlock a locked maintenance user.";
+      input {
+        leaf maintenanceUserName {
+          mandatory true;
+          description "Maintenance user's username for SSH-based login.See MO MaintenanceUser.username.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action closeSessions {
+      description "This action will close all sessions except for maintenance user sessions.";
+    }
+  } // end 'grouping moc-MaintenanceUserSecurity'
+  grouping moc-UserIdentity-keys {
+    description "Key(s) for MOC UserIdentity";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name userIdentityId;
+      type string;
+    }
+  } // end 'grouping moc-UserIdentity-keys'
+  grouping moc-UserIdentity {
+    description "The UserIdentity class provides means for giving the true user name.\n\nThis class is used for recording the true user name, in case a generic user name has been used at login. \nThis typically happens when the operator access the ME through a MS, and the user's credentials are only checked when logging in to the MS.\n\nThis class also provides a mechanism for shutting down all other sessions than maintenance user sessions.";
+    leaf userName {
+      description "The user name associated to the operator actually providing input to the management system.\nNote! This attribute may be set, but because the value is session dependent it will not be shown to the user.";
+      type string;
+    }
+  } // end 'grouping moc-UserIdentity'
+  grouping moc-MaintenanceUser-keys {
+    description "Key(s) for MOC MaintenanceUser";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name maintenanceUserId;
+      type string;
+    }
+  } // end 'grouping moc-MaintenanceUser-keys'
+  grouping moc-MaintenanceUser {
+    description "This class provides means for offline authentication.\n\nA maintenance user can login without LDAP authentication and is assigned a role through which the entire model can be accessed.\nOnly maintenance users can add MaintenanceUser MOs. In order to do so there may not be any normal users logged in.\nThe closeSession action of the MaintenanceUserSecurity MOC can be used to close any other open sessions.";
+    container password {
+      description "Password used for SSH based login. \nIf no password is given, SSH based login will not be available for this user.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcsuser:struct-EcimPassword;
+    } // end 'container password'
+    leaf userName {
+      description "Optional user name for SSH-based login.";
+      type string;
+    }
+    leaf subjectName {
+      description "This value shall be the subject name of the certificate used for logging in.\nIf no subject name is configured, certificate based login will not be available for this user.";
+      type string;
+    }
+  } // end 'grouping moc-MaintenanceUser'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement/erienmnrmrcsuser:UserIdentity {
+    list MaintenanceUserSecurity {
+      key id;
+      max-elements 1;
+      description "This MO provides an action for shutting down all other sessions than maintenance user sessions.\nThis is necessary in order to configure attributes in this MO as well as adding or removing MaintenanceUser MOs.\nThis MO also provides attributes for configuring login parameters of maintenance users.\nNote:If the user has no login failures in the last FailedLoginAttemptPeriod or the user is not locked then the changes to the attributes FailedLoginAttemptPeriod,loginDelay,noOfFailedLoginAttempts and userLockoutPeriod take effect immediately, otherwise old values are used.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-MaintenanceUserSecurity-keys;
+      container attributes {
+        description "Attributes for MaintenanceUserSecurity";
+        uses moc-MaintenanceUserSecurity;
+      } // end 'container attributes'
+    } // end 'list MaintenanceUserSecurity'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement {
+    list UserIdentity {
+      key id;
+      max-elements 1;
+      description "The UserIdentity class provides means for giving the true user name.\n\nThis class is used for recording the true user name, in case a generic user name has been used at login. \nThis typically happens when the operator access the ME through a MS, and the user's credentials are only checked when logging in to the MS.\n\nThis class also provides a mechanism for shutting down all other sessions than maintenance user sessions.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-UserIdentity-keys;
+      container attributes {
+        description "Attributes for UserIdentity";
+        uses moc-UserIdentity;
+      } // end 'container attributes'
+    } // end 'list UserIdentity'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement/erienmnrmrcsuser:UserIdentity {
+    list MaintenanceUser {
+      key id;
+      description "This class provides means for offline authentication.\n\nA maintenance user can login without LDAP authentication and is assigned a role through which the entire model can be accessed.\nOnly maintenance users can add MaintenanceUser MOs. In order to do so there may not be any normal users logged in.\nThe closeSession action of the MaintenanceUserSecurity MOC can be used to close any other open sessions.";
+      erienmyext:enm-type MOC;
+      uses moc-MaintenanceUser-keys;
+      container attributes {
+        description "Attributes for MaintenanceUser";
+        uses moc-MaintenanceUser;
+      } // end 'container attributes'
+    } // end 'list MaintenanceUser'
+  }
+}

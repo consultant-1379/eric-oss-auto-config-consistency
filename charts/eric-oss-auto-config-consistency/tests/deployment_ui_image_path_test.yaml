@@ -1,0 +1,56 @@
+#
+# COPYRIGHT Ericsson 2023
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+suite: Verify UI container Image Path Populated Correctly.
+templates:
+  - deployment.yaml
+tests:
+  - it: When EACC is deployed with its default configuration, then UI container has it's image path properly populated (from Product Info).
+    asserts:
+      - isKind:
+          of: Deployment
+      #
+      #     UI Image path Populated from eric-product-info.yaml
+      ######################################################################################
+      - equal:
+          path: spec.template.spec.containers[1].image
+          value: "armdocker.rnd.ericsson.se/REPO_PATH/eric-oss-auto-config-consistency-audit-gui:VERSION"
+
+  - it: When EACC is deployed with its image and repo set globally, then UI container has it's image registry url and repo (from Global).
+    values:
+      - ui_image_test_values/global_image_values.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      #
+      #     UI Image path Populated from Global values
+      ######################################################################################
+      - equal:
+          path: spec.template.spec.containers[1].image
+          value: "global.registry.url/global.registry.repoPath/eric-oss-auto-config-consistency-audit-gui:VERSION"
+
+  - it: When EACC is deployed with its url, repo and tag set from imageCredentials, then UI container has it's image registry url, repo and tag (from imageCredentials).
+    values:
+      - ui_image_test_values/image_credentials_values.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      #
+      #     UI Image path Populated from ImageCredentials
+      ######################################################################################
+      - equal:
+          path: spec.template.spec.containers[1].image
+          value: "imageCredentials.eric-oss-auto-config-consistency-ui.registry.url/imageCredentials.eric-oss-auto-config-consistency-ui.repoPath/eric-oss-auto-config-consistency-audit-gui:imageCredentials.eric-oss-auto-config-consistency-ui.repoPath.tag"

@@ -1,0 +1,396 @@
+module ericsson-enm-RtnL3InterfaceIPv4 {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnL3InterfaceIPv4;
+  prefix erienmnrmrtnl3interfaceipv4;
+  yexte:ecim-name RtnL3InterfaceIPv4;
+  revision 2351-11-28 {
+    yexte:version 7;
+    yexte:release 49;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-ClientIdentifierType {
+    description "Type of DHCP client identifier that is used.\n\nDHCP option 61, Client-Identifier, consists of type-value pair, as described in RFC 2132.\nType field is set to 0 (zero) in all cases except for AUTOMATIC_MAC.\nIn case of AUTOMATIC_MAC Type field is set to 1 (one).";
+    type enumeration {
+      enum AUTOMATIC {
+        description "The identifier that is used toward the DHCP server is constructed automatically in the DHCP client.\n\nThe Client-Identifier field is set as in the following template:\n\nClient-Identifier = <mac address>.<tagged>.<VLAN ID>\n\nA client with MAC address 02.C7.F8.00.04.22 on the tagged VLAN 0x012F uses Client-Identifier = 02.C7.F8.00.04.22.01.01.2F\n";
+        value 0;
+      }
+      enum AUTOMATIC_MAC {
+        description "The identifier that is used toward the DHCP server is constructed automatically in the DHCP client from the MAC address of the client.";
+        value 1;
+      }
+      enum AUTOMATIC_SERIAL_NUMBER {
+        description "The identifier that is used toward the DHCP server is constructed automatically in the DHCP client from the HW serial number.";
+        value 2;
+      }
+      enum MANUAL {
+        description "The identifier that is used toward the DHCP server is constructed manually using the value specified in the dhcpClientIdentifier attribute.\n";
+        value 10;
+      }
+      enum NO_CLIENT_IDENTIFIER {
+        description "DHCP option 61 Client-Identifier is not used in the DHCP messages.";
+        value 99;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-BfdStaticRoutesInterfaceType {
+    description "State of bfdStaticRoutes.";
+    type enumeration {
+      enum DISABLED {
+        value 0;
+      }
+      enum ENABLED {
+        value 1;
+      }
+    }
+  }
+  typedef enum-IpConfigMode {
+    description "Method of IP address configuration.";
+    type enumeration {
+      enum MANUAL {
+        description "Address is configured manually.";
+        value 0;
+      }
+      enum DHCP {
+        description "Address and the default route(s) are retrieved using the DHCP configuration method.";
+        value 1;
+      }
+      enum IKE {
+        description "Address is retrieved from security gateway using IKEv2 configuration payload in IKE negotiation.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv4_InterfaceIPv4_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv4_InterfaceIPv4_mtu {
+    type int32 {
+      range 576..9000;
+    }
+  }
+  typedef ddt-EthPCP {
+    description "Specifies the PCP value for ARP packets using this interface (does only effect VLAN-interfaces).";
+    type uint8 {
+      range 0..7;
+    }
+  }
+  typedef ddt-Ipv4AddressAndPrefixLengthStr {
+    description "'Unicast IPv4 address'/'prefix length' string.\n\nIPv4 address specified in dotted-quad decimal notation in accordance with RFC791, without leading zeros.\nThe IPv4 address is within the range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters. The prefix length is a number from 0 to 32.\n\nExample: 1.1.2.2/28";
+    type string;
+  }
+  typedef ddt-RtnL3InterfaceIPv4_AddressIPv4_dhcpClientIdentifier {
+    type string;
+  }
+  typedef ddt-RtnL3InterfaceIPv4_AddressIPv4_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv4_InterfaceIPv4_routesHoldDownTimer {
+    type uint16 {
+      range 1..300;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv4_InterfaceIPv4_arpTimeout {
+    type uint32 {
+      range 30..7200;
+    }
+  }
+  typedef ddt-EcimEmpty {
+    description "This type represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping moc-AddressIPv4-keys {
+    description "Key(s) for MOC AddressIPv4";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name addressIPv4Id;
+      type string;
+    }
+  } // end 'grouping moc-AddressIPv4-keys'
+  grouping moc-AddressIPv4 {
+    description "Assigned IPv4 address including information about the subnet it resides on.";
+    leaf configurationMode {
+      description "Whether IP address is configured manually, or retrieved from network using either DHCP or IKEv2 configuration payload.\nIf MANUAL, address is manually configured.\nIf DHCP, address and default routes are retrieved from DHCP server.\nIf IKE, address is retrieved from security gateway using IKEv2 configuration payload in IKE negotiation.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If DHCP, encapsulation of parent InterfaceIPv4 MO must refer to MO type EthernetPort, VlanPort, LagPort or Bridge.\nIf DHCP, no other AddressIPv4 MO with configurationMode DHCP must exist within same Router MO.\nIf DHCP, bfdProfile attribute in parent InterfaceIPv4 MO must not be set.\nIf IKE, encapsulation of parent InterfaceIPv4 MO must refer to IpsecTunnel MO.\nIf IKE, only one AddressIPv4 MO must exist within same Router MO.\nIf IKE, parent InterfaceIPv4 MO must not refer to IpsecTunnel MO referred by InterfaceIPv6 MO.\nMust be MANUAL or IKE, if there is RouteTableIPv4Static MO in Router MO.\nMust be MANUAL, if DchpRelay MO or AbisIP MO refer to this MO.\nMust be MANUAL, if there is Ospfv2 MO in Router MO.\nMust be MANUAL, if loopback attribute in parent InterfaceIPv4 MO is set.";
+      type erienmnrmrtnl3interfaceipv4:enum-IpConfigMode;
+      default MANUAL;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnl3interfaceipv4:ddt-RtnL3InterfaceIPv4_AddressIPv4_userLabel;
+    }
+    leaf address {
+      description "Configured IPv4 address.\nIPv4 decimal address + \"/\" + prefix length <0-32>.\nConfiguration with prefix length /31 is supported according to RFC 3021, using 31-bit prefixes on IPv4 Point-to-Point links.\n";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If loopback is set, or if encapsulation refers to IpsecTunnel MO, for parent InterfaceIPv4 MO, prefix length must be 32.\nIf parent InterfaceIPv4 MO has encapsulation towards physical network via LagPort MO or Bridge MO, there is no support for prefix length 31.\nIf subnet mask equals 31, encapsulation of parent InterfaceIPv4 MO must refer to EthernetPort MO or VlanPort MO.\nIf configurationMode is MANUAL, this attribute must be set.\nIf configurationMode is DHCP or IKE, this attribute must not be set.";
+      type erienmnrmrtnl3interfaceipv4:ddt-Ipv4AddressAndPrefixLengthStr;
+    }
+    leaf dhcpClientIdentifier {
+      description "Specifies DHCP client identifier to be used when dhcpClientIdentifierType is set to MANUAL.\nArbitrary client identifier string, ASCII encoding. Empty string not allowed.\nExample: eNodeB47";
+      yexte:dependencies "If configurationMode is DHCP and dhcpClientIdentifierType is MANUAL, this attribute must be set.\nIf configurationMode is DHCP and dhcpClientIdentifierType has any other value than MANUAL, this attribute must not be set.\nIf configurationMode is MANUAL or IKE, or if dhcpClientIdentifierType is AUTOMATIC, this attribute must not be set.\n";
+      type erienmnrmrtnl3interfaceipv4:ddt-RtnL3InterfaceIPv4_AddressIPv4_dhcpClientIdentifier;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf dhcpClientIdentifierType {
+      description "Specifies whether dhcpClientIdentifier is configured manually, automatically generated or not used at all.\nDHCP client identifier is unique identifier assigned to each client on network that DHCP server uses to identify node interface and to connect it with its address binding.\nThis identifier must be unique for all clients in administrative domain of DHCP server.";
+      yexte:dependencies "Only applicable if configurationMode is DHCP.";
+      type erienmnrmrtnl3interfaceipv4:enum-ClientIdentifierType;
+      default AUTOMATIC;
+    }
+    leaf usedAddress {
+      config false;
+      description "Used IP address as IPv4 decimal address + \"/\" + prefix length <0-32>.\nIf configurationMode is MANUAL, this attribute has same content as address attribute.\nIf configurationMode is DHCP or IKE, retrieved address is shown in this attribute.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-AddressIPv4'
+  grouping moc-InterfaceIPv4-keys {
+    description "Key(s) for MOC InterfaceIPv4";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name interfaceIPv4Id;
+      type string;
+    }
+  } // end 'grouping moc-InterfaceIPv4-keys'
+  grouping moc-InterfaceIPv4 {
+    description "Represents IPv4-addressed termination point, interface on IPv4 routing domain.\n\nDependencies:\nMax one InterfaceIPv4 MO can reserve this LagPort MO.";
+    leaf encapsulation {
+      description "Reference to underlying encapsulation, which can be MO type EthernetPort, VlanPort, Bridge, IpsecTunnel or LagPort.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "One of encapsulation or loopback must be set, but not both at same time.\nOnly one InterfaceIPv4 MO can refer to same MO.\nCannot refer to EthernetPort MO referred by VlanPort MO.\nCannot refer to VlanPort MO referred by Bridge MO.\nCannot refer to Bridge MO with port attribute referring to VlanPort MO where lowLatencySwitching attribute set to true.\nReferred IpsecTunnel MO must belong to same Router MO.\nIf InterfaceIPv4 MO and InterfaceIPv6 MO refer to same MO in encapsulation, they must belong to same Router MO.\nIf attribute refers to IpsecTunnel MO, none of aclIngress, aclEgress, egressQosMarking, or routingPolicyIngress can be set.\nIf attribute refers to IpsecTunnel MO, bfdStaticRoutes must be DISABLED.\nIf attribute refers to IpsecTunnel MO, configurationMode for child AddressIPv4 MO must not be DHCP.\nIf attribute refers to IpsecTunnel MO, the only relevant configuration attributes are mtu and routesHoldDownTimer.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "Label for free use.\n";
+      type erienmnrmrtnl3interfaceipv4:ddt-RtnL3InterfaceIPv4_InterfaceIPv4_userLabel;
+    }
+    leaf pcpArp {
+      description "PCP value for ARP packets using this interface.";
+      yexte:dependencies "Attribute is only applicable if encapsulation refers MO type EthernetPort, VlanPort, or Bridge.";
+      type erienmnrmrtnl3interfaceipv4:ddt-EthPCP;
+      default 6;
+    }
+    leaf aclIngress {
+      description "Reference to AclIpv4 MO applied in ingress direction.\nIf attribute is empty, no ACL filtering will take place in ingress direction.\nWhen ACL entries are configured, ACL entry must be added for default action, otherwise non-matching packets will be silently discarded.";
+      yexte:dependencies "Attribute can only be set if encapsulation refers MO types EthernetPort, VlanPort, or Bridge.\nReferred AclIpv4 MO must belong to same Router MO, and must have at least one AclEntryIpv4 MO as child.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf mtu {
+      description "Maximum Transmission Unit (MTU).\nReal MTU is minimum of this configured value and MTU given by encapsulation.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If InterfaceIPv4 MO and InterfaceIPv6 MO refer to same EthernetPort, VlanPort, LagPort, or Bridge MO in encapsulation, they must have same MTU value.\nThis attribute is not relevant if loopback is set.";
+      type erienmnrmrtnl3interfaceipv4:ddt-RtnL3InterfaceIPv4_InterfaceIPv4_mtu;
+      default 1500;
+    }
+    leaf routesHoldDownTimer {
+      description "Hold-down timer used for static and dynamic routes that use this interface.\nIf attribute is set, hold-down timer is started when conditions for static route to become available have been fulfilled.\nWhen hold-down timer expires, route becomes available.\nOSPFv2 uses this attribute to delay neighbour discovery on this interface (that is, until interface is deemed reliably up) until routesHoldDownTimer has expired, counting from time that underlying L2 interface transitioned to operational state of ENABLED.\nIf attribute is empty, there is no hold-down timer for routes.\nThis attribute does not affect the operational state of the interface.";
+      yexte:dependencies "If InterfaceIPv4 MO and InterfaceIPv6 MO refer to same MO in encapsulation, they must have same routesHoldDownTimer value.\nAttribute is not relevant if loopback is set.";
+      type erienmnrmrtnl3interfaceipv4:ddt-RtnL3InterfaceIPv4_InterfaceIPv4_routesHoldDownTimer;
+    }
+    leaf egressQosMarking {
+      description "DSCP to PCP map used for marking DSCP tagged packets with PCP value.\nPackets are marked either host originated or routed into QoS domain.\nIf empty, DSCP values are mapped to PCP values according to following:\npcp0 = 0\npcp1   (empty)\npcp2 = 10,12,14\npcp3 = 18,20,22\npcp4 = 8,16,26,28\npcp5 = 34,36,38,46\npcp6 = 32,40,48\npcp7 = 51,54";
+      yexte:dependencies "Attribute can only be set if encapsulation refers MO type EthernetPort, VlanPort, or Bridge.\nDSCP to PCP map is not relevant if loopback is set, or encapsulation refers to IpsecTunnel MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustDSCP {
+      status deprecated;
+      description "Defines whether DSCP field of ingress datagrams shall be trusted or not.";
+      type boolean;
+      default true;
+    }
+    leaf bfdProfile {
+      description "Reference to BfdProfile MO containing BFD parameters used for BFD sessions from this interface.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If bfdStaticRoutes is set to ENABLED, this attribute must be set.\nIf configurationMode in AddressIPv4 MO is set to DHCP, this attribute must not be set.\nReferred BfdProfile MO must belong to Transport MO or same Router MO.\nIf loopback is set, this attribute must not be set.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf bfdStaticRoutes {
+      description "Enables or disables BFD monitoring of static route and PBR nexthops on this interface.\nThis attribute works in conjunction with bfdProfile.\nTo enable BFD monitoring for this interface, bfdStaticRoutes must be set to ENABLED and bfdProfile must be set.\nIf BFD monitoring is enabled, all static routing nexthops on subnets of this IP interface are monitored, unless explicitly disabled on PeerIPv4 MO or NextHop MO.\nBFD monitoring of static routes for a specific peer can be enabled on PeerIPv4 MO even if this attribute is DISABLED.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If attribute is set to ENABLED, bfdProfile must be set.\nAttribute can only be ENABLED if encapsulation refers MO type EthernetPort, VlanPort, or Bridge.";
+      type erienmnrmrtnl3interfaceipv4:enum-BfdStaticRoutesInterfaceType;
+      default DISABLED;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf routingPolicyIngress {
+      description "Reference to a RoutingPolicyIPv4 MO to be used for Policy Based Routing in ingress direction.\nIf attribute is set, Policy Based Routing of incoming packets is enabled.\n";
+      yexte:dependencies "Referred RoutingPolicyIPv4 MO must belong to same Router MO, and must have at least one RoutingRuleIpv4 MO as child.\nAttribute can only be set if encapsulation refers MO type EthernetPort, VlanPort, or Bridge.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf arpTimeout {
+      description "Average time that entry remains in ARP cache.\nEntry is dynamically learned IP address and its corresponding MAC address.\nEntry is then either refreshed, if entry is still needed, or removed, if entry is not needed any more.";
+      yexte:dependencies "Attribute is only relevant if encapsulation refers MO type EthernetPort a VlanPort, or a Bridge.";
+      type erienmnrmrtnl3interfaceipv4:ddt-RtnL3InterfaceIPv4_InterfaceIPv4_arpTimeout;
+      default 300;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState. ";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnl3interfaceipv4:enum-AvailStatus;
+    }
+    leaf ingressQosMarking {
+      description "DSCP to DSCP map used for remarking ingress DSCP tagged packets.\nEmpty string means no re-marking is done.\nAttribute used to fix specific issues within QoS domain and should most often be empty.\nIt can refer to DscpDscpMap MO.\n";
+      yexte:dependencies "Attribute is only relevant if encapsulation refers MO type EthernetPort, VlanPort, or Bridge.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state. ";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnl3interfaceipv4:enum-OperState;
+    }
+    leaf aclEgress {
+      description "Reference to AclIpv4 MO applied in egress direction.\nIf attribute is empty, no ACL filtering will take place in egress direction.\nWhen ACL entries are configured, ACL entry must be added for default action, otherwise non-matching packets will be silently discarded.";
+      yexte:dependencies "Attribute can only be set if encapsulation refers MO type EthernetPort, VlanPort, or Bridge.\nReferred AclIpv4 MO must belong to same Router MO, and must have at least one AclEntryIpv4 MO as child.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf loopback {
+      description "Specifies if interface is IP loopback interface.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "One of encapsulation or loopback must be set, but not both at same time.\nMax number of InterfaceIPv4 MOs, with this attribute set, is 64.\nIf attribute is set, none of aclIngress, aclEgress, egressQosMarking or routingPolicyIngress can be set.\nIf attribute is set, bfdStaticRoutes must be DISABLED.\nIf attribute is set, configurationMode for child AddressIPv4 MO must be MANUAL.\nIf attribute is set, none of other configuration attributes are relevant.\nIf set, bfdProfile must not be set.";
+      type erienmnrmrtnl3interfaceipv4:ddt-EcimEmpty;
+    }
+  } // end 'grouping moc-InterfaceIPv4'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnl3interfaceipv4:InterfaceIPv4 {
+    list AddressIPv4 {
+      key id;
+      max-elements 1;
+      description "Assigned IPv4 address including information about the subnet it resides on.";
+      erienmyext:enm-type MOC;
+      uses moc-AddressIPv4-keys;
+      container attributes {
+        description "Attributes for AddressIPv4";
+        uses moc-AddressIPv4;
+      } // end 'container attributes'
+    } // end 'list AddressIPv4'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list InterfaceIPv4 {
+      key id;
+      max-elements 256;
+      description "Represents IPv4-addressed termination point, interface on IPv4 routing domain.\n\nDependencies:\nMax one InterfaceIPv4 MO can reserve this LagPort MO.";
+      erienmyext:enm-type MOC;
+      uses moc-InterfaceIPv4-keys;
+      container attributes {
+        description "Attributes for InterfaceIPv4";
+        uses moc-InterfaceIPv4;
+      } // end 'container attributes'
+    } // end 'list InterfaceIPv4'
+  }
+}

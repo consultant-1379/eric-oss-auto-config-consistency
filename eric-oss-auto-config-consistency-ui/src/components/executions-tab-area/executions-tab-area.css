@@ -1,0 +1,63 @@
+/*******************************************************************************
+ * COPYRIGHT Ericsson 2023 - 2024
+ *
+ *
+ *
+ * The copyright to the computer program(s) herein is the property of
+ *
+ * Ericsson Inc. The programs may be used and/or copied only with written
+ *
+ * permission from Ericsson Inc. or in accordance with the terms and
+ *
+ * conditions stipulated in the agreement/contract under which the
+ *
+ * program(s) have been supplied.
+ ******************************************************************************/
+:host {
+  display: block;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 var(--space-large) 0;
+}
+
+.tab-header-tile {
+  padding: 0;
+  height: var(--space-xxl);
+  width: fit-content;
+}
+
+.tab-header-changes-tile {
+  padding: 0;
+}
+
+#filterPill {
+  padding: var(--space-small) 0;
+  font-size: 14px;
+}
+
+.content-box {
+  margin-top: var(--space-large);
+}
+
+.changes-selection {
+  font-size: 14px;
+  color: var(--gray-55);
+  padding-left: var(--space-small);
+  padding-bottom: var(--space-large);
+}
+
+.clearSelection {
+  color: var(--link-blue);
+}
+
+.clearSelection:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#action-buttons {
+  height: var(--space-xl);
+}

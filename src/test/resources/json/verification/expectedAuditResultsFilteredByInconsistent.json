@@ -1,0 +1,46 @@
+{
+  "totalElements": 4,
+  "totalPages": 1,
+  "currentPage": 0,
+  "perPage": 6,
+  "hasNext": false,
+  "hasPrev": false,
+  "results": [
+    {
+      "managedObjectFdn": "SubNetwork=Europe,SubNetwork=Ireland,SubNetwork=NETSimW,ManagedElement=LTE416dg2ERBS00006,ENodeBFunction=1,EUtranCellFDD=LTE06dg2ERBS00030-1",
+      "managedObjectType": "EUtranCellFDD",
+      "attributeName": "cellCapMinCellSubCap",
+      "currentValue": "100",
+      "preferredValue": "1000",
+      "auditStatus": "Inconsistent",
+      "executionId": "EXECID"
+    },
+    {
+      "managedObjectFdn": "SubNetwork=Europe,SubNetwork=Ireland,SubNetwork=NETSimW,ManagedElement=LTE416dg2ERBS00006,ENodeBFunction=1,EUtranCellFDD=LTE06dg2ERBS00030-1",
+      "managedObjectType": "EUtranCellFDD",
+      "attributeName": "cfraEnable",
+      "currentValue": "false",
+      "preferredValue": "true",
+      "auditStatus": "Inconsistent",
+      "executionId": "EXECID"
+    },
+    {
+      "managedObjectFdn": "SubNetwork=Europe,SubNetwork=Ireland,SubNetwork=NETSimW,ManagedElement=LTE416dg2ERBS00006,ENodeBFunction=1,EUtranCellFDD=LTE06dg2ERBS00030-3",
+      "managedObjectType": "EUtranCellFDD",
+      "attributeName": "cellCapMinCellSubCap",
+      "currentValue": "100",
+      "preferredValue": "1000",
+      "auditStatus": "Inconsistent",
+      "executionId": "EXECID"
+    },
+    {
+      "managedObjectFdn": "SubNetwork=Europe,SubNetwork=Ireland,SubNetwork=NETSimW,ManagedElement=LTE416dg2ERBS00006,ENodeBFunction=1,EUtranCellFDD=LTE06dg2ERBS00030-3",
+      "managedObjectType": "EUtranCellFDD",
+      "attributeName": "cfraEnable",
+      "currentValue": "false",
+      "preferredValue": "true",
+      "auditStatus": "Inconsistent",
+      "executionId": "EXECID"
+    }
+  ]
+}

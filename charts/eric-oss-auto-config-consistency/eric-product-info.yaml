@@ -1,0 +1,40 @@
+#
+# COPYRIGHT Ericsson 2021 - 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+productName: "eric-oss-auto-config-consistency HELM"
+productNumber: "CXC 201 0000"
+images:
+  eric-oss-auto-config-consistency:
+    productName: "eric-oss-auto-config-consistency IMAGE"
+    productNumber: "CXU 101 1675"
+    registry: "armdocker.rnd.ericsson.se"
+    repoPath: REPO_PATH
+    name: "eric-oss-auto-config-consistency"
+    tag: VERSION
+  eric-oss-auto-config-consistency-ui:
+    productName: "eric-oss-auto-config-consistency UI IMAGE"
+    productNumber: "CXU 101 1685"
+    registry: "armdocker.rnd.ericsson.se"
+    repoPath: REPO_PATH
+    name: "eric-oss-auto-config-consistency-audit-gui"
+    tag: VERSION
+  eric-data-document-database-pg:
+    productName: "Document Database PG"
+    productNumber: "CAX 105 3319"
+    registry: "armdocker.rnd.ericsson.se"
+    repoPath: "proj-document-database-pg-release/data"
+    name: "eric-data-document-database-pg13"
+    tag: "9.2.0+44"

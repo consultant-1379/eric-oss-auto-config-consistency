@@ -1,0 +1,301 @@
+module ericsson-notifications {
+	yang-version 1.1;
+  	namespace urn:rdns:com:ericsson:oammodel:ericsson-notifications;
+  	prefix notife;
+
+  	import ericsson-yang-extensions { prefix yexte; }
+  	import ietf-netconf-notifications { prefix ncn; }
+  	import ietf-netconf-acm { prefix nacm; }
+
+  	organization "Ericsson AB";
+  	contact "Ericsson first line support via email";
+  	description "The EYANG notifications model.
+  		A server that implements this YAM MUST send push-change-update 
+  		notifications for all data nodes marked config true in the running 
+  		datastore.
+  		
+  		It SHALL also send push-change-update notifications for changes of 
+  		data nodes marked config false, if they are also marked with the 
+  		notife:notifiable-state-data extension.
+  		
+    	Copyright (c) 2017 Ericsson AB. All rights reserved.";
+
+    reference "Loosely based on 
+    	https://trac.tools.ietf.org/html/draft-ietf-netconf-yang-push
+    	https://tools.ietf.org/html/rfc8072";
+
+  	revision "2017-05-12" {
+    	description "Updated when notifications are sent. 
+    		Added the notifiable-state-data extension definition.
+    		Updated how the change list entry will be used for 
+    		different changes and different data node types.";
+    	yexte:version "2";
+    	yexte:release "0";
+    	yexte:correction "4";
+  	}
+
+  	revision "2017-04-12" {
+    	description "Introduced a single notification push-change-update 
+    		to carry all data changes be it about config true or false data.";
+    	yexte:version "2";
+    	yexte:release "0";
+    	yexte:correction "1";
+  	}
+
+  	revision "2017-03-07" {
+    	description "Added netconf-state-change notification.";
+    	yexte:version "2";
+    	yexte:release "0";
+    	yexte:correction "0";
+  	}
+
+  	revision "2016-07-01" {
+    	description "Initial revision";
+    	yexte:version "1";
+    	yexte:release "1";
+    	yexte:correction "0";
+  	}
+
+  	feature netconf-state-change {
+  		description "Change notifications are sent about changes to 
+  			config=false data.";
+  	}
+  	
+    extension notifiable-state-data  {
+        description
+            "If the argument is 'true' changes to the data node and any 
+             contained child data nodes SHALL be reported using 
+             push-change-update notifications even if they are marked 
+             config=false, if netconf-state-change is supported. 
+             
+             A 'notifiable-state-data' statement on a child node will override 
+             a similar statement on an ancestor node. 
+             
+             The extension can be a substatement to both config=false and 
+             config=true data nodes. However changes for config=true nodes 
+             are always reported independent of this extension. A reason to 
+             place this extension on config=true data nodes is to specify  
+             that changes on contained config=false child data nodes SHALL be 
+             reported without marking each child data node with the extension.
+            
+            The statement MUST only be a substatement of the leaf, 
+            leaf-list, container, list, anyxml, anydata  statements.
+            Zero or One notifiable-state-data statement is allowed per parent 
+            statement.     
+            NO substatements are allowed.
+
+            The argument is a boolean value indicating whether changes about 
+            config=false data nodes SHALL be reported or not.
+            If notifiable-state-data is not specified, 
+            the default is the same as the parent data node's value. For top 
+            level data nodes the default value is false.";            
+            
+        argument value;
+    }
+
+  	notification push-change-updates-not-created {
+    	description "Informs that the ME was not able to create and send 
+    		push-change-update notifications for some datastore changes. 
+    		These notifications MAY NOT be available for replay either. 
+    		The client shall consider re-reading the datastore content to gain 
+    		knowledge of recent changes.
+
+    		Sent on the ERICSSON-DATA-CHANGE stream, 
+    		but not on the NETCONF stream.";
+  	}
+
+  	notification heartbeat {   
+    	description  "Informs that the netconf server in the ME is up and running. 
+      		Sent periodically every 180 second.
+      		
+    		Sent on the ERICSSON-DATA-CHANGE stream, 
+    		but not on the NETCONF stream.";
+  	}
+
+  	notification push-change-update {
+    	description "Generated when the server detects that the
+       		<running> datastore or state data has changed.
+ 	       	The notification summarizes the changes. The notification 
+ 	       	MAY be generated for both config false and true data. 
+ 	       	 	       	
+     		The server SHALL report all changes whether they are 
+     		the result of Netconf, Restconf, CLI operations, 
+     		server processes or anything else.
+	
+	       	Sent on the ERICSSON-DATA-CHANGE stream, 
+    		but not on the NETCONF stream.";
+
+    	/* As there might not be any data specific access control on  
+    	* push-change-update notifications, a subscriber may receive information 
+    	* about all data in the ME. This may include security sensitive data. 
+    	* push-change-update notifications will only be sent to 
+    	* subscribers for whom an explicit permit rule is defined. */
+		nacm:default-deny-all;
+
+		leaf sequence-number {
+			type uint64 ;
+			description "A sequence number for push-change-update 
+				notifications. Can be used to detect missing notifications.
+				Increased by one for each push-change-update notification 
+				generated, rolling over to zero after max value.
+				 
+				It MAY be reset at events like restart or upgrade.
+				
+				The number SHOULD be sequential for each subscription, 
+				but it MAY be instead sequential for all generated 
+				notifications of the ERICSSON-DATA-CHANGE stream.
+				If stream based numbering is used and a subscription uses 
+				filters the receiver will see missing sequence numbers 
+				whenevever a notification is discarded by filtering."; 
+		} 	   
+    
+	    uses ncn:changed-by-parms;
+
+    	list change {
+      		description "A change entry SHALL be present for each distinct
+      			configuration or state change that the server has detected.
+      			
+		       	Containers and list entries are reported as created or 
+		       	deleted but never as replaced or merged.
+		       	
+		       	At the creation of containers or list entries notifications 
+		       	MUST include separate change entries for this data node and 
+		       	any changed child data nodes 
+		       	(e.g. leafs, leaf-lists, contained lists, etc.).	       	
+		
+		       	At the deletion of a container or list entry a single change 
+		       	entry will be sent for this data node, that also implies the 
+		       	deletion of all contained child data nodes 
+		       	(e.g. container, list, leaf and leaf-list).
+		       	
+		       	
+		       	Leafs, leaf-list entries, anyxml or anydata are reported as merged 
+		       	or deleted but never as replaced or created.
+
+	
+      			ordered-by user list or leaf-list entries MAY also be 
+      			reported as inserted or moved.";
+
+	      	leaf target {
+	        	type instance-identifier;
+	        	mandatory true;
+	        	description "Top-most data node within
+	           		the datastore associated with the change.";
+	      	}
+	
+	      	leaf operation {
+          		type enumeration {
+		            enum create {
+		              value 0;	
+		              description
+		                "The target data node is created using the supplied
+		                 value.  The 'target' leaf identifies the data node 
+		                 to be created, not the parent data node.";
+		            }
+		            enum delete {
+		              value 1;
+		              description
+		                "The target data node is deleted.";
+		            }		
+		            enum insert {
+		              value 2;
+		              description
+		                "The supplied value is inserted into a user-ordered
+		                 list or leaf-list. The target node must
+		                 represent a new data resource.  If the 'where'
+		                 parameter is set to 'before' or 'after', then
+		                 the 'point' parameter identifies the insertion
+		                 point for the target node.
+		                 Used instead of create for user-ordered data.";
+		            }		            
+				    enum "merge" {
+		            	value 3;
+				        description
+				          "Merge the value with the target data resource; create
+				          if it does not already exist, replace if it exists.";
+				    }
+		            enum move {
+		              value 4;
+		              description
+		                "The target node is moved. Reorder a user-ordered
+		                 list or leaf-list.  The target node must represent
+		                 an existing data resource. If the 'where' parameter
+		                 is set to 'before' or 'after', then the 'point'
+		                 parameter identifies the insertion point of the 
+		                 the target node.";
+		            }
+		            /* replace not used as containers/list entries are instead 
+		             * deleted and re-created while for other data nodes the 
+		             * merge operation is used.
+		             * 
+		             * remove not used as in this context it means the same 
+		             * as delete */
+		        }
+	        	mandatory true;
+	        	description "Type of edit operation / change detected.";
+	      	}
+	
+	        leaf point {
+	          	when "(../operation = 'insert' or ../operation = 'move')"
+	             		+ "and (../where = 'before' or ../where = 'after')" {
+	            	description
+	              		"This leaf only applies for 'insert' or 'move'
+	               		 operations, before or after an existing entry.";
+		    	}
+	          	type instance-identifier;
+	          	description
+	            	"The path for the data node that is being
+	             	used as the insertion point or move point for the
+	             	target of this 'change' entry.";
+			} 
+	        leaf where {
+	          when "../operation = 'insert' or ../operation = 'move'";
+	          type enumeration {
+	            enum before {
+		          value 0;
+	              description
+	                "Insert or move a data node before the data resource
+	                 identified by the 'point' parameter.";
+	            }
+	            enum after {
+		          value 1;
+	              description
+	                "Insert or move a data node after the data resource
+	                 identified by the 'point' parameter.";
+				} 
+        
+	            enum first {
+		          value 2;
+	              description
+	                "Insert or move a data node so it becomes ordered
+	                 as the first entry.";
+	            }
+	            enum last {
+		          value 3;
+	              description
+	                "Insert or move a data node so it becomes ordered
+	                 as the last entry.";
+	            }
+	          }
+	          default last;
+	          description
+	            "Identifies where a data resource will be inserted
+	             or moved.  YANG only allows these operations for
+	             list and leaf-list data nodes that are
+	             'ordered-by user'.";
+}
+
+	        anydata value {
+	          	when "../operation = 'create' "
+	             	+ "or ../operation = 'merge' "
+	             	+ "or ../operation = 'insert'";
+	          
+	          	description
+	              "Value used in the change. It contains the leaf, leaf-list, 
+	               anydata or anyxml pointed out by the 'target' leaf.
+	               For containers, list entries, and leafs/leaf-lists of 
+	               type empty the value MUST NOT be present for any operation.";
+	        }	     
+	    } 
+  	}         
+}

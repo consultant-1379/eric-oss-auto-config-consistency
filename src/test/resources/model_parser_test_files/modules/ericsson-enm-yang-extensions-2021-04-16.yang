@@ -1,0 +1,38 @@
+module ericsson-enm-yang-extensions {
+  namespace "urn:rdns:com:ericsson:oammodel:ericsson-enm-yang-extensions";
+  prefix erienmyext;
+
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  
+  description
+    "The module defines Ericsson ENM proprietary YANG extensions.
+     Copyright (c) 2020 Ericsson AB. All rights reserved.";
+
+  revision 2021-04-16 {
+    description "Added default-system-created";
+    yexte:version "1";
+    yexte:release "0";
+    yexte:correction "0";
+  }
+
+  extension lock-before-modify {
+    description "Denotes that the corresponding parent object must be locked before the data node can be modified.";
+    argument text;
+  }
+
+  extension no-notification {
+    description "Denotes that the node will not be sending notifications for this configurable data node.";
+  }
+
+  extension enm-type {
+    description "Denotes the type of a data node in ENM. One of: MOC, STRUCT, MOREF";
+    argument text;
+  }
+
+
+}

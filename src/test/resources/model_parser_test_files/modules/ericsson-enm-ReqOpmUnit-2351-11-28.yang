@@ -1,0 +1,265 @@
+module ericsson-enm-ReqOpmUnit {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqOpmUnit;
+  prefix erienmnrmreqopmunit;
+  yexte:ecim-name ReqOpmUnit;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ActiveLine {
+    description "Indicator if any optical line and which is currently active.";
+    type enumeration {
+      enum NONE {
+        description "No active line.";
+        value 0;
+      }
+      enum FIRST {
+        description "First line is active.";
+        value 1;
+      }
+      enum SECOND {
+        description "Second line is active.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef ddt-ReqOpmUnit_OpmProductData_serialNumber {
+    type string {
+      length 0..16;
+    }
+  }
+  typedef ddt-ReqOpmUnit_OpmProductData_manufacturerDesignation {
+    type string {
+      length 0..16;
+    }
+  }
+  typedef ddt-ReqOpmUnit_OpmProductData_manufacturerRevision {
+    type string {
+      length 0..8;
+    }
+  }
+  typedef ddt-ReqOpmUnit_OpmProductData_productNumber {
+    type string {
+      length 0..14;
+    }
+  }
+  typedef ddt-ReqOpmUnit_OpmProductData_manufacturerId {
+    type string {
+      length 0..16;
+    }
+  }
+  typedef ddt-Date {
+    description "Represents the international standard for the representation of date (ISO 8601).\nThe string format is \"YYYY-MM-DD\" (excluding quotes).\nThe following pattern describes the Date format:\nYYYY-MM-DD\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)";
+    type string;
+  }
+  typedef ddt-ReqOpmUnit_OpmProductData_productRevision {
+    type string {
+      length 0..8;
+    }
+  }
+  grouping struct-OpmProductData {
+    description "Opm product data";
+    leaf productionDate {
+      description "Production date of OPM Unit.";
+      type erienmnrmreqopmunit:ddt-Date;
+      mandatory true;
+    }
+    leaf serialNumber {
+      description "Serial number of OPM Unit.";
+      type erienmnrmreqopmunit:ddt-ReqOpmUnit_OpmProductData_serialNumber;
+      mandatory true;
+    }
+    leaf manufacturerRevision {
+      description "Manufacturer revision of OPM Unit.";
+      type erienmnrmreqopmunit:ddt-ReqOpmUnit_OpmProductData_manufacturerRevision;
+      mandatory true;
+    }
+    leaf manufacturerId {
+      description "Manufacturer ID of OPM Unit.";
+      type erienmnrmreqopmunit:ddt-ReqOpmUnit_OpmProductData_manufacturerId;
+      mandatory true;
+    }
+    leaf manufacturerDesignation {
+      description "Manufacturer designation of OPM Unit.";
+      type erienmnrmreqopmunit:ddt-ReqOpmUnit_OpmProductData_manufacturerDesignation;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "Product number of OPM Unit. States \"Non-Ericsson\" when information not available.";
+      type erienmnrmreqopmunit:ddt-ReqOpmUnit_OpmProductData_productNumber;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "Product version of OPM Unit. States \"Non-Ericsson\" when information not available.";
+      type erienmnrmreqopmunit:ddt-ReqOpmUnit_OpmProductData_productRevision;
+      mandatory true;
+    }
+  } // end 'grouping struct-OpmProductData'
+  grouping moc-OpmUnit-keys {
+    description "Key(s) for MOC OpmUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name opmUnitId;
+      type string;
+    }
+  } // end 'grouping moc-OpmUnit-keys'
+  grouping moc-OpmUnit {
+    description "This MO represents an optical protection module.";
+    leaf administrativeState {
+      description "The administrative state. If set to SHUTTINGDOWN, the state will immediately be brought to LOCKED.";
+      type erienmnrmreqopmunit:enum-AdmState;
+      default UNLOCKED;
+    }
+    leaf riPortRef {
+      description "Reference to RiPort on the Baseband Unit to which the OPM is connected. Port used only to control OPM.";
+      mandatory true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container productData {
+      description "Information about installed OPM Unit.\n\nIf empty, data is unavailable.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqopmunit:struct-OpmProductData;
+    } // end 'container productData'
+    leaf activeLine {
+      config false;
+      description "The active optical line.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqopmunit:enum-ActiveLine;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqopmunit:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqopmunit:enum-OperState;
+    }
+  } // end 'grouping moc-OpmUnit'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list OpmUnit {
+      key id;
+      description "This MO represents an optical protection module.";
+      erienmyext:enm-type MOC;
+      uses moc-OpmUnit-keys;
+      container attributes {
+        description "Attributes for OpmUnit";
+        uses moc-OpmUnit;
+      } // end 'container attributes'
+    } // end 'list OpmUnit'
+  }
+}

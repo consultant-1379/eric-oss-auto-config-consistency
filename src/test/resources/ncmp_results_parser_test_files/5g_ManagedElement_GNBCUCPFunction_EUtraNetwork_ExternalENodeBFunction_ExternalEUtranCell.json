@@ -1,0 +1,49 @@
+ {
+"ManagedElement":
+  [
+    {
+      "id": "NR01gNodeBRadio00007",
+      "attributes":
+      {
+        "dnPrefix": "test"
+      },
+      "GNBCUCPFunction":
+      [
+        {
+          "id": "1",
+          "attributes":
+          {
+            "tXnDcOverall": "5"
+          },
+          "EUtraNetwork":
+          [
+            {
+              "id": "1",
+              "ExternalENodeBFunction":
+              [
+                {
+                  "id": "100",
+                  "attributes":
+                  {
+                    "isRemoveAllowed": "false"
+                  },
+                  "ExternalEUtranCell":
+                  [
+                    {
+                      "id": "10",
+                      "attributes":
+                      {
+                        "earfcnul": "18000",
+                        "tac": "0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

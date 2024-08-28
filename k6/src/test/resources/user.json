@@ -1,0 +1,15 @@
+{
+  "user": {
+    "firstName": "",
+    "lastName": "",
+    "email": "",
+    "username": "eacc-user",
+    "status": "Enabled",
+    "privileges": [
+      "eacc-read-only"
+    ]
+  },
+  "password": "idunEr!css0n",
+  "tenant": "master",
+  "passwordResetFlag": false
+}

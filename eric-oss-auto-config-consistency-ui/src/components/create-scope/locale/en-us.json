@@ -1,0 +1,22 @@
+{
+  "CREATE_NODE_SET": "Create node set",
+  "EDIT_NODE_SET": "Edit node set",
+  "SAVE": "Save",
+  "NAME": "Name",
+  "NO_FILE_SELECTED": "No file selected",
+  "UPLOAD_FILE": "Upload file",
+  "NODE_SET_NAME_PATTERN_WARNING": "Only lower case alphanumeric, '_' and '-' allowed",
+  "NODE_SET_NAME_EXISTS_WARNING": "Node set name already exists",
+  "NODE_SET_FILE_TOO_LARGE": "The selected file exceeds the maximum size of 20 MB",
+  "NODE_SET_CREATION_FAILURE_SHORT_DESCRIPTION": "Unable to create node set",
+  "UNABLE_TO_UPDATE_NODE_SET": "Unable to update node set",
+  "NODE_SET_CREATION_FAILURE_LONG_DESCRIPTION": "Internal server error. Try again or contact the system administrator.",
+  "NODE_SET_CREATED": "Node set '%node_set_name%' was created.",
+  "NODE_SET_UPDATED": "Node set '%node_set_name%' was updated.",
+  "REST_RESPONSE_400_BAD_REQUEST": "The node set content has an invalid format.",
+  "REST_RESPONSE_404_NOT_FOUND": "The node set could not be found or no longer exists.",
+  "REST_RESPONSE_409_CONFLICT": "Make sure '%node_set_name%' is not used by any active jobs and try again.",
+  "REST_RESPONSE_413_PAYLOAD_TOO_LARGE": "The selected file exceeds the maximum size of 20 MB.",
+  "REST_403_DESCRIPTION": "Your role does not allow you to perform this operation. Contact the System Administrator to change your access rights.",
+  "ACCESS_DENIED": "Access Denied"
+}

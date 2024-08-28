@@ -1,0 +1,74 @@
+module ericsson-enm-RmePmSupport {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmePmSupport;
+  prefix erienmnrmrmepmsupport;
+  yexte:ecim-name RmePmSupport;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-FileHandlingMethod {
+    description "Describes the possible file handling methods.";
+    type enumeration {
+      enum SINGLE_ROP_FILE {
+        description "The system collects all performance data in one ROP file.";
+        value 1;
+      }
+      enum MULTIPLE_ROP_FILES {
+        description "The system produces multiple ROP files according to the jobGroup value in the defined PmJob MO's.";
+        value 2;
+      }
+    }
+  }
+  grouping moc-PmSupport-keys {
+    description "Key(s) for MOC PmSupport";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the value identifying this MO.";
+      mandatory true;
+      yexte:ecim-name pmSupportId;
+      type string;
+    }
+  } // end 'grouping moc-PmSupport-keys'
+  grouping moc-PmSupport {
+    description "Holds control for multi ROP file behaviour.";
+    leaf ropFileHandling {
+      description "Controls if all performance data is to be produced in a single ROP file or multiple ROP files.";
+      type erienmnrmrmepmsupport:enum-FileHandlingMethod;
+      default SINGLE_ROP_FILE;
+    }
+  } // end 'grouping moc-PmSupport'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list PmSupport {
+      key id;
+      max-elements 1;
+      description "Holds control for multi ROP file behaviour.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PmSupport-keys;
+      container attributes {
+        description "Attributes for PmSupport";
+        uses moc-PmSupport;
+      } // end 'container attributes'
+    } // end 'list PmSupport'
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "ManagedElement":
+  [
+    {
+      "id": "LTE04dg2ERBS00082",
+      "attributes":
+      {
+        "dnPrefix": "test"
+      },
+      "ENodeBFunction":
+      [
+        {
+          "id": "1",
+          "LoadBalancingFunction":
+          [
+            {
+              "id": "1",
+              "IdleModePrioAtRelease":
+              [
+                {
+                  "id": "1000",
+                  "attributes":
+                  {
+                    "highLoadThreshold": "800",
+                    "mediumLoadThreshold": "400",
+                    "lowLoadThreshold": "0",
+                    "mediumHighLoadThreshold": "600",
+                    "lowMediumLoadThreshold": "200"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+module ericsson-enm-RtnDhcpRelayIPv4 {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnDhcpRelayIPv4;
+  prefix erienmnrmrtndhcprelayipv4;
+  yexte:ecim-name RtnDhcpRelayIPv4;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 3;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  grouping moc-DhcpRelayIPv4-keys {
+    description "Key(s) for MOC DhcpRelayIPv4";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name dhcpRelayIPv4Id;
+      type string;
+    }
+  } // end 'grouping moc-DhcpRelayIPv4-keys'
+  grouping moc-DhcpRelayIPv4 {
+    description "Represents DHCP relay agent, that can relay IPv4 DHCP messages between DHCP clients and DHCP servers.";
+    leaf-list server {
+      min-elements 1;
+      max-elements 10;
+      description "Reference to PeerIPv4 MO that DHCP packets will be relayed to.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Referred PeerIPv4 MO must belong to same Router MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list subnet {
+      min-elements 1;
+      description "IP subnets that DHCP relay agent must serve.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Referred AddressIPv4 MO must belong to same Router MO.\nReferred AddressIPv4 MO is one and only AddressIpv4 MO on that InterfaceIpv4 MO.\nReferred AddressIPv4 MO must have configurationMode MANUAL.\nMust not be duplicated.\nLoopback interfaces are not allowed.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-DhcpRelayIPv4'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list DhcpRelayIPv4 {
+      key id;
+      description "Represents DHCP relay agent, that can relay IPv4 DHCP messages between DHCP clients and DHCP servers.";
+      erienmyext:enm-type MOC;
+      uses moc-DhcpRelayIPv4-keys;
+      container attributes {
+        description "Attributes for DhcpRelayIPv4";
+        uses moc-DhcpRelayIPv4;
+      } // end 'container attributes'
+    } // end 'list DhcpRelayIPv4'
+  }
+}

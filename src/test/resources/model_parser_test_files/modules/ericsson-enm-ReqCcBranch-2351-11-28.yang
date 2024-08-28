@@ -1,0 +1,80 @@
+module ericsson-enm-ReqCcBranch {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqCcBranch;
+  prefix erienmnrmreqccbranch;
+  yexte:ecim-name ReqCcBranch;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  import ericsson-enm-ReqAntennaSystem {
+    prefix erienmnrmreqantennasystem;
+  }
+  grouping moc-CcBranch-keys {
+    description "Key(s) for MOC CcBranch";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ccBranchId;
+      type string;
+    }
+  } // end 'grouping moc-CcBranch-keys'
+  grouping moc-CcBranch {
+    description "This MO represents the functional \"long antenna branch\" between the Antenna Reference Point and the cross connected receiving radio unit. It conceptually includes an RfBranch and a CcLink.";
+    leaf rfBranchRef {
+      description "Contains reference to the RfBranch included in the CcBranch. The RfBranch represents the RF feeder part of the CcBranch.";
+      mandatory true;
+      yexte:takes-effect " MO CcLink Lock/Unlock.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf ccLinkRef {
+      description "Contains reference to the CcLink included in the CcBranch. The CcLink represents cross connect cable part of the CcBranch.";
+      mandatory true;
+      yexte:takes-effect " MO CcLink Lock/Unlock.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-CcBranch'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup {
+    list CcBranch {
+      key id;
+      max-elements 24;
+      description "This MO represents the functional \"long antenna branch\" between the Antenna Reference Point and the cross connected receiving radio unit. It conceptually includes an RfBranch and a CcLink.";
+      erienmyext:enm-type MOC;
+      uses moc-CcBranch-keys;
+      container attributes {
+        description "Attributes for CcBranch";
+        uses moc-CcBranch;
+      } // end 'container attributes'
+    } // end 'list CcBranch'
+  }
+}

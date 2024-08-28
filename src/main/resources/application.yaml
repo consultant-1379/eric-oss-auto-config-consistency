@@ -1,0 +1,162 @@
+#
+# COPYRIGHT Ericsson 2021 - 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+logging.level.org.springframework.web: INFO
+logging.level.org.hibernate: INFO
+
+#Metrics related configurations
+management.info.env.enabled: "true"
+management.endpoint.metrics.enabled: "true"
+management.endpoints.web.exposure.include: "prometheus,health,info"
+management.endpoint.prometheus.enabled: "true"
+management.metrics.export.prometheus.enabled: "true"
+management.metrics.web.server.auto-time-requests: "true"
+management.metrics.web.client.request.autotime.enabled: "true"
+management.metrics.distribution.percentiles-histogram.eacc.cc.http.server.requests.duration: "true"
+management.metrics.distribution.minimum-expected-value.eacc.cc.http.server.requests.duration: "500ms"
+management.metrics.distribution.maximum-expected-value.eacc.cc.http.server.requests.duration: "20s"
+management.metrics.distribution.percentiles-histogram.eacc.cc.http.requests.duration: "true"
+management.metrics.distribution.minimum-expected-value.eacc.cc.http.requests.duration: "500ms"
+management.metrics.distribution.maximum-expected-value.eacc.cc.http.requests.duration: "20s"
+management.metrics.distribution.minimum-expected-value.eacc.apt.http.server.requests: "1s"
+management.metrics.distribution.maximum-expected-value.eacc.apt.http.server.requests: "1s"
+#Database check should be excluded from liveness probe and readiness probe
+management.health.db.enabled: "false"
+
+#opentracing.jaeger.enabled: "true"
+
+spring:
+  flyway:
+    locations: "classpath:db/migration/postgres"
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driverClassName: org.postgresql.Driver
+    hikari:
+      connectionTimeout: 10000
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+endpoints.health.sensitive: "false"
+info.app.name: "@name@"
+info.app.description: Microservice chassis app
+info.app.version: "@version@"
+info.app.legal: "COPYRIGHT Ericsson 2021 -
+  The copyright to the computer program(s) herein is the property of
+  Ericsson Inc. The programs may be used and/or copied only with written
+  permission from Ericsson Inc. or in accordance with the terms and
+  conditions stipulated in the agreement/contract under which the
+  program(s) have been supplied."
+
+#See more details about pattern layout: https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
+#See more details about logging.pattern.level : https://docs.spring.io/spring-boot/docs/2.5.2/reference/html/features.html#features.logging.custom-log-configuration
+#logging.pattern.level: "%5p [%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}][%X{userName}]"
+
+#Set the stubrunner credentials:
+#stubrunner.username: <LAN SIGNUM ID>
+#stubrunner.password: <LAN encripted PWD or JFrog API Key>
+stubrunner.username: ${SELI_ARTIFACTORY_REPO_USER}
+stubrunner.password: ${SELI_ARTIFACTORY_REPO_PASS}
+
+schedule.threadpoolsize: 5
+
+gateway.scheme: ${GATEWAY_SCHEME:https}
+gateway.host: ${GATEWAY_HOST:localhost}
+gateway.port: ${GATEWAY_PORT:}
+
+gateway.services.ncmp.url: ${NCMP_URL:}
+gateway.services.ncmp.basePath: ${NCMP_BASE_PATH:}
+gateway.services.ncmp.headers: ${NCMP_HEADERS:}
+
+gateway.services.iam.url: ${IAM_URL:}
+gateway.services.iam.basePath: ${IAM_BASE_PATH:}
+gateway.services.iam.clientId: ${IAM_CLIENT_ID:}
+gateway.services.iam.clientSecret: ${IAM_CLIENT_SECRET:}
+gateway.services.iam.tokenEndpointPath: ${IAM_TOKEN_ENDPOINT_PATH:}
+
+logging:
+  config: ${LOGBACK_CONFIG_FILE:classpath:logback-json.xml}
+  endpoints:
+    exclude: /actuator/health, /actuator/prometheus, /ping, /metrics, /actuator/id-(.*)
+  logcontrol-file: ${LOG_CTRL_FILE:/logcontrol/logcontrol.json}
+  enableAuditLogOfReads: ${ENABLE_AUDIT_LOG_OF_READS:false}
+  streamingMethod: ${LOG_STREAMING_METHOD:direct}
+
+frontEnd:
+  corsValueGasUrl: ${CORS_VALUE_GAS_URL:#{'CORS_VALUE_GAS_URL'}}
+
+tls:
+  enabled: ${TLS_ENABLED:false}
+  clientProtocol: ${CLIENT_PROTOCOL:TLSv1.3}
+  truststoreCertFilePath: ${TRUSTSTORE_CERTIFICATE_MOUNT_PATH:}
+  keystoreCertFilePath: ${KEYSTORE_CERTIFICATE_MOUNT_PATH:}
+  truststore:
+    # This trust store that we save with certs supplied to EACC
+    appStorePath: /tmp/truststore.jks
+    appTrustStorePass: ${APP_TRUST_STORE_PASS:}
+  keystore:
+    appStorePath: /tmp/eric-log-transformer.p12
+    appKeyStorePass: ${ERIC_LOG_TRANSFORMER_KEYSTORE_PW:}
+
+audit:
+  ncmpReadMos:
+    threadPoolSize: ${NCMP_READ_MOS_THREAD_POOL_SIZE:3}
+  moQueueSize: ${AUDIT_MO_QUEUE_SIZE:1000}
+  threadPoolSize: ${CONSISTENCY_CHECKER_THREAD_POOL_SIZE:1}
+  revertThreadPoolSize: ${REVERSION_EXECUTOR_THREAD_POOL_SIZE:1}
+
+ncmpCalls:
+  retry:
+    maxAttempts: 5
+    delay: 1000
+    maxDelay: 30000
+    delayMultiplier: 2
+
+modelDiscovery:
+  scheduling:
+    cronExpression: ${MODEL_DISCOVERY_SCHEDULE:0 0 0 * * 0}
+  modulesFilePath: /tmp/yang_modules/
+  threadPoolSize: ${MODEL_DISCOVERY_THREAD_POOL_SIZE:4}
+  retry:
+    maxAttempts: 100
+    delay: 1000
+    maxDelay: 600000
+    delayMultiplier: 2
+
+database:
+  retry:
+    userInitiated:
+      maxAttempts: ${SHORT_DB_RETRY_ATTEMPTS:2}
+    scheduleInitiated:
+      maxAttempts: ${LONG_DB_RETRY_ATTEMPTS:5}
+      delay: ${LONG_DB_RETRY_DELAY:8000}
+      maxDelay: ${LONG_DB_RETRY_MAX_DELAY:64000}
+      delayMultiplier: ${LONG_DB_RETRY_DELAY_MULTIPLIER:2}
+  retention:
+    executionCronExpression: ${EXECUTION_RETENTION_SCHEDULE:0 0 1 ? * *}
+    executionExpirationPeriodInDays: ${EXECUTION_EXPIRATION_DAYS:90}
+    maxExecutionsToBeRetained: ${DATA_RETENTION_MAX_COUNT:180}

@@ -1,0 +1,100 @@
+module ericsson-enm-LratRpUpt {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-LratRpUpt;
+  prefix erienmnrmlratrpupt;
+  yexte:ecim-name LratRpUpt;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 3;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-Lrat {
+    prefix erienmnrmlrat;
+  }
+  typedef ddt-LratRpUpt_RpUserPlaneLink_localEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  typedef ddt-LratRpUpt_RpUserPlaneLink_remoteEndPoint {
+    type string {
+      length 2..39;
+    }
+  }
+  grouping moc-RpUserPlaneLink-keys {
+    description "Key(s) for MOC RpUserPlaneLink";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name rpUserPlaneLinkId;
+      type string;
+    }
+  } // end 'grouping moc-RpUserPlaneLink-keys'
+  grouping moc-RpUserPlaneLink {
+    description "User plane link for the radio processing interface.\n\nSystem created when a radio processing user plane link is established.\nSystem deleted when a radio processing user plane link is released.\n\nThe RDN of this MO is RpUserPlaneLink=[Remote Managed Element Identity].";
+    leaf remoteEndPoint {
+      erienmyext:no-notification;
+      config false;
+      description "Remote GTP transport address.\nIP address can be an IPv4 or an IPv6 address.";
+      type erienmnrmlratrpupt:ddt-LratRpUpt_RpUserPlaneLink_remoteEndPoint;
+    }
+    leaf localEndPoint {
+      erienmyext:no-notification;
+      config false;
+      description "Local GTP transport address.\nIP address can be an IPv4 or an IPv6 address.";
+      type erienmnrmlratrpupt:ddt-LratRpUpt_RpUserPlaneLink_localEndPoint;
+    }
+  } // end 'grouping moc-RpUserPlaneLink'
+  grouping moc-RpUserPlaneTermination-keys {
+    description "Key(s) for MOC RpUserPlaneTermination";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name rpUserPlaneTerminationId;
+      type string;
+    }
+  } // end 'grouping moc-RpUserPlaneTermination-keys'
+  grouping moc-RpUserPlaneTermination {
+    description "Local termination point of the radio processing user plane interface.\n\nSystem created when the first radio processing user plane link is established.\nSystem deleted when the last radio processing user plane link is released.\n\nThe RDN of this MO is RpUserPlaneTermination=1.";
+  } // end 'grouping moc-RpUserPlaneTermination'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmlrat:ENodeBFunction/erienmnrmlratrpupt:RpUserPlaneTermination {
+    list RpUserPlaneLink {
+      key id;
+      description "User plane link for the radio processing interface.\n\nSystem created when a radio processing user plane link is established.\nSystem deleted when a radio processing user plane link is released.\n\nThe RDN of this MO is RpUserPlaneLink=[Remote Managed Element Identity].";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-RpUserPlaneLink-keys;
+      container attributes {
+        description "Attributes for RpUserPlaneLink";
+        uses moc-RpUserPlaneLink;
+      } // end 'container attributes'
+    } // end 'list RpUserPlaneLink'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmlrat:ENodeBFunction {
+    list RpUserPlaneTermination {
+      key id;
+      max-elements 1;
+      description "Local termination point of the radio processing user plane interface.\n\nSystem created when the first radio processing user plane link is established.\nSystem deleted when the last radio processing user plane link is released.\n\nThe RDN of this MO is RpUserPlaneTermination=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-RpUserPlaneTermination-keys;
+    } // end 'list RpUserPlaneTermination'
+  }
+}

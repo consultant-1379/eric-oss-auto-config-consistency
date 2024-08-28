@@ -1,0 +1,12 @@
+{
+  "ManagedElement":
+  [
+    {
+      "id": "NR01gNodeBRadio00007",
+      "attributes":
+      {
+        "dnPrefix": "test"
+      }
+    }
+  ]
+}

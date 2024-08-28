@@ -1,0 +1,353 @@
+module ericsson-enm-Fgw {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-Fgw;
+  prefix erienmnrmfgw;
+  yexte:ecim-name Fgw;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+      enum DEPENDENCY_HOLDING {
+        description "Resource cannot operate because some other resource on which it depends is currently unavailable.\nThe situation is expected to be resolved. Actions to facilitate dependency resolution may be ongoing.";
+        value 13;
+      }
+    }
+  }
+  typedef ddt-IpDNSAddress {
+    description "The IpDNSAddress type represents an IP address or a DNS domain name.\n\nA unicast IPv4 address is presented in three-digit decimal blocks. It is specified in dotted-quad decimal notation (i.e. three-digit decimal blocks) in accordance with RFC791, The blocks are separated by a dot.\n- The unicast IPV4  address is within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\n- The IP address range 127.0.0.0 – 127.255.255.255 is reserved for loopback\n- The IP address range 0– 0.255.255.255 are reserved\n- The IP address range 169.254.1.0 - 169.254.254.255 is used for link-local addresses.\n\nAn  IPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons as described in RFC 4291. If multiple consecutive groups contain only zeros, the use of “::” indicates one or more groups of 16 bits of zeros, as described in RFC 4291, section 2.2 bullet 2. A link-local address will have prefix fe80::/10. The format of the embedded IPv4/IPv6 addresses is described in RFC 6052.\n- IPv6 minimum length = 3 and maximum length = 39.\n- Valid characters: 0123456789abcdefABCDEF:\n\nA domain name is specified in dot separated alphanumeric notation  as described in RFC 1034. The domain name consists of one or more parts, called labels, that are delimited by dots.\n- Domain Name's length: 253 characters\n- Label's length: 63 characters.\n- Valid characters: a-z, A-Z, 0,1,2,3,4,5,6,7,8,9,-\n- The Label’s first character is a letter.\n- Labels shall not start or end with a hyphen.\n- Labels shall not start with a numbers\n- Labels shall end with a number or a letter.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-Ipv6AddressStr {
+    description "IPv6 address string, controlled by a regular expression.\n\nAddress is to be specified in colon separated hexadecimal notation as described in RFC 4291 section 2.2 items 1-3, but without leading 0s.\nIPv6 addresses length: 3-39 characters.\nValid characters: 0123456789abcdefABCDEF:\n\nRegex:\n(^\\s*(((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){7}(([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|:))|\n((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){6}(:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|\n((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){5}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,2})|:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|\n((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){4}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,3})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0))?:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|\n((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){3}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,4})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,2}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|\n((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){2}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,5})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,3}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|\n((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){1}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,6})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,4}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|\n(:(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,7})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,5}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:)))(%.+)?\\s*$)\n\nExamples: FF01::101, 2001:DB8:0:0:8:800:200C:417A";
+    type string;
+  }
+  typedef ddt-MacAddressStr {
+    description "MAC address string, controlled by a regular expression.\n\nAddress is to be specified in colon-separated hexadecimal notation as described in IEEE 802. \nMAC addresses must have 17 characters.\nValid characters: 0123456789abcdefABCDEF\nRegular expression: (^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$)\nExample: 00:12:34:56:78:9A";
+    type string {
+      length 17..17;
+    }
+  }
+  typedef ddt-Fgw_FgwFunction_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-FgwFunction-keys {
+    description "Key(s) for MOC FgwFunction";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name fgwFunctionId;
+      type string;
+    }
+  } // end 'grouping moc-FgwFunction-keys'
+  grouping moc-FgwFunction {
+    description "Fronthaul gateway functionality.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmfgw:ddt-Fgw_FgwFunction_userLabel;
+    }
+    leaf release {
+      erienmyext:no-notification;
+      config false;
+      description "The product release of the fronthaul gateway function.";
+      type string;
+    }
+  } // end 'grouping moc-FgwFunction'
+  grouping moc-FgwTermPoint-keys {
+    description "Key(s) for MOC FgwTermPoint";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name fgwTermPointId;
+      type string;
+    }
+  } // end 'grouping moc-FgwTermPoint-keys'
+  grouping moc-FgwTermPoint {
+    description "Physical port for user plane towards vDU.";
+    leaf vlanPortRef {
+      description "Reference to VlanPort MO.";
+      mandatory true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf localPort {
+      erienmyext:no-notification;
+      config false;
+      description "EthernetPortId for local end of FgwTermPoint.";
+      type string;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmfgw:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmfgw:enum-AvailStatus;
+    }
+  } // end 'grouping moc-FgwTermPoint'
+  grouping moc-FgwService-keys {
+    description "Key(s) for MOC FgwService";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name fgwServiceId;
+      type string;
+    }
+  } // end 'grouping moc-FgwService-keys'
+  grouping moc-FgwService {
+    description "Service control interface of fronthaul gateway towards vDU.";
+    leaf transportRef {
+      description "Reference to VlanPort MO or Bridge MO.";
+      mandatory true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf ipv6Address {
+      yexte:restricted;
+      description "IPv6 address of fronthaul gateway function.";
+      mandatory true;
+      type erienmnrmfgw:ddt-Ipv6AddressStr;
+    }
+    leaf administrativeState {
+      description "The administrative state.";
+      type erienmnrmfgw:enum-AdmState;
+      default LOCKED;
+    }
+    leaf nodeCredential {
+      description "Credential used for TLS over Ericsson LLS interface between vDU and FGW function.\nDN of NodeCredential MO in certificate management.";
+      mandatory true;
+      yexte:takes-effect "Next MO Unlock.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmfgw:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmfgw:enum-AvailStatus;
+    }
+    leaf trustCategory {
+      description "Set of certificates trusted for TLS over Ericsson LLS interface between vDU and FGW function.\nDN of TrustCategory MO in certificate management.";
+      mandatory true;
+      yexte:takes-effect "Next MO Unlock.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf remoteIpAddress {
+      erienmyext:no-notification;
+      config false;
+      description "IP address of vDU.";
+      type erienmnrmfgw:ddt-IpDNSAddress;
+    }
+  } // end 'grouping moc-FgwService'
+  grouping moc-LlsEndpoints-keys {
+    description "Key(s) for MOC LlsEndpoints";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name llsEndpointsId;
+      type string;
+    }
+  } // end 'grouping moc-LlsEndpoints-keys'
+  grouping moc-LlsEndpoints {
+    description "Pair of endpoints between the processing instance of the eCPRI to CPRI converter function and the vDU.\n\nThe RDNs of these MOs are LlsEndpoints=1 to LlsEndpoints=2.\n";
+    leaf localAddress {
+      erienmyext:no-notification;
+      config false;
+      description "MAC address of local Baseband entity.";
+      type erienmnrmfgw:ddt-MacAddressStr;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmfgw:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmfgw:enum-AvailStatus;
+    }
+    leaf remoteAddress {
+      erienmyext:no-notification;
+      config false;
+      description "MAC address of remote Baseband entity.";
+      type erienmnrmfgw:ddt-MacAddressStr;
+    }
+  } // end 'grouping moc-LlsEndpoints'
+  augment /erienmnrmcomtop:ManagedElement {
+    list FgwFunction {
+      key id;
+      max-elements 1;
+      description "Fronthaul gateway functionality.";
+      erienmyext:enm-type MOC;
+      uses moc-FgwFunction-keys;
+      container attributes {
+        description "Attributes for FgwFunction";
+        uses moc-FgwFunction;
+      } // end 'container attributes'
+    } // end 'list FgwFunction'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmfgw:FgwFunction {
+    list FgwTermPoint {
+      key id;
+      max-elements 2;
+      description "Physical port for user plane towards vDU.";
+      erienmyext:enm-type MOC;
+      uses moc-FgwTermPoint-keys;
+      container attributes {
+        description "Attributes for FgwTermPoint";
+        uses moc-FgwTermPoint;
+      } // end 'container attributes'
+    } // end 'list FgwTermPoint'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmfgw:FgwFunction {
+    list FgwService {
+      key id;
+      max-elements 1;
+      description "Service control interface of fronthaul gateway towards vDU.";
+      erienmyext:enm-type MOC;
+      uses moc-FgwService-keys;
+      container attributes {
+        description "Attributes for FgwService";
+        uses moc-FgwService;
+      } // end 'container attributes'
+    } // end 'list FgwService'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmfgw:FgwFunction/erienmnrmfgw:FgwTermPoint {
+    list LlsEndpoints {
+      key id;
+      max-elements 2;
+      description "Pair of endpoints between the processing instance of the eCPRI to CPRI converter function and the vDU.\n\nThe RDNs of these MOs are LlsEndpoints=1 to LlsEndpoints=2.\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-LlsEndpoints-keys;
+      container attributes {
+        description "Attributes for LlsEndpoints";
+        uses moc-LlsEndpoints;
+      } // end 'container attributes'
+    } // end 'list LlsEndpoints'
+  }
+}

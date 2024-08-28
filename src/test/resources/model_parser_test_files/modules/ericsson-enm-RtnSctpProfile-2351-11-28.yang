@@ -1,0 +1,414 @@
+module ericsson-enm-RtnSctpProfile {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnSctpProfile;
+  prefix erienmnrmrtnsctpprofile;
+  yexte:ecim-name RtnSctpProfile;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 7;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-AlphaIndex {
+    description "RTO alpha index.";
+    type enumeration {
+      enum ALPHA_1_2ND {
+        description "ALPHA_1_2ND -> RTO.Alpha=1/2.\n";
+        value 1;
+      }
+      enum ALPHA_1_4TH {
+        description "ALPHA_1_4TH -> RTO.Alpha=1/4.";
+        value 2;
+      }
+      enum ALPHA_1_8TH {
+        description "ALPHA_1_8TH -> RTO.Alpha=1/8.";
+        value 3;
+      }
+      enum ALPHA_1_16TH {
+        description "ALPHA_1_16TH -> RTO.Alpha=1/16.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-BetaIndex {
+    description "RTO beta index. ";
+    type enumeration {
+      enum BETA_1_2ND {
+        description "BETA_1_2ND -> RTO.Beta = 1/2.";
+        value 1;
+      }
+      enum BETA_1_4TH {
+        description "BETA_1_4TH -> RTO.Beta = 1/4.";
+        value 2;
+      }
+      enum BEAT_1_8TH {
+        description "BEAT_1_8TH -> RTO.Beta = 1/8.";
+        value 3;
+      }
+      enum BETA_1_16TH {
+        description "BETA_1_16TH -> RTO.Beta = 1/16.";
+        value 4;
+      }
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_sackTimer {
+    type uint16 {
+      range 0..500;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_bundlingTimer {
+    type uint16 {
+      range 0..1000;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_maxSctpPduSize {
+    type uint16 {
+      range 0..1480;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_maxOutStreams {
+    type uint16 {
+      range 1..16384;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_maxActivateThr {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_initialHeartbeatInterval {
+    type uint32 {
+      range 10..1800000;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_transmitBufferSize {
+    type uint16 {
+      range 1..2048;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_minRto {
+    type uint16 {
+      range 10..5000;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_pathMaxRtx {
+    type uint8 {
+      range 1..20;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_minActivateThr {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_initRto {
+    type uint32 {
+      range 10..120000;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_hbMaxBurst {
+    type uint32 {
+      range 0..4;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_cookieLife {
+    type uint8 {
+      range 1..180;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_initARWnd {
+    type uint32 {
+      range 1500..1048576;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_assocMaxRtx {
+    type uint8 {
+      range 1..20;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_thrTransmitBufferCongCeased {
+    type uint8 {
+      range 1..100;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_heartbeatInterval {
+    type uint32 {
+      range 10..1800000;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_incCookieLife {
+    type uint8 {
+      range 0..180;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_maxInitRt {
+    type uint8 {
+      range 1..16;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_dscp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_primaryPathMaxRtx {
+    type uint8 {
+      range 0..20;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_maxShutdownRt {
+    type uint8 {
+      range 1..20;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_maxBurst {
+    type uint16 {
+      range 1..16384;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_maxRto {
+    type uint32 {
+      range 11..120000;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_maxInStreams {
+    type uint16 {
+      range 1..16384;
+    }
+  }
+  typedef ddt-RtnSctpProfile_SctpProfile_thrTransmitBuffer {
+    type uint16 {
+      range 1..2048;
+    }
+  }
+  grouping moc-SctpProfile-keys {
+    description "Key(s) for MOC SctpProfile";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name sctpProfileId;
+      type string;
+    }
+  } // end 'grouping moc-SctpProfile-keys'
+  grouping moc-SctpProfile {
+    description "The SctpProfile defines the configuration that controls the behaviour of an SctpEndpoint. \n\nThe SctpProfile can be shared by one or more SctpEndpoint MOs.";
+    leaf maxInStreams {
+      description "Maximum number of inbound streams to negotiate for an association. \nA change to this attribute does not affect the existing associations. \nTo apply a new value, the endpoint must be re-created.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_maxInStreams;
+      default 2;
+    }
+    leaf minRto {
+      description "Minimum RTO.";
+      yexte:dependencies "minRto <= initRto <= maxRto";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_minRto;
+      default 100;
+    }
+    leaf initARWnd {
+      description "Value of the initial advertised receiver window credit (a_rwnd sent in the INIT message).\nIf the value of this attribute is increased, it applies to both existing and new associations. If the value is decreased, it does not apply to associations that are already established.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_initARWnd;
+      default 16384;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_userLabel;
+    }
+    leaf maxInitRt {
+      description "Maximum number of retransmissions allowed for both INIT and COOKIE_ECHO chunks.\nA new value of the attribute does not apply to associations that are already established.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_maxInitRt;
+      default 8;
+    }
+    leaf primaryPathAvoidance {
+      description "Whether SCTP can avoid primary path usage when it didn't work for the latest transmission.\n\nTrue: Enable functionality. \nFalse: Disable functionality.";
+      type boolean;
+      default true;
+    }
+    leaf bundlingTimer {
+      description "Maximum allowed bundling delay.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_bundlingTimer;
+      default 0;
+    }
+    leaf cookieLife {
+      description "Valid cookie life.\nA new value of the attribute does not apply to associations that are already established. ";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_cookieLife;
+      default 60;
+    }
+    leaf dscp {
+      description "The DSCP value. ";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_dscp;
+      default 40;
+    }
+    leaf transmitBufferSize {
+      description "Size of the buffer used for storing data pending to be sent or retransmitted in an association.";
+      yexte:dependencies thrTransmitBuffer<=transmitBufferSize;
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_transmitBufferSize;
+      default 64;
+    }
+    leaf thrTransmitBufferCongCeased {
+      description "Size of threshold of the transmit buffer in percentage when congestion cease indication is sent.\n\nSee also description of attribute thrTransmitBuffer.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_thrTransmitBufferCongCeased;
+      default 85;
+    }
+    leaf minActivateThr {
+      description "Minimum and initial number of consecutive successful heartbeats before switchback can be performed.\n\nThe minimum and initial value for the number of consecutive successful heartbeats that must be sent over the preferred primary path before switchback can be performed.";
+      yexte:dependencies minActivateThr<=maxActivateThr;
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_minActivateThr;
+      default 1;
+    }
+    leaf betaIndex {
+      description "RTO beta index. \n";
+      type erienmnrmrtnsctpprofile:enum-BetaIndex;
+      default BETA_1_4TH;
+    }
+    leaf incCookieLife {
+      description "Allowed increment of parameter valid.Cookie.Life in local node.\n\nApplied when an increase of the parameter is requested from the remote node.\nA new value of the attribute does not apply to associations that are already established.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_incCookieLife;
+      default 30;
+    }
+    leaf maxOutStreams {
+      description "Maximum number of outbound streams to negotiate for an association. \nA change to this attribute does not affect the existing associations. \nTo apply a new value, the endpoint must be re-created.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_maxOutStreams;
+      default 2;
+    }
+    leaf initRto {
+      description "RTO initial value.\nA new value of the attribute does not apply to associations that are already established.";
+      yexte:dependencies "minRto <= initRto <= maxRto";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_initRto;
+      default 200;
+    }
+    leaf thrTransmitBuffer {
+      description "Threshold of the transmit buffer size. \nUpon exceeding this threshold the user of SCTP will be asked to stop sending data. This condition will persist until the occupancy of the transmit buffer drops below thrTransmitBufferCongCeased * thrTransmitBuffer.";
+      yexte:dependencies thrTransmitBuffer<=transmitBufferSize;
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_thrTransmitBuffer;
+      default 48;
+    }
+    leaf noSwitchback {
+      description "Recovery of the failed Primary Path does not invoke change of the (current) data transfer path. \n\nTrue: No switchback.\nFalse: Switchback.";
+      type boolean;
+      default true;
+    }
+    leaf heartbeatInterval {
+      description "SCTP heartbeat interval.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_heartbeatInterval;
+      default 2000;
+    }
+    leaf initialHeartbeatInterval {
+      description "Period for acceptance of a heartbeat acknowledge message during path probing.\n\nIt limits the intensity of heartbeats for path probing after association start-up.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_initialHeartbeatInterval;
+      default 500;
+    }
+    leaf maxActivateThr {
+      description "Maximum number of consecutive successful heartbeats.\n\nIt must be sent over the data transfer path (DTP) before switchback can be performed.";
+      yexte:dependencies minActivateThr<=maxActivateThr;
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_maxActivateThr;
+      default 65535;
+    }
+    leaf maxShutdownRt {
+      description "Maximum number of retransmissions during the shutdown phase of an association.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_maxShutdownRt;
+      default 5;
+    }
+    leaf bundlingActivated {
+      description "States whether bundling is allowed for an endpoint.\n\nTrue: An endpoint bundles chunks by including multiple chunks in one outbound SCTP packet.\nFalse: Bundling is not used.";
+      type boolean;
+      default true;
+    }
+    leaf pathMaxRtx {
+      description "Maximum number of consecutive retransmissions on an IP path.\n\nAn IP path is defined by the pair of local and remote IP addresses.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_pathMaxRtx;
+      default 10;
+    }
+    leaf assocMaxRtx {
+      description "Association maximum number of retransmissions packets.";
+      yexte:dependencies "primaryPathMaxRtx <= pathMaxRtx <= assocMaxRtx";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_assocMaxRtx;
+      default 20;
+    }
+    leaf bundlingAdaptiveActivated {
+      description "States whether adaptive bundling is applied. \nIt is only applicable if bundlingActivated is set to true.\nAccording to traffic condition, SCTP bundles chunks by including multiple chunks in one outbound SCTP packet.\nTrue :  Adaptive bundling is enabled.\nFalse : Adaptive bundling is disabled.";
+      type boolean;
+      default true;
+    }
+    leaf heartbeatActivated {
+      description "States whether heartbeat is activated.\n\nTrue: Activates heartbeats for SCTP endpoint.\nFalse: Disables heartbeats for SCTP endpoint.";
+      type boolean;
+      default true;
+    }
+    leaf maxBurst {
+      description "Maximum number of burst packets.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_maxBurst;
+      default 4;
+    }
+    leaf maxRto {
+      description "Maximum RTO.";
+      yexte:dependencies "minRto <= initRto <= maxRto";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_maxRto;
+      default 400;
+    }
+    leaf alphaIndex {
+      description "RTO alpha index.";
+      type erienmnrmrtnsctpprofile:enum-AlphaIndex;
+      default ALPHA_1_8TH;
+    }
+    leaf maxSctpPduSize {
+      description "Maximum size of the SCTP PDU.\n\nThis is equal to the size of IP MTU minus the size of IP overhead.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_maxSctpPduSize;
+      default 0;
+    }
+    leaf hbMaxBurst {
+      description "HB.MaxBurst value.\nA new value of the attribute does not apply to associations that are already established.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_hbMaxBurst;
+      default 1;
+    }
+    leaf primaryPathMaxRtx {
+      description "Maximum value of the error counter of the current primary path before switchover.\n\nIn case of enabled Primary Path Avoidance(PPA), if the error counter of the primary path exceeds this value, SCTP chooses another current primary path.";
+      yexte:dependencies "primaryPathMaxRtx <= pathMaxRtx <= assocMaxRtx";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_primaryPathMaxRtx;
+      default 0;
+    }
+    leaf sackTimer {
+      description "The time delay for sending the Selective Acknowledgement (SACK).\n\nTime is measured from receiving the DATA chunk to sending the SACK chunk.";
+      type erienmnrmrtnsctpprofile:ddt-RtnSctpProfile_SctpProfile_sackTimer;
+      default 10;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-SctpProfile'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list SctpProfile {
+      key id;
+      description "The SctpProfile defines the configuration that controls the behaviour of an SctpEndpoint. \n\nThe SctpProfile can be shared by one or more SctpEndpoint MOs.";
+      erienmyext:enm-type MOC;
+      uses moc-SctpProfile-keys;
+      container attributes {
+        description "Attributes for SctpProfile";
+        uses moc-SctpProfile;
+      } // end 'container attributes'
+    } // end 'list SctpProfile'
+  }
+}

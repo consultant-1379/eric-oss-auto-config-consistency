@@ -1,0 +1,175 @@
+module ericsson-enm-RtnIpsecProposalProfile {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnIpsecProposalProfile;
+  prefix erienmnrmrtnipsecproposalprofile;
+  yexte:ecim-name RtnIpsecProposalProfile;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 15;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-ChildSaIntegrityAlgorithm {
+    description "Child SA integrity algorithms.";
+    type enumeration {
+      enum AUTH_HMAC_MD5_96 {
+        value 1;
+      }
+      enum AUTH_HMAC_SHA1_96 {
+        value 2;
+      }
+      enum AUTH_AES_XCBC_96 {
+        value 5;
+      }
+      enum AUTH_AES_128_GMAC {
+        description "Using this corresponds to combined mode algorithm ENCR_NULL_AUTH_AES_GMAC for ESP, as defined by RFC 4543, with 128 key length.";
+        value 9;
+      }
+      enum AUTH_AES_256_GMAC {
+        description "Using this corresponds to combined mode algorithm ENCR_NULL_AUTH_AES_GMAC for ESP, as defined by RFC 4543, with 256 key length.";
+        value 10;
+      }
+      enum AUTH_HMAC_SHA2_256_128 {
+        value 12;
+      }
+    }
+  }
+  typedef enum-ChildSaEncryptionAlgorithm {
+    description "Child SA encryption algorithms.";
+    type enumeration {
+      enum ENCR_NULL {
+        value 11;
+      }
+      enum ENCR_AES_CBC_128 {
+        value 1024;
+      }
+      enum ENCR_AES_CBC_256 {
+        value 1026;
+      }
+      enum AES_GCM_16_128 {
+        value 1034;
+      }
+      enum AES_GCM_16_256 {
+        value 1035;
+      }
+    }
+  }
+  typedef ddt-RtnIpsecProposalProfile_IpsecProposalProfile_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-DataLimit {
+    description "Specify the amount of data in Mbytes.";
+    type uint32 {
+      range 100..500000;
+    }
+  }
+  typedef ddt-TimeLimit {
+    description "The maximum time in minutes.";
+    type uint32 {
+      range 60..5000;
+    }
+  }
+  grouping struct-IpsecProposal {
+    description "Holds transform proposal used during Child SA negotiation.";
+    leaf integrityAlgorithm {
+      description "Algorithm used for integrity check.\nIf not set (nil), node sends all integrity algorithms supported by node in proposal.\nAES_GMAC integrity is not included in negotiation when attribute is not set.";
+      yexte:dependencies "If AES_GMAC, encryptionAlgorithm must not be configured or must be set to NULL.";
+      type erienmnrmrtnipsecproposalprofile:enum-ChildSaIntegrityAlgorithm;
+    }
+    leaf encryptionAlgorithm {
+      description "Algorithm for encryption.\nIf not set (nil), node sends all encryption algorithms supported by node in proposal.\nNULL encryption is not included in negotiation when attribute is not set.";
+      yexte:dependencies "If AES_GCM, integrityAlgorithm must not be configured.";
+      type erienmnrmrtnipsecproposalprofile:enum-ChildSaEncryptionAlgorithm;
+    }
+  } // end 'grouping struct-IpsecProposal'
+  grouping struct-ChildSaLifetime {
+    description "Lifetime for negotiated Child SAs.";
+    leaf timeLimit {
+      description "Max time Child SA can be used.";
+      type erienmnrmrtnipsecproposalprofile:ddt-TimeLimit;
+      default 1440;
+    }
+    leaf dataLimit {
+      description "Max amount of allowed data transmitted on Child SA before rekeying.\nIf not set (nil), data limit is not set and only time limit is used.";
+      type erienmnrmrtnipsecproposalprofile:ddt-DataLimit;
+    }
+  } // end 'grouping struct-ChildSaLifetime'
+  grouping moc-IpsecProposalProfile-keys {
+    description "Key(s) for MOC IpsecProposalProfile";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ipsecProposalProfileId;
+      type string;
+    }
+  } // end 'grouping moc-IpsecProposalProfile-keys'
+  grouping moc-IpsecProposalProfile {
+    description "Common configuration parameters used by the Child SAs.";
+    container childSaLifetime {
+      description "Lifetime for negotiated Child SAs.\nIn order for node to complete the rekeying process before lifetime expires, node starts new rekeying according to soft lifetime. Soft lifetime is calculated as (0.8+0.1*R)*childSaLifetime, where R is random factor between 0 and 1.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnipsecproposalprofile:struct-ChildSaLifetime;
+    } // end 'container childSaLifetime'
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnipsecproposalprofile:ddt-RtnIpsecProposalProfile_IpsecProposalProfile_userLabel;
+    }
+    list ipsecProposal {
+      min-elements 0;
+      max-elements 2;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Ordered list of Child SA proposals. Each proposal contains set of cryptographic algorithms applicable for the Child SA.\n\nIf attribute is not set, system generates proposals based on node-supported algorithms.\nNeither NULL encryption algorithm nor AES-GMAC integrity algorithms are included in this case.\n\nFirst proposal in list has highest priority.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnipsecproposalprofile:struct-IpsecProposal;
+    } // end 'list ipsecProposal'
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf pfs {
+      description "Enables Perfect Forward Secrecy.\nBy default, PFS is disabled and is not used for any Child SA pair rekeying or establishment of new Child SA pairs.\nIf PFS is enabled, node requires PFS for any Child SA pair rekeying or establishment of new Child SA pairs.";
+      yexte:disturbances "Changing this attribute causes traffic disturbance.";
+      type boolean;
+      default false;
+    }
+  } // end 'grouping moc-IpsecProposalProfile'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list IpsecProposalProfile {
+      key id;
+      max-elements 8;
+      description "Common configuration parameters used by the Child SAs.";
+      erienmyext:enm-type MOC;
+      uses moc-IpsecProposalProfile-keys;
+      container attributes {
+        description "Attributes for IpsecProposalProfile";
+        uses moc-IpsecProposalProfile;
+      } // end 'container attributes'
+    } // end 'list IpsecProposalProfile'
+  }
+}

@@ -1,0 +1,18 @@
+stage-marker-one:
+  - name: consistency-checker-clean.Jenkinsfile
+  - name: eacc-ui-clean.Jenkinsfile
+stage-marker-test:
+  - name: consistency-checker-test.Jenkinsfile
+  - name: archive-artifacts.Jenkinsfile
+  - name: eacc-ui-test.Jenkinsfile
+  - name: helm-unittest-test.Jenkinsfile
+stage-marker-build:
+  - name: consistency-checker-build.Jenkinsfile
+  - name: eacc-ui-build.Jenkinsfile
+stage-marker-image:
+  - name: consistency-checker-image.Jenkinsfile
+  - name: eacc-ui-image.Jenkinsfile
+  - name: eacc-ui-package.Jenkinsfile
+stage-marker-helm:
+  - name: helm/helmInstall.Jenkinsfile
+  - name: va-analysis.Jenkinsfile

@@ -1,0 +1,3 @@
+moId,moType,attributes,cmHandle,fdn
+1,EUtranCellFDD,ulVolteCovMobThr:5;commonCqiPeriodicity:80;cfraEnable:true;cellCapMinCellSubCap:1000;cellCapMinMaxWriProt:true,cmHandle,fdn
+1,ENodeBFunction,zzzTemporary74:-2000000000;prachConfigEnabled:true,cmHandle,fdn

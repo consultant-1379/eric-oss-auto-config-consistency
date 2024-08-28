@@ -1,0 +1,5 @@
+moType,attributeName,attributeValue,conditions,priority
+ENodeBFunction,forcedSiTunnelingActive,true,,
+EUtranCellFDD,cellCapMinCellSubCap,1000,,
+EUtranCellFDD,cellCapMinMaxWriProt,true,,
+EUtranCellFDD,cfraEnable,true,,

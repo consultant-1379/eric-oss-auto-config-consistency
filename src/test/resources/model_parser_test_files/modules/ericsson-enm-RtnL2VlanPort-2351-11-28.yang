@@ -1,0 +1,128 @@
+module ericsson-enm-RtnL2VlanPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnL2VlanPort;
+  prefix erienmnrmrtnl2vlanport;
+  yexte:ecim-name RtnL2VlanPort;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 20;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef ddt-RtnL2VlanPort_VlanPort_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-VlanId {
+    description "Valid VLAN id 12-bit value.";
+    type uint16 {
+      range 1..4094;
+    }
+  }
+  grouping moc-VlanPort-keys {
+    description "Key(s) for MOC VlanPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN. \n";
+      mandatory true;
+      yexte:ecim-name vlanPortId;
+      type string;
+    }
+  } // end 'grouping moc-VlanPort-keys'
+  grouping moc-VlanPort {
+    description "Represents VLAN in context of single aware port.\n\nDependencies: Max one InterfaceIPv4 MO or InterfaceIPv6 MO can reserve this port.\nBridge MO and InterfaceIPv4 MO or InterfaceIPv6 MO must not refer to same VlanPort MO.\n\nIf reserved by MO type ENodeBFunction, ExternalENodeBFunction, FgwService or FgwTermPoint, this port can only be reserved by MO type PtpBcOcPort, GNBDUFunction or ExtGNBDUPartnerFunction.\n\nIf underlying encapsulation is LagPort MO, MO type ENodeBFunction, ExternalENodeBFunction, FgwService or FgwTermPoint cannot reserve this port.\n\nQueueSystem and egress traffic shaping has no effect on low latency traffic.";
+    leaf isTagged {
+      description "Tagged or untagged traffic on port.\nIf set to true, tagged frames are accepted and sent.\nIf set to false, untagged frames are accepted and sent.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If false, attribute lowLatencySwitching cannot be set to true.\nIf set to false, untagged frames are accepted and sent.\nMust be set to true if ENodeBFunction MO or ExternalENodeBFunction MO reserves this port.\nCannot be configured if underlying encapsulation is EthernetPort MO, which is encapsulated by TnPort MO for IDL connector.";
+      type boolean;
+      default true;
+    }
+    leaf encapsulation {
+      description "Reference to underlying encapsulation.\nUnderlying encapsulation can be MO type EthernetPort or LagPort.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "VlanPort MO can only refer to MO type EthernetPort and LagPort.\nFollowing applies for each VlanPort MO that refers same EthernetPort MO:\n- VlanPort MO instances must have different values of vlanId.\n- Only one VlanPort MO instance can have isTagged = false.\nVlanPort MO cannot refer to same EthernetPort MO as InterfaceIPv4 MO or InterfaceIPv6 MO.\nVlanPort MO cannot refer to same LagPort MO as InterfaceIPv4 MO or InterfaceIPv6 MO.\nIf refers to EthernetPort MO with egressQosClassification set, attribute lowLatencySwitching cannot be set to true.\nIf refers to EthernetPort MO with egressQosMarking set, attribute lowLatencySwitching cannot be set to true.\nIf refers to EthernetPort MO with egressQosQueueMap set, attribute lowLatencySwitching cannot be set to true.\nIf refers to LagPort MO, attribute lowLatencySwitching cannot be set to true";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "Label for free use. \n";
+      type erienmnrmrtnl2vlanport:ddt-RtnL2VlanPort_VlanPort_userLabel;
+    }
+    leaf lowLatencySwitching {
+      description "Enables port low latency switching.";
+      yexte:dependencies "Must be same for all VlanPorts MOs at Bridge MO.\nCannot be set to true if VlanPort MO is not used by Bridge MO.\nIn all VlanPort MOs reserved by port attribute in Bridge MO, this attribute must be set to same value.\nIn all VlanPort MOs reserved by port attribute in Bridge MO, vlanId attribute must be set to same value when this attribute set to true.\nCannot be set to true if attribute isTagged is set to false.\nCannot be set to true if attribute egressQosClassification is set.\nCannot be set to true if attribute egressQosMarking is set.\nCannot be set to true if attribute ingressQosMarking is set.\nCannot be set to true if attribute egressQosQueueMap is set.\nCannot be set to true if encapsulation refers to EthernetPort MO with egressQosClassification set.\nCannot be set to true if encapsulation refers to EthernetPort MO with egressQosMarking set.\nCannot be set to true if encapsulation refers to EthernetPort MO with egressQosQueueMap set.\nCannot be set to true if encapsulation refers to LagPort MO.";
+      type boolean;
+      default false;
+    }
+    leaf egressQosMarking {
+      description "DSCP to PCP map used to re-mark DSCP tagged packets to PCP value for egress traffic.\nCan refer to DscpPcpMap MO.\nEmpty string means no re-marking done on DSCP.\nUsed for specific issues within QoS domain and should most often be empty.";
+      yexte:dependencies "Only one of egressQosMarking or egressQosClassification can be set per MO.\nIf set, attribute lowLatencySwitching cannot be set to true.\nCannot be configured if ENodeBFunction MO or ExternalENodeBFunction MO reserves this port.\nCannot be configured if underlying encapsulation is EthernetPort MO, which is encapsulated by TnPort MO for IDL connector.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf vlanId {
+      description "Ingress classifies which VlanPort MO traffic will be going into, when being received on EthernetPort MO.\n\nEgress indicates VLAN ID in VLAN tag of packets being transmitted out of EthernetPort MO.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "In all VlanPort MOs reserved by port attribute in Bridge MO, this attribute must be set to same value, when lowLatencySwitching attribute set to true.";
+      type erienmnrmrtnl2vlanport:ddt-VlanId;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list ingressQosMarking {
+      min-elements 0;
+      max-elements 2;
+      description "DSCP to DSCP or PCP to PCP map used to re-mark DSCP or PCP tagged packets.\nEmpty string means no re-marking is done.\nUsed to fix specific issues within QoS domain and should most often be empty.\nCan refer to DscpDscpMap MO or PcpPcpMap MO.\n";
+      yexte:dependencies "If set, attribute lowLatencySwitching cannot be set to true.\nCannot be configured if ENodeBFunction MO or ExternalENodeBFunction MO reserves this port.\nCannot be configured if underlying encapsulation is EthernetPort MO, which is encapsulated by TnPort MO for IDL connector.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf egressQosQueueMap {
+      description "PcpToQueueMap MO used by configuring VlanPort MO.";
+      yexte:dependencies "If set, attribute lowLatencySwitching cannot be set to true.\nIf set, it must refer to PcpToQueueMap MO in each EthernetPort MO that is encapsulated by LagPort MO.\nMust be set only once when encapsulation is EthernetPort MO.\nCannot be configured if ENodeBFunction MO or ExternalENodeBFunction MO reserves this port.\nCannot be configured if underlying encapsulation is EthernetPort MO, which is encapsulated by TnPort MO for IDL connector.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf egressQosClassification {
+      description "DSCP to PCP map used to classify DSCP tagged packets to PCP value for egress traffic in order to be handled correctly by queue system.\nIt can refer to DscpPcpMap MO.\nEmpty string means no classification done on DSCP, that PCP value is trusted.\nThis attribute is used for specific issues within the QoS domain and should most often be empty.";
+      yexte:dependencies "Only one of egressQoSMarking or egressQoSClassification can be set per MO.\nCannot be configured if InterfaceIPv4 MO or InterfaceIPv6 MO use VlanPort MO as encapsulation.\nCannot be configured if ENodeBFunction MO or ExternalENodeBFunction MO reserves this port.\nCannot be configured if underlying encapsulation is EthernetPort MO, which is encapsulated by TnPort MO for IDL connector.\nIf set, attribute lowLatencySwitching cannot be set to true.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-VlanPort'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list VlanPort {
+      key id;
+      description "Represents VLAN in context of single aware port.\n\nDependencies: Max one InterfaceIPv4 MO or InterfaceIPv6 MO can reserve this port.\nBridge MO and InterfaceIPv4 MO or InterfaceIPv6 MO must not refer to same VlanPort MO.\n\nIf reserved by MO type ENodeBFunction, ExternalENodeBFunction, FgwService or FgwTermPoint, this port can only be reserved by MO type PtpBcOcPort, GNBDUFunction or ExtGNBDUPartnerFunction.\n\nIf underlying encapsulation is LagPort MO, MO type ENodeBFunction, ExternalENodeBFunction, FgwService or FgwTermPoint cannot reserve this port.\n\nQueueSystem and egress traffic shaping has no effect on low latency traffic.";
+      erienmyext:enm-type MOC;
+      uses moc-VlanPort-keys;
+      container attributes {
+        description "Attributes for VlanPort";
+        uses moc-VlanPort;
+      } // end 'container attributes'
+    } // end 'list VlanPort'
+  }
+}

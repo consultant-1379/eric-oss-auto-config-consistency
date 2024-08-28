@@ -1,0 +1,7 @@
+id,moType,attributeName,attributeValue,conditions,priority
+1,EUtranCellFDD,pZeroNominalPusch,-80,EUtranCellFDD.ulVolteCovMobThr < 3,10
+2,EUtranCellFDD,pZeroNominalPusch,-70,EUtranCellFDD.ulVolteCovMobThr < 5,20
+3,EUtranCellFDD,ulVolteCovMobThr,7,EUtranCellFDD.commonCqiPeriodicity = 50,10
+4,EUtranCellFDD,ulVolteCovMobThr,8,EUtranCellFDD.commonCqiPeriodicity > 50,1
+5,ENodeBFunction,biasThpWifiMobility,11,ENodeBFunction.dscpLabel <= 24,20
+6,ENodeBFunction,biasThpWifiMobility,12,ENodeBFunction.dscpLabel <= 24,10

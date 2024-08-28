@@ -1,0 +1,269 @@
+module ericsson-enm-ReqBatteryUnit {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqBatteryUnit;
+  prefix erienmnrmreqbatteryunit;
+  yexte:ecim-name ReqBatteryUnit;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6. ";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productionDate {
+    type string {
+      length 5..8;
+    }
+  }
+  typedef ddt-ReqBatteryUnit_BatteryUnit_nominalCapacity {
+    type int32 {
+      range -1..999999;
+    }
+  }
+  typedef ddt-ReqBatteryUnit_BatteryUnit_installationDate {
+    type string {
+      length 8..8;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_serialNumber {
+    type string {
+      length 1..13;
+    }
+  }
+  typedef ddt-ReqBatteryUnit_BatteryUnit_fullyChargedCapacity {
+    type int32 {
+      range -1..999999;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productRevision {
+    type string {
+      length 1..7;
+    }
+  }
+  typedef ddt-ReqBatteryUnit_BatteryUnit_stateOfHealth {
+    type int32 {
+      range -1..100;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productName {
+    type string {
+      length 1..32;
+    }
+  }
+  typedef ddt-ReqBatteryUnit_BatteryUnit_userLabel {
+    type string {
+      length 0..128;
+    }
+  }
+  typedef ddt-ReqCabinet_ApcProductData_productNumber {
+    type string {
+      length 1..24;
+    }
+  }
+  grouping struct-ApcProductData {
+    description ".\n";
+    leaf productionDate {
+      description "The production date is represented in two ways:\n\n- the preferred syntax is four-digits for the year, two digits for the month, and two digits for the day.\nExample: 19991231\n\n- the date is also be represented by two digits for the year, followed by the letter W for week, and two digits for the number of the week.\nExample: 99W52";
+      type erienmnrmreqbatteryunit:ddt-ReqCabinet_ApcProductData_productionDate;
+      mandatory true;
+    }
+    leaf serialNumber {
+      description "The serial number of the product. ";
+      type erienmnrmreqbatteryunit:ddt-ReqCabinet_ApcProductData_serialNumber;
+      mandatory true;
+    }
+    leaf productNumber {
+      description "The product number of the product.\n\nExamples: ABC 101 001, CXC 123 456, 1/BFD 101 999\n";
+      type erienmnrmreqbatteryunit:ddt-ReqCabinet_ApcProductData_productNumber;
+      mandatory true;
+    }
+    leaf productName {
+      description "The name of the product.";
+      type erienmnrmreqbatteryunit:ddt-ReqCabinet_ApcProductData_productName;
+      mandatory true;
+    }
+    leaf productRevision {
+      description "The revision state of the product.\n\nExamples: R1, R1A, R1A02, P7B ";
+      type erienmnrmreqbatteryunit:ddt-ReqCabinet_ApcProductData_productRevision;
+      mandatory true;
+    }
+  } // end 'grouping struct-ApcProductData'
+  grouping moc-BatteryUnit-keys {
+    description "Key(s) for MOC BatteryUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name batteryUnitId;
+      type string;
+    }
+  } // end 'grouping moc-BatteryUnit-keys'
+  grouping moc-BatteryUnit {
+    description "This MO represents a battery unit connected to the system. The battery unit can be of lithium-ion type or lead-acid type.\n\nThis MO is created automatically. MO can only be deleted by action delete(). To prevent the system from recreating the BatteryUnit MO, battery hardware must be disconnected. \n\nRDNs of these MOs are BatteryUnit=1, BatteryUnit=2 and so on.";
+    leaf fullyChargedCapacity {
+      config false;
+      description "Current maximum capacity of the battery unit.\nUndefined value: -1 indicates that no value has been retrieved.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqbatteryunit:ddt-ReqBatteryUnit_BatteryUnit_fullyChargedCapacity;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqbatteryunit:ddt-ReqBatteryUnit_BatteryUnit_userLabel;
+    }
+    leaf batteryProtocolAdapterRef {
+      config false;
+      description "Reference to instance of FieldReplaceableUnit MO that represents the HW that realizes the battery protocol adapter (BPA) function and is connected to this battery unit.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf batteryBackupRef {
+      config false;
+      description "Reference to instance of the BatteryBackup MO which the battery unit refers to.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf stateOfHealth {
+      config false;
+      description "State of health for the battery unit.\nUndefined value: -1 indicates that no value has been retrieved.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqbatteryunit:ddt-ReqBatteryUnit_BatteryUnit_stateOfHealth;
+    }
+    leaf installationDate {
+      description "Date when battery unit was installed and taken into service. Format: YYYYMMDD.\nUndefined value: \"00000000\" indicates that no date has been set.";
+      type erienmnrmreqbatteryunit:ddt-ReqBatteryUnit_BatteryUnit_installationDate;
+      default 00000000;
+    }
+    leaf nominalCapacity {
+      config false;
+      description "Nominal capacity of battery unit.\nUndefined value: -1 indicates that no value has been retrieved.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqbatteryunit:ddt-ReqBatteryUnit_BatteryUnit_nominalCapacity;
+    }
+    container productData {
+      description "Product data for battery unit. Matches product data on hardware unit label.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqbatteryunit:struct-ApcProductData;
+    } // end 'container productData'
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status. It contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqbatteryunit:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqbatteryunit:enum-OperState;
+    }
+    leaf batteryFuseUnitRef {
+      config false;
+      description "Reference to instance of FieldReplaceableUnit MO that represents physical battery fuse unit (BFU) connected to this battery unit.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    action delete {
+      description "This action deletes the BatteryUnit MO.\n\nTo prevent the system from recreating the BatteryUnit MO, battery hardware must be disconnected.";
+    }
+  } // end 'grouping moc-BatteryUnit'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list BatteryUnit {
+      key id;
+      max-elements 32;
+      description "This MO represents a battery unit connected to the system. The battery unit can be of lithium-ion type or lead-acid type.\n\nThis MO is created automatically. MO can only be deleted by action delete(). To prevent the system from recreating the BatteryUnit MO, battery hardware must be disconnected. \n\nRDNs of these MOs are BatteryUnit=1, BatteryUnit=2 and so on.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-BatteryUnit-keys;
+      container attributes {
+        description "Attributes for BatteryUnit";
+        uses moc-BatteryUnit;
+      } // end 'container attributes'
+    } // end 'list BatteryUnit'
+  }
+}

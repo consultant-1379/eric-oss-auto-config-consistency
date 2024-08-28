@@ -1,0 +1,491 @@
+module ericsson-enm-RcsSecM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsSecM;
+  prefix erienmnrmrcssecm;
+  yexte:ecim-name RcsSecM;
+  revision 2351-11-28 {
+    yexte:version 12;
+    yexte:release 1;
+    yexte:correction 4;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-SshKeyAlgorithm {
+    description "Indicates the key algorithm and length in bits.\n\nThis enumeration supports Digital Signature Algorithm (DSA), Rivest Shamir Adleman (RSA), and Elliptic Curve Digital Signature Algorithm (ECDSA).";
+    type enumeration {
+      enum DSA_1024 {
+        status deprecated {
+          yexte:status-information "Outdated key type.";
+        }
+        value 0;
+      }
+      enum RSA_1024 {
+        description "1024-bit long key generated for the RSA algorithm.";
+        status deprecated {
+          yexte:status-information "Outdated key type.";
+        }
+        value 1;
+      }
+      enum RSA_2048 {
+        description "2048-bit long key generated for the RSA algorithm.";
+        value 2;
+      }
+      enum RSA_3072 {
+        description "3072-bit long key generated for the RSA algorithm.";
+        value 3;
+      }
+      enum RSA_4096 {
+        description "4096-bit long key generated for the RSA algorithm.";
+        value 4;
+      }
+      enum ECDSA_SECP_256_R1 {
+        description "ECDSA algorithm with SECP 256 r1 curve.";
+        value 5;
+      }
+      enum ECDSA_SECP_384_R1 {
+        description "ECDSA algorithm with SECP 384 r1 curve.";
+        value 6;
+      }
+      enum ECDSA_SECP_521_R1 {
+        description "ECDSA algorithm with SECP 521 r1 curve.";
+        value 7;
+      }
+    }
+  }
+  typedef enum-SshKeyFormat {
+    description "Key storage format.";
+    type enumeration {
+      enum OPENSSH {
+        description "The OpenSSH key format.";
+        value 0;
+      }
+      enum RFC4716 {
+        description "The RFC4716 key format in base64 encoding without line breaks.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-CipherList {
+    description "Derived string for the specification of a cipher suite list.\n\nContains colon-delimited (':') cipher strings that can be of any value of the members contained by a Cipher struct. A cipher string indicates an individual cipher or a set of ciphers that use the same protocol version, key exchange etc. The cipher strings can be combined in logical order and operation by character '+'. They can be optionally preceded by either an '!' or a '-' character. Character '!' means that the preceded cipher suite or cipher suite type is permanently deleted from the list. Character '-' means that the preceded cipher suite or cipher suite type is deleted from the list, but any of the cipher suites can be added by later options.\n\nThey must contain at least one positive expression, that is, without character '!' or '-' in the cipher string, otherwise the filter results in an empty cipher suite list.\n\nCipher strings with special meaning:\nALL - all cipher suites except for the NULL encryption ciphers, which must be explicitly enabled. NULL authentication ciphers are included.\nDEFAULT - all cipher suites except the NULL authentication and NULL encryption ciphers.\n\nExample: \n\nALL:!SSLv2:!RSA:!aRSA:!3DES:!DES:!MD5 \nALL:!EXP-EDH-RSA-DES-CBC-SHA\nAES:-kRSA\nAES:RC4\nkEDH+EXPORT:-MD5, assume that the listed cipher strings are valid values of members of Cipher structs.";
+    type string;
+  }
+  typedef ddt-RcsSecM_ServerKey_publicKey {
+    type string;
+  }
+  typedef ddt-RcsSecM_UserManagement_targetType {
+    type string;
+  }
+  typedef ddt-RcsSecM_ServerKey_fingerprint {
+    type string;
+  }
+  typedef ddt-SshAlgorithm {
+    description "Derived string for SSH Cipher, Key Exchange and Message Authentication Code strings.";
+    type string;
+  }
+  typedef ddt-RcsSecM_UserManagement_loginFailureDelay {
+    type uint8 {
+      range 1..max;
+    }
+  }
+  grouping struct-MethodOrder {
+    description "Struct that represents the order of an authentication or authorization method. \n\nThe referred method must be used by a security function, that is, authentication or authorization in the given order.";
+    leaf userLabel {
+      description "Freetext label to describe reason for the method order.";
+      type string;
+    }
+    leaf orderNumber {
+      description "The method (1-*) order number.";
+      type int16;
+      mandatory true;
+    }
+    leaf methodReference {
+      description "An MO Reference to the method.";
+      erienmyext:enm-type MOREF;
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-MethodOrder'
+  grouping struct-Cipher {
+    description "Represents a cipher suite.";
+    leaf encryption {
+      description "A keyword that identifies the cipher encryption algorithm.\n\nFor example: 'AES'.";
+      type string;
+    }
+    leaf name {
+      description "A keyword that identifies the cipher name. \n\nFor example: 'TLS_DHE_RSA_WITH_AES_256_CBC_SHA'.";
+      type string;
+      mandatory true;
+    }
+    leaf protocolVersion {
+      description "A keyword that identifies the cipher protocol version.\n\nFor example: 'TLSv1'.";
+      type string;
+    }
+    leaf export {
+      description "Shows 'EXPORT' if the cipher is classified as an EXPORT cipher, otherwise empty.";
+      type string;
+    }
+    leaf keyExchange {
+      description "A keyword that identifies the cipher key exchange algorithm.\n\nFor example: 'kEDH'.";
+      type string;
+    }
+    leaf mac {
+      description "A keyword that identifies the cipher Message Authentication Code algorithm.\n\nFor example: 'SHA'.";
+      type string;
+    }
+    leaf authentication {
+      description "A keyword that identifies the cipher authentication algorithm.\n\nFor example: 'aRSA'.";
+      type string;
+    }
+  } // end 'grouping struct-Cipher'
+  grouping moc-ServerKey-keys {
+    description "Key(s) for MOC ServerKey";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name serverKeyId;
+      type string;
+    }
+  } // end 'grouping moc-ServerKey-keys'
+  grouping moc-ServerKey {
+    description "Represents an SSH server key.";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf fingerprint {
+      config false;
+      description "The SHA256 fingerprint of the public key.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcssecm:ddt-RcsSecM_ServerKey_fingerprint;
+    }
+    leaf publicKeyFormat {
+      config false;
+      description "The selected key presentation format.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcssecm:enum-SshKeyFormat;
+    }
+    leaf publicKey {
+      config false;
+      description "Holds the whole content of a public key file.\n\nThe format of the key can be found in attribute publicKeyFormat. \n\nIn case of RFC4716 format, an additional base64 line-break free encoding is used over the whole formatted content.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcssecm:ddt-RcsSecM_ServerKey_publicKey;
+    }
+    leaf keyType {
+      yexte:restricted;
+      description "The type of the key.\n\nThe types from Ssh supportedKeyTypes can be used.";
+      mandatory true;
+      type erienmnrmrcssecm:enum-SshKeyAlgorithm;
+    }
+    action renewKey {
+      description "Generates a new key of current type that replaces the current key.\n\nIf the key is in use, it takes immediate effect. The distribution of the new public key parts shall be done timely before the key is used at the peers to avoid disruption of the service.";
+    }
+  } // end 'grouping moc-ServerKey'
+  grouping moc-UserManagement-keys {
+    description "Key(s) for MOC UserManagement";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name userManagementId;
+      type string;
+    }
+  } // end 'grouping moc-UserManagement-keys'
+  grouping moc-UserManagement {
+    description "User Management MOC. ";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf privacyNotice {
+      description "The privacy notice presented to the user when starting an O&M session.\n\nThe message is presented to the client before authentication takes place. The presentation of the message to the O&M user depends on the client capability and configuration. The O&M user may receive this information before authentication if the authentication is password based; otherwise, it is received as a post-authentication message. The purpose of the message is to remind the user about the confidentiality obligations when potentially accessing the privacy data. No value means there is no privacy notice.\n\nWhen a privacy notice is updated it is recommended to include the version information and date of modification in the privacy notice text. This information and audit log details can be used during  auditing to track which version of privacy notice is presented to the user at the start of the O&M session. The date and version format is an operator choice.\n";
+      yexte:takes-effect "Node Restart";
+      type string;
+      default "The misuse of personal data may generate considerable harm to the data subjects.\nBe reminded of the confidentiality obligations you have when accessing\nthis kind of data and the disciplinary consequences of improper handling.";
+    }
+    leaf loginFailureDelay {
+      description "Delay after a failed login attempt in seconds.\n\nNo value means no delay.";
+      type erienmnrmrcssecm:ddt-RcsSecM_UserManagement_loginFailureDelay;
+      default 5;
+    }
+    leaf-list targetType {
+      min-elements 0;
+      description "Lists the target types of the ME for Target Based Access Control (TBAC).\n\nThis attribute is optional for Authentication Methods that require TBAC configuration. Authentication Methods use TBAC to determine the following: whether a user can be authorized in the ME, and which authorization profiles apply to the user in the ME, based on the target types specified in this attribute.\n\nThis attribute can contain any classifier string for the ME such as geographical, for example: 'stockholm', network, for example 'ims', or functional identifiers, for example 'cscf', and any combination of these.\n\nThe generic behavior of TBAC for authorization is as follows:\n\nTBAC is LOCKED in the ME: authorization is performed without TBAC. \nTBAC is UNLOCKED in the ME: authorization is performed if the targets that the user is provided with exactly match at least one string of configured target types. Otherwise, authorization fails.\n\nDetermining the authorization profiles of the user is specific per Authentication Method.\n\nThe LOCKED and UNLOCKED states of TBAC in the ME are controlled by the Authentication Methods.\n\nExample value: 'cscf.ims.stockholm'.";
+      type erienmnrmrcssecm:ddt-RcsSecM_UserManagement_targetType;
+    }
+    leaf legalNotice {
+      description "The legal notice presented to the user when starting an O&M session. \n\nThe message is presented to the client before authentication takes place. The presentation of the message to the O&M user depends on the client capability and configuration. The O&M user may receive this information before authentication if the authentication is password based; otherwise, it is received as a post-authentication message. The purpose of the message is to warn the user about the consequences of unauthorized access. No value means there is no legal notice.";
+      yexte:takes-effect "Node Restart";
+      type string;
+      default "WARNING: This system is restricted solely to authorized users for legitimate\nbusiness purposes only. The actual or attempted unauthorized access,\nuse, or modification of this system is strictly prohibited.\n\nUnauthorized users are subject to appropriate disciplinary proceedings\nand/or criminal and civil penalties under state, federal, or other\napplicable domestic and foreign laws.\n\nThe use of this system may be monitored and recorded for\nadministrative and security reasons. Anyone accessing this system\nexpressly consents to such monitoring and is advised that if\nmonitoring reveals possible evidence of criminal activity, the owner\nof this equipment may provide the evidence of such activity to law\nenforcement officials.\n\nAll authorized users shall comply with the security policies,\ninstructions and requirements related to the business purpose and in\ncase of doubt shall seek advice from his/her manager.";
+    }
+  } // end 'grouping moc-UserManagement'
+  grouping moc-Ssh-keys {
+    description "Key(s) for MOC Ssh";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name sshId;
+      type string;
+    }
+  } // end 'grouping moc-Ssh-keys'
+  grouping moc-Ssh {
+    description "Configures system-wide properties of Secure Shell Transport Layer Protocol (SSH).";
+    leaf-list supportedMacs {
+      min-elements 1;
+      config false;
+      description "Lists the supported message authentication codes.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcssecm:ddt-SshAlgorithm;
+    }
+    leaf-list supportedKeyExchanges {
+      min-elements 1;
+      config false;
+      description "Lists the supported key exchange algorithms.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcssecm:ddt-SshAlgorithm;
+    }
+    leaf-list selectedMacs {
+      min-elements 1;
+      description "The list of selected message authentication codes.\n\nThe algorithms are offered to the SSH peer in the order as configured. Each value indicates one coding algorithm.";
+      type erienmnrmrcssecm:ddt-SshAlgorithm;
+    }
+    leaf-list supportedCiphers {
+      min-elements 1;
+      config false;
+      description "Lists the supported encryption ciphers.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcssecm:ddt-SshAlgorithm;
+    }
+    leaf-list selectedCiphers {
+      min-elements 1;
+      description "The list of selected ciphers.\n\nThe ciphers are offered to the SSH peer in the order as configured. Each value indicates one cipher.";
+      type erienmnrmrcssecm:ddt-SshAlgorithm;
+    }
+    leaf-list selectedKeyExchanges {
+      min-elements 1;
+      description "The list of selected key exchange algorithms.\n\nThe algorithms are offered to the SSH peer in the order as configured. Each value indicates one algorithm.";
+      type erienmnrmrcssecm:ddt-SshAlgorithm;
+    }
+  } // end 'grouping moc-Ssh'
+  grouping moc-Tls-keys {
+    description "Key(s) for MOC Tls";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name tlsId;
+      type string;
+    }
+  } // end 'grouping moc-Tls-keys'
+  grouping moc-Tls {
+    description "Configures system-wide properties of Transport Layer Security (TLS).";
+    list enabledCiphers {
+      min-elements 1;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Lists the cipher suites as filtered by the attribute cipherFilter. \n\nCipher suites are ordered by strength. The strongest cipher suite is offered first.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcssecm:struct-Cipher;
+    } // end 'list enabledCiphers'
+    list supportedCiphers {
+      min-elements 1;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Lists the cipher suites supported by the ME.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcssecm:struct-Cipher;
+    } // end 'list supportedCiphers'
+    leaf cipherFilter {
+      description "Specifies a filter for the cipher suite list.\n\nApplied on the cipher suites listed in attribute supportedCiphers. The result is shown in attribute enabledCiphers.";
+      mandatory true;
+      type erienmnrmrcssecm:ddt-CipherList;
+    }
+  } // end 'grouping moc-Tls'
+  grouping moc-SecM-keys {
+    description "Key(s) for MOC SecM";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name secMId;
+      type string;
+    }
+  } // end 'grouping moc-SecM-keys'
+  grouping moc-SecM {
+    description "Security Management root MOC.";
+  } // end 'grouping moc-SecM'
+  grouping moc-AuthenticationOrder-keys {
+    description "Key(s) for MOC AuthenticationOrder";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name authenticationOrderId;
+      type string;
+    }
+  } // end 'grouping moc-AuthenticationOrder-keys'
+  grouping moc-AuthenticationOrder {
+    description "MO Class used to view the order of authentication methods.";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    list authenticationMethodOrder {
+      min-elements 1;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "The order in which authentication methods are to be used. \n\nMethods must be called up in the order specified by the orderNumber member. The method is referenced by the methodReference member.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcssecm:struct-MethodOrder;
+    } // end 'list authenticationMethodOrder'
+  } // end 'grouping moc-AuthenticationOrder'
+  grouping moc-AuthorizationOrder-keys {
+    description "Key(s) for MOC AuthorizationOrder";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name authorizationOrderId;
+      type string;
+    }
+  } // end 'grouping moc-AuthorizationOrder-keys'
+  grouping moc-AuthorizationOrder {
+    description "MO Class used to view the order of authorization methods.";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    list authorizationMethodOrder {
+      min-elements 1;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "The order in which authorization methods are to be used.\n\nMethods must be called up in the order specified by the orderNumber member. The method is referenced by the methodReference member.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcssecm:struct-MethodOrder;
+    } // end 'list authorizationMethodOrder'
+  } // end 'grouping moc-AuthorizationOrder'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:Ssh {
+    list ServerKey {
+      key id;
+      description "Represents an SSH server key.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-ServerKey-keys;
+      container attributes {
+        description "Attributes for ServerKey";
+        uses moc-ServerKey;
+      } // end 'container attributes'
+    } // end 'list ServerKey'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM {
+    list UserManagement {
+      key id;
+      max-elements 1;
+      description "User Management MOC. ";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-UserManagement-keys;
+      container attributes {
+        description "Attributes for UserManagement";
+        uses moc-UserManagement;
+      } // end 'container attributes'
+    } // end 'list UserManagement'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM {
+    list Ssh {
+      key id;
+      max-elements 1;
+      description "Configures system-wide properties of Secure Shell Transport Layer Protocol (SSH).";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Ssh-keys;
+      container attributes {
+        description "Attributes for Ssh";
+        uses moc-Ssh;
+      } // end 'container attributes'
+    } // end 'list Ssh'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM {
+    list Tls {
+      key id;
+      max-elements 1;
+      description "Configures system-wide properties of Transport Layer Security (TLS).";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Tls-keys;
+      container attributes {
+        description "Attributes for Tls";
+        uses moc-Tls;
+      } // end 'container attributes'
+    } // end 'list Tls'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list SecM {
+      key id;
+      max-elements 1;
+      description "Security Management root MOC.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SecM-keys;
+    } // end 'list SecM'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement {
+    list AuthenticationOrder {
+      key id;
+      max-elements 1;
+      description "MO Class used to view the order of authentication methods.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-AuthenticationOrder-keys;
+      container attributes {
+        description "Attributes for AuthenticationOrder";
+        uses moc-AuthenticationOrder;
+      } // end 'container attributes'
+    } // end 'list AuthenticationOrder'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcssecm:UserManagement {
+    list AuthorizationOrder {
+      key id;
+      max-elements 1;
+      description "MO Class used to view the order of authorization methods.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-AuthorizationOrder-keys;
+      container attributes {
+        description "Attributes for AuthorizationOrder";
+        uses moc-AuthorizationOrder;
+      } // end 'container attributes'
+    } // end 'list AuthorizationOrder'
+  }
+}

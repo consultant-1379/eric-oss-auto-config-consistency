@@ -1,0 +1,511 @@
+module ericsson-enm-RtnOSPFv2 {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnOSPFv2;
+  prefix erienmnrmrtnospfv2;
+  yexte:ecim-name RtnOSPFv2;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 19;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-RouterType {
+    description "Router type.";
+    type enumeration {
+      enum STATIC {
+        description "Static routes can be redistributed.";
+        value 1;
+      }
+      enum CONNECTED {
+        description "Connected routes can be redistributed.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-MetricType {
+    description "Metric type.";
+    type enumeration {
+      enum TYPE_1 {
+        description "OSPF external type 1 metric.";
+        value 1;
+      }
+      enum TYPE_2 {
+        description "OSPF external type 2 metric.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-InterfaceNetworkType {
+    description "OSPF area interface network type.";
+    type enumeration {
+      enum BROADCAST {
+        description "Broadcast network.";
+        value 1;
+      }
+      enum POINT_TO_POINT {
+        description "Point-to-point network.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-OspfAuthentication {
+    description "Authentication type.";
+    type enumeration {
+      enum NONE {
+        description "No authentication.";
+        value 1;
+      }
+      enum MD5 {
+        description "MD5 authentication.";
+        value 2;
+      }
+    }
+  }
+  typedef ddt-DistanceValueType {
+    description "OSPF distance value for routes external to the OSPF domain.";
+    type uint8 {
+      range 1..255;
+    }
+  }
+  typedef ddt-ReferenceBandwidthType {
+    description "Reference Bandwidth in megabits per second.";
+    type uint32 {
+      range 1..4294967;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Redistribute_metric {
+    type uint32 {
+      range 0..16777214;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Ospfv2_minHoldTime {
+    type int32 {
+      range 0..600000;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Ospfv2_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Md5_md5Key {
+    type uint8 {
+      range 1..255;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Md5_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Redistribute_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RouterDeadIntervalType {
+    description "Interface router-dead interval.";
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-HelloIntervalType {
+    description "Interface hello interval.";
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Interface_adminCost {
+    type uint32 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-AreaIdType {
+    description "Ospf Area Id.\nRegular expression representing an IPv4 address or 32 bit number used as a area Id.\nArea ID 0.0.0.0 is used for the OSPF backbone";
+    type string;
+  }
+  typedef ddt-Md5Password {
+    description "The Md5Password type represents password used for MD5 authentication in OSPFv2.\n\nAlphanumeric characters are allowed in the string.\n\nRegexp: ^([A-Za-z0-9]+)$";
+    type string {
+      length 1..16;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Area_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Interface_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnOSPFv2_Ospfv2_maxHoldTime {
+    type int32 {
+      range 0..600000;
+    }
+  }
+  typedef ddt-RouterIdStr {
+    description "The unique router ID of an OSPFv2 process instance.\n\nDependencies: The value cannot be set to 0.0.0.0 or 0.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-KeyAttributeType {
+    description "Ospf KeyAttribute Type.";
+    type string;
+  }
+  typedef ddt-RtnOSPFv2_Ospfv2_instanceId {
+    type uint16 {
+      range 1..65535;
+    }
+  }
+  typedef ddt-RouterPriorityType {
+    description "Interface Router Priority.";
+    type uint8 {
+      range 0..255;
+    }
+  }
+  grouping moc-Ospfv2-keys {
+    description "Key(s) for MOC Ospfv2";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ospfv2Id;
+      type erienmnrmrtnospfv2:ddt-KeyAttributeType;
+    }
+  } // end 'grouping moc-Ospfv2-keys'
+  grouping moc-Ospfv2 {
+    description "Represents OSPFv2 routing instance.\n\nDependencies:\nIf AddressIPv4 MO with configurationMode DHCP exists within Router MO, this MO cannot be created.\nIf IpsecTunnel MO exists within Router MO, this MO cannot be created.";
+    leaf referenceBandwidth {
+      description "Specifies the reference bandwidth used by for automatic interface cost calculation indicated by the attribute operCost in class Interface.\nThis calculation divides the reference bandwidth by the interface bandwidth. If adminCost is set in class Interface then no automatic cost calculation is done and the administratively set cost is used for that interface.";
+      type erienmnrmrtnospfv2:ddt-ReferenceBandwidthType;
+      default 100;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Ospfv2_userLabel;
+    }
+    leaf instanceId {
+      yexte:restricted;
+      description "The ID of the OSPFv2 routing instance.";
+      mandatory true;
+      yexte:dependencies "Ospfv2 instanceId must be unique between different Ospfv2 processes.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Ospfv2_instanceId;
+    }
+    leaf maxHoldTime {
+      description "Maximum delay between receiving change to SPF calculation.";
+      yexte:dependencies "maxHoldTime must be greater or equal to minHoldTime.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Ospfv2_maxHoldTime;
+      default 15000;
+    }
+    leaf routerId {
+      description "Specified the value for the router ID to be used as a fixed ID for the OSPFv2 instance.\nIf the OSPFv2 router ID is not configured, OSPF chooses the lowest loopback interface address. If there are no loopback interfaces then the lowest interface address is used. When reset to empty OSPFv2 reverts to automatic router ID assignment. The OSPFv2 router process is automatically restarted when the router ID is changed.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:takes-effect "The OSPFv2 process is restarted. All OSPFv2 routes are removed from the routing table and traffic is impacted until OSPFv2 has converged.";
+      type erienmnrmrtnospfv2:ddt-RouterIdStr;
+    }
+    leaf adminDistanceExternal {
+      description "The administrative distance applied to routes redistributed from other routing domains.";
+      type erienmnrmrtnospfv2:ddt-DistanceValueType;
+      default 110;
+    }
+    leaf adminDistanceInter {
+      description "The administrative distance applied to routes learned in an OSPFv2 area different from the area that this router is located in.";
+      type erienmnrmrtnospfv2:ddt-DistanceValueType;
+      default 110;
+    }
+    leaf adminDistanceIntra {
+      description "The administrative distance applied to routes learned in the same OSPFv2 area as this router is located in.";
+      type erienmnrmrtnospfv2:ddt-DistanceValueType;
+      default 110;
+    }
+    leaf minHoldTime {
+      description "Minimum delay between receiving change to SPF calculation.\nAdjust route-calculation timers using exponential back-off delays. This attribute, together with maxHoldTime, configures minimum and maximum delay time between receipt of topology change and calculation of SPF.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Ospfv2_minHoldTime;
+      default 50;
+    }
+  } // end 'grouping moc-Ospfv2'
+  grouping moc-Area-keys {
+    description "Key(s) for MOC Area";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name areaId;
+      type erienmnrmrtnospfv2:ddt-KeyAttributeType;
+    }
+  } // end 'grouping moc-Area-keys'
+  grouping moc-Area {
+    description "Information related to the OSPF area of this router. ";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Area_userLabel;
+    }
+    leaf ospfAreaId {
+      description "The area identifier as an integer (0..4294967295) or as an IPv4 address in decimal-dot notation.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:takes-effect "All Interface MOs are reconfigured. The OSPFv2 routes from these interfaces are removed from the routing table and traffic is impacted until OSPFv2 has converged.";
+      yexte:dependencies "If ospfAreaId is set to 0, this instance of the Area MO class must not have Stub or Nssa MOs as children.\nAn instance of Area MO class can have only one area type, that is Stub MO or Nssa MO, as child.";
+      type erienmnrmrtnospfv2:ddt-AreaIdType;
+    }
+  } // end 'grouping moc-Area'
+  grouping moc-Nssa-keys {
+    description "Key(s) for MOC Nssa";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nssaId;
+      type string;
+    }
+  } // end 'grouping moc-Nssa-keys'
+  grouping moc-Nssa {
+    description "Specifies the OSPF area to be an NSSA (Not-So-Stubby Area).\n\nDisturbances: Changing this attribute causes traffic disturbances.\nTakes effect: All Interface MOs are reconfigured. The OSPFv2 routes from these interfaces are removed from the routing table and traffic is impacted until OSPFv2 has converged.";
+  } // end 'grouping moc-Nssa'
+  grouping moc-Stub-keys {
+    description "Key(s) for MOC Stub";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name stubId;
+      type string;
+    }
+  } // end 'grouping moc-Stub-keys'
+  grouping moc-Stub {
+    description "Specifies the OSPF area to be a stub area.\n\nDisturbances: Changing this attribute causes traffic disturbances.\nTakes effect: All Interface MOs are reconfigured. The OSPFv2 routes from these interfaces are removed from the routing table and traffic is impacted until OSPFv2 has converged.";
+  } // end 'grouping moc-Stub'
+  grouping moc-Interface-keys {
+    description "Key(s) for MOC Interface";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name interfaceId;
+      type erienmnrmrtnospfv2:ddt-KeyAttributeType;
+    }
+  } // end 'grouping moc-Interface-keys'
+  grouping moc-Interface {
+    description "Represents OSPF area interface.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Interface_userLabel;
+    }
+    leaf interfaceAddress {
+      description "Reference to AddressIPv4 MO that identifies layer 3 interface participating in OSPF.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:takes-effect "The Interface MO is reconfigured. The OSPFv2 routes from this interface are removed from the routing table and traffic is impacted until OSPFv2 has converged.";
+      yexte:dependencies "An AddressIPv4 MO can be referenced by only one OSPF Interface MO at a time.\nOnly AddressIPv4 MO reference within the same router is allowed in Ospfv2.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf routerDeadInterval {
+      description "The router dead interval specifies the time after which the neighbor is declared as unavailable, if no hello packet is received during this interval.\nThis value is advertised in the hello packets from the router and must be a multiple of helloInterval. The same value must be set on all interfaces in the network. \n";
+      yexte:dependencies "routerDeadInterval must be greater than helloInterval.";
+      type erienmnrmrtnospfv2:ddt-RouterDeadIntervalType;
+      default 40;
+    }
+    leaf bfdMonitoring {
+      description "Controls whether availability of this route depends on BFD session that monitors OSPF Interface.\nIf set to true, availability of this route depends on session state, if BFD session monitors OSPF Interface.\nIf set to false, availability of this route does not depend on session state, when BFD session monitors OSPF Interface.";
+      type boolean;
+      default false;
+    }
+    leaf routerPriority {
+      description "The router priority used on this interface.\nThis priority used to determine the OSPF Designated Router (DR) for the network this interface is on. If two routers attempt to become the DR, the router with the higher router priority becomes the DR. If the router priority is the same for two routers, the router with the higher router ID takes precedence. Only routers with nonzero router priority values are eligible to become the designated or backup designated router.";
+      type erienmnrmrtnospfv2:ddt-RouterPriorityType;
+      default 0;
+    }
+    leaf adminCost {
+      description "Cost of traversing this interface.\nThis attribute overrides result of automatic cost calculation, performed by default (uses referenceBandwidth in Ospfv2 MO).\nSet this attribute to empty, to revert to automatic cost calculation.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Interface_adminCost;
+    }
+    leaf helloInterval {
+      description "Hello interval.\nConfigure same hello interval for all routers in network. Shorter hello interval ensure faster detection of topological changes, but results in more routing traffic.";
+      type erienmnrmrtnospfv2:ddt-HelloIntervalType;
+      default 10;
+    }
+    leaf authenticationType {
+      description "Authentication type of this interface.";
+      yexte:dependencies "If set to MD5, Md5 MO must be configured.";
+      type erienmnrmrtnospfv2:enum-OspfAuthentication;
+      default NONE;
+    }
+    leaf networkType {
+      description "Specifies the network type of this interface.\nFor some settings, this attribute changes the OSPF behavior of electing the designated router, sending of database descriptions, and the content of LSAs. \n";
+      type erienmnrmrtnospfv2:enum-InterfaceNetworkType;
+      default BROADCAST;
+    }
+    leaf passive {
+      description "Enables the passive mode on this interface.\nIf this attribute is set to true, this interface does not participate in OSPF, and does not send routing updates or establish adjacencies while the interface is still advertised to other routers. \n";
+      type boolean;
+      default false;
+    }
+  } // end 'grouping moc-Interface'
+  grouping moc-Md5-keys {
+    description "Key(s) for MOC Md5";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name md5Id;
+      type string;
+    }
+  } // end 'grouping moc-Md5-keys'
+  grouping moc-Md5 {
+    description "Represents password and key-id used in MD5 algorithm to authenticate OSPF messages.\n\nConfiguration of this class is only valid if authenticationType is set to MD5.\nCannot be configured at loopback interface.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Md5_userLabel;
+    }
+    leaf md5Key {
+      description "Key-id for MD5 authentication.";
+      mandatory true;
+      yexte:dependencies "Must be unique within same OSPFv2 Interface.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Md5_md5Key;
+    }
+    action setPassword {
+      description "This action sets password that is used for MD5 authentication.";
+      input {
+        leaf password {
+          mandatory true;
+          description "String to use as MD5 password.";
+          type erienmnrmrtnospfv2:ddt-Md5Password;
+        }
+      }
+    }
+  } // end 'grouping moc-Md5'
+  grouping moc-Redistribute-keys {
+    description "Key(s) for MOC Redistribute";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name redistributeId;
+      type string;
+    }
+  } // end 'grouping moc-Redistribute-keys'
+  grouping moc-Redistribute {
+    description "Represents types and metrics of routes to be redistributed by OSPFv2.\n\nOnly one of each routeType is allowed, static or connected.";
+    leaf metricType {
+      description "Metric-type of external route to be announced.";
+      type erienmnrmrtnospfv2:enum-MetricType;
+      default TYPE_2;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Redistribute_userLabel;
+    }
+    leaf metric {
+      description "External route metric of redistributed route.";
+      type erienmnrmrtnospfv2:ddt-RtnOSPFv2_Redistribute_metric;
+      default 20;
+    }
+    leaf routeType {
+      description "Type of route to be redistributed.";
+      type erienmnrmrtnospfv2:enum-RouterType;
+      default STATIC;
+    }
+  } // end 'grouping moc-Redistribute'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list Ospfv2 {
+      key id;
+      max-elements 32;
+      description "Represents OSPFv2 routing instance.\n\nDependencies:\nIf AddressIPv4 MO with configurationMode DHCP exists within Router MO, this MO cannot be created.\nIf IpsecTunnel MO exists within Router MO, this MO cannot be created.";
+      erienmyext:enm-type MOC;
+      uses moc-Ospfv2-keys;
+      container attributes {
+        description "Attributes for Ospfv2";
+        uses moc-Ospfv2;
+      } // end 'container attributes'
+    } // end 'list Ospfv2'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnospfv2:Ospfv2 {
+    list Area {
+      key id;
+      max-elements 1;
+      description "Information related to the OSPF area of this router. ";
+      erienmyext:enm-type MOC;
+      uses moc-Area-keys;
+      container attributes {
+        description "Attributes for Area";
+        uses moc-Area;
+      } // end 'container attributes'
+    } // end 'list Area'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnospfv2:Ospfv2/erienmnrmrtnospfv2:Area {
+    list Nssa {
+      key id;
+      max-elements 1;
+      description "Specifies the OSPF area to be an NSSA (Not-So-Stubby Area).\n\nDisturbances: Changing this attribute causes traffic disturbances.\nTakes effect: All Interface MOs are reconfigured. The OSPFv2 routes from these interfaces are removed from the routing table and traffic is impacted until OSPFv2 has converged.";
+      erienmyext:enm-type MOC;
+      uses moc-Nssa-keys;
+    } // end 'list Nssa'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnospfv2:Ospfv2/erienmnrmrtnospfv2:Area {
+    list Stub {
+      key id;
+      max-elements 1;
+      description "Specifies the OSPF area to be a stub area.\n\nDisturbances: Changing this attribute causes traffic disturbances.\nTakes effect: All Interface MOs are reconfigured. The OSPFv2 routes from these interfaces are removed from the routing table and traffic is impacted until OSPFv2 has converged.";
+      erienmyext:enm-type MOC;
+      uses moc-Stub-keys;
+    } // end 'list Stub'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnospfv2:Ospfv2/erienmnrmrtnospfv2:Area {
+    list Interface {
+      key id;
+      description "Represents OSPF area interface.";
+      erienmyext:enm-type MOC;
+      uses moc-Interface-keys;
+      container attributes {
+        description "Attributes for Interface";
+        uses moc-Interface;
+      } // end 'container attributes'
+    } // end 'list Interface'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnospfv2:Ospfv2/erienmnrmrtnospfv2:Area/erienmnrmrtnospfv2:Interface {
+    list Md5 {
+      key id;
+      max-elements 2;
+      description "Represents password and key-id used in MD5 algorithm to authenticate OSPF messages.\n\nConfiguration of this class is only valid if authenticationType is set to MD5.\nCannot be configured at loopback interface.";
+      erienmyext:enm-type MOC;
+      uses moc-Md5-keys;
+      container attributes {
+        description "Attributes for Md5";
+        uses moc-Md5;
+      } // end 'container attributes'
+    } // end 'list Md5'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnospfv2:Ospfv2 {
+    list Redistribute {
+      key id;
+      max-elements 2;
+      description "Represents types and metrics of routes to be redistributed by OSPFv2.\n\nOnly one of each routeType is allowed, static or connected.";
+      erienmyext:enm-type MOC;
+      uses moc-Redistribute-keys;
+      container attributes {
+        description "Attributes for Redistribute";
+        uses moc-Redistribute;
+      } // end 'container attributes'
+    } // end 'list Redistribute'
+  }
+}

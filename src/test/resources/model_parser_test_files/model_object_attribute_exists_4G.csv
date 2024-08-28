@@ -1,0 +1,26 @@
+ModelObjectName:AttributeName:Exists
+DataRadioBearer:ulMaxRetxThreshold:true
+DynamicBlerTarget:dlActivitySubscrDelay:true
+ENodeBFunction:rrcConnReestActive:true
+EUtranCellFDD:qRxLevMin:true
+EUtranCellFDD:DoesNotExist:false
+EUtranCellTDD:cellCapMinCellSubCap:true
+SectorCarrier:digitalTilt:true
+IdleModePrioAtRelease:highLoadThreshold:true
+Paging:nB:true
+PreschedProfile:preschedulingDataSize:true
+RATFreqPrio:t320:true
+Rcs:tInactivityTimer:true
+ReportConfigA5:a5Threshold1Rsrp:true
+ReportConfigA5UlTrig:hysteresisA5:true
+ReportConfigEUtraBestCell:timeToTriggerA3:true
+ReportConfigSCellA1A2:a1a2ThresholdRsrq:true
+ReportConfigSearch:a1a2SearchThresholdRsrp:true
+ResourcePartitions:rrpAdmCtrlRejPaReqOvlGbr:true
+#Comment-This is not available in version of model used for tests
+Rrc:tRrcUeCapabilityInfo:false
+SecurityHandling:personalDataProtectionEnabled:true
+SignalingRadioBearer:dlMaxRetxThreshold:true
+#Comment-This is not available in version of model used for tests
+SubscriberGroupProfile:dlAiLaDeltaSinrMax:false
+UeMeasControl:rwrToNRAllowed:true

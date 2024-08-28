@@ -1,0 +1,8 @@
+Conditions:MoType:AttributeNames
+ENodeBFunction.dscpLabel <= 24:ENodeBFunction:dscpLabel
+"EUtranCellFDD.freqBand in (1,3,7)":EUtranCellFDD:freqBand
+EUtranCellFDD.userLabel like 'LTE06dg2ERBS00005%':EUtranCellFDD:userLabel
+EUtranCellFDD.cellSubscriptionCapacity != 1200:EUtranCellFDD:cellSubscriptionCapacity
+SectorCarrier.essScPairId <= 9223372036854775806L:SectorCarrier1:
+(EUtranCellFDD.earfcndl = 1850 or EUtranCellFDD.earfcndl = 1501) and (EUtranCellFDD.dlChannelBandwidth = 15000 or EUtranCellFDD.dlChannelBandwidth = 20000):EUtranCellFDD:earfcndl,dlChannelBandwidth
+FDN like '%LTE63dg2%':ENodeBFunction:

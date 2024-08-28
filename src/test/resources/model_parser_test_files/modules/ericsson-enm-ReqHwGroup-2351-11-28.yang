@@ -1,0 +1,84 @@
+module ericsson-enm-ReqHwGroup {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqHwGroup;
+  prefix erienmnrmreqhwgroup;
+  yexte:ecim-name ReqHwGroup;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef ddt-ReqHwGroup_HwGroup_userLabel {
+    type string {
+      length 0..128;
+    }
+  }
+  typedef ddt-ReqHwGroup_HwGroup_positionInformation {
+    type string {
+      length 0..255;
+    }
+  }
+  grouping moc-HwGroup-keys {
+    description "Key(s) for MOC HwGroup";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name hwGroupId;
+      type string;
+    }
+  } // end 'grouping moc-HwGroup-keys'
+  grouping moc-HwGroup {
+    description "Represents HW unit group, adjacently mounted units. Each unit refers to HwGroup MO through attributes positionRef and controlDomainRef.";
+    leaf userLabel {
+      erienmyext:no-notification;
+      description "Label for free use.";
+      yexte:takes-effect IMMEDIATELY;
+      type erienmnrmreqhwgroup:ddt-ReqHwGroup_HwGroup_userLabel;
+    }
+    leaf positionInformation {
+      erienmyext:no-notification;
+      description "Information on where the HW group is located.\n\nThis can be expressed in terms of a street address, building, floor, room, etc.";
+      yexte:takes-effect IMMEDIATELY;
+      type erienmnrmreqhwgroup:ddt-ReqHwGroup_HwGroup_positionInformation;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-HwGroup'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list HwGroup {
+      key id;
+      description "Represents HW unit group, adjacently mounted units. Each unit refers to HwGroup MO through attributes positionRef and controlDomainRef.";
+      erienmyext:enm-type MOC;
+      uses moc-HwGroup-keys;
+      container attributes {
+        description "Attributes for HwGroup";
+        uses moc-HwGroup;
+      } // end 'container attributes'
+    } // end 'list HwGroup'
+  }
+}

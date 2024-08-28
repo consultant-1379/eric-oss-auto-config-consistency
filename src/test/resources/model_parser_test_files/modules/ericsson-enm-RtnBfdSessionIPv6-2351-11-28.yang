@@ -1,0 +1,200 @@
+module ericsson-enm-RtnBfdSessionIPv6 {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnBfdSessionIPv6;
+  prefix erienmnrmrtnbfdsessionipv6;
+  yexte:ecim-name RtnBfdSessionIPv6;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-BfdSessionOperState {
+    description "The operational states of a BFD session.";
+    type enumeration {
+      enum ADMIN_DOWN {
+        value 0;
+      }
+      enum DOWN {
+        value 1;
+      }
+      enum INIT {
+        value 2;
+      }
+      enum FAILING {
+        value 3;
+      }
+      enum UP {
+        value 4;
+      }
+    }
+  }
+  typedef enum-BfdSessionDiagnosticCode {
+    description "Common BFD diagnostic codes.";
+    type enumeration {
+      enum NO_DIAG {
+        value 0;
+      }
+      enum CONTROL_DETECTION_TIME_EXPIRED {
+        value 1;
+      }
+      enum ECHO_FUNCTION_FAILED {
+        value 2;
+      }
+      enum NEIGHBOR_SIGNALED_SESSION_DOWN {
+        value 3;
+      }
+      enum FORWARDING_PLANE_RESET {
+        value 4;
+      }
+      enum PATH_DOWN {
+        value 5;
+      }
+      enum CONCATENATED_PATH_DOWN {
+        value 6;
+      }
+      enum ADMIN_DOWN {
+        value 7;
+      }
+      enum REVERSE_CONCATENATED_PATH_DOWN {
+        value 8;
+      }
+    }
+  }
+  typedef ddt-RtnBfdSessionIPv6_BfdSessionIPv6_intervalRxNegotiated {
+    type uint32;
+  }
+  typedef ddt-RtnBfdSessionIPv6_BfdSessionIPv6_intervalTxNegotiated {
+    type uint32;
+  }
+  typedef ddt-RtnBfdSessionIPv6_BfdSessionIPv6_detectionTime {
+    type uint32;
+  }
+  typedef ddt-DateTime {
+    description "Represents the International Standard for the representation of date and time ( ISO 8601) . \nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\" representing UTC time zone (equals to +00) or a time zone offset (e.g., +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format in detail:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = four digit year\nMM = two digit month (01=January, etc.)\nDD = two digit day of month (01 through 31)\nT = time designator (shows start of time component)\nhh = two digits of hour (00 through 23, AM/PM not allowed)\nmm = two digits of minute (00 through 59)\nss = two digits of second (00 through 59, leap second not allowed)\nS+ = one or more digits of decimal fraction of a second\nZ = time is Coordinated Universal Time (UTC)\n+- = + or - character indicating positive or negative offset to UTC \n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)\n\n";
+    type string {
+      length 19..31;
+    }
+  }
+  grouping moc-BfdSessionIPv6-keys {
+    description "Key(s) for MOC BfdSessionIPv6";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\nThe value of this attribute identifies a session between a pair of endpoints, defined by their IP addresses.";
+      mandatory true;
+      yexte:ecim-name bfdSessionIPv6Id;
+      type string;
+    }
+  } // end 'grouping moc-BfdSessionIPv6-keys'
+  grouping moc-BfdSessionIPv6 {
+    description "IPv6 BFD session information.";
+    leaf remoteHeardFlag {
+      erienmyext:no-notification;
+      config false;
+      description "This attribute specifies the status of BFD packet reception from the remote endpoint.\nThis attribute is set to true if the local endpoint actively receives BFD packets from the remote endpoint. It is set to false if the local endpoint has not recently received BFD packets, i.e. within the detection time, or if the local endpoint is attempting to tear down the BFD session.\nThe initial value is false.";
+      type boolean;
+    }
+    leaf addrDst {
+      config false;
+      description "The remote IP address of the BFD session.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf portSrc {
+      erienmyext:no-notification;
+      config false;
+      description "The source UDP port for BFD session control packets.\n \nRFC5881 specifies the value to be within the range of 49152 through 65535.";
+      type uint16;
+    }
+    leaf addrSrc {
+      config false;
+      description "The local IP address of the BFD session.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf timeUp {
+      erienmyext:no-notification;
+      config false;
+      description "The system time from the most recent occasion when the session started.\nThis attribute is empty if no time up event exists.";
+      type erienmnrmrtnbfdsessionipv6:ddt-DateTime;
+    }
+    leaf remoteDiscriminator {
+      erienmyext:no-notification;
+      config false;
+      description "The remote discriminator defined by the remote endpoint for this BFD session.";
+      type uint32;
+    }
+    leaf timeDown {
+      erienmyext:no-notification;
+      config false;
+      description "The system time value from the most recent occasion the last time communication with the neighbor was lost.\nThis attribute is empty if no time down event exists.";
+      type erienmnrmrtnbfdsessionipv6:ddt-DateTime;
+    }
+    leaf diagCode {
+      erienmyext:no-notification;
+      config false;
+      description "A diagnostic code that specifies the reason for the latest transition of sessionState from UP to another state.";
+      type erienmnrmrtnbfdsessionipv6:enum-BfdSessionDiagnosticCode;
+    }
+    leaf localDiscriminator {
+      erienmyext:no-notification;
+      config false;
+      description "The local discriminator for this BFD session used for unique identification.";
+      type uint32;
+    }
+    leaf sessionState {
+      erienmyext:no-notification;
+      config false;
+      description "The state of this BFD session.";
+      type erienmnrmrtnbfdsessionipv6:enum-BfdSessionOperState;
+    }
+    leaf intervalRxNegotiated {
+      erienmyext:no-notification;
+      config false;
+      description "The negotiated interval at which the local node expects to receive BFD control packets.";
+      type erienmnrmrtnbfdsessionipv6:ddt-RtnBfdSessionIPv6_BfdSessionIPv6_intervalRxNegotiated;
+    }
+    leaf detectionTime {
+      erienmyext:no-notification;
+      config false;
+      description "The period of time lapsed without receiving BFD packets, after which the local endpoint will declare the session down. \nRFC 5880 specifies that the Detection Time calculated in the local endpoint is equal to the value of the detection multiplier received from the remote endpoint, multiplied by the agreed transmit interval of the remote system.\nIf the remote endpoint has a shorter detection time value, this will be the effective detection time for the session.";
+      type erienmnrmrtnbfdsessionipv6:ddt-RtnBfdSessionIPv6_BfdSessionIPv6_detectionTime;
+    }
+    leaf intervalTxNegotiated {
+      erienmyext:no-notification;
+      config false;
+      description "The negotiated interval at which the local node transmits BFD control packets.";
+      type erienmnrmrtnbfdsessionipv6:ddt-RtnBfdSessionIPv6_BfdSessionIPv6_intervalTxNegotiated;
+    }
+  } // end 'grouping moc-BfdSessionIPv6'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list BfdSessionIPv6 {
+      key id;
+      description "IPv6 BFD session information.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-BfdSessionIPv6-keys;
+      container attributes {
+        description "Attributes for BfdSessionIPv6";
+        uses moc-BfdSessionIPv6;
+      } // end 'container attributes'
+    } // end 'list BfdSessionIPv6'
+  }
+}

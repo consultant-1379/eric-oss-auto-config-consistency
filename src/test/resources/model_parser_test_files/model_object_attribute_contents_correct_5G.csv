@@ -1,0 +1,18 @@
+ModelObjectName:AttributeName:Type:DataType:ValueConstraint:TakesEffect:PreCondition
+AnrFunction:removeNrelTime:leaf:int32:1..1000::
+CommonBeamforming:digitalPan:leaf:int32:-900..900:Next NRSectorCarrier Unlock:
+DataRadioBearer:tStatusProhibitUl:leaf:int32:0..0 | 5..5 | 10..10 | 15..15 | 20..20 | 25..25 | 30..30 | 35..35 | 40..40 | 45..45 | 50..50 | 55..55 | 60..60 | 65..65 | 70..70 | 75..75 | 80..80 | 85..85 | 90..90 | 95..95 | 100..100 | 105..105 | 110..110 | 115..115 | 120..120 | 125..125 | 130..130 | 135..135 | 140..140 | 145..145 | 150..150 | 155..155 | 160..160 | 165..165 | 170..170 | 175..175 | 180..180 | 185..185 | 190..190 | 195..195 | 200..200 | 205..205 | 210..210 | 215..215 | 220..220 | 225..225 | 230..230 | 235..235 | 240..240 | 245..245 | 250..250 | 300..300 | 350..350 | 400..400 | 450..450 | 500..500 | 800..800 | 1000..1000 | 1200..1200 | 1600..1600 | 2000..2000 | 2400..2400:New connection:
+GNBDUFunction:ulBbCapacityMaxLimit:leaf:int32:0..65535::
+GNBCUCPFunction:tDcOverall:leaf:int32:1..20:New connection:
+GNBCUUPFunction:dcDlAggActTime:leaf:int32:0..1000:New connection:
+McfbCellProfile:triggerQuantity:leaf:enumeration:[enum RSRP, enum RSRQ]:Next usage.:
+NRCellCU:mcpcPSCellEnabled:leaf:boolean::Next usage.:
+NRCellDU:dftSOfdmPuschEnabled:leaf:boolean::Next cell unlock:Value can only be changed if administrativeState is LOCKED.
+QciProfileEndcConfigExt:initialUplinkConf:leaf:enumeration:[enum MCG, enum SCG]:New connection:
+Rrc:t310:leaf:int32:0..0 | 50..50 | 100..100 | 200..200 | 500..500 | 1000..1000 | 2000..2000 | 4000..4000 | 6000..6000:Next cell unlock:
+
+
+
+
+
+

@@ -1,0 +1,166 @@
+module ericsson-enm-RmeTimeSettings {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeTimeSettings;
+  prefix erienmnrmrmetimesettings;
+  yexte:ecim-name RmeTimeSettings;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-DstMonth {
+    description "Month of daylight savings time change";
+    type enumeration {
+      enum JANUARY {
+        value 1;
+      }
+      enum FEBRUARY {
+        value 2;
+      }
+      enum MARCH {
+        value 3;
+      }
+      enum APRIL {
+        value 4;
+      }
+      enum MAY {
+        value 5;
+      }
+      enum JUNE {
+        value 6;
+      }
+      enum JULY {
+        value 7;
+      }
+      enum AUGUST {
+        value 8;
+      }
+      enum SEPTEMBER {
+        value 9;
+      }
+      enum OCTOBER {
+        value 10;
+      }
+      enum NOVEMBER {
+        value 11;
+      }
+      enum DECEMBER {
+        value 12;
+      }
+    }
+  }
+  typedef ddt-RmeTimeSettings_TimeSettings_daylightSavingTimeOffset {
+    type string {
+      length 4..4;
+    }
+  }
+  typedef ddt-RmeTimeSettings_TimeSettings_gpsToUtcLeapSeconds {
+    type int16 {
+      range -1000..1000;
+    }
+  }
+  typedef ddt-RmeTimeSettings_TimeSettings_timeOffset {
+    type string {
+      length 5..6;
+    }
+  }
+  typedef ddt-RmeTimeSettings_DstRule_time {
+    type string {
+      length 5..5;
+    }
+  }
+  typedef ddt-RmeTimeSettings_TimeSettings_gpsToUtcLeapSecondsChangeDate {
+    type string;
+  }
+  grouping struct-DstRule {
+    description "This struct contains rule information for the beginning and end of the daylight savings time period.";
+    leaf month {
+      description "The month in which this dst rule is applied";
+      type erienmnrmrmetimesettings:enum-DstMonth;
+      mandatory true;
+    }
+    leaf time {
+      description "The time of day when this rule should be applied ranging from 00:00-24:00 expressed in the local time zone.";
+      type erienmnrmrmetimesettings:ddt-RmeTimeSettings_DstRule_time;
+      mandatory true;
+    }
+    leaf dayRule {
+      description "The rule for the day of the month for which this rule applies. The rule can be formatted in any of three ways:\n- 1..31 (the change will be applied on the given day)\n- lastDDD, where DDD = Mon, Tue, Wed, Thu, Fri, Sat, Sun (the change will be applied on the last given weekday of the month)\n- DDD >= N where DDD= Mon, Tue, Wed, Thu, Fri, Sat, Sun and N = 1..31 (the change will be applied on the weekday with the given date or the given weekday following the given date)";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-DstRule'
+  grouping moc-TimeSettings-keys {
+    description "Key(s) for MOC TimeSettings";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying this MO.";
+      mandatory true;
+      yexte:ecim-name timeSettingsId;
+      type string;
+    }
+  } // end 'grouping moc-TimeSettings-keys'
+  grouping moc-TimeSettings {
+    description "This MO class contain configuration for time zone information broadcast. \nThe settings in this MO do not affect the system local time zone.";
+    leaf gpsToUtcLeapSecondsChangeDate {
+      description "The date when leap seconds is changed. The minus sign indicates a decrement of the gpsToUtcLeapSeconds value.";
+      type erienmnrmrmetimesettings:ddt-RmeTimeSettings_TimeSettings_gpsToUtcLeapSecondsChangeDate;
+    }
+    leaf gpsToUtcLeapSeconds {
+      description "The leap second offset of UTC compared to GPS time.";
+      type erienmnrmrmetimesettings:ddt-RmeTimeSettings_TimeSettings_gpsToUtcLeapSeconds;
+    }
+    container daylightSavingTimeStartDate {
+      description "Date for starting daylight saving time expressed in local standard time as configured in the timeOffset attribute.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmetimesettings:struct-DstRule;
+    } // end 'container daylightSavingTimeStartDate'
+    container daylightSavingTimeEndDate {
+      description "Date for ending daylight saving time expressed in local standard time as specified in the timeOffset attribute";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmetimesettings:struct-DstRule;
+    } // end 'container daylightSavingTimeEndDate'
+    leaf timeOffset {
+      description "The time offset from UTC";
+      type erienmnrmrmetimesettings:ddt-RmeTimeSettings_TimeSettings_timeOffset;
+      default "+00:00";
+    }
+    leaf daylightSavingTimeOffset {
+      description "The time saved when daylight saving time is applied given as hours:minutes";
+      type erienmnrmrmetimesettings:ddt-RmeTimeSettings_TimeSettings_daylightSavingTimeOffset;
+      default 1:00;
+    }
+  } // end 'grouping moc-TimeSettings'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list TimeSettings {
+      key id;
+      max-elements 1;
+      description "This MO class contain configuration for time zone information broadcast. \nThe settings in this MO do not affect the system local time zone.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-TimeSettings-keys;
+      container attributes {
+        description "Attributes for TimeSettings";
+        uses moc-TimeSettings;
+      } // end 'container attributes'
+    } // end 'list TimeSettings'
+  }
+}

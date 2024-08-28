@@ -1,0 +1,548 @@
+module ericsson-enm-ReqRfPort {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqRfPort;
+  prefix erienmnrmreqrfport;
+  yexte:ecim-name ReqRfPort;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 15;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-MicroSleepTxRadioCapability {
+    type enumeration {
+      enum NO_SUPPORT {
+        description "Radio can not support feature.";
+        value 0;
+      }
+      enum FULL_SUPPORT {
+        description "Radio can fully support feature.";
+        value 1;
+      }
+      enum LIMITED_SUPPORT {
+        description "Radio has limited support for feature because HW cannot save power on every symbol position.\n";
+        value 2;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-PimdMeasDuration {
+    description "PIMD measurement duration.";
+    type enumeration {
+      enum SHORT {
+        value 0;
+      }
+      enum LONG {
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-RlFreqSweepFailedReason {
+    description "Reason for unsuccessful action startRlFreqSweep.";
+    type enumeration {
+      enum UNDEFINED {
+        description "Default value.";
+        value 0;
+      }
+      enum INVALID_PARAMETERS {
+        description "Input parameter invalid.";
+        value 1;
+      }
+      enum HW_NOT_SUPPORTED {
+        description "Hardware does not support this function.";
+        value 2;
+      }
+      enum NO_AVAILABLE_CARRIER_BRANCH {
+        description "Carrier branch is invalid.";
+        value 3;
+      }
+      enum INTERNAL_ERROR {
+        description "Internal error.";
+        value 4;
+      }
+      enum UPLOAD_FAILURE {
+        description "Upload failed.";
+        value 5;
+      }
+    }
+  }
+  typedef enum-TcpStatus {
+    description "Status of TCP.";
+    type enumeration {
+      enum UNKNOWN {
+        value 0;
+      }
+      enum STARTED {
+        value 1;
+      }
+      enum FINISHED {
+        value 2;
+      }
+      enum FAILED {
+        value 3;
+      }
+      enum STOPPED {
+        value 4;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef enum-MicroSleepTxRadioStatus {
+    type enumeration {
+      enum ENABLED {
+        description "Feature support in radio is enabled.";
+        value 0;
+      }
+      enum DISABLED {
+        description "Feature support in radio is disabled because some other feature is prioritized.\n";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-ReqRfPort_RfPort_pimdThreshold {
+    type uint32 {
+      range 60..300;
+    }
+  }
+  typedef ddt-ReqRfPort_VswrInfo_message {
+    type string {
+      length 0..160;
+    }
+  }
+  typedef ddt-ReqRfPort_FreqBandData_vswrSupervisionSensitivity {
+    type int32 {
+      range "-1..-1 | 1..100";
+    }
+  }
+  typedef ddt-ReqRfPort_RfPort_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqRfPort_VswrInfo_sampleTime {
+    type string {
+      length 0..23;
+    }
+  }
+  typedef ddt-RfPort_startRlFreqSweep_uploadDirectory {
+    type string {
+      length 0..128;
+    }
+  }
+  typedef ddt-ReqRfPort_RfPort_dlFrequencyRanges {
+    type string {
+      length 0..256;
+    }
+  }
+  typedef ddt-RfPort_startRlFreqSweep_password {
+    type string {
+      length 0..128;
+    }
+  }
+  typedef ddt-ReqRfPort_VswrInfo_returnLoss {
+    type string {
+      length 0..5;
+    }
+  }
+  typedef ddt-RfPort_startRlFreqSweep_username {
+    type string {
+      length 0..128;
+    }
+  }
+  typedef ddt-ReqRfPort_RfPort_vswrSupervisionSensitivity {
+    type int32 {
+      range "-1..-1 | 1..100";
+    }
+  }
+  typedef ddt-RfPort_startRlFreqSweep_ipAddress {
+    type string {
+      length 0..128;
+    }
+  }
+  typedef ddt-RfPort_startRlFreqSweep_samplingStep {
+    type uint32 {
+      range 500..5000;
+    }
+  }
+  typedef ddt-ReqRfPort_FreqBandData_ulFrequencyRange {
+    type string {
+      length 0..256;
+    }
+  }
+  typedef ddt-ReqRfPort_RfPort_ulFrequencyRanges {
+    type string {
+      length 0..256;
+    }
+  }
+  typedef ddt-ReqRfPort_FreqBandData_dlFrequencyRange {
+    type string {
+      length 0..256;
+    }
+  }
+  grouping struct-VswrInfo {
+    description "VSWR value and related information.";
+    leaf returnLoss {
+      description "Return loss value.";
+      type erienmnrmreqrfport:ddt-ReqRfPort_VswrInfo_returnLoss;
+      mandatory true;
+    }
+    leaf message {
+      description "Message about insufficient readings above screening threshold.";
+      type erienmnrmreqrfport:ddt-ReqRfPort_VswrInfo_message;
+      mandatory true;
+    }
+    leaf sampleTime {
+      description "Timestamp for the value. Format: YYYY-MM-DD HH:MM:SS.XXX\n";
+      type erienmnrmreqrfport:ddt-ReqRfPort_VswrInfo_sampleTime;
+      mandatory true;
+    }
+  } // end 'grouping struct-VswrInfo'
+  grouping moc-RfPort-keys {
+    description "Key(s) for MOC RfPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name rfPortId;
+      type string;
+    }
+  } // end 'grouping moc-RfPort-keys'
+  grouping moc-RfPort {
+    description "Represents a port on a radio depending on the rfPortId of the Port MO.\nRepresents an antenna feeder port on the Radio if it has an rfPortId like A, B, C, etc. \nRepresents a cross connection port on the Radio if it has any of the rfPortIds RXA_IO or RXB_IO. \nRepresents a RET port on the External Radio if it has the rfPortId R.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqrfport:ddt-ReqRfPort_RfPort_userLabel;
+    }
+    leaf vswrSupervisionActive {
+      description "VSWR supervision status.\nIndicates if supervision of Voltage Standing Wave Ratio (VSWR) is enabled for the branch of this port on the Radio Unit.\nVSWR supervision is possible on a TX branch only. ";
+      type boolean;
+      default false;
+    }
+    leaf pimdAlarmActive {
+      description "Whether PIMD alarm can be raised.";
+      type boolean;
+      default false;
+    }
+    leaf nodeUniqueRfPortId {
+      config false;
+      description "Internal identifier for the RfPort to ease error traceability.\n";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf pimdMeasDuration {
+      description "Measurement duration in PIMD filter.";
+      type erienmnrmreqrfport:enum-PimdMeasDuration;
+      default LONG;
+    }
+    leaf pimdThreshold {
+      description "Alarm can be raised if a certain number of PIMD values are larger than pimdThreshold during a time period specified by pimdMeasDuration. ";
+      type erienmnrmreqrfport:ddt-ReqRfPort_RfPort_pimdThreshold;
+      default 300;
+    }
+    leaf rlFreqSweepFailedReason {
+      config false;
+      description "Information on the reason for unsuccessful action startRlFreqSweep.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrfport:enum-RlFreqSweepFailedReason;
+    }
+    leaf dlFrequencyRanges {
+      config false;
+      description "Multiple downlink frequency ranges that radio unit supports, displayed as string. \nIf gaps occur in supported frequency range, attribute shows multiple ranges. Lowest subrange is first.\nSee CPI for more information.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrfport:ddt-ReqRfPort_RfPort_dlFrequencyRanges;
+    }
+    container vswrValue {
+      description "VSWR value and related information from radios.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqrfport:struct-VswrInfo;
+    } // end 'container vswrValue'
+    leaf antennaSupervisionActive {
+      description "Antenna supervision status indicates if supervision of antenna/feeder connection is enabled for the branch of this port on the Radio Unit. ";
+      type boolean;
+      default false;
+    }
+    leaf microSleepTxRadioCapability {
+      config false;
+      description "Capability in radio to support the Micro Sleep Tx functionality.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrfport:enum-MicroSleepTxRadioCapability;
+    }
+    leaf ulFrequencyRanges {
+      config false;
+      description "Multiple uplink frequency ranges that radio unit supports, displayed as string.\nIf gaps occur in supported frequency range, attribute shows multiple ranges. Lowest subrange is first.\nSee CPI for more information.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrfport:ddt-ReqRfPort_RfPort_ulFrequencyRanges;
+    }
+    leaf microSleepTxRadioStatus {
+      config false;
+      description "Current status in radio of the support for the Micro Sleep Tx functionality.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrfport:enum-MicroSleepTxRadioStatus;
+    }
+    leaf administrativeState {
+      description "The administrative state.\nWhen set to LOCKED, the RfPort might still be used and RF power might still be transmitted, but any corresponding alarms cease.\nIf set to SHUTTINGDOWN, the state will immediately be brought to LOCKED.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type erienmnrmreqrfport:enum-AdmState;
+      default LOCKED;
+    }
+    leaf rlFreqSweepStatus {
+      config false;
+      description "Status of latest return loss frequency sweep, initiated by action startRlFreqSweep.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrfport:enum-TcpStatus;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf automaticANUrecovery {
+      description "Wether automatic recovery is performed for antenna near unit after connection with radio is lost.";
+      type boolean;
+      default true;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrfport:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqrfport:enum-OperState;
+    }
+    leaf vswrSupervisionSensitivity {
+      description "VSWR supervision sensitivity.\nHigh values enable detection of low-reflected power (high return loss). Low values require high-reflected power (low return loss) to cause alarms.\nVSWR = (1+10^(-RL/20))/(1-10^(-RL/20))\nWhere RL is Return Loss\nRelation between sensitivity and return loss on Radio is defined as:\nRL = 6 + vswrSupervisionSensitivity [%]*0.08 dB\nThis gives VSWR=1.5 for 100% sensitivity and VSWR=3 for 1% sensitivity.\nIf attribute set to -1, radio chooses default return loss threshold. Currently this is the same as setting sensitivity to 1%.";
+      type erienmnrmreqrfport:ddt-ReqRfPort_RfPort_vswrSupervisionSensitivity;
+      default -1;
+    }
+    action resetPimDesenseFilter {
+      description "Resets PIMD filter.";
+    }
+    action startRlFreqSweep {
+      description "Starts return loss frequency sweep on RfPort of a specific radio unit. Return loss measurement data is collected from the radio unit and stored on SFTP server.";
+      input {
+        leaf password {
+          mandatory true;
+          description "Password for connecting to the SFTP server.";
+          type erienmnrmreqrfport:ddt-RfPort_startRlFreqSweep_password;
+        }
+        leaf ipAddress {
+          mandatory true;
+          description "IP address for SFTP server.";
+          type erienmnrmreqrfport:ddt-RfPort_startRlFreqSweep_ipAddress;
+        }
+        leaf uploadDirectory {
+          mandatory true;
+          description "Path to the directory in the SFTP server where measurement data is stored.";
+          type erienmnrmreqrfport:ddt-RfPort_startRlFreqSweep_uploadDirectory;
+        }
+        leaf samplingStep {
+          mandatory true;
+          description "Frequency sampling length.";
+          type erienmnrmreqrfport:ddt-RfPort_startRlFreqSweep_samplingStep;
+        }
+        leaf username {
+          mandatory true;
+          description "User name for connecting to the SFTP server.";
+          type erienmnrmreqrfport:ddt-RfPort_startRlFreqSweep_username;
+        }
+      }
+    }
+  } // end 'grouping moc-RfPort'
+  grouping moc-FreqBandData-keys {
+    description "Key(s) for MOC FreqBandData";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name freqBandDataId;
+      type string;
+    }
+  } // end 'grouping moc-FreqBandData-keys'
+  grouping moc-FreqBandData {
+    description "Represents a band configured on RfPort MO.\nCreated by the system for multi-band radio when radio is connected.\n\nThe RDNs of these MOs are \"FreqBandData=1\" to \"FreqBandData=4\".";
+    container vswrValue {
+      description "VSWR value and related information from radios.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqrfport:struct-VswrInfo;
+    } // end 'container vswrValue'
+    leaf dlFrequencyRange {
+      erienmyext:no-notification;
+      config false;
+      description "Downlink frequency range supported by the band.\nFor band with no valid DL frequency range, the string shows Not Supported.";
+      type erienmnrmreqrfport:ddt-ReqRfPort_FreqBandData_dlFrequencyRange;
+    }
+    leaf ulFrequencyRange {
+      erienmyext:no-notification;
+      config false;
+      description "Uplink frequency range supported by the band.\nFor band with no valid UL frequency range, the string shows Not Supported.";
+      type erienmnrmreqrfport:ddt-ReqRfPort_FreqBandData_ulFrequencyRange;
+    }
+    leaf maxFrequency {
+      status deprecated {
+        yexte:status-information "Since 20.Q2. Planned to be removed.";
+      }
+      erienmyext:no-notification;
+      config false;
+      description "Maximum frequency of band.\nValue -1 means undefined.";
+      type int32;
+    }
+    leaf vswrSupervisionActive {
+      description "VSWR supervision status.\nIndicates if supervision of VSWR is enabled for branch of this port on Radio unit. VSWR supervision is possible on a TX branch only.";
+      type boolean;
+      default false;
+    }
+    leaf minFrequency {
+      status deprecated {
+        yexte:status-information "Since 20.Q2. Planned to be removed.";
+      }
+      erienmyext:no-notification;
+      config false;
+      description "Minimum frequency of band.\nValue -1 means undefined.";
+      type int32;
+    }
+    leaf vswrSupervisionSensitivity {
+      description "VSWR supervision sensitivity.\nHigh values enable detection of low-reflected power (high return loss). Low values require high-reflected power (low return loss) to cause alarms.\nVSWR = (1+10^(-RL/20))/(1-10^(-RL/20)), where RL is Return Loss.\nRelation between sensitivity and return loss on Radio:\nVSWR=1.5 for 100% sensitivity and VSWR=3 for 1% sensitivity. If attribute is set to -1, Radio chooses default return loss threshold. This is the same as setting sensitivity to 1%.";
+      type erienmnrmreqrfport:ddt-ReqRfPort_FreqBandData_vswrSupervisionSensitivity;
+      default -1;
+    }
+  } // end 'grouping moc-FreqBandData'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list RfPort {
+      key id;
+      max-elements 10;
+      description "Represents a port on a radio depending on the rfPortId of the Port MO.\nRepresents an antenna feeder port on the Radio if it has an rfPortId like A, B, C, etc. \nRepresents a cross connection port on the Radio if it has any of the rfPortIds RXA_IO or RXB_IO. \nRepresents a RET port on the External Radio if it has the rfPortId R.";
+      erienmyext:enm-type MOC;
+      uses moc-RfPort-keys;
+      container attributes {
+        description "Attributes for RfPort";
+        uses moc-RfPort;
+      } // end 'container attributes'
+    } // end 'list RfPort'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqrfport:RfPort {
+    list FreqBandData {
+      key id;
+      description "Represents a band configured on RfPort MO.\nCreated by the system for multi-band radio when radio is connected.\n\nThe RDNs of these MOs are \"FreqBandData=1\" to \"FreqBandData=4\".";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FreqBandData-keys;
+      container attributes {
+        description "Attributes for FreqBandData";
+        uses moc-FreqBandData;
+      } // end 'container attributes'
+    } // end 'list FreqBandData'
+  }
+}

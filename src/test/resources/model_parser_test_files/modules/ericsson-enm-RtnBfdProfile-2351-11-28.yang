@@ -1,0 +1,126 @@
+module ericsson-enm-RtnBfdProfile {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnBfdProfile;
+  prefix erienmnrmrtnbfdprofile;
+  yexte:ecim-name RtnBfdProfile;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef ddt-RtnBfdProfile_BfdProfile_intervalRxMinRequired {
+    type uint32 {
+      range 10..60000;
+    }
+  }
+  typedef ddt-RtnBfdProfile_BfdProfile_dscp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnBfdProfile_BfdProfile_detectionMultiplier {
+    type uint8 {
+      range 1..10;
+    }
+  }
+  typedef ddt-RtnBfdProfile_BfdProfile_intervalTxSessionDown {
+    type uint32 {
+      range 1000..30000;
+    }
+  }
+  typedef ddt-RtnBfdProfile_BfdProfile_intervalTxMinDesired {
+    type uint32 {
+      range 10..60000;
+    }
+  }
+  grouping moc-BfdProfile-keys {
+    description "Key(s) for MOC BfdProfile";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name bfdProfileId;
+      type string;
+    }
+  } // end 'grouping moc-BfdProfile-keys'
+  grouping moc-BfdProfile {
+    description "This class defines the BFD Session Profile.";
+    leaf intervalTxSessionDown {
+      description "The interval that the local system uses when transmitting BFD control packets during session down.";
+      type erienmnrmrtnbfdprofile:ddt-RtnBfdProfile_BfdProfile_intervalTxSessionDown;
+      default 2000;
+    }
+    leaf dscp {
+      description "The DSCP value to be placed in the IP header of control packets.\nThe default value is CS6 (0x30).";
+      type erienmnrmrtnbfdprofile:ddt-RtnBfdProfile_BfdProfile_dscp;
+      default 48;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf detectionMultiplier {
+      description "The Detection Time multiplier.\nThe desired detection multiplier. The negotiated control packet transmission interval, multiplied by the multiplier, defines the detection time for this session, as seen by the remote system.";
+      type erienmnrmrtnbfdprofile:ddt-RtnBfdProfile_BfdProfile_detectionMultiplier;
+      default 5;
+    }
+    leaf intervalTxMinDesired {
+      description "The preferred minimum desired interval that the local system uses when transmitting BFD control packets.";
+      type erienmnrmrtnbfdprofile:ddt-RtnBfdProfile_BfdProfile_intervalTxMinDesired;
+      default 100;
+    }
+    leaf intervalRxMinRequired {
+      description "The minimum interval between received BFD control packets that the local system is capable of supporting.";
+      type erienmnrmrtnbfdprofile:ddt-RtnBfdProfile_BfdProfile_intervalRxMinRequired;
+      default 100;
+    }
+  } // end 'grouping moc-BfdProfile'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list BfdProfile {
+      key id;
+      max-elements 64;
+      description "This class defines the BFD Session Profile.";
+      erienmyext:enm-type MOC;
+      uses moc-BfdProfile-keys;
+      container attributes {
+        description "Attributes for BfdProfile";
+        uses moc-BfdProfile;
+      } // end 'container attributes'
+    } // end 'list BfdProfile'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list BfdProfile {
+      key id;
+      max-elements 64;
+      description "This class defines the BFD Session Profile.";
+      erienmyext:enm-type MOC;
+      uses moc-BfdProfile-keys;
+      container attributes {
+        description "Attributes for BfdProfile";
+        uses moc-BfdProfile;
+      } // end 'container attributes'
+    } // end 'list BfdProfile'
+  }
+}

@@ -1,0 +1,479 @@
+module ericsson-enm-RtnL3InterfaceIPv6 {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnL3InterfaceIPv6;
+  prefix erienmnrmrtnl3interfaceipv6;
+  yexte:ecim-name RtnL3InterfaceIPv6;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 50;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-Ipv6ConfigMode {
+    description "Method of IP address configuration.";
+    type enumeration {
+      enum MANUAL {
+        description "Address is configured manually.";
+        value 0;
+      }
+      enum IKE {
+        description "Address is retrieved from security gateway using IKEv2 configuration payload in IKE negotiation.";
+        value 1;
+      }
+      enum AUTO {
+        description "IPv6 configuration is retrieved by RA messages which information controls if stateless or stateful autoconfiguration is used, and if additional configuration parameters from DHCPv6 server shall be retrieved.\n\nRecommended mode for IPv6 autoconfiguration purpose.";
+        value 2;
+      }
+      enum AUTO_NO_DHCPV6 {
+        description "IPv6 configuration is retrieved by RA messages which only supporting stateless autoconfiguration and additional parameters by options in RA messages.\n\nFor troubleshooting, as workaround if some configuration problem of DHCPv6 server occurs.";
+        value 3;
+      }
+      enum AUTO_DHCPV6 {
+        description "IPv6 configuration is retrieved by RA messages for default route, and stateful autoconfiguration and additional parameters via DHCPv6 only.\n\nFor troubleshooting, as workaround if some configuration problem of routers occurs.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-AdvertisingState {
+    description "Advertising interface state.";
+    type enumeration {
+      enum DISABLED {
+        description "Interface does not send out any Router Advertisement message.";
+        value 0;
+      }
+      enum ENABLED {
+        description "Interface sends out Router Advertisment message.  ";
+        value 1;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-BfdStaticRoutesInterfaceType {
+    description "State of bfdStaticRoutes.";
+    type enumeration {
+      enum DISABLED {
+        value 0;
+      }
+      enum ENABLED {
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef enum-DuidType {
+    description "Type of DUID.";
+    type enumeration {
+      enum DUID_LLT {
+        description "DUID is based on link-layer address and time.";
+        value 0;
+      }
+      enum DUID_EN {
+        description "DUID is assigned by vendor, based on enterprise number, HW serial number and VLAN ID.";
+        value 1;
+      }
+      enum DUID_EN_SERIAL_NUMBER {
+        description "DUID is assigned by vendor, based on enterprise number, and HW serial number.\n\nDUID option is aligned with DUID_EN option used by Zero Touch Integration to receive IP address for OAM access.";
+        value 2;
+      }
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_InterfaceIPv6_neighborSolicitationInterval {
+    type uint32 {
+      range 1..3600000;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_InterfaceIPv6_mtu {
+    type uint32 {
+      range 1280..9000;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_RaTransmitter_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_RaTransmitter_maxRtrAdvInterval {
+    type uint16 {
+      range 4..1800;
+    }
+  }
+  typedef ddt-Ipv6AddressAndPrefixLengthStr {
+    description "Unicast Ipv6Address (colon separated, rfc4291, without leading 0s) / prefix_length 0-128.\n\nExample: 2001:DB8::8:800:200C:417A/64";
+    type string;
+  }
+  typedef ddt-RtnL3InterfaceIPv6_AddressIPv6_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_InterfaceIPv6_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_InterfaceIPv6_routesHoldDownTimer {
+    type uint16 {
+      range 1..300;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_InterfaceIPv6_neighborDiscoveryTimeout {
+    type uint32 {
+      range 0..3600000;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_InterfaceIPv6_dscpNdp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RtnL3InterfaceIPv6_RaTransmitter_minRtrAdvInterval {
+    type uint16;
+  }
+  typedef ddt-EcimEmpty {
+    description "This type represents a leaf that has no value, it conveys information by its presence or absence.";
+    type boolean;
+  }
+  grouping moc-RaTransmitter-keys {
+    description "Key(s) for MOC RaTransmitter";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name raTransmitterId;
+      type string;
+    }
+  } // end 'grouping moc-RaTransmitter-keys'
+  grouping moc-RaTransmitter {
+    description "Represents Router Advertisement Transmitter which advertises RA messages and responds to Router Solicitation messages on routing interface.\n\nDependencies: Cannot be configured on IP loopback interface.\nCannot be configured on IPsec inner interface.\nCan be created only if AddressIPv6 MO configurationMode attribute is MANUAL.";
+    leaf minRtrAdvInterval {
+      config false;
+      description "Minimum time allowed between sending unsolicited multicast Router Advertisements from interface.\nIf MaxRtrAdvInterval >= 9 seconds, its value is 0.33 * MaxRtrAdvInterval, otherwise value is 0.75 * MaxRtrAdvInterval.";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_RaTransmitter_minRtrAdvInterval;
+    }
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_RaTransmitter_userLabel;
+    }
+    leaf maxRtrAdvInterval {
+      description "Maximum time allowed between sending unsolicited multicast Router Advertisements from interface.";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_RaTransmitter_maxRtrAdvInterval;
+      default 600;
+    }
+    leaf managedConfig {
+      description "1 bit managed address autoconfiguration flag.\nIf false, address autoconfiguration is not available via DHCPv6.\nIf true, address autoconfiguration is available via DHCPv6.\nIf true, otherConfig is redundant and can be ignored because DHCPv6 will return all available configuration information.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type boolean;
+      default true;
+    }
+    leaf otherConfig {
+      description "1-bit other configuration flag.\nIf true, other configuration information, excluding address, is available via DHCPv6.\nIf false, other configuration information is not available via DHCPv6.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type boolean;
+      default true;
+    }
+    leaf sendAdvertisement {
+      description "Whether or not router sends periodic Router Advertisements and responds to Router Solicitations.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrtnl3interfaceipv6:enum-AdvertisingState;
+      default DISABLED;
+    }
+  } // end 'grouping moc-RaTransmitter'
+  grouping moc-AddressIPv6-keys {
+    description "Key(s) for MOC AddressIPv6";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN. \n";
+      mandatory true;
+      yexte:ecim-name addressIPv6Id;
+      type string;
+    }
+  } // end 'grouping moc-AddressIPv6-keys'
+  grouping moc-AddressIPv6 {
+    description "Assigned IPv6 address including information about subnet it resides on.";
+    leaf configurationMode {
+      description "Whether IP address is configured manually, or retrieved from network using IKEv2 configuration payload or IPv6 autoconfiguration.\nIf MANUAL, address is manually configured.\nIf IKE, address is retrieved from security gateway using IKEv2 configuration payload in IKE negotiation.\nIf AUTO, AUTO_NO_DHCPV6, or AUTO_DHCPV6, address and default routes are retrieved from network using IPv6 autoconfiguration.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Must be MANUAL, if loopback attribute in parent InterfaceIPv6 MO is set.\nMust be MANUAL, if there is RaTransmitter MO in parent InterfaceIPv6 MO.\nMust be MANUAL or IKE, if there is RouteTableIPv6Static MO in Router MO.\nMust be MANUAL or IKE, if encapsulation attribute in InterfaceIPv6 MO refers to IpsecTunnel MO.\nIf IKE, encapsulation of parent InterfaceIPv6 MO must refer to IpsecTunnel MO.\nIf IKE, only one AddressIPv6 MO must exist within same Router MO.\nIf IKE, parent InterfaceIPv6 MO must not refer to IpsecTunnel MO referred by InterfaceIPv4 MO.\nIf AUTO, AUTO_NO_DHCPV6 or AUTO_DHCPV6, encapsulation of parent InterfaceIPv6 MO must refer to MO type EthernetPort, VlanPort, LagPort, or Bridge.\nIf AUTO, AUTO_NO_DHCPV6 or AUTO_DHCPV6, no other AddressIPv6 MO with configurationMode AUTO, AUTO_NO_DHCPV6 or AUTO_DHCPV6 must exist within same Router MO.\nIf AUTO, AUTO_NO_DHCPV6 or AUTO_DHCPV6, bfdProfile attribute in parent InterfaceIPv6 MO must not be set.";
+      type erienmnrmrtnl3interfaceipv6:enum-Ipv6ConfigMode;
+      default MANUAL;
+    }
+    leaf userLabel {
+      description "Label for free use. \n";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_AddressIPv6_userLabel;
+    }
+    leaf duidType {
+      description "Whether DUID is based on link-layer address and time (DUID_LLT), or on serial number using vendor specific option (DUID_EN or DUID_EN_SERIAL_NUMBER ).\nDUID is assigned to each DHCPv6 client and server. Used by DHCPv6 server to identify clients for selection of configuration parameters.\nMust be unique globally across all DHCPv6 clients and servers.\n";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "Only applicable if configurationMode is AUTO or AUTO_DHCPV6.\nDUID_EN_SERIAL_NUMBER can only be set in max one MO instance in node.";
+      type erienmnrmrtnl3interfaceipv6:enum-DuidType;
+      default DUID_LLT;
+    }
+    leaf address {
+      description "Configured IPv6 address.\nIPv6 address + \"/\" + prefix length<0-128>. \n\n ";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If loopback attribute in parent InterfaceIPv6 MO is set, or if encapsulation refers to IpsecTunnel MO, prefix length must be 128.\nIf configurationMode is MANUAL, this attribute must be set.\nIf configurationMode is other than MANUAL, this attribute must not be set.";
+      type erienmnrmrtnl3interfaceipv6:ddt-Ipv6AddressAndPrefixLengthStr;
+    }
+    leaf duid {
+      config false;
+      description "DHCP Unique Identifier (DUID).";
+      yexte:dependencies "Only applicable if configurationMode is AUTO or AUTO_DHCPV6.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf usedAddress {
+      config false;
+      description "Used IP address.\nIf configurationMode is MANUAL, this attribute has same content as address attribute.\nIf configurationMode is other than MANUAL, retrieved address is shown in this attribute.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-AddressIPv6'
+  grouping moc-InterfaceIPv6-keys {
+    description "Key(s) for MOC InterfaceIPv6";
+    leaf id {
+      erienmyext:no-notification;
+      description "Value component of the RDN. \n";
+      mandatory true;
+      yexte:ecim-name interfaceIPv6Id;
+      type string;
+    }
+  } // end 'grouping moc-InterfaceIPv6-keys'
+  grouping moc-InterfaceIPv6 {
+    description "Represents IPv6-addressed termination point, interface on IPv6 routing function.\n\nDependencies:\nMax one InterfaceIPv6 MO can reserve this LagPort MO.";
+    leaf encapsulation {
+      description "Reference to underlying encapsulation, which can be MO type EthernetPort, VlanPort, Bridge, IpsecTunnel or LagPort.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "One of encapsulation or loopback must be set, but not both at same time.\nOnly one InterfaceIPv6 MO can refer to same MO.\nCannot refer to EthernetPort MO referred by VlanPort MO.\nCannot refer to VlanPort MO referred by Bridge MO.\nCannot refer to Bridge MO with port attribute referring to VlanPort MO where lowLatencySwitching attribute set to true.\nReferred IpsecTunnel MO must belong to same Router MO.\nIf InterfaceIPv4 MO and InterfaceIPv6 MO refer to same MO in encapsulation, they must belong to same Router MO.\nIf attribute refers to IpsecTunnel MO, none of aclIngress, aclEgress, egressQosMarking, or routingPolicyIngress can be set.\nIf attribute refers to IpsecTunnel MO, bfdStaticRoutes must be DISABLED.\nIf attribute refers to IpsecTunnel MO, configurationMode for child AddressIPv6 MO must not be AUTO, AUTO_NO_DHCPV6 or AUTO_DHCPV6.\nIf attribute refers to IpsecTunnel MO, the only relevant configuration attributes are mtu and routesHoldDownTimer.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "Label for free use.\n";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_InterfaceIPv6_userLabel;
+    }
+    leaf neighborDiscoveryTimeout {
+      description "Timeout value for neighbor entry.\n\nConfigures how long remote IPv6 node is considered reachable after reachability confirmation event has occurred.\nValue of zero means that entries are never cleared from cache.";
+      yexte:dependencies "This attribute is only relevant if encapsulation refers to EthernetPort MO, VlanPort MO, or Bridge MO.";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_InterfaceIPv6_neighborDiscoveryTimeout;
+      default 30000;
+    }
+    leaf aclIngress {
+      description "Reference to AclIpv6 MO applied in ingress direction.\nIf this attribute is empty, no ACL filtering will take place in ingress direction.\nWhen ACL entries are configured, ACL entry must be added for default action, otherwise non-matching packets will be silently discarded.";
+      yexte:dependencies "This attribute can only be set if encapsulation refers to EthernetPort MO, VlanPort MO, or Bridge MO.\nThe referred AclIpv6 MO must belong to same Router MO, and must have at least one AclEntryIpv6 MO as child.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf dscpNdp {
+      description "Differentiated Services Code Point (DSCP) value for Neighbor Discovery Protocol (NDP).\n";
+      yexte:dependencies "This attribute is only relevant if encapsulation refers to EthernetPort MO, VlanPort MO, or Bridge MO.";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_InterfaceIPv6_dscpNdp;
+      default 48;
+    }
+    leaf neighborSolicitationInterval {
+      description "Interval between retransmitted neighbor solicitation messages on interface.";
+      yexte:dependencies "This attribute is only relevant if encapsulation refers to EthernetPort MO, VlanPort MO, or Bridge MO.";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_InterfaceIPv6_neighborSolicitationInterval;
+      default 1000;
+    }
+    leaf mtu {
+      description "Maximum Transmission Unit (MTU).\nReal MTU is minimum of this configured value and MTU given by encapsulation.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If InterfaceIPv4 MO and InterfaceIPv6 MO refer to same EthernetPort, VlanPort, LagPort, or Bridge MO in encapsulation, they must have same MTU value.\nThis attribute is not relevant if loopback is set.";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_InterfaceIPv6_mtu;
+      default 1500;
+    }
+    leaf routesHoldDownTimer {
+      description "Hold-down timer used for static routes that use this interface.\nIf this attribute is set, hold-down timer is started when conditions for static route to become available have been fulfilled.\nWhen hold-down timer expires, route becomes available.\nIf this attribute is empty, there is no hold-down timer for routes.\nThis attribute does not affect operational state of interface.";
+      yexte:dependencies "If InterfaceIPv4 and InterfaceIPv6 refer to same MO in encapsulation, they must have same routesHoldDownTimer value.\nThis attribute is not relevant if loopback is set.";
+      type erienmnrmrtnl3interfaceipv6:ddt-RtnL3InterfaceIPv6_InterfaceIPv6_routesHoldDownTimer;
+    }
+    leaf egressQosMarking {
+      description "DSCP to PCP map used for marking DSCP tagged packets with PCP value. Packets marked are either host originated or routed into QoS domain.\nIf empty, DSCP values are mapped to PCP values according to following:\npcp0 = 0\npcp1   (empty)\npcp2 = 10,12,14\npcp3 = 18,20,22\npcp4 = 8,16,26,28\npcp5 = 34,36,38,46\npcp6 = 32,40,48\npcp7 = 51,54";
+      yexte:dependencies "Attribute can only be set if encapsulation refers to MO type EthernetPort, VlanPort, or Bridge.\nDSCP to PCP map is not relevant if loopback is set or encapsulation is IpsecTunnel MO.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf bfdProfile {
+      description "Reference to BfdProfile MO containing BFD parameters used for BFD sessions from this interface.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If bfdStaticRoutes is set to ENABLED, this attribute must be set.\nIf configurationMode in AddressIPv6 MO is set to AUTO, AUTO_NO_DHCPV6 or AUTO_DHCPV6, this attribute must not be set.\nReferred BfdProfile MO must belong to Transport MO or same Router MO.\nIf loopback is set, this attribute must not be set.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf bfdStaticRoutes {
+      description "Enables or disables BFD monitoring of static route nexthops on this interface.\nThis attribute works in conjunction with bfdProfile.\nTo enable BFD monitoring for this interface, bfdStaticRoutes must be set to ENABLED and bfdProfile must be set.\nIf BFD monitoring is enabled, all static routing nexthops on subnets of this IP interface are monitored, unless explicitly disabled on PeerIPv6 MO or NextHop MO.\nBFD monitoring of static routes for a specific peer can be enabled on PeerIPv6 MO even if this attribute is DISABLED.\n";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "If this attribute is set to ENABLED, bfdProfile must be set.\nThis attribute can only be ENABLED if encapsulation refers to EthernetPort MO, VlanPort MO or Bridge MO.";
+      type erienmnrmrtnl3interfaceipv6:enum-BfdStaticRoutesInterfaceType;
+      default DISABLED;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState. ";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnl3interfaceipv6:enum-AvailStatus;
+    }
+    leaf ingressQosMarking {
+      description "DSCP to DSCP map used for remarking ingress DSCP tagged packets.\nEmpty string means no re-marking is done.\nThis attribute is used to fix specific issues within QoS domain and should most often be empty.\nIt can refer to DscpDscpMap MO.";
+      yexte:dependencies "This attribute is only relevant if encapsulation refers to EthernetPort MO, VlanPort MO, or Bridge MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state. ";
+      notife:notifiable-state-data true;
+      type erienmnrmrtnl3interfaceipv6:enum-OperState;
+    }
+    leaf aclEgress {
+      description "Reference to AclIpv6 MO applied in egress direction.\nIf this attribute is empty, no ACL filtering will take place in egress direction.\nWhen ACL entries are configured, ACL entry must be added for default action, otherwise non-matching packets will be silently discarded.";
+      yexte:dependencies "This attribute can only be set if encapsulation refers to EthernetPort MO, VlanPort MO, or Bridge MO.\nThe referred AclIpv6 MO must belong to same Router MO, and must have at least one AclEntryIpv6 MO as child.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf loopback {
+      description "Specifies if interface is IP Loopback Interface. ";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      yexte:dependencies "One of encapsulation or loopback must be set, but not both at the same time.\nMax number of InterfaceIPv6 MOs, with this attribute set, is 64.\nIf attribute is set, none of aclIngress, aclEgress, egressQosMarking or routingPolicyIngress can be set.\nIf attribute is set, bfdStaticRoutes must be DISABLED.\nIf attribute is set, configurationMode for child AddressIPv6 MO must be MANUAL.\nIf attribute is set, none of the other configuration attributes are relevant.\nIf set, bfdProfile must not be set.";
+      type erienmnrmrtnl3interfaceipv6:ddt-EcimEmpty;
+    }
+  } // end 'grouping moc-InterfaceIPv6'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnl3interfaceipv6:InterfaceIPv6 {
+    list RaTransmitter {
+      key id;
+      max-elements 1;
+      description "Represents Router Advertisement Transmitter which advertises RA messages and responds to Router Solicitation messages on routing interface.\n\nDependencies: Cannot be configured on IP loopback interface.\nCannot be configured on IPsec inner interface.\nCan be created only if AddressIPv6 MO configurationMode attribute is MANUAL.";
+      erienmyext:enm-type MOC;
+      uses moc-RaTransmitter-keys;
+      container attributes {
+        description "Attributes for RaTransmitter";
+        uses moc-RaTransmitter;
+      } // end 'container attributes'
+    } // end 'list RaTransmitter'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnl3interfaceipv6:InterfaceIPv6 {
+    list AddressIPv6 {
+      key id;
+      max-elements 1;
+      description "Assigned IPv6 address including information about subnet it resides on.";
+      erienmyext:enm-type MOC;
+      uses moc-AddressIPv6-keys;
+      container attributes {
+        description "Attributes for AddressIPv6";
+        uses moc-AddressIPv6;
+      } // end 'container attributes'
+    } // end 'list AddressIPv6'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list InterfaceIPv6 {
+      key id;
+      max-elements 256;
+      description "Represents IPv6-addressed termination point, interface on IPv6 routing function.\n\nDependencies:\nMax one InterfaceIPv6 MO can reserve this LagPort MO.";
+      erienmyext:enm-type MOC;
+      uses moc-InterfaceIPv6-keys;
+      container attributes {
+        description "Attributes for InterfaceIPv6";
+        uses moc-InterfaceIPv6;
+      } // end 'container attributes'
+    } // end 'list InterfaceIPv6'
+  }
+}

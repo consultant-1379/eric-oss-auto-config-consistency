@@ -1,0 +1,22 @@
+{
+  "NODESETS": "Node sets",
+  "NO_NODESETS_CREATED": "No node sets created",
+  "SCOPE_NAME": "Name",
+  "EDIT": "Edit",
+  "DELETE": "Delete",
+  "CREATE_NODE_SET": "Create node set",
+  "NODE_SET": "Node set",
+  "DELETE_NODESET": "Delete node set",
+  "CONFIRM_DELETE": "Confirm delete node set",
+  "DELETE_NODESET_MESSAGE": "Are you sure you want to continue?",
+  "DELETED_SUCCESS_MESSAGE": "was deleted.",
+  "DELETED_FAILURE_MESSAGE": "Unable to delete node set.",
+  "DELETE_FAILURE_GENERIC_DESCRIPTION": "Internal Server Error. Try again or contact the system administrator.",
+  "DELETE_FAILURE_404_DESCRIPTION": "Node set could not be found or no longer exists.",
+  "DELETE_FAILURE_409_DESCRIPTION": "Make sure '%node_set_name%' is not used by any job and try again.",
+  "FILE_DOWNLOAD_FAILED_SHORT": "Unable to download file",
+  "FILE_DOWNLOAD_FAILED_LONG": "Internal Server Error. Try again or contact the system administrator.",
+  "DOWNLOAD": "Download",
+  "REST_403_DESCRIPTION": "Your role does not allow you to perform this operation. Contact the System Administrator to change your access rights.",
+  "ACCESS_DENIED": "Access Denied"
+}

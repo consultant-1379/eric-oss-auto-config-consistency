@@ -1,0 +1,116 @@
+module ericsson-enm-RmeCapacityUsage {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RmeCapacityUsage;
+  prefix erienmnrmrmecapacityusage;
+  yexte:ecim-name RmeCapacityUsage;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 1;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  grouping struct-HupInfo {
+    description "Hardware Utilization Package (HUP) information.\n\nInitial Package (IP) or Expansion Package (EP) content is presented in the following format:\n\n<HUP type>:[<Baseband>]:<Size>:<Count>;\n\nHUP type: IP or EP.\n\nBaseband: Baseband type the IP is applicable to. [ ] means optional field, not present for EP.\n\nSize: Number of HWACs forming an indivisible allocation unit.\n\nCount: Number of indivisible allocation units.";
+    leaf nrAllocatedUnusedCapacity {
+      description "Number of unused HWACs allocated to NR.";
+      type int32;
+      mandatory true;
+    }
+    leaf licenseKeyName {
+      description "Name of the HWAC license key.\nExample:\n60 MHz Antenna Bandwidth";
+      type string;
+      mandatory true;
+    }
+    leaf totAllocated {
+      description "Total amount of HUPs allocated to all RATs.\nExample:\n\"IP:BB6648:1:16;EP::2:5;\" ";
+      type string;
+      mandatory true;
+    }
+    leaf licenseKeyId {
+      description "Identity of the HWAC license key.\nExample:\nCXC 401 2472";
+      type string;
+      mandatory true;
+    }
+    leaf totFree {
+      description "Total amount of free HUPs available for distribution.\nExample:\n\"EP::1:4;\" ";
+      type string;
+      mandatory true;
+    }
+    leaf lteAllocatedUnusedCapacity {
+      description "Number of unused HWACs allocated to LTE.";
+      type int32;
+      mandatory true;
+    }
+    leaf nrAllocated {
+      description "Total amount of HUPs allocated to NR.\nExample:\n\"IP:BB6648:1:8;EP::2:5;\" ";
+      type string;
+      mandatory true;
+    }
+    leaf totInstalled {
+      description "Total amount of HUPs available for distribution.\nExample:\n\"IP:BB6648:1:16;EP::1:4;EP::2:5;\" ";
+      type string;
+      mandatory true;
+    }
+    leaf lteAllocated {
+      description "Total amount of HUPs allocated on LTE.\nExample:\n\"IP:BB6648:1:8;\" ";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-HupInfo'
+  grouping moc-CapacityUsage-keys {
+    description "Key(s) for MOC CapacityUsage";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying this MO.";
+      mandatory true;
+      yexte:ecim-name capacityUsageId;
+      type string;
+    }
+  } // end 'grouping moc-CapacityUsage-keys'
+  grouping moc-CapacityUsage {
+    description "Contains PM counters for capacity usage.\n          \n          The RDN of this MO is CapacityUsage=1.";
+    list hupInfo {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Hardware Utilization Package (HUP) information related to Initial/Expansion Package (IP/EP) content of corresponding HWAC license keys.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrmecapacityusage:struct-HupInfo;
+    } // end 'list hupInfo'
+  } // end 'grouping moc-CapacityUsage'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list CapacityUsage {
+      key id;
+      max-elements 1;
+      description "Contains PM counters for capacity usage.\n          \n          The RDN of this MO is CapacityUsage=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CapacityUsage-keys;
+      container attributes {
+        description "Attributes for CapacityUsage";
+        uses moc-CapacityUsage;
+      } // end 'container attributes'
+    } // end 'list CapacityUsage'
+  }
+}

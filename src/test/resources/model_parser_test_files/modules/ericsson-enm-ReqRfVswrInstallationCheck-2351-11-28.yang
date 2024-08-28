@@ -1,0 +1,260 @@
+module ericsson-enm-ReqRfVswrInstallationCheck {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqRfVswrInstallationCheck;
+  prefix erienmnrmreqrfvswrinstallationcheck;
+  yexte:ecim-name ReqRfVswrInstallationCheck;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef enum-ReasonForNotTested {
+    description "Reason why measurement cannot be executed.";
+    type enumeration {
+      enum UNDEFINED {
+        description "Default value used when testResult is OK, OKW (OK with warning) or NOK (not OK).";
+        value 0;
+      }
+      enum HW_NOT_SUPPORTED {
+        description "Measurement functionality not supported by radio.";
+        value 1;
+      }
+      enum INTERNAL_ERROR {
+        description "Performing or finishing measurement is prevented by internal condition.";
+        value 2;
+      }
+      enum NO_ACTIVE_CARRIER {
+        description "No carrier is activated for this band or RF port.";
+        value 3;
+      }
+      enum HW_RESOURCE_CONFLICT {
+        description "Ongoing performCheck action triggered from another DU sharing this radio.";
+        value 4;
+      }
+      enum MAX_NUM_OF_RF_PORTS_REACHED {
+        description "Check requested for too many RF ports, exceeding internal queue limit, 280. Therefore, no measurement is performed for this band on RF port. To receive the result for this band on RF port, action needs to be performed for smaller set of RF ports, or lower testLevel.";
+        value 5;
+      }
+    }
+  }
+  typedef enum-ActionFailureReason {
+    description "Reason for actionStatus set to FAILED.";
+    type enumeration {
+      enum UNDEFINED {
+        description "Default value when actionStatus is different than FAILED.";
+        value 0;
+      }
+      enum INVALID_INPUT_PARAMETERS {
+        description "Input parameters are invalid.";
+        value 1;
+      }
+      enum RL_FREQ_SWEEP_ONGOING {
+        description "Action startRlFreqSweep on RF Port MO is ongoing.";
+        value 2;
+      }
+      enum NO_RF_PORT_TESTED {
+        description "No RF port is tested because of reasonForNotTested settings in rfPortTestResult.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-TestResult {
+    description "Result of test after comparing measured data with given thresholds.";
+    type enumeration {
+      enum NOT_TESTED {
+        description "Measurement not performed or finished because of the reason presented in reasonForNotTested.";
+        value 0;
+      }
+      enum OK {
+        description "Result of measurement is greater than or equal to thresholdHigh.";
+        value 1;
+      }
+      enum OKW {
+        description "Result of measurement is less than thresholdHigh but greater than or equal to thresholdLow.";
+        value 2;
+      }
+      enum NOK {
+        description "Result of measurement is less than thresholdLow.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-TestLevel {
+    description "Level on which test is executed.";
+    type enumeration {
+      enum NODE {
+        description "All connected RF ports on node has to be tested.";
+        value 0;
+      }
+      enum RADIO {
+        description "All connected RF ports on radio units specified by targedLDN has to be tested.";
+        value 1;
+      }
+      enum RFPORT {
+        description "All RF ports specified by targedLDN has to be tested.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-ActionStatus {
+    description "Current state of measurement.";
+    type enumeration {
+      enum UNKNOWN {
+        description "Default value set after MO creation, performCheck action never started.";
+        value 0;
+      }
+      enum STARTED {
+        description "Action performCheck started and ongoing.";
+        value 1;
+      }
+      enum FAILED {
+        description "Action performCheck fails because of actionFailureReason settings.";
+        value 2;
+      }
+      enum FINISHED {
+        description "Action performCheck finished successfully.";
+        value 3;
+      }
+    }
+  }
+  typedef ddt-ReqRfVswrInstallationCheck_TestResultOfVswr_value {
+    type int16;
+  }
+  typedef ddt-RfVswrInstallationCheck_performCheck_thresholdHigh {
+    type uint8 {
+      range 10..17;
+    }
+  }
+  typedef ddt-RfVswrInstallationCheck_performCheck_thresholdLow {
+    type uint8 {
+      range 10..17;
+    }
+  }
+  grouping struct-TestResultOfVswr {
+    description "Results of VSWR measurements for each RF port determined by testLevel and targetLDN. If RF port supports more frequency bands, testResultOfVswr is created for each band.";
+    leaf frequencyRange {
+      description "Downlink frequency range for which measurement is performed.";
+      type string;
+      mandatory true;
+    }
+    leaf reasonForNotTested {
+      description "Reason why measurement cannot be executed.";
+      type erienmnrmreqrfvswrinstallationcheck:enum-ReasonForNotTested;
+      mandatory true;
+    }
+    leaf testResult {
+      description "Result of test after comparing measured data with given thresholds.";
+      type erienmnrmreqrfvswrinstallationcheck:enum-TestResult;
+      mandatory true;
+    }
+    leaf value {
+      description "Value is calculated based on received measurement and compared to thresholdLow and thresholdHigh.";
+      type erienmnrmreqrfvswrinstallationcheck:ddt-ReqRfVswrInstallationCheck_TestResultOfVswr_value;
+      mandatory true;
+    }
+    leaf rfPort {
+      description "LDN of tested RF port.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-TestResultOfVswr'
+  grouping moc-RfVswrInstallationCheck-keys {
+    description "Key(s) for MOC RfVswrInstallationCheck";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name rfVswrInstallationCheckId;
+      type string;
+    }
+  } // end 'grouping moc-RfVswrInstallationCheck-keys'
+  grouping moc-RfVswrInstallationCheck {
+    description "This MO allows to run different VSWR measurements automatically based on type of radio.";
+    leaf actionStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Current state of measurement.";
+      type erienmnrmreqrfvswrinstallationcheck:enum-ActionStatus;
+    }
+    leaf actionFailureReason {
+      erienmyext:no-notification;
+      config false;
+      description "Reason for actionStatus set to FAILED.";
+      type erienmnrmreqrfvswrinstallationcheck:enum-ActionFailureReason;
+    }
+    list rfPortTestResult {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Results of VSWR measurements for each RF port determined by testLevel and targetLDN. If RF port supports more frequency bands, testResultOfVswr is created for each band.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqrfvswrinstallationcheck:struct-TestResultOfVswr;
+    } // end 'list rfPortTestResult'
+    leaf endTime {
+      erienmyext:no-notification;
+      config false;
+      description "Timestamp of the end of last executed measurement. Format: YYYY-MM-DD HH:MM:SS.XXX.";
+      type string;
+    }
+    action performCheck {
+      description "Triggers Antenna System Validation (ASV) VSWR measurements for whole node, given radios or specific RF ports. Stores measurement results in rfPortTestResult for further evaluation.";
+      input {
+        leaf testLevel {
+          mandatory true;
+          description "Level on which test is executed.";
+          type erienmnrmreqrfvswrinstallationcheck:enum-TestLevel;
+        }
+        leaf-list targetLDN {
+          min-elements 0;
+          max-elements 280;
+          description "Array of LDNs that identifies radio units or RF ports to test. Used only if testLevel is set to RADIO or RFPORT.";
+          erienmyext:enm-type MOREF;
+          type string;
+        }
+        leaf thresholdHigh {
+          description "Integer value that is a reference to set testResult according to user requirements.\nIf result is less than thresholdHigh and greater than or equal to thresholdLow, then testResult is OKW (OK with warning).\nIf result is greater than or equal to thresholdHigh then testResult is OK.";
+          type erienmnrmreqrfvswrinstallationcheck:ddt-RfVswrInstallationCheck_performCheck_thresholdHigh;
+        }
+        leaf thresholdLow {
+          description "Integer value that is a reference to set testResult according to user requirements.\nIf result is less than thresholdLow, then testResult is NOK (not OK).\nIf result is greater than or equal to thresholdLow and less than thresholdHigh, then testResult is OKW (OK with warning).";
+          type erienmnrmreqrfvswrinstallationcheck:ddt-RfVswrInstallationCheck_performCheck_thresholdLow;
+        }
+      }
+    }
+  } // end 'grouping moc-RfVswrInstallationCheck'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list RfVswrInstallationCheck {
+      key id;
+      max-elements 1;
+      description "This MO allows to run different VSWR measurements automatically based on type of radio.";
+      erienmyext:enm-type MOC;
+      uses moc-RfVswrInstallationCheck-keys;
+      container attributes {
+        description "Attributes for RfVswrInstallationCheck";
+        uses moc-RfVswrInstallationCheck;
+      } // end 'container attributes'
+    } // end 'list RfVswrInstallationCheck'
+  }
+}

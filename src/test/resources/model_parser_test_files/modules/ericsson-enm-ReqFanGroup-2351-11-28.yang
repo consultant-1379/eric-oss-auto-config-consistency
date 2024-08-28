@@ -1,0 +1,113 @@
+module ericsson-enm-ReqFanGroup {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqFanGroup;
+  prefix erienmnrmreqfangroup;
+  yexte:ecim-name ReqFanGroup;
+  revision 2351-11-28 {
+    yexte:version 4;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqCabinet {
+    prefix erienmnrmreqcabinet;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-ApcIndicatorStatus {
+    description "Possible states for green, yellow and red indicators. Since the semantics of the different indicator states depend on the color of the indicator, the semantics is described as part of the corresponding indicator status attribute description.";
+    type enumeration {
+      enum NOT_APPLICABLE {
+        description "The indicator is not supported. ";
+        value 0;
+      }
+      enum NOT_AVAILABLE {
+        description "The indicator state is currently not available.";
+        value 1;
+      }
+      enum OFF {
+        description "The indicator is off.";
+        value 2;
+      }
+      enum STEADY_ON {
+        description "The indicator is on continuously.";
+        value 3;
+      }
+      enum SLOW_BLINK {
+        description "The indicator blinks slowly.";
+        value 4;
+      }
+      enum FAST_BLINK {
+        description "The indicator blinks quickly.";
+        value 6;
+      }
+      enum DOUBLE_FLASH_AND_STEADY_ON {
+        description "The indicator blinks twice and is then on for a short time. This cycle is then repeated. ";
+        value 7;
+      }
+      enum DOUBLE_FLASH_AND_OFF {
+        description "The indicator blinks twice and is then off for a short time. This cycle is then repeated.";
+        value 8;
+      }
+    }
+  }
+  typedef ddt-ReqFanGroup_FanGroup_fanPort {
+    type int32 {
+      range 1..10;
+    }
+  }
+  grouping moc-FanGroup-keys {
+    description "Key(s) for MOC FanGroup";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name fanGroupId;
+      yexte:dependencies "Can only exist in the node when the attribute supportSystemControl on MO EquipmentSupportFunction is set to true.";
+      type string;
+    }
+  } // end 'grouping moc-FanGroup-keys'
+  grouping moc-FanGroup {
+    description "This MO models a fan group.\nA fan group is one or more fans which are supervised and controlled as a group. The MO ID will \nmatch the physical fan group ID. Number of MOs created depends on cabinet type and climate \nsystem.\n\nThe RDNs of these MOs are FanGroup=1, FanGroup=2, and so on. \n\nDependencies: Can only exist in the node when the attribute supportSystemControl \non MO EquipmentSupportFunction is set to true.";
+    leaf fanPort {
+      erienmyext:no-notification;
+      config false;
+      description "The physical port where the fan is connected.";
+      type erienmnrmreqfangroup:ddt-ReqFanGroup_FanGroup_fanPort;
+    }
+    leaf fanGroupFaultIndicator {
+      erienmyext:no-notification;
+      config false;
+      description "The current fault indicator status of the fan group shown by the optical fan group fault indicator on the Support Control Unit (SCU).\n\nPossible values:\n• NOT_APPLICABLE = This indicator is not supported.\n• NOT_AVAILABLE = The indicator state is currently not available.\n• OFF = Fans connected and no fault exists in this unit.\n• STEADY_ON = A fan fault exists in this unit.\n• SLOW_BLINK = A fan in this unit is disconnected. ";
+      type erienmnrmreqfangroup:enum-ApcIndicatorStatus;
+    }
+  } // end 'grouping moc-FanGroup'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqcabinet:Cabinet {
+    list FanGroup {
+      key id;
+      description "This MO models a fan group.\nA fan group is one or more fans which are supervised and controlled as a group. The MO ID will \nmatch the physical fan group ID. Number of MOs created depends on cabinet type and climate \nsystem.\n\nThe RDNs of these MOs are FanGroup=1, FanGroup=2, and so on. \n\nDependencies: Can only exist in the node when the attribute supportSystemControl \non MO EquipmentSupportFunction is set to true.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-FanGroup-keys;
+      container attributes {
+        description "Attributes for FanGroup";
+        uses moc-FanGroup;
+      } // end 'container attributes'
+    } // end 'list FanGroup'
+  }
+}

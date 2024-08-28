@@ -1,0 +1,924 @@
+module ericsson-enm-RcsPm {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsPm;
+  prefix erienmnrmrcspm;
+  yexte:ecim-name RcsPm;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 1;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-JobStartStopSupport {
+    description "Specifies if Performance Management jobs defined in ME can be started and stopped.";
+    type enumeration {
+      enum NONE {
+        description "NONE - a job is started when it is created and will run until it is deleted.";
+        value 0;
+      }
+      enum BASIC {
+        description "BASIC - simple start/stop supported.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-MeasurementStatus {
+    description "The Measurement status of a Measurement Type.";
+    type enumeration {
+      enum USED {
+        description "Measurement status = Used. \nThe measurement is approved, available and stepped in this version of the Managed Element.";
+        value 1;
+      }
+      enum DEPRECATED {
+        description "Measurement status = Deprecated.\nThe measurement is available in this version of the Managed Element, but as it is planned for removal it is not recommended for use.";
+        value 2;
+      }
+      enum OBSOLETE {
+        description "Measurement status = Obsolete.\nThe measurement is not available and not stepped in this version of the Managed Element.";
+        value 3;
+      }
+      enum PRELIMINARY {
+        description "MeasurementStatus = Preliminary.\nThe measurement is available and stepped in this version of the Managed Element, but is not yet approved.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-TimePeriod {
+    description "The different time periods associated with Performance Monitoring.";
+    type enumeration {
+      enum TEN_SECONDS {
+        description "This represents a 10-second time period.";
+        value 1;
+      }
+      enum THIRTY_SECONDS {
+        description "This represents a 30-second time period.";
+        value 2;
+      }
+      enum ONE_MIN {
+        description "This represents a one-minute time period.";
+        value 3;
+      }
+      enum FIVE_MIN {
+        description "This represents a five-minute time period.";
+        value 4;
+      }
+      enum FIFTEEN_MIN {
+        description "This represents a 15-minute time period.";
+        value 5;
+      }
+      enum THIRTY_MIN {
+        description "This represents a 30-minute time period.";
+        value 6;
+      }
+      enum ONE_HOUR {
+        description "This represents a one-hour time period.";
+        value 7;
+      }
+      enum TWELVE_HOUR {
+        description "This represents a 12-hour (720-minute)  time period.";
+        value 8;
+      }
+      enum ONE_DAY {
+        description "This represents a 24-hour (1440-minute)  time period.";
+        value 9;
+      }
+    }
+  }
+  typedef enum-JobPriority {
+    description "Job Priority.";
+    type enumeration {
+      enum LOW {
+        description "Priority = Low.";
+        value 1;
+      }
+      enum MEDIUM {
+        description "Priority = Medium.";
+        value 2;
+      }
+      enum HIGH {
+        description "Priority = High.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-JobControl {
+    description "The level of MS control of the PM job.\nIf no value is set, ";
+    type enumeration {
+      enum FULL {
+        description "MS has Full control of the PM Job.\nMS can create, delete, start and stop a job.";
+        value 0;
+      }
+      enum STARTSTOP {
+        description "MS has Restricted control of the PM Job.\nMS can stop and start a job, but cannot delete or create it.\n";
+        value 1;
+      }
+      enum VIEWONLY {
+        description "MS can only view the PM job.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-PerTimeInterval {
+    description "Time interval used to monitor a MeaurementType value against a threshold.\n\nSpecifies, for Threshold Monitoring of a Cumulative Counter, what to compare against the threshold.";
+    type enumeration {
+      enum PER_SECOND {
+        description "Rate of variation per second of the measurement type value shall be monitored.\nWhat shall be compared against the threshold is the rate of variation per second of the measurement type over the monitor granularity period.";
+        value 0;
+      }
+      enum PER_GP {
+        description "Absolute value of the measurement type shall be monitored.\nWhat shall be compared against the threshold is the absolute value of the measurement type at the end of the monitor granularity period.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-RopFilenameTimestamp {
+    description "Supported Result Output Period (ROP) filename timestamp formats.";
+    type enumeration {
+      enum LOCAL_WITH_UTC_OFFSET {
+        description "Filename timestamp expressed as NE local time with UTC offset.\nThe Starttime and Endtime fields in the filename are expressed according to 3GPP TS 32.432, as NE local time with UTC offset.\nThis is the recommended setting.";
+        value 0;
+      }
+      enum UTC_NO_OFFSET {
+        description "Filename timestamp expressed as UTC time with no offset.\nThe Starttime and Endtime fields in the filename are expressed as UTC time with no offset.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-Aggregation {
+    description "The aggregation method for a Measurement Type.";
+    type enumeration {
+      enum SUM {
+        description "Aggregation method = SUM.";
+        value 2;
+      }
+      enum AVG {
+        description "Aggregation method = AVG.";
+        value 3;
+      }
+      enum MIN {
+        description "Aggregation method = MIN.";
+        value 4;
+      }
+      enum MAX {
+        description "Aggregation method = MAX.";
+        value 5;
+      }
+      enum LAST_UPDATE {
+        description "Aggregation method = LAST_UPDATE.";
+        value 6;
+      }
+    }
+  }
+  typedef enum-SeverityLevel {
+    description "The possible alarm serverities.";
+    type enumeration {
+      enum CRITICAL {
+        description "Aligned with ERICSSON-ALARM-MIB numbering.";
+        value 3;
+      }
+      enum MAJOR {
+        description "Aligned with ERICSSON-ALARM-MIB numbering.";
+        value 4;
+      }
+      enum MINOR {
+        description "Aligned with ERICSSON-ALARM-MIB numbering.";
+        value 5;
+      }
+      enum WARNING {
+        description "Aligned with ERICSSON-ALARM-MIB numbering.";
+        value 6;
+      }
+    }
+  }
+  typedef enum-ThresholdDirection {
+    description "The threshold direction of a Measurement Type value which raises the Performance Alarm severity.";
+    type enumeration {
+      enum INCREASING {
+        description "Threshold direction = Increasing.";
+        value 1;
+      }
+      enum DECREASING {
+        description "Threshold Direction = Decreasing.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-CompressionTypes {
+    description "Supported common File Compression Type(s).";
+    type enumeration {
+      enum GZIP {
+        description "GNU zip file compression type.";
+        value 0;
+      }
+    }
+  }
+  typedef enum-JobType {
+    description "PM job types.";
+    type enumeration {
+      enum MEASUREMENTJOB {
+        description "Measurement Job.\nThis job monitors a number of Measurement Types and the resulting data will be presented in an XML file. This file will then be available for collection.\n";
+        value 1;
+      }
+      enum THRESHOLDJOB {
+        description "Threshold Job.\nThis job monitors one or more Measurement Types against assigned thresholds. If a threshold is exceeded an alarm will be issued.\n";
+        value 2;
+      }
+      enum REALTIMEJOB {
+        description "Real-time Job.\nThis job monitors one or more Measurement Types and makes the current value available in the model to be fetched by the MS.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-JobState {
+    description "PM job states.";
+    type enumeration {
+      enum ACTIVE {
+        description "Job State = Active.";
+        value 1;
+      }
+      enum STOPPED {
+        description "Job State = Stopped.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-CollectionMethod {
+    description "The form in which measurement data for a Measurement Type  is obtained.";
+    type enumeration {
+      enum CC {
+        description "The collection method is Cumulative Counter.";
+        value 1;
+      }
+      enum GAUGE {
+        description "The collection method is Gauge - based on a dynamic variable.\nThis method is used when data being measured can vary up or down during the period of measurement.";
+        value 2;
+      }
+      enum DER {
+        description "The collection method is Discrete Event Registration (DER).\nWhen data related to a particular event are captured, every nth event is registered, where n can be 1 or greater.";
+        value 3;
+      }
+      enum SI {
+        description "The collection method is Status Inspection.";
+        value 4;
+      }
+    }
+  }
+  typedef ddt-MoFilter {
+    description "MO Filter Data Type.\nThis data type is used to specify a target Managed Object (MO) specified by MO DN or MO filter expression.\nThe filter expression is encoded in a simplified regular expression.\nThe following uses are covered:\n\nSpecifying by particular MO : Use the 3GPP DN notation. \nExample: \n\"ManagedElement=ABC,AppX=1\" selects the MO identified by that DN (where the naming attribute follows the convention MO Class name + \"Id\").\nAdditionally here a mix of MO and MOC is allowed in the same filter expression. This usage allows singleton MOCs to be unnamed, and makes the filter specification independent of the system implementation for the naming of singleton MOC types.\nExample: \n\"ManagedElement,Equipment,FRU=19\"  selects a specific FRU MO, without specifying the name of its singleton parents.\n\nSpecifying by MO where the naming attributes are not of the conventional form:\nIf the naming attribute is not the same as the MO Class name + “Id”, the 3GPP DN uses a dot notation to specify the naming attribute. \nExample:\n\"ManagedElement,Equipment,Abc.xyz=1\"  selects a specific MO of MO class Abc where the naming attribute is not equal to the MOC Name + “Id” 3GPP special case.";
+    type string;
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC\n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)";
+    type string {
+      length 19..31;
+    }
+  }
+  grouping struct-ManagedObjectClass {
+    description "This struct represents a Managed Object Class.";
+    leaf moClassName {
+      description "Contains the Managed Object Class name.";
+      type string;
+      mandatory true;
+    }
+    leaf mimVersion {
+      description "Contains the version of the MIM that contains the Managed Object Class.";
+      type string;
+      mandatory true;
+    }
+    leaf mimName {
+      description "Contains the name of the MIM that contains the Managed Object Class.\n\n";
+      type string;
+      mandatory true;
+    }
+    leaf mimRelease {
+      description "Contains the release number of the MIM that contains the Managed Object Class.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-ManagedObjectClass'
+  grouping struct-MeasurementSpecification {
+    description "Specifies a reference to either a MeasurementType MO or to a PmGroup MO.\nMust contain only one member, either groupRef or measurementTypeRef.\n";
+    leaf measurementTypeRef {
+      description "Reference to a MeasurementType which can be associated with a MeasurementReader.\nThe MeasurementReader will handle this MeasurementType.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf groupRef {
+      description "Reference to a PmGroup which can be associated with a MeasurementReader.\nThe MeasurementReader will therefore handle all the MeasurementTypes contained by the PmGroup.\nOnly valid for PM jobs of type MEASUREMENTJOB.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping struct-MeasurementSpecification'
+  grouping struct-PMCounterCategory {
+    description "Defines the category of a Measurement Type. It is a 3-level categorisation.";
+    leaf area {
+      description "Mandatory PM category level 2 used to select the PM area, CPP PM Area and KPI ";
+      type string;
+      mandatory true;
+    }
+    leaf scenario {
+      description "Optional PM category level 3 used to classify counters further into a traffic scenario or a particular KPI formula.";
+      type string;
+    }
+    leaf type {
+      description "Mandatory PM category level 1 used to select the PM filtering perspectives.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-PMCounterCategory'
+  grouping struct-MeasurementReaderNameValue {
+    description "This name value is used for real-time monitoring.\nThe real-time monitoring is set up using a PM job of type REALTIMEJOB.";
+    leaf lastUpdated {
+      description "Contains the exact time the currentValue was last set. \nThis attribute is used to determine how recent the value supplied in currentValue is.";
+      type erienmnrmrcspm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf suspectFlag {
+      description "Indicates if the collected measurement result is suspect.";
+      type boolean;
+      default false;
+    }
+    leaf moClassInstance {
+      description "Specifies the MO class instance that the real-time measurement applies to.\nThis maps to the measObjLdn as defined in 3GPP 32.401.";
+      erienmyext:enm-type MOREF;
+      type string;
+      mandatory true;
+    }
+    leaf currentValue {
+      description "Contains the real-time value of the measurement.\nThis value can be read in conjunction with attribute lastUpdated to determine the value of counters in real time.";
+      type string;
+      mandatory true;
+    }
+  } // end 'grouping struct-MeasurementReaderNameValue'
+  grouping moc-PmGroup-keys {
+    description "Key(s) for MOC PmGroup";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name pmGroupId;
+      type string;
+    }
+  } // end 'grouping moc-PmGroup-keys'
+  grouping moc-PmGroup {
+    description "A grouping of the measurements into logical grouping. \nPmGroup is unique in the ME.";
+    leaf generation {
+      erienmyext:no-notification;
+      config false;
+      description "Determines if group concerns GSM, UMTS, EPS, combined (GSM+UMTS+EPS),  IMS or 5GS measurements.\nValues are defined in 3GPP standard 32:404.";
+      type string;
+    }
+    container moClass {
+      description "The Managed Object Class that uses the Measurement Types in this PmGroup.\nNo value means this PM Group is not associated with any specific Managed Object Class.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcspm:struct-ManagedObjectClass;
+    } // end 'container moClass'
+    leaf switchingTechnology {
+      erienmyext:no-notification;
+      config false;
+      description "The Switching domain or domains to which this measurement is applicable.\nValues are defined in 3GPP standard 32.404.";
+      type string;
+    }
+    leaf pmGroupVersion {
+      erienmyext:no-notification;
+      config false;
+      description "PM Group version identifier.\nUnique version identifier associated with a change to the contents of the PM Group, where new MeasurementTypes have been added.";
+      type string;
+    }
+    leaf description {
+      erienmyext:no-notification;
+      config false;
+      description "Description of the PmGroup.";
+      type string;
+    }
+    leaf validity {
+      erienmyext:no-notification;
+      config false;
+      description "States if the group is valid.\nA group might not be valid if, for example, the feature that this group is used for is not available to the customer.\nIf no value is set, the MS shall treat it as true";
+      type boolean;
+    }
+  } // end 'grouping moc-PmGroup'
+  grouping moc-MeasurementType-keys {
+    description "Key(s) for MOC MeasurementType";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name measurementTypeId;
+      type string;
+    }
+  } // end 'grouping moc-MeasurementType-keys'
+  grouping moc-MeasurementType {
+    description "Defines a Measurement Type on the Managed Element to be monitored and collected.\nMeasurementType is unique within the PM Group.";
+    leaf collectionMethod {
+      erienmyext:no-notification;
+      config false;
+      description "Contains the form in which this measurement data is obtained.";
+      type erienmnrmrcspm:enum-CollectionMethod;
+    }
+    leaf multiplicity {
+      erienmyext:no-notification;
+      config false;
+      description "Where a counter is an array of values, this attribute represents the size of the array.\nWhere it produces a single value, this attribute is set to 1.";
+      type int16;
+    }
+    leaf thresholdValidRange {
+      erienmyext:no-notification;
+      config false;
+      description "The valid threshold range for use in a threshold job.\nExpressed as a space-separated string containing lower and upper bound, for example \"0 100\".\nOnly applicable if fmAlarmType is set.";
+      type string;
+    }
+    leaf measurementStatus {
+      erienmyext:no-notification;
+      config false;
+      description "Contains the status of the measurement.";
+      type erienmnrmrcspm:enum-MeasurementStatus;
+    }
+    leaf resetAtGranPeriod {
+      erienmyext:no-notification;
+      config false;
+      description "Specifies whether the value is initialized at the beginning of each granularity period.";
+      type boolean;
+    }
+    leaf description {
+      erienmyext:no-notification;
+      config false;
+      description "A comprehensible explanation of this measurement.";
+      type string;
+    }
+    leaf aggregation {
+      erienmyext:no-notification;
+      config false;
+      description "Describes how the PM service aggregates the measurement values for measurement instances.";
+      type erienmnrmrcspm:enum-Aggregation;
+    }
+    leaf measurementName {
+      status deprecated {
+        yexte:status-information "This attribute does not save the intended data. It also has no particular use in the model. Deprecated in ECIM PM 3.0";
+      }
+      erienmyext:no-notification;
+      config false;
+      description "Deprecated,The full name of the measurement type. Deprecated in ECIM PM 3.0.";
+      type string;
+    }
+    leaf derSampleRate {
+      erienmyext:no-notification;
+      config false;
+      description "Specifies the sample rate for DER counters.\nDefined as according to 3GPP 32.401.\nData related to a particular event is captured. Every nth event is registered, where n can be 1 or greater.\nThis attribute defines n.\nOnly applicable when collectionMethod = DER.";
+      type int16;
+    }
+    leaf isCompressed {
+      erienmyext:no-notification;
+      config false;
+      description "Indicates if the MeasurementType result is in compressed format.\nFor MeasurementTypes with multiplicity greater than 1, the result can be compressed by only reporting the non-zero values.\nA detailed explanation of the format of the measurement result is given in the measurementResult attribute.\nNo value means that this MeasurementType is not compressed.";
+      type boolean;
+    }
+    leaf measurementResult {
+      erienmyext:no-notification;
+      config false;
+      description "Contains a description of expected result value or values.\nFor example, \"a single integer value\". See 3GPP 32.404.";
+      type string;
+    }
+    leaf condition {
+      erienmyext:no-notification;
+      config false;
+      description "Details the condition which causes the measurement result data to be updated.";
+      type string;
+    }
+    leaf size {
+      erienmyext:no-notification;
+      config false;
+      description "Contains the size of the measurement in number of octets.";
+      type uint16;
+    }
+    leaf fmAlarmType {
+      erienmyext:no-notification;
+      config false;
+      description "FmAlarmType associated to Threshold Monitoring of this MeasurementType.\nNo value means that this MeasurementType is not available for selection for a PM Threshold Job.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf thresholdDirection {
+      erienmyext:no-notification;
+      config false;
+      description "The threshold direction of a Measurement Type value which raises the Threshold Alarm severity.\nThe attribute is set if this MeasurementType shall only be monitored in one direction in a PM Threshold Job. If it can be monitored in either direction, then the direction will be set as part of the threshold job creation by setting thresholdDirection in MeasurementReader.\nOnly applicable if fmAlarmType is set.\n";
+      type erienmnrmrcspm:enum-ThresholdDirection;
+    }
+    list categories {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Defines the categories to which the Measurement Type belongs";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcspm:struct-PMCounterCategory;
+    } // end 'list categories'
+    leaf initialValue {
+      erienmyext:no-notification;
+      config false;
+      description "The initial value to which the Measurement Type is set at the beginning of a new granularity period.\nOnly applicable when resetAtGranPeriod = true. No value means it is reset to 0.";
+      type int32;
+    }
+  } // end 'grouping moc-MeasurementType'
+  grouping moc-PmJob-keys {
+    description "Key(s) for MOC PmJob";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name pmJobId;
+      type string;
+    }
+  } // end 'grouping moc-PmJob-keys'
+  grouping moc-PmJob {
+    description "Describes a user-defined PM job on the Managed Element.\nA PM Job defines the attributes required per job and also defines the measurements to be included in the job. An instance of the MeasurementReader class is created for every PmGroup or MeasurementType instance being measured.";
+    leaf reportingPeriod {
+      description "Contains the reporting period of the result file. \nThis is directly related to the granularity period as the granularity period cannot be longer than the reporting period. \nDefault Value: 15m. \nThe value of reportingPeriod must be equal to the value of granularityPeriod if fileRPSupported in PmMeasurementCapabilities is false, or may be equal to a multiple of the value of granularityPeriod if fileRPSupported is set to true.\nreportingPeriod must be one of the supported values listed in PmMeasurementCapabilities\\supportedRopPeriods\nOnly applicable when jobType = MEASUREMENTJOB.";
+      type erienmnrmrcspm:enum-TimePeriod;
+      default FIFTEEN_MIN;
+    }
+    leaf requestedJobState {
+      description "Contains the requested state of the PM job.\nIt represents the state that the job has been ordered to reach.";
+      type erienmnrmrcspm:enum-JobState;
+      default ACTIVE;
+    }
+    leaf jobControl {
+      config false;
+      description "Describes the level of MS control of the PM job.\nIf no value is set, the MS shall treat it as FULL.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-JobControl;
+    }
+    leaf currentJobState {
+      config false;
+      description "Describes the current state of the PM job.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-JobState;
+    }
+    leaf compressionType {
+      description "Indicates file compression type to be applied to the report file.\nIf no value is set, then no compression is to be applied to the report file for this job.\nMust have the same value for all PM jobs with the same jobGroup tag and reportingPeriod assigned.\nMust have the same value for all PM jobs for which no jobGroup tag is assigned (the \"default\" jobGroup), but the same reportingPeriod assigned.\nOnly applicable when jobType = MEASUREMENTJOB.";
+      type erienmnrmrcspm:enum-CompressionTypes;
+    }
+    leaf jobGroup {
+      description "Tag for grouping PM measurement job results.\nRepresents a grouping of separate PM Jobs for which the measurement results must be collected together in a single report file for that group only.\nIf this attribute is not set, then for each reporting period, the measurement results for this job are written to the same report file as other jobs that have no job group assigned.\nIt is recommended to use alphanumeric characters only.\nOnly applicable when jobType = MEASUREMENTJOB.";
+      type string;
+    }
+    leaf jobType {
+      description "Contains the type of PM job.";
+      type erienmnrmrcspm:enum-JobType;
+      default MEASUREMENTJOB;
+    }
+    leaf jobPriority {
+      description "Contains the priority of the job.\nEach job must have a priority if jobPrioritizationSupport in the PmMeasurementCapabilities is set to true.";
+      type erienmnrmrcspm:enum-JobPriority;
+      default MEDIUM;
+    }
+    leaf granularityPeriod {
+      description "Contains the granularity period of the job. \nThe granularity period is the time between the initiation of two successive gatherings of measurement data. This is directly related to the ReportingPeriod as the granularity period can not be longer than the reporting period. \ngranularityPeriod must be one of the supported values for that job type as listed in \nPmMeasurementCapabilities\\supportedMeasJobGps OR \nPmMeasurementCapabilities\\supportedRtJobGps OR \nPmMeasurementCapabilities\\supportedThreshJobGps\n\nDefault Value: 15m.";
+      type erienmnrmrcspm:enum-TimePeriod;
+      default FIFTEEN_MIN;
+    }
+  } // end 'grouping moc-PmJob'
+  grouping moc-MeasurementReader-keys {
+    description "Key(s) for MOC MeasurementReader";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name measurementReaderId;
+      type string;
+    }
+  } // end 'grouping moc-MeasurementReader-keys'
+  grouping moc-MeasurementReader {
+    description "Represents the capability to read the value of the MeasurementType or group of MeasurementTypes.\nThere can be many Measurement Reader instances for each job (one for each MeasurementType or PmGroup).\nFor a Threshold Job, only a MeasurementType instance can be referenced by the Measurement Reader. \n";
+    list measurementReaderNameValue {
+      min-elements 0;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Contains the real-time measurement data.\nOnly used by a PM job of type REALTIMEJOB.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcspm:struct-MeasurementReaderNameValue;
+    } // end 'list measurementReaderNameValue'
+    container measurementSpecification {
+      description "This struct allows reference to either MeasurementType or PmGroup of MeasurementTypes to be defined.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcspm:struct-MeasurementSpecification;
+    } // end 'container measurementSpecification'
+    leaf thresholdDirection {
+      description "Specifies the threshold direction. \nUsed when the thresholdDirection in the MeasurementType instance is not set. If neither is set, the default value is used. \nOnly applicable when jobType = THRESHOLDJOB.\n";
+      type erienmnrmrcspm:enum-ThresholdDirection;
+    }
+    leaf-list moInstances {
+      min-elements 0;
+      description "Target MO instance or instances.\nIf not set, the job is applied to all MO instances relevant to the selected PmGroup or MeasurementType.";
+      type erienmnrmrcspm:ddt-MoFilter;
+    }
+    leaf thresholdRateOfVariation {
+      description "Time interval used for monitoring the Measurement Type against a threshold.\nSpecifies, for Threshold Monitoring of a Cumulative Counter Measurement Type, how to calculate the value of the Measurement Type used to compare against the threshold.\nOnly applicable when jobType = THRESHOLDJOB.";
+      type erienmnrmrcspm:enum-PerTimeInterval;
+    }
+  } // end 'grouping moc-MeasurementReader'
+  grouping moc-PmThresholdMonitoring-keys {
+    description "Key(s) for MOC PmThresholdMonitoring";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name pmThresholdMonitoringId;
+      type string;
+    }
+  } // end 'grouping moc-PmThresholdMonitoring-keys'
+  grouping moc-PmThresholdMonitoring {
+    description "Contains configuration of each threshold for Threshold jobs.\nTo be able to monitor the overall health of the network, thresholds are used for generating Performance Alarms.\nPerformance alarms cannot be cleared manually. Performance alarms must be cleared when the threshold is (a) crossed, or (b) reached, in the opposite direction to the one that triggers the alarm.";
+    leaf thresholdSeverity {
+      description "Threshold severity.\nA Severity Level must be assigned per threshold, in order to raise a threshold alarm of this severity, or change an existing alarm to this severity, if that threshold is reached or crossed\nSeverity level CLEARED is not a valid severity level and cannot be assigned to this attribute.";
+      type erienmnrmrcspm:enum-SeverityLevel;
+      default MINOR;
+    }
+    leaf thresholdHigh {
+      description "Defines the high-threshold level for this alarm severity.\nFor each pair of high-threshold and low-threshold levels, one of them must generate an alarm notification - or increase the severity of an existing alarm. The other one must generate an alarm clear notification, or decrease the severity of an existing alarm. \nIf the direction of the threshold monitor is increasing, a new alarm (or severity increase of an existing alarm) is not generated before the measurement value has (a) crossed or (b) reached the high-level threshold value. \nFurthermore, an existing alarm is not cleared (or its severity decreased) before the measurement value has reached or crossed the low-level threshold value. \nIf the direction of the threshold monitor is defined as decreasing, this means that the counter behaviour approaches an alarm situation as its value decreases. For this scenario, the thresholdLow attribute holds the alarming level, and if hysteresis is applied, the thresholdHigh attribute holds the value at which the alarm will clear (or decrease in severity) as the value of the counter increases to this level.\nThe value of thresholdLow shall never be higher than the value of thresholdHigh.\nIt is not mandatory to apply hysteresis to the threshold monitor. If hysteresis is not required, the same threshold value shall be assigned to both thresholdHigh and thresholdLow. \nThe hysteresis mechanism can be used for both Gauges and Cumulative Counters thresholds.";
+      mandatory true;
+      type int64;
+    }
+    leaf thresholdLow {
+      description "Defines the low-threshold level for this alarm severity.\nFor each pair of high-threshold and low-threshold levels, one of them must generate an alarm notification, or increase the severity of an existing alarm. The other one must generate an alarm clear notification, or decrease the severity of an existing alarm. \nIf the direction of the threshold monitor is increasing, a new alarm (or severity increase of an existing alarm) is not generated before the measurement value has (a) crossed or (b) reached the high-level threshold value. \nFurthermore, an existing alarm is not cleared (or its severity decreased) before the measurement value has reached or crossed the low-level threshold value. \nIf the direction of the threshold monitor is defined as decreasing, this means that the counter behaviour approaches an alarm situation as its value decreases. For this scenario, the thresholdLow attribute holds the alarming level, and if hysteresis is applied, the thresholdHigh attribute holds the value at which the alarm will clear (or decrease in severity) as the value of the counter increases to this level.\nThe value of thresholdLow shall never be higher than the value of thresholdHigh.\nIt is not mandatory to apply hysteresis to the threshold monitor. If hysteresis is not required, the same threshold value shall be assigned to both thresholdHigh and thresholdLow. \nThe hysteresis mechanism can be used for both Gauges and Cumulative Counters thresholds.";
+      mandatory true;
+      type int64;
+    }
+  } // end 'grouping moc-PmThresholdMonitoring'
+  grouping moc-Pm-keys {
+    description "Key(s) for MOC Pm";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name pmId;
+      type string;
+    }
+  } // end 'grouping moc-Pm-keys'
+  grouping moc-Pm {
+    description "The top class of the Performance Management model.\nIt is used to manage the Performance Management jobs and PM measurements.";
+  } // end 'grouping moc-Pm'
+  grouping moc-PmMeasurementCapabilities-keys {
+    description "Key(s) for MOC PmMeasurementCapabilities";
+    leaf id {
+      erienmyext:no-notification;
+      description "Holds the name used when identifying the MO.";
+      mandatory true;
+      yexte:ecim-name pmMeasurementCapabilitiesId;
+      type string;
+    }
+  } // end 'grouping moc-PmMeasurementCapabilities-keys'
+  grouping moc-PmMeasurementCapabilities {
+    description "Contains the measurement capabilities of the ME.";
+    leaf maxNoOfThresholdJobs {
+      config false;
+      description "Specifies the maximum number of Threshold Jobs that can be defined.\nA value of 0 means there is no limit to the number of Threshold Jobs.\nOnly applicable when thresholdJobSupport = true.\nIf no value is set, the MS shall treat it as 0.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf realTimeJobSupport {
+      config false;
+      description "Indicates if the Managed Element supports Realtime Jobs.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf maxNoOfMeasurementJobs {
+      config false;
+      description "Specifies the maximum number of Measurement Jobs that can be defined.\nA value of 0 means there is no limit to the number of Measurement Jobs.\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as 0.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf alignedReportingPeriod {
+      config false;
+      description "Defines whether or not the Managed Element aligns its reporting periods to the hour.\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as true.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf-list supportedRopPeriods {
+      min-elements 0;
+      max-elements 9;
+      config false;
+      description "Indicates the Result Output Period (ROP) or ROPs supported by the ME.\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as a single value of FIFTEEN_MIN.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-TimePeriod;
+    }
+    leaf maxNoOfPmFiles {
+      config false;
+      description "Specifies the maximum number of Result Output Period (ROP) files that are maintained in the ME.\nIf a new file is created and the limit is exceeded, the oldest file is deleted. This is an upper-system limit, and support for it cannot be guaranteed in high-load conditions.\nOnly applicable when measurementJobSupport = true.";
+      notife:notifiable-state-data true;
+      type uint16;
+    }
+    leaf fileLocation {
+      config false;
+      description "Contains the path to the virtual file system on the node from which to fetch the measurement files.\nOnly applicable when measurementJobSupport = true.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf jobPrioritizationSupport {
+      config false;
+      description "Defines whether or not measurement jobs can be stopped by the system.\nBased on the priority of the Measurement jobs, they can either be stopped (true) or not (false) by the system. Attribute jobPriority in the job sets the priority per job.\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as false.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf thresholdJobSupport {
+      config false;
+      description "Indicates if the Managed Element supports Threshold Jobs.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf fileRPSupported {
+      config false;
+      description "Specifies if ME supports a file Reporting Period different to Granularity Period where RP > GP.\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as false.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf jobGroupingSupport {
+      config false;
+      description "Indicates if Managed Element supports grouping of selected measurement job results in a report file.\nIf set to true, the ME groups selected measurement job results into one file per reporting period based on the PmJob attribute jobGroup. \nIf set to false, the default behaviour is to generate a single PM report file per reporting period for all jobs.\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as false.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf ropFilenameTimestamp {
+      config false;
+      description "Indicates how the timestamp format is used in the Result Output Period (ROP) filename.\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as LOCAL_WITH_UTC_OFFSET.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-RopFilenameTimestamp;
+    }
+    leaf maxNoOfMeasurements {
+      config false;
+      description "The maximum number of counter instances, i.e. active counters, that can be reported in one ROP.\nThis is used by an MS to determine the max PM data file size. This is an upper-system limit, and support for it cannot be guaranteed in high-load conditions.\nA value of 0 means there is no limit. \nOnly applicable when measurementJobSupport = true.";
+      notife:notifiable-state-data true;
+      type uint32;
+    }
+    leaf maxNoOfJobs {
+      config false;
+      description "Specifies the maximum number of jobs that can be defined.\nA value of 0 means there is no limit to the number of jobs.\nIf the specified limit is exceeded, when a performance monitoring is created or started, the create job or start job operation is rejected.\nThis is an upper system limit, and support for it cannot be guaranteed in high-load conditions.";
+      notife:notifiable-state-data true;
+      type uint16;
+    }
+    leaf-list supportedMeasJobGps {
+      min-elements 0;
+      max-elements 9;
+      config false;
+      description "Indicates which granularity periods are supported by the ME for Measurement jobs.\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as a single value of FIFTEEN_MIN.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-TimePeriod;
+    }
+    leaf maxNoOfRealtimeJobs {
+      config false;
+      description "Specifies the maximum number of Realtime Jobs that can be defined.\nA value of 0 means there is no limit to the number of Realtime Jobs.\nOnly applicable when realtimeJobSupport = true.\nIf no value is set, the MS shall treat it as 0.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf finalROP {
+      config false;
+      description "Indicates if measurement file for the last Result Output Period (ROP) is expected. \nWhen a measurement job is stopped, this attribute specifies whether a result file for the last ROP is expected (true), or not expected (false).\nOnly applicable when measurementJobSupport = true.\nIf no value is set, the MS shall treat it as false";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf-list supportedRtJobGps {
+      min-elements 0;
+      max-elements 9;
+      config false;
+      description "Indicates which granularity periods are supported by the ME for Realtime jobs.\nOnly applicable when realTimeJobSupport = true.\nIf no value is set, the MS shall treat it as a single value of ONE_MIN.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-TimePeriod;
+    }
+    leaf measurementJobSupport {
+      config false;
+      description "Indicates if Managed Element supports Measurement Jobs.";
+      notife:notifiable-state-data true;
+      type boolean;
+    }
+    leaf jobStartStopSupport {
+      config false;
+      description "Specifies whether or not Performance Management jobs defined in the ME can be started and stopped.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-JobStartStopSupport;
+    }
+    leaf-list supportedThreshJobGps {
+      min-elements 0;
+      max-elements 9;
+      config false;
+      description "Indicates which granularity periods are supported by the ME for Threshold jobs.\nOnly applicable when thresholdJobSupport = true.\nIf no value is set, the MS shall treat it as a single value of FIFTEEN_MIN.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-TimePeriod;
+    }
+    leaf-list supportedCompressionTypes {
+      min-elements 0;
+      max-elements 2;
+      config false;
+      description "Indicates which compression types are supported by the ME for report files.\nNo value means that compression of report files is not supported.\nOnly applicable when measurementJobSupport = true.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmrcspm:enum-CompressionTypes;
+    }
+  } // end 'grouping moc-PmMeasurementCapabilities'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspm:Pm {
+    list PmGroup {
+      key id;
+      description "A grouping of the measurements into logical grouping. \nPmGroup is unique in the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PmGroup-keys;
+      container attributes {
+        description "Attributes for PmGroup";
+        uses moc-PmGroup;
+      } // end 'container attributes'
+    } // end 'list PmGroup'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspm:Pm/erienmnrmrcspm:PmGroup {
+    list MeasurementType {
+      key id;
+      description "Defines a Measurement Type on the Managed Element to be monitored and collected.\nMeasurementType is unique within the PM Group.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-MeasurementType-keys;
+      container attributes {
+        description "Attributes for MeasurementType";
+        uses moc-MeasurementType;
+      } // end 'container attributes'
+    } // end 'list MeasurementType'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspm:Pm {
+    list PmJob {
+      key id;
+      description "Describes a user-defined PM job on the Managed Element.\nA PM Job defines the attributes required per job and also defines the measurements to be included in the job. An instance of the MeasurementReader class is created for every PmGroup or MeasurementType instance being measured.";
+      erienmyext:enm-type MOC;
+      uses moc-PmJob-keys;
+      container attributes {
+        description "Attributes for PmJob";
+        uses moc-PmJob;
+      } // end 'container attributes'
+    } // end 'list PmJob'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspm:Pm/erienmnrmrcspm:PmJob {
+    list MeasurementReader {
+      key id;
+      description "Represents the capability to read the value of the MeasurementType or group of MeasurementTypes.\nThere can be many Measurement Reader instances for each job (one for each MeasurementType or PmGroup).\nFor a Threshold Job, only a MeasurementType instance can be referenced by the Measurement Reader. \n";
+      erienmyext:enm-type MOC;
+      uses moc-MeasurementReader-keys;
+      container attributes {
+        description "Attributes for MeasurementReader";
+        uses moc-MeasurementReader;
+      } // end 'container attributes'
+    } // end 'list MeasurementReader'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspm:Pm/erienmnrmrcspm:PmJob/erienmnrmrcspm:MeasurementReader {
+    list PmThresholdMonitoring {
+      key id;
+      max-elements 4;
+      description "Contains configuration of each threshold for Threshold jobs.\nTo be able to monitor the overall health of the network, thresholds are used for generating Performance Alarms.\nPerformance alarms cannot be cleared manually. Performance alarms must be cleared when the threshold is (a) crossed, or (b) reached, in the opposite direction to the one that triggers the alarm.";
+      erienmyext:enm-type MOC;
+      uses moc-PmThresholdMonitoring-keys;
+      container attributes {
+        description "Attributes for PmThresholdMonitoring";
+        uses moc-PmThresholdMonitoring;
+      } // end 'container attributes'
+    } // end 'list PmThresholdMonitoring'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list Pm {
+      key id;
+      max-elements 1;
+      description "The top class of the Performance Management model.\nIt is used to manage the Performance Management jobs and PM measurements.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Pm-keys;
+    } // end 'list Pm'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcspm:Pm {
+    list PmMeasurementCapabilities {
+      key id;
+      max-elements 1;
+      description "Contains the measurement capabilities of the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-PmMeasurementCapabilities-keys;
+      container attributes {
+        description "Attributes for PmMeasurementCapabilities";
+        uses moc-PmMeasurementCapabilities;
+      } // end 'container attributes'
+    } // end 'list PmMeasurementCapabilities'
+  }
+}

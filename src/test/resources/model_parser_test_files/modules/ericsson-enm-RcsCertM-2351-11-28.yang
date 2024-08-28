@@ -1,0 +1,1108 @@
+module ericsson-enm-RcsCertM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsCertM;
+  prefix erienmnrmrcscertm;
+  yexte:ecim-name RcsCertM;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 0;
+    yexte:correction 6;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RcsSecM {
+    prefix erienmnrmrcssecm;
+  }
+  typedef enum-RenewalMode {
+    description "Modes for certificate renewal.";
+    type enumeration {
+      enum MANUAL {
+        description "Certificate renewal is manually performed by the MS.\n\nThis renewal mode requires the MS to start an enrollment by manually invoking one of the enrollment actions.";
+        value 0;
+      }
+      enum AUTOMATIC {
+        description "Certificate renewal is automatically performed by the ME.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AuthorityType {
+    description "Enrollment authority types.\n\nThis type is deprecated.";
+    type enumeration {
+      enum CERTIFICATION_AUTHORITY {
+        description "An entity that issues certificates.";
+        value 0;
+      }
+      enum REGISTRATION_AUTHORITY {
+        description "An intermediate PKI entity, separate from the Certification Authority.\n\nUsed for registration purposes and certificate enrollment.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-CertificateState {
+    description "Certificate states.";
+    type enumeration {
+      enum NOT_VALID_YET {
+        description "Based on the validFrom date, the certificate is not yet valid.";
+        value 1;
+      }
+      enum VALID {
+        description "Based on the validFrom and validTo dates, the certificate is valid.";
+        value 0;
+      }
+      enum EXPIRED {
+        description "Based on the validTo date having passed, the certificate expired.";
+        value 2;
+      }
+      enum REVOKED {
+        description "The certificate was revoked by a trusted CA.";
+        status deprecated {
+          yexte:status-information "Deprecated in version 3.0. Improper state descriptor for local certificates.";
+        }
+        value 3;
+      }
+    }
+  }
+  typedef enum-FingerprintSupport {
+    description "The SHA fingerprint algorithm the ME supports.";
+    type enumeration {
+      enum SHA_1 {
+        description "The SHA-1 secure hash algorithm.";
+        value 0;
+      }
+      enum SHA_224 {
+        description "The SHA-224 secure hash algorithm.";
+        value 1;
+      }
+      enum SHA_256 {
+        description "The SHA-256 secure hash algorithm.";
+        value 2;
+      }
+      enum SHA_384 {
+        description "The SHA-384 secure hash algorithm.";
+        value 3;
+      }
+      enum SHA_512 {
+        description "The SHA-512 secure hash algorithm.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-KeyInfo {
+    description "Indicates the key type and length in bits.\n\nThis enumeration supports Rivest Shamir Adleman (RSA) and Elliptic Curve Digital Signature Algorithm (ECDSA).";
+    type enumeration {
+      enum RSA_1024 {
+        description "1024-bit long key generated for the RSA algorithm.";
+        status deprecated {
+          yexte:status-information "Outdated key type.";
+        }
+        value 0;
+      }
+      enum RSA_2048 {
+        description "2048-bit long key generated for the RSA algorithm.";
+        value 1;
+      }
+      enum RSA_3072 {
+        description "3072-bit long key generated for the RSA algorithm.";
+        value 2;
+      }
+      enum RSA_4096 {
+        description "4096-bit long key generated for the RSA algorithm.";
+        value 3;
+      }
+      enum ECDSA_160 {
+        description "ECDSA algorithm with P-160 curve.";
+        status deprecated {
+          yexte:status-information "Improperly specified key type.";
+        }
+        value 4;
+      }
+      enum ECDSA_224 {
+        description "ECDSA algorithm with P-224 curve.";
+        status deprecated {
+          yexte:status-information "Improperly specified key type.";
+        }
+        value 5;
+      }
+      enum ECDSA_256 {
+        description "ECDSA algorithm with P-256 curve.";
+        status deprecated {
+          yexte:status-information "Improperly specified key type.";
+        }
+        value 6;
+      }
+      enum ECDSA_384 {
+        description "ECDSA algorithm with P-384 curve.";
+        status deprecated {
+          yexte:status-information "Improperly specified key type.";
+        }
+        value 7;
+      }
+      enum ECDSA_512 {
+        description "ECDSA algorithm with P-512 curve.";
+        status deprecated {
+          yexte:status-information "Improperly specified key type.";
+        }
+        value 8;
+      }
+      enum ECDSA_521 {
+        description "ECDSA algorithm with P-521 curve.";
+        status deprecated {
+          yexte:status-information "Improperly specified key type.";
+        }
+        value 9;
+      }
+      enum ECDSA_BRAINPOOL_256 {
+        description "ECDSA algorithm with Brainpool P-256 r1 curve.";
+        value 10;
+      }
+      enum ECDSA_BRAINPOOL_320 {
+        description "ECDSA algorithm with Brainpool P-320 r1 curve.";
+        value 11;
+      }
+      enum ECDSA_BRAINPOOL_384 {
+        description "ECDSA algorithm with Brainpool P-384 r1 curve.";
+        value 12;
+      }
+      enum ECDSA_BRAINPOOL_512 {
+        description "ECDSA algorithm with Brainpool P-512 r1 curve.";
+        value 13;
+      }
+      enum ECDSA_SECP_256_R1 {
+        description "ECDSA algorithm with SECP 256 r1 curve.";
+        value 14;
+      }
+      enum ECDSA_SECP_384_R1 {
+        description "ECDSA algorithm with SECP 384 r1 curve.";
+        value 15;
+      }
+      enum ECDSA_SECP_521_R1 {
+        description "ECDSA algorithm with SECP 521 r1 curve.";
+        value 16;
+      }
+    }
+  }
+  typedef enum-ActionResultType {
+    description "Lists the different results of an action.";
+    type enumeration {
+      enum SUCCESS {
+        description "The asynchronous action ended with success.";
+        value 1;
+      }
+      enum FAILURE {
+        description "The asynchronous action ended with failure.";
+        value 2;
+      }
+      enum NOT_AVAILABLE {
+        description "No result is available yet.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-ActionStateType {
+    description "Lists the action states.";
+    type enumeration {
+      enum CANCELLING {
+        description "Cancellation is in progress.";
+        value 1;
+      }
+      enum RUNNING {
+        description "The execution of the action is currently in progress.";
+        value 2;
+      }
+      enum FINISHED {
+        description "The action is finished.";
+        value 3;
+      }
+      enum CANCELLED {
+        description "The action has been cancelled and cancellation has been done.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-EnrollmentSupport {
+    description "Supportable enrollment methods.";
+    type enumeration {
+      enum OFFLINE_CSR {
+        description "Certificate Signing Request-based (CSR) offline enrollment.\n\nThe certificate for a node credential is manually provided by the MS using a CSR in PKCS#10 format.";
+        value 0;
+      }
+      enum OFFLINE_PKCS12 {
+        description "PKCS#12-based offline enrollment.\n\nThe node credential is manually provided by the MS using a PKCS#12 format, a certificate accompanied by a private key.";
+        value 1;
+      }
+      enum ONLINE_SCEP {
+        description "Online enrollment. The node credential is acquired by the Simple Certificate Enrollment Protocol.";
+        value 2;
+      }
+      enum ONLINE_CMP {
+        description "Online enrollment. The node credential is acquired by the Certificate Management Protocol.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-ManagedCertificateState {
+    description "The states the MS may set for a certificate.";
+    type enumeration {
+      enum ENABLED {
+        description "The certificate is enabled.";
+        value 0;
+      }
+      enum DISABLED {
+        description "The certificate is disabled.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-EnrollmentProtocol {
+    description "Enrollment protocols.";
+    type enumeration {
+      enum SCEP {
+        description "Simple Certificate Enrollment Protocol.";
+        value 0;
+      }
+      enum CMP {
+        description "Certificate Management Protocol.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-FeatureState {
+    description "Indicates whether a feature is Activated or Deactivated.";
+    type enumeration {
+      enum ACTIVATED {
+        description "The feature is administratively activated.";
+        value 0;
+      }
+      enum DEACTIVATED {
+        description "The feature is administratively deactivated.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-Fingerprint {
+    description "A derived string type that allows hexadecimal digits.\n\nThe string must be entered in two-digit groups separated by colons. For example: 'b7:a8:c6:d5:43:fa:50:43'";
+    type string;
+  }
+  typedef ddt-ActionInvocationResult {
+    description "This is the datatype for the Asychronous Action Id. ";
+    type uint16;
+  }
+  typedef ddt-ECIM_CertM_NodeCredential_subjectAltName {
+    type string;
+  }
+  typedef ddt-DistinguishedName {
+    description "Represents the international standard for the representation of Distinguished Name (RFC 4512).\nThe format of the DistinguishedName REGEX is:\n{AttributeType = AttributeValue};\n\nAttributeType consists of alphanumeric and hyphen (OIDs not allowed). All other characters  are restricted.\nThe Attribute value cannot contain control characters or the following characters :   \\ > < ; \" + , (Comma)  and White space.\nThe Attribute value can contain the following characters if they are escaped:   \\ > < ; \" + , (Comma)  and White space. \nThe Attribute value can contain control characters if it's an escaped double digit hex number.";
+    type string {
+      length 3..65535;
+    }
+  }
+  typedef ddt-ECIM_CertM_NodeCredential_enrollmentTimer {
+    type uint16 {
+      range 1..max;
+    }
+  }
+  typedef ddt-MoId {
+    description "A derived string type that allows alphanumerical characters and special signs: ., :. -, _, /, %, !, ?.";
+    type string;
+  }
+  typedef ddt-DateTime {
+    description "Represents the international standard for the representation of date and time ( ISO 8601).\nThe string format is \"YYYY-MM-DDThh:mm:ss.SSSZ\" (excluding quotes).\nA DateTime string consists of a date part, a time part, and an optional time zone information part. The time zone part may be a \"Z\", representing the Coordinated Universal Time (UTC) time zone (equals to +00) or a time zone offset (for example, +02:00).\nIf the time zone part is not present, the DateTime value represents local time.\n\nThe following pattern describes the DateTime format:\nYYYY-MM-DDThh:mm:ss[.S+][Z|+-hh:mm]\nWhere:\nYYYY = Four digit year\nMM = Two digit month (01=January, and so on)\nDD = Two digit day of month (01 through 31)\nT = Time designator (shows start of time component)\nhh = Two digits of hour (00 through 23, AM/PM not allowed)\nmm = Two digits of minute (00 through 59)\nss = Two digits of second (00 through 59, leap second not allowed)\nS+ = One or more digits of decimal fraction of a second\nZ = Time is UTC\n+- = + or - character indicating positive or negative offset to UTC \n\nDateTime values are compliant with ISO 8601 \"Representation of dates and times\" but are restricted according to RFC 3339 \"Date and Time on the Internet: Timestamps\". The DateTime format is further restricted as follows:\n- T and Z designators are upper case.\n- . (dot) is used to indicate start of fractions of seconds (ISO 8601 also allows comma)\n\n";
+    type string {
+      length 19..31;
+    }
+  }
+  typedef ddt-EcimPasswordString {
+    description "Password string.";
+    type string;
+  }
+  typedef ddt-ExpiryAlarmThresholdRange {
+    description "Range in days for certificate expiry alarm threshold.";
+    type uint16 {
+      range 1..365;
+    }
+  }
+  grouping struct-CertificateContent {
+    description "The content of the X.509 certificate.";
+    leaf serialNumber {
+      description "The serial number of the certificate assigned by the CA.";
+      type string;
+    }
+    leaf keyUsage {
+      description "The usage category for which the certificate was issued as defined by X.509 key usage extension.";
+      type string;
+    }
+    leaf publicKeyAlgorithm {
+      description " Identifies the algorithm of which this public key is an instance.";
+      type string;
+    }
+    leaf subject {
+      description "The X.501 distinguished name of the subject associated with the public-key.";
+      type string;
+      mandatory true;
+    }
+    leaf validFrom {
+      description "The certificate is valid from this date.";
+      type erienmnrmrcscertm:ddt-DateTime;
+    }
+    leaf publicKey {
+      description "Carries the public key.";
+      type string;
+    }
+    leaf version {
+      description "The version of the encoded certificate.";
+      type string;
+    }
+    leaf signatureAlgorithm {
+      description "The identifier for the algorithm and hash function used by the CA in signing the certificate.";
+      type string;
+    }
+    leaf issuer {
+      description "The X.501 distinguished name of the CA that signed and issued the certificate.";
+      type string;
+    }
+    leaf validTo {
+      description "The certificate is valid to this date.";
+      type erienmnrmrcscertm:ddt-DateTime;
+    }
+    leaf-list extensionContent {
+      min-elements 0;
+      description "Contains the X.509 certificate extensions.\n\nAn extension string is displayed in Field:Value format.";
+      type string;
+    }
+  } // end 'grouping struct-CertificateContent'
+  grouping struct-AsyncActionProgress {
+    description "Records the progress of an asynchronous action.";
+    leaf result {
+      description "Result state of a completed action.\nThis field has value NOT_AVAILABLE if the action is not finished.";
+      type erienmnrmrcscertm:enum-ActionResultType;
+    }
+    leaf timeOfLastStatusUpdate {
+      description "Date and time when the struct member state was last updated.";
+      type erienmnrmrcscertm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf timeActionCompleted {
+      description "Date and time when the action was completed (successfully or unsuccessfully).";
+      type erienmnrmrcscertm:ddt-DateTime;
+    }
+    leaf-list additionalInfo {
+      min-elements 0;
+      description "Used for logging significant messages during execution of an action.";
+      type string;
+    }
+    leaf actionId {
+      description "Uniquely identifies the invocation of an action.\nIdentifies the invocation of an action when the managed object allows invocation of more than one action at a time.";
+      type erienmnrmrcscertm:ddt-ActionInvocationResult;
+      mandatory true;
+    }
+    leaf progressPercentage {
+      description "Progress of the action.\nThe range is between 0 and 100.";
+      type uint8;
+    }
+    leaf progressInfo {
+      description "Textual information that describes the actual state of the action execution.";
+      type string;
+    }
+    leaf state {
+      description "Current state of the action.";
+      type erienmnrmrcscertm:enum-ActionStateType;
+    }
+    leaf timeActionStarted {
+      description "Date and time when the current action was started.";
+      type erienmnrmrcscertm:ddt-DateTime;
+      mandatory true;
+    }
+    leaf resultInfo {
+      description "Textual description of the outcome/result of the action containing useful information for the NMS.\nIf the action failed, it can contain an error message.";
+      type string;
+    }
+    leaf actionName {
+      description "Name of the invoked asynchronous action.";
+      type string;
+    }
+  } // end 'grouping struct-AsyncActionProgress'
+  grouping moc-CertMCapabilities-keys {
+    description "Key(s) for MOC CertMCapabilities";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name certMCapabilitiesId;
+      type string;
+    }
+  } // end 'grouping moc-CertMCapabilities-keys'
+  grouping moc-CertMCapabilities {
+    description "Contains the certificate management capabilities of the ME.";
+    leaf-list enrollmentSupport {
+      min-elements 1;
+      erienmyext:no-notification;
+      config false;
+      description "Indicates the enrollment methods supported by the ME.";
+      type erienmnrmrcscertm:enum-EnrollmentSupport;
+    }
+    leaf-list keySupport {
+      min-elements 1;
+      config false;
+      description "List of the key types the ME supports.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcscertm:enum-KeyInfo;
+    }
+    leaf fingerprintSupport {
+      erienmyext:no-notification;
+      config false;
+      description "The secure hash algorithm the ME supports for fingerprint calculation.\n\nThe attributes and parameters in the CertM model taking a fingerprint must be provided by calculating the fingerprint using the indicated algorithm.";
+      type erienmnrmrcscertm:enum-FingerprintSupport;
+    }
+  } // end 'grouping moc-CertMCapabilities'
+  grouping moc-NodeCredential-keys {
+    description "Key(s) for MOC NodeCredential";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name nodeCredentialId;
+      type string;
+    }
+  } // end 'grouping moc-NodeCredential-keys'
+  grouping moc-NodeCredential {
+    description "Represents the node credential and contains information about the corresponding certificate.\n\n";
+    leaf enrollmentAuthority {
+      description "The DN of the EnrollmentAuthority used for online enrollments.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    container certificateContent {
+      description "The X.509 content of the certificate.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcscertm:struct-CertificateContent;
+    } // end 'container certificateContent'
+    container enrollmentProgress {
+      description "Reports the progress of the ongoing enrollment.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcscertm:struct-AsyncActionProgress;
+    } // end 'container enrollmentProgress'
+    leaf renewalMode {
+      description "The certificate renewal mode for online enrollment.\n\nRenewals use subjectName, keyInfo and enrollmentServerGroup attributes as inputs.\n\nIf configured to AUTOMATIC, manually initiated offline and online renewals fail.\n\nIf an automatic enrollment failed alarm is present on the MO, setting this attribute to MANUAL clears the alarm.";
+      type erienmnrmrcscertm:enum-RenewalMode;
+      default MANUAL;
+    }
+    leaf keyInfo {
+      description "Specifies the key type and length that is used for the next enrollment.\n\nMandatory for actions startOfflineCsrEnrollment or startOnlineEnrollment.\n\nFor the supported key types see CertMCapabilities MO keySupport attribute. Deprecated key types are not recommended for new enrollments.\n\n";
+      type erienmnrmrcscertm:enum-KeyInfo;
+    }
+    leaf certificateState {
+      config false;
+      description "The current state of the certificate.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcscertm:enum-CertificateState;
+    }
+    leaf enrollmentServerGroup {
+      description "The DN of the EnrollmentServerGroup used for online enrollments.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list reservedByUser {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Indicates the users of this NodeCredential MO.\n\nThe users are identified by Distinguished Names of Credential User Managed Objects.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf expiryAlarmThreshold {
+      description "Threshold value of remaining number of days of certificate validity. When the threshold is reached action will be triggered based on value of the attribute renewalMode.\n\nIf the renewalMode is set to MANUAL:\nThe alarm Certificate Management the Certificate is to Expire with severity WARNING is raised in case the remaining time to expiry is reduced to the configured threshold.\nThe alarm Certificate Management the Certificate is to Expire with severity MINOR is raised in case the remaining time to expiry is reduced to the one third of the configured threshold.\nThe alarm Certificate Management the Certificate is to Expire with severity MAJOR is raised in case the remaining time to expiry is reduced to the one tenth of the configured threshold or one week.\nThe alarm Certificate Management the Certificate is to Expire is cleared and a Certificate Management a Valid Certificate is Not Available alarm is raised when the certificate expires. \nIf the renewalMode is set to AUTOMATIC:\nWhen the remaining time to expiry is reduced to the configured threshold, automatic enrollment is started.\nIf automatic enrollment fails, alarm Automatic Enrollment Failed is raised.\n";
+      type erienmnrmrcscertm:ddt-ExpiryAlarmThresholdRange;
+      default 30;
+    }
+    leaf subjectName {
+      yexte:restricted;
+      description "The X.501 DN to be used in the subject field of the requested certificate.\n\nFor instance: \"C=SE,O=Ericsson,CN=someserialnumber.ericsson.com\" ";
+      type erienmnrmrcscertm:ddt-DistinguishedName;
+    }
+    leaf enrollmentTimer {
+      description "The enrollment poll timer in minutes. \n\nIf the time indicated by this timer elapses before the enrollment is finished, the enrollment fails.  No value means the timer is disabled. Used only for online enrollment.";
+      type erienmnrmrcscertm:ddt-ECIM_CertM_NodeCredential_enrollmentTimer;
+      default 60;
+    }
+    leaf subjectAltName {
+      description "The subjectAltName can be specified either as an IP address or a FQDN. \n\nFormat is <type>:<value>, where <type> is either 'IP' (for IP address) or 'DNS' (for FQDN).\n\nFor 'IP' type the <value> is an IPv4 address in dotted decimal notation, or an IPv6 address in colon decimal notation.\nFor 'DNS' type the <value> is an FQDN.\n\nIn case a type identification ('IP' or 'DNS') is not present, the type will be interpreted depending on value.\n\nExamples:\n\nsomeserialnumber.ericsson.com\nDNS:someserialnumber.ericsson.com\nIP:145.34.23.123\nIP:2001:DB8::8:800:200C:417A";
+      type erienmnrmrcscertm:ddt-ECIM_CertM_NodeCredential_subjectAltName;
+    }
+    action startOfflineCsrEnrollment {
+      description "Starts a manual enrollment procedure. \n\nCreates a PKCS#10 Certificate Signing Request (CSR) that is stored at the specified local Uniform Resource Identifier URI. A file transfer service can be used to fetch the CSR file from the ME.\n\nThe action can be invoked if the enrollmentSupport attribute of the CertMCapabilities MO indicates that offline CSR-based enrollment is supported.\n\nThe action uses attributes subjectName and keyInfo attributes as inputs.\n\nIf no other action is in progress on this MO, the action can be invoked and it returns immediately after invocation. \nThe action progress can be tracked via the enrollmentProgress attribute.\n\nThe action returns with TRUE after successful invocation, otherwise it returns with FALSE.\n\nThe action has a timeout of 3 minutes.";
+      input {
+        leaf uriPassword {
+          description "The password section of the Uniform Resource Identifier (URI). \n                    If the password is not required, this parameter can be omitted.\n                    ";
+          type erienmnrmrcscertm:ddt-EcimPasswordString;
+        }
+        leaf uri {
+          mandatory true;
+          description "This parameter contains a URI assumed to point to where the CSR file should be stored. \n\nThe generic Uniform Resource Identifier (URI) syntax is defined by RFC 3986. \nExample: sftp://myuser@myhostname.ericsson.local/dir/subdir/file \nThe URI must not contain any password. The password shall be provided in the second parameter of this action.\n";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action installCredentialFromUri {
+      description "Installs a node credential or certificate from the specified Uniform Resource Identifier (URI).\n\nIf the container file is in PKCS#12 format, the action implicitly starts an offline enrollment. If the file is a certificate in Privacy Enhanced Mail (PEM) or Distinguished Encoding Rules (DER) format, this action closes the ongoing offline enrollment process started by the startOfflineCsrEnrollment action.\n\nChain certificates are imported from PEM formatted file or PKCS#12 container file.\n\nThe action can be invoked if the enrollmentSupport attribute of the CertMCapabilities MO indicates that offline enrollment is supported.\n\nFor a container file in PKCS#12 format, the action can be invoked if there is no other action in progress on this MO. For a certificate file in PEM or DER format, the action can be invoked if there is a startOfflineCsrEnrollment action in progress on this MO.\n\nThe action returns immediately after invocation. The progress of the action can be tracked via the enrollmentProgress attribute.\n\nThe action returns with TRUE after successful invocation, otherwise it returns with FALSE.\n\nThe action has a timeout of 3 minutes.\n\nThe generic URI syntax is defined by RFC 3986.\nExample: sftp://myuser@myhostname.ericsson.local/dir/subdir/certificate\nExample: http://myhostname.ericsson.local/dir/subdir/certificate";
+      input {
+        leaf credentialPassword {
+          description "The password for decrypting the PKCS#12 container file.\nIf the password is not required, this parameter can be omitted.";
+          type erienmnrmrcscertm:ddt-EcimPasswordString;
+          default "";
+        }
+        leaf uriPassword {
+          description "The password part of the Uniform Resource Identifier (URI).\n                    If the password is not required, this parameter can be omitted.\n                    ";
+          type erienmnrmrcscertm:ddt-EcimPasswordString;
+        }
+        leaf fingerprint {
+          description "The Secure Hash Algorithm (SHA) fingerprint of the certificate to be installed. \n\nThe fingerprint is checked against the fingerprint calculated on the installed file. The hash must be calculated by the SHA algorithm indicated in fingerprintSupport of the CertMCapabilities MO.\nIf the password is not required, this parameter can be omitted.";
+          type erienmnrmrcscertm:ddt-Fingerprint;
+        }
+        leaf uri {
+          mandatory true;
+          description "This parameter contains a URI assumed to point to the certificate or credential container file.\n\nThe generic Uniform Resource Identifier (URI) syntax is defined by RFC 3986.\nExample: sftp://myuser@myhostname.ericsson.local/dir/subdir/file\nThe URI must not contain any password. The password shall be provided in the second parameter of this action.\n";
+          type string;
+          default "";
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action startOnlineEnrollment {
+      description "Starts the online enrollment process.\n\nFor initial enrollment when a vendor credential is not available, a challengePassword must be provided, otherwise the vendor credential or the existing valid node credential signs the PKI request. \n\nIf the enrollmentSupport attribute of the CertMCapabilities MO indicates that online enrollment is supported, the action can be invoked.\n\nAs inputs, the action uses subjectName, keyInfo, enrollmentServerGroup and enrollmentAuthority attributes.\n\nIf no other action is in progress on this MO, the action can be invoked and it returns immediately after invocation. \nAction progress can be tracked via the enrollmentProgress attribute.\n\nThe action returns with TRUE after successful invocation, otherwise it returns with FALSE.";
+      input {
+        leaf challengePassword {
+          description "The one-time challenge password used as a shared-secret between the ME and the enrollment CA.\n";
+          type erienmnrmrcscertm:ddt-EcimPasswordString;
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action cancelEnrollment {
+      description "Cancels the enrollment process.\n\nIf the enrollment runs in online polling mode, this action stops polling the enrollment server. The enrollment rejects to confirm the PKI response from the enrollment server and releases the generated key-pair. The enrollment fails.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-NodeCredential'
+  grouping moc-ChainCertificate-keys {
+    description "Key(s) for MOC ChainCertificate";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name chainCertificateId;
+      type string;
+    }
+  } // end 'grouping moc-ChainCertificate-keys'
+  grouping moc-ChainCertificate {
+    description "Chain certificate belonging to the credential.";
+    container certificateContent {
+      description "The X.509 content of the certificate.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcscertm:struct-CertificateContent;
+    } // end 'container certificateContent'
+    leaf certificateState {
+      config false;
+      description "The current state of the certificate.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcscertm:enum-CertificateState;
+    }
+  } // end 'grouping moc-ChainCertificate'
+  grouping moc-CertM-keys {
+    description "Key(s) for MOC CertM";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name certMId;
+      type string;
+    }
+  } // end 'grouping moc-CertM-keys'
+  grouping moc-CertM {
+    description "The top class of the Certificate Management model. \n\nCertificate management encompasses management of node credentials and trusted certificates.";
+    leaf localFileStorePath {
+      config false;
+      description "Contains a file sytem path for locally stored certificates.\n\nThe default directory path on the ME file system where certificates or credential containers are stored. It may store locally generated files or files generated after push download. ";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf activeVendorCredential {
+      config false;
+      description "Indicates the active vendor credential for initial enrollments.\n\nContains the DN of a VendorCredential MO.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container reportProgress {
+      description "Reports the progress of the ongoing action on this MO.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcscertm:struct-AsyncActionProgress;
+    } // end 'container reportProgress'
+    action cancel {
+      description "Cancels an ongoing action on this MO.\n\nCan be invoked during execution of an action.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action downloadCrl {
+      description "Downloads the Certificate Revocation List (CRL) files.\n\nCRLs are downloaded from Uniform Resource Identifier (URI) locations indicated by the CRL distribution points extension of the peer certificates at the time specified by the extension. This action allows the MS to trigger a download in the special case when CRLs are published prior to the published update times.\n\nThe action can be invoked if no other action is in progress on this MO and returns immediately after invocation. \nThe progress of the action can be tracked via the reportProgress attribute.\n\nThe action returns with TRUE after successful invocation, otherwise it returns with FALSE.";
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action removeTrustedCert {
+      description "Removes a trusted certificate.";
+      input {
+        leaf trustedCert {
+          mandatory true;
+          description "The DN of the TrustedCertificate MO to be removed.";
+          erienmyext:enm-type MOREF;
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action installTrustedCertFromUri {
+      description "Installs a trusted certificate from the specified Uniform Resource Identifier (URI). Creates an instance of MO TrustedCertificate.\n\nThe action can be invoked if no other action in progress on this MO.\nThe action returns immediately after invocation. The progress of the action can be tracked via the reportProgress attribute.\n\nThe action returns with TRUE after successful invocation, otherwise it returns with FALSE.\n\nThe action has a timeout of 3 minutes.\n\nThe generic URI syntax is defined by RFC 3986.\nExample: sftp://myuser@myhostname.ericsson.local/dir/subdir/certificate\nExample: http://myhostname.ericsson.local/dir/subdir/certificate";
+      input {
+        leaf uriPassword {
+          description "The password section of the URI.";
+          type erienmnrmrcscertm:ddt-EcimPasswordString;
+        }
+        leaf fingerprint {
+          description "The Secure Hash Algorithm (SHA) fingerprint of the certificate to be installed.\n\nThe fingerprint is checked against the fingerprint calculated on the installed file. The hash must be calculated by the SHA algorithm indicated in fingerprintSupport of the CertMCapabilities MO.\nIf the fingerprint check is not required, this parameter can be omitted.";
+          type erienmnrmrcscertm:ddt-Fingerprint;
+        }
+        leaf trustpointInterface {
+          description "Address object under an interface, either IPv4 or IPv6.";
+          erienmyext:enm-type MOREF;
+          type string;
+        }
+        leaf uri {
+          mandatory true;
+          description "This parameter contains a URI assumed to point to the certificate file.\n\nThe generic URI syntax is defined by RFC 3986.\nExample: sftp://myuser@myhostname.ericsson.local/dir/subdir/certificate\nThe URI must not contain any password. The password shall be provided in the second parameter of this action.";
+          type string;
+        }
+        leaf moId {
+          description "Id of TrustedCertificate instance. Sets attribute trustedCertificateId. If omitted, values 1,2, ... are default, RDN is TrustedCertificate=1, TrustedCertificate=2, ...";
+          type erienmnrmrcscertm:ddt-MoId;
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-CertM'
+  grouping moc-EnrollmentServerGroup-keys {
+    description "Key(s) for MOC EnrollmentServerGroup";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name enrollmentServerGroupId;
+      type string;
+    }
+  } // end 'grouping moc-EnrollmentServerGroup-keys'
+  grouping moc-EnrollmentServerGroup {
+    description "Maintains a group of enrollment servers for load balancing.";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "The Distinguished Names of MOs using this EnrollmentServerGroup.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-EnrollmentServerGroup'
+  grouping moc-TrustCategory-keys {
+    description "Key(s) for MOC TrustCategory";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name trustCategoryId;
+      type string;
+    }
+  } // end 'grouping moc-TrustCategory-keys'
+  grouping moc-TrustCategory {
+    description "Represents a group of trusted certificates that can be referenced by Credential Users on the ME.";
+    leaf-list trustedCertificates {
+      min-elements 1;
+      description "The list of trusted certificates that belongs to this trust category.\n\nContains the Distinguished Names of the TrustedCertificate Managed Objects.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf crlInterface {
+      description "Address object under an interface, either IPv4 or IPv6.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list reservedByUser {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Indicates the users of this TrustCategory MO.\n\nThe users are identified by Distinguished Names of Credential User Managed Objects.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf crlCheck {
+      description "Toggles CRL control.\n\nToggles CRL control for the certificates validated in the chain of a trusted certificate in this TrustCategory MO.\nIf ACTIVATED, CRLs are checked.\nIf DEACTVATED, CRLs are not checked.";
+      yexte:disturbances "\nActivating CRL check can cause loss of traffic if CRLs contain revocations of trusted certificates used for TLS or IPsec.\n                ";
+      type erienmnrmrcscertm:enum-FeatureState;
+      default DEACTIVATED;
+    }
+  } // end 'grouping moc-TrustCategory'
+  grouping moc-TrustedCertificate-keys {
+    description "Key(s) for MOC TrustedCertificate";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name trustedCertificateId;
+      type string;
+    }
+  } // end 'grouping moc-TrustedCertificate-keys'
+  grouping moc-TrustedCertificate {
+    description "Represents a trusted certificate.";
+    leaf managedState {
+      description "The state of the trusted certificate set by the MS.\n\nIf set to ENABLED, the certificate is trusted and the state of the certificate is represented by certificateState.\nIf set to DISABLED, the trusted certificate is quarantined, and thus the trust relationship is suspended.";
+      yexte:disturbances "\nDisabling a trusted certificate which is used for TLS or IPsec can cause loss of traffic.\n                ";
+      type erienmnrmrcscertm:enum-ManagedCertificateState;
+      default ENABLED;
+    }
+    leaf-list reservedByCategory {
+      min-elements 0;
+      status deprecated {
+        yexte:status-information "Deprecated in version 3.0. Restrictive to TrustCategory objects. Replaced by reservedBy.";
+      }
+      erienmyext:no-notification;
+      config false;
+      description "Indicates the trust categories this trusted certificate belongs to.\n\nContains the Distinguished Names of the TrustCategory Managed Objects.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container certificateContent {
+      description "The X.509 content of the certificate.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcscertm:struct-CertificateContent;
+    } // end 'container certificateContent'
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "The Distinguished Names of MOs using this TrustedCertificate.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf certificateState {
+      config false;
+      description "The current state of the certificate.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcscertm:enum-CertificateState;
+    }
+  } // end 'grouping moc-TrustedCertificate'
+  grouping moc-EnrollmentAuthority-keys {
+    description "Key(s) for MOC EnrollmentAuthority";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name enrollmentAuthorityId;
+      type string;
+    }
+  } // end 'grouping moc-EnrollmentAuthority-keys'
+  grouping moc-EnrollmentAuthority {
+    description "Represents a Certification or Registration Authority for certificate enrollment.";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf enrollmentCaCertificate {
+      description "The trusted cerificate of the RA or CA used for enrollment authentication.\n\nRepresents the certificate by the DN of the appropriate TrustedCertificate MO. \n\nThe RA or CA certificate provided in the PKI response is authenticated by this trusted certificate.\n\nIf this attribute has any value, the attribute enrollmentCaFingerprint is ignored.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf enrollmentCaFingerprint {
+      description "The SHA fingerprint of the trusted cerificate of the RA or CA used for enrollment authentication.\n\nIf the trusted certificate is not stored on the ME as a TrustedCertificate MO, the enrollmentCaCertificate attribute cannot refer to the appropriate TrustedCertificate MO, so this attribute at least must be provided. If enrollmentCaCertificate references a TrustedCertificate MO, this attribute displays the fingerprint of the certificate defined by enrollmentCaCertificate, and cannot be modified. \n\nThe fingerprint of the trusted certificate provided by the PKI response is calculated and compared to this attribute. If a match is found, the certificate is used for authenticating the CA or RA.\n\nThe hash must be calculated by the Secure Hash Algorithm (SHA) algorithm indicated in fingerprintSupport of the CertMCapabilities MO.";
+      type erienmnrmrcscertm:ddt-Fingerprint;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "The MO Distinguished Names using this EnrollmentAuthority.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf enrollmentAuthorityName {
+      description "Specifies the name of the issuing CA.\n\nThe X.501 distinguished name of the issuing CA used for addressing and reference identity.";
+      type erienmnrmrcscertm:ddt-DistinguishedName;
+    }
+    leaf authorityType {
+      status deprecated {
+        yexte:status-information "Deprecated in version 2.0. Redundant functionality.";
+      }
+      description "Indicates the type of the enrollment authority.\n\nUsed for the verification of the Public Key Infrastructure (PKI) response message. In case of a Certification Authority (CA), the self-signed certificate of the CA is accepted by ME given that the certificate is configured either in attribute enrollmentCaCertificate or enrollmentCaFingerprint. In case of a Registration Authority (RA), the RA certificate is verified using the CA certificate of the RA configured in attribute enrollmentCaCertificate.\n\nThis entity is deprecated as implemented redundant functionality.";
+      type erienmnrmrcscertm:enum-AuthorityType;
+    }
+  } // end 'grouping moc-EnrollmentAuthority'
+  grouping moc-EnrollmentServer-keys {
+    description "Key(s) for MOC EnrollmentServer";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name enrollmentServerId;
+      type string;
+    }
+  } // end 'grouping moc-EnrollmentServer-keys'
+  grouping moc-EnrollmentServer {
+    description "Represents an enrollment server.\n\nAn enrollment server implement the Certificate Management Protocol (CMP).";
+    leaf enrollmentAuthority {
+      status deprecated {
+        yexte:status-information "Deprecated in version 2.0. Function replaced by enrollmentAuthority attribute in NodeCredential MOC.";
+      }
+      description "The Certification Authority or Registration Authority used by this enrollment server.\n\nRepresents the enrollment authority by the DN of the EnrollmentAuthority MO.\n\nThis entity is deprecated. If this attribute is specified, the enrollmentAuthority attribute in the NodeCredential MO referring to the EnrollmentServerGroup MO of this EnrollmentServer MO is ignored.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf protocol {
+      description "The enrollment protocol.";
+      mandatory true;
+      type erienmnrmrcscertm:enum-EnrollmentProtocol;
+    }
+    leaf enrollmentInterface {
+      description "Address object under an interface, either IPv4 or IPv6.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf uri {
+      description "The URI of the enrollment server.\n\nThe URI consists of a protocol, an IP or DNS address and an optional port number. Specify the optional port designation by appending a colon followed by the port number to the host part, for example, 192.168.33.27:8080. If no port number is provided, the default port is used.\n\nExample for CMP: http://192.168.33.27:8080 or cmp://192.168.33.27";
+      mandatory true;
+      type string;
+    }
+  } // end 'grouping moc-EnrollmentServer'
+  grouping moc-VendorCredential-keys {
+    description "Key(s) for MOC VendorCredential";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name vendorCredentialId;
+      type string;
+    }
+  } // end 'grouping moc-VendorCredential-keys'
+  grouping moc-VendorCredential {
+    description "Represents the vendor credential pre-installed on the ME.";
+    container certificateContent {
+      description "The X.509 content of the certificate.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrcscertm:struct-CertificateContent;
+    } // end 'container certificateContent'
+    leaf certificateState {
+      config false;
+      description "The current state of the certificate.";
+      notife:notifiable-state-data true;
+      type erienmnrmrcscertm:enum-CertificateState;
+    }
+  } // end 'grouping moc-VendorCredential'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM {
+    list CertMCapabilities {
+      key id;
+      max-elements 1;
+      description "Contains the certificate management capabilities of the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CertMCapabilities-keys;
+      container attributes {
+        description "Attributes for CertMCapabilities";
+        uses moc-CertMCapabilities;
+      } // end 'container attributes'
+    } // end 'list CertMCapabilities'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM {
+    list NodeCredential {
+      key id;
+      description "Represents the node credential and contains information about the corresponding certificate.\n\n";
+      erienmyext:enm-type MOC;
+      uses moc-NodeCredential-keys;
+      container attributes {
+        description "Attributes for NodeCredential";
+        uses moc-NodeCredential;
+      } // end 'container attributes'
+    } // end 'list NodeCredential'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM/erienmnrmrcscertm:NodeCredential {
+    list ChainCertificate {
+      key id;
+      description "Chain certificate belonging to the credential.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-ChainCertificate-keys;
+      container attributes {
+        description "Attributes for ChainCertificate";
+        uses moc-ChainCertificate;
+      } // end 'container attributes'
+    } // end 'list ChainCertificate'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM/erienmnrmrcscertm:VendorCredential {
+    list ChainCertificate {
+      key id;
+      description "Chain certificate belonging to the credential.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-ChainCertificate-keys;
+      container attributes {
+        description "Attributes for ChainCertificate";
+        uses moc-ChainCertificate;
+      } // end 'container attributes'
+    } // end 'list ChainCertificate'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM {
+    list CertM {
+      key id;
+      max-elements 1;
+      description "The top class of the Certificate Management model. \n\nCertificate management encompasses management of node credentials and trusted certificates.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CertM-keys;
+      container attributes {
+        description "Attributes for CertM";
+        uses moc-CertM;
+      } // end 'container attributes'
+    } // end 'list CertM'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM {
+    list EnrollmentServerGroup {
+      key id;
+      description "Maintains a group of enrollment servers for load balancing.";
+      erienmyext:enm-type MOC;
+      uses moc-EnrollmentServerGroup-keys;
+      container attributes {
+        description "Attributes for EnrollmentServerGroup";
+        uses moc-EnrollmentServerGroup;
+      } // end 'container attributes'
+    } // end 'list EnrollmentServerGroup'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM {
+    list TrustCategory {
+      key id;
+      description "Represents a group of trusted certificates that can be referenced by Credential Users on the ME.";
+      erienmyext:enm-type MOC;
+      uses moc-TrustCategory-keys;
+      container attributes {
+        description "Attributes for TrustCategory";
+        uses moc-TrustCategory;
+      } // end 'container attributes'
+    } // end 'list TrustCategory'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM {
+    list TrustedCertificate {
+      key id;
+      description "Represents a trusted certificate.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-TrustedCertificate-keys;
+      container attributes {
+        description "Attributes for TrustedCertificate";
+        uses moc-TrustedCertificate;
+      } // end 'container attributes'
+    } // end 'list TrustedCertificate'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM {
+    list EnrollmentAuthority {
+      key id;
+      description "Represents a Certification or Registration Authority for certificate enrollment.";
+      erienmyext:enm-type MOC;
+      uses moc-EnrollmentAuthority-keys;
+      container attributes {
+        description "Attributes for EnrollmentAuthority";
+        uses moc-EnrollmentAuthority;
+      } // end 'container attributes'
+    } // end 'list EnrollmentAuthority'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM/erienmnrmrcscertm:EnrollmentServerGroup {
+    list EnrollmentServer {
+      key id;
+      description "Represents an enrollment server.\n\nAn enrollment server implement the Certificate Management Protocol (CMP).";
+      erienmyext:enm-type MOC;
+      uses moc-EnrollmentServer-keys;
+      container attributes {
+        description "Attributes for EnrollmentServer";
+        uses moc-EnrollmentServer;
+      } // end 'container attributes'
+    } // end 'list EnrollmentServer'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssecm:SecM/erienmnrmrcscertm:CertM {
+    list VendorCredential {
+      key id;
+      description "Represents the vendor credential pre-installed on the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-VendorCredential-keys;
+      container attributes {
+        description "Attributes for VendorCredential";
+        uses moc-VendorCredential;
+      } // end 'container attributes'
+    } // end 'list VendorCredential'
+  }
+}

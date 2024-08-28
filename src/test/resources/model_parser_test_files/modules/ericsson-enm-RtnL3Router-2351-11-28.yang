@@ -1,0 +1,107 @@
+module ericsson-enm-RtnL3Router {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnL3Router;
+  prefix erienmnrmrtnl3router;
+  yexte:ecim-name RtnL3Router;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 31;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef ddt-RtnL3Router_Router_hopLimit {
+    type int32 {
+      range 0..255;
+    }
+  }
+  typedef ddt-RtnL3Router_Router_ttl {
+    type int32 {
+      range 1..255;
+    }
+  }
+  typedef ddt-RtnL3Router_Router_pathMtuExpiresIPv6 {
+    type int32 {
+      range 300..21474836;
+    }
+  }
+  typedef ddt-RtnL3Router_Router_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping moc-Router-keys {
+    description "Key(s) for MOC Router";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN. \n";
+      mandatory true;
+      yexte:ecim-name routerId;
+      type string;
+    }
+  } // end 'grouping moc-Router-keys'
+  grouping moc-Router {
+    description "IP routing domain instance.\n\nIt provides data plane isolation of routed traffic and control plane isolation of routing entities from other routing instances.\n\nIt allows for further fragmentation of the routing domain.";
+    leaf routingPolicyLocal {
+      description "Reference to RoutingPolicyIpv4 MO used for policy-routing local originated traffic.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf userLabel {
+      description "Label for free use. \n";
+      type erienmnrmrtnl3router:ddt-RtnL3Router_Router_userLabel;
+    }
+    leaf pathMtuExpiresIPv6 {
+      description "Number of seconds between PMTU probing.\n";
+      yexte:disturbances "Changing this attribute can cause traffic disturbances.";
+      type erienmnrmrtnl3router:ddt-RtnL3Router_Router_pathMtuExpiresIPv6;
+      default 86400;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf ttl {
+      description "Default value of TTL.\nDefault value inserted into TTL field of IPv4 header of datagrams, originated from all Router MOs, whenever TTL value is not supplied by transport layer protocol.\nChanged value takes effect on existing GPRS Tunneling Protocol paths and UDP sessions after node restart.";
+      yexte:disturbances "Changing this attribute too low might cause total loss of traffic or loss of connectivity to the node.";
+      type erienmnrmrtnl3router:ddt-RtnL3Router_Router_ttl;
+      default 64;
+    }
+    leaf hopLimit {
+      description "IPv6 default hop limit.\nDefault value inserted into hop limit field of IPv6 header of datagrams, originated from all Router MOs, whenever hop limit value is not supplied by transport layer protocol.\nChanged value takes effect on existing GPRS Tunneling Protocol paths and UDP sessions after node restart.";
+      yexte:disturbances "Changing this attribute too low might cause total loss of traffic or loss of connectivity to the node.";
+      type erienmnrmrtnl3router:ddt-RtnL3Router_Router_hopLimit;
+      default 64;
+    }
+  } // end 'grouping moc-Router'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list Router {
+      key id;
+      max-elements 8;
+      description "IP routing domain instance.\n\nIt provides data plane isolation of routed traffic and control plane isolation of routing entities from other routing instances.\n\nIt allows for further fragmentation of the routing domain.";
+      erienmyext:enm-type MOC;
+      uses moc-Router-keys;
+      container attributes {
+        description "Attributes for Router";
+        uses moc-Router;
+      } // end 'container attributes'
+    } // end 'list Router'
+  }
+}

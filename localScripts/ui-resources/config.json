@@ -1,0 +1,167 @@
+{
+  "apps": [
+    {
+      "name": "eacc-<SIGNUM>",
+      "module": "eacc-<SIGNUM>",
+      "version": "1.0.0",
+      "displayName": "Automated Configuration Consistency <SIGNUM>",
+      "type": "euisdk",
+      "groupNames": ["rapps:product", "rapps:category:deployment"],
+      "childNames": [
+        "executions-<SIGNUM>",
+        "jobs-<SIGNUM>",
+        "settings-<SIGNUM>"
+      ],
+      "descriptionLong": "Perform CM consistency audits to detect baseline consistency errors.",
+      "route": "eacc-<SIGNUM>"
+    },
+    {
+      "name": "executions-<SIGNUM>",
+      "module": "executions-<SIGNUM>",
+      "displayName": "Executions Overview",
+      "type": "euisdk",
+      "route": "executions-<SIGNUM>",
+      "version": "1.0.0",
+      "childNames": ["execution-reports-<SIGNUM>"]
+    },
+    {
+      "name": "jobs-<SIGNUM>",
+      "module": "jobs-<SIGNUM>",
+      "displayName": "Jobs",
+      "type": "euisdk",
+      "route": "jobs-<SIGNUM>",
+      "descriptionShort": "Jobs",
+      "version": "1.0.0",
+      "childNames": ["create-job-<SIGNUM>", "update-job-<SIGNUM>"]
+    },
+    {
+      "name": "execution-reports-<SIGNUM>",
+      "module": "execution-reports-<SIGNUM>",
+      "displayName": "Execution Reports",
+      "type": "euisdk",
+      "route": "execution-reports-<SIGNUM>",
+      "version": "1.0.0",
+      "hidden": true
+    },
+    {
+      "name": "create-job-<SIGNUM>",
+      "module": "create-job-<SIGNUM>",
+      "displayName": "Create Job",
+      "type": "euisdk",
+      "route": "create-job-<SIGNUM>",
+      "version": "1.0.0",
+      "hidden": true
+    },
+    {
+      "name": "update-job-<SIGNUM>",
+      "module": "create-job-<SIGNUM>",
+      "displayName": "Update Job",
+      "type": "euisdk",
+      "route": "update-job-<SIGNUM>",
+      "version": "1.0.0",
+      "hidden": true
+    },
+    {
+      "name": "settings-<SIGNUM>",
+      "module": "settings-<SIGNUM>",
+      "displayName": "Settings",
+      "type": "euisdk",
+      "route": "settings-<SIGNUM>",
+      "version": "1.0.0"
+    }
+  ],
+  "components": [
+    {
+      "name": "executions-tab-area",
+      "module": "executions-tab-area",
+      "displayName": "Executions Tab",
+      "version": "1.0.0"
+    },
+    {
+      "name": "scope",
+      "module": "scope",
+      "displayName": "Scope",
+      "version": "1.0.0"
+    },
+    {
+      "name": "ruleset",
+      "module": "ruleset",
+      "displayName": "Ruleset",
+      "version": "1.0.0"
+    },
+    {
+      "name": "create-scope",
+      "module": "create-scope",
+      "displayName": "Create Scope",
+      "version": "1.0.0"
+    },
+    {
+      "name": "create-ruleset",
+      "module": "create-ruleset",
+      "displayName": "Create Ruleset",
+      "version": "1.0.0"
+    },
+    {
+      "name": "initialization-error",
+      "module": "initialization-error",
+      "displayName": "Initialization Error",
+      "version": "1.0.0"
+    },
+    {
+      "name": "changes-poll",
+      "module": "changes-poll",
+      "displayName": "Changes Poll",
+      "version": "1.0.0"
+    },
+    {
+      "name": "access-denied-error",
+      "module": "access-denied-error",
+      "displayName": "Access Denied Error",
+      "version": "1.0.0"
+    },
+    {
+      "name": "rest-paginated-table",
+      "module": "rest-paginated-table",
+      "displayName": "Rest Paginated Table",
+      "version": "1.0.0"
+    },
+    {
+      "name": "audit-report-tab",
+      "module": "audit-report-tab",
+      "displayName": "Audit Report Tab",
+      "version": "1.0.0"
+    },
+    {
+      "name": "revert-all-button",
+      "module": "revert-all-button",
+      "displayName": "Revert All Button",
+      "version": "1.0.0"
+    },
+    {
+      "name": "apply-button",
+      "module": "apply-button",
+      "displayName": "Apply Button",
+      "version": "1.0.0"
+    },
+    {
+      "name": "settings-error-table",
+      "module": "settings-error-table",
+      "displayName": "Settings Error Table",
+      "version": "1.0.0"
+    }
+  ],
+  "groups": [
+    {
+      "displayName": "Automation Apps",
+      "version": "1.0.0",
+      "name": "rapps:product",
+      "type": "product"
+    },
+    {
+      "displayName": "Network Deployment",
+      "version": "1.0.0",
+      "name": "rapps:category:deployment",
+      "type": "category"
+    }
+  ]
+}

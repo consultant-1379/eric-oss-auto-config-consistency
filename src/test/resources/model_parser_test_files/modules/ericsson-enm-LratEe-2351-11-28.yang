@@ -1,0 +1,23 @@
+module ericsson-enm-LratEe {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-LratEe;
+  prefix erienmnrmlratee;
+  yexte:ecim-name LratEe;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 2;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+}

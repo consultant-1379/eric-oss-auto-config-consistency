@@ -1,0 +1,334 @@
+module ericsson-enm-RtnIpsec {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RtnIpsec;
+  prefix erienmnrmrtnipsec;
+  yexte:ecim-name RtnIpsec;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 41;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RtnL3Router {
+    prefix erienmnrmrtnl3router;
+  }
+  typedef enum-OperState {
+    description "The operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description " The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description " The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-IdentityOrigin {
+    description "Origin for transmitted IKE ID.";
+    type enumeration {
+      enum SUBJECT {
+        description "IKE ID is set to same value as subject field in node IPsec certificate.";
+        value 0;
+      }
+      enum SUBJECT_ALT_NAME {
+        description "IKE ID is set to same value as subjectAltName in node IPsec certificate.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\n It indicates why the operational state has changed its value. ";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure. \nIf the administrative state is locked or  shutting down then normal users are precluded from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both. The operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "This indicates a log full condition.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\n or the availability status of the other resource is dependency locked.  ";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\n or the availability status of the other resource is dependency shutting down. ";
+        value 11;
+      }
+    }
+  }
+  typedef ddt-RtnIpsec_IpsecPolicy_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-IpAddressRangeStr {
+    description "Regular expression pattern for IP address with prefix, covering both IPv4 and IPv6.\n\nThe type is ((IPv4 address)|(IPv6 address)) / prefix without leading 0s:\n          Unicast IPv4 address / prefix 0-32.\n          IPv4 address within range [0-255].[0-255].[0-255].[0-255]\n          Regex:\n(^(([1-9]|22[0-3]|2[01][0-9]|1[013456789][0-9]|12[012345689]|[1-9][0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]))/([0-9]|[1-2][0-9]|3[0-2])$)\n         \n         Ipv6Address (colon separated, rfc4291) / prefix 0-128.\n         Regex:\n\\s*(((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){7}(([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){6}(:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){5}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,2})|:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){4}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,3})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0))?:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){3}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,4})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,2}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){2}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,5})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,3}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){1}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,6})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,4}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(:(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,7})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,5}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:)))(%.+)?\\s*)/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8])        \n\n         Thus resulting pattern ^((IPv4Network/Netmask)|(IPv6Network/Netmask))$ is:\n^(((([1-9]|22[0-3]|2[01][0-9]|1[013456789][0-9]|12[012345689]|[1-9][0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]))/([0-9]|[1-2][0-9]|3[0-2]))|((\\s*(((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){7}(([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){6}(:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){5}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,2})|:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){4}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,3})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0))?:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){3}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,4})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,2}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){2}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,5})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,3}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|((([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0):){1}(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,6})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,4}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(:(((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){1,7})|((:([1-9A-Fa-f][0-9A-Fa-f]{0,3}|0)){0,5}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:)))(%.+)?\\s*)/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8])))$\n         ";
+    type string;
+  }
+  typedef ddt-PresharedKey {
+    description "Derived string used as pre-shared key.\n\nPre-shared key must be either valid hexadecimal number or ASCII string.\nExamples:\n - Hexadecimal: 0x5e921e7706e90bd13032\n - ASCII: dz8GmnVla0tKik4jBYXtq98NDJZG9J";
+    type string {
+      length 1..130;
+    }
+  }
+  typedef ddt-RtnIpsec_Ikev2Session_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-RtnIpsec_IpsecTunnel_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  grouping struct-TrafficSelector {
+    description "Traffic selector. Used for Child SA negotiation.";
+    leaf addressRange {
+      description "IPv4 or IPv6 address range.";
+      type erienmnrmrtnipsec:ddt-IpAddressRangeStr;
+      mandatory true;
+    }
+  } // end 'grouping struct-TrafficSelector'
+  grouping moc-Ikev2Session-keys {
+    description "Key(s) for MOC Ikev2Session";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ikev2SessionId;
+      type string;
+    }
+  } // end 'grouping moc-Ikev2Session-keys'
+  grouping moc-Ikev2Session {
+    description "Represents IKEv2 that must be used as control and key exchange protocol. It also gives some properties for IKE SA.\n\nRefers to Ikev2PolicyProfile MO that specifies cryptographic algorithms (encryption, integrity, PRF and Diffie-Hellman group), allowed lifetime and dead peer detection time for IKE SA.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnipsec:ddt-RtnIpsec_Ikev2Session_userLabel;
+    }
+    leaf localIdentityOrigin {
+      description "IKE ID must be identical to subjectAltName or subject field in certificate.\nIf certificate based authentication is used, node sends IKE ID to security gateway identical to subjectAltName in used certificate.\nIf more than one IPsec VPN connection is setup from node to same security gateway, node can be forced to send different IKE IDs on two IKE SAs.\nCertain security gateway configurations can reject multiple IKE SAs with same IKE ID.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type erienmnrmrtnipsec:enum-IdentityOrigin;
+      default SUBJECT_ALT_NAME;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.\n\nDisabled if no IKE SA or first Child SA pair is established.";
+      type erienmnrmrtnipsec:enum-OperState;
+    }
+    leaf ikev2PolicyProfile {
+      description "Reference to Ikev2PolicyProfile MO.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    action restartIkeSa {
+      description "This causes the node to delete IKE SA and initiate negotiation of new IKE SA.";
+    }
+    action installPreSharedKey {
+      description "Install pre-shared key for IKEv2 session.\n\nThis action must be used if pre-shared key based authentication is used.\n\nTo install pre-shared key, valid IPsec license must be installed, and IPsec feature must be activated.\n\nIf credential and trustCategory are set for Ikev2PolicyProfile MO, certificate-based authentication is used and pre-shared key is not used, even if installed.\n\nInstallation of pre-shared key is completed when action is completed without error.\nInstallation is not done if any error is returned.";
+      input {
+        leaf presharedKey {
+          mandatory true;
+          description "String used as pre-shared key.";
+          type erienmnrmrtnipsec:ddt-PresharedKey;
+        }
+      }
+    }
+  } // end 'grouping moc-Ikev2Session'
+  grouping moc-IpsecTunnel-keys {
+    description "Key(s) for MOC IpsecTunnel";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ipsecTunnelId;
+      type string;
+    }
+  } // end 'grouping moc-IpsecTunnel-keys'
+  grouping moc-IpsecTunnel {
+    description "Represents IPsec VPN connection.\nPoints at endpoints in outer network,  MO type AddressIPv4 or AddressIPv6 for local endpoint, and MO type PeerIPv4 or PeerIPv6 for remote endpoint.\n\nDependencies:\nMax number IpsecTunnel MOs in node is limited to 32.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnipsec:ddt-RtnIpsec_IpsecTunnel_userLabel;
+    }
+    leaf localAddress {
+      description "Tunnel local endpoint assigned IP address, local outer address of IPsec VPN connection.\nValid reference is of MO type AddressIPv4 or AddressIPv6.";
+      mandatory true;
+      yexte:dependencies "Local and remote addresses must have same address family and belong to same routing domain. They must be contained under same Router MO.\nMust not refer to child of InterfaceIPv4 MO or InterfaceIPv6 MO encapsulating IpsecTunnel MO.\nCombination of local and remote outer addresses must be unique for each IpsecTunnel MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list remoteAddressSecondary {
+      min-elements 0;
+      description "Secondary remote outer address of IPsec VPN connection.\nConfigure if IPsec active-standby redundancy is to be used. Only one reference can be configured.\nIn this case PeerIPv4 or PeerIPv6 in remoteAddress represents primary security gateway.\nPeerIPv4 or PeerIPv6 in remoteAddressSecondary represents secondary security gateway.\nValid reference is of MO type PeerIPv4 or PeerIPv6.\n";
+      yexte:dependencies "Local and remote addresses must have same address family and belong to same routing domain. They must be contained under same Router MO.\nThis attribute and remoteAddress addresses must have same address family.\nMaximum one remoteAddressSecondary is allowed.\nMust not refer to same PeerIPv4 or PeerIPv6 MO as attribute remoteAddress.\nIf this attribute is configured, address attribute on PeerIPv4 or PeerIPv6 MOs for both remoteAddress and remoteAddressSecondary must be IP address.\nCombination of local and remote outer addresses must be unique for each IpsecTunnel MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmrtnipsec:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.\nThe operationalState is disabled if the associated Ikev2Session is disabled.";
+      type erienmnrmrtnipsec:enum-OperState;
+    }
+    leaf remoteAddress {
+      description "Remote outer address of IPsec VPN connection.\nValid reference is of MO type PeerIPv4 or PeerIPv6.";
+      mandatory true;
+      yexte:dependencies "Local and remote addresses must have same address family and belong to same routing domain. They must be contained under same Router MO.\nThis attribute and remoteAddressSecondary addresses must have same address family.\nThis attribute and remoteAddressSecondary cannot be same.\nCombination of local and remote outer addresses must be unique for each IpsecTunnel MO.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-IpsecTunnel'
+  grouping moc-IpsecPolicy-keys {
+    description "Key(s) for MOC IpsecPolicy";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ipsecPolicyId;
+      type string;
+    }
+  } // end 'grouping moc-IpsecPolicy-keys'
+  grouping moc-IpsecPolicy {
+    description "Represents which traffic is allowed through IPsec VPN connection through traffic selector configuration.\nRefers to IpsecProposalProfile MO that defines which cryptographic algorithms are allowed and max lifetime of Child SA.\n\nOne Child SA pair is always established for each IpsecPolicy MO as negotiation result.\nHowever, depending on security gateway configuration and support, multiple Child SA pairs can be negotiated.\n\nDependencies:\nMax number IpsecPolicy MOs in node is limited to 64.\nIf there is AddressIPv4 MO with configurationMode IKE in Router MO, there can be only one IpsecPolicy MO for each IpsecTunnel MO encapsulated by InterfaceIPv4 MO. Same applies to corresponding IPv6 case.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmrtnipsec:ddt-RtnIpsec_IpsecPolicy_userLabel;
+    }
+    leaf antiReplayProtection {
+      description "Enable or disable anti-replay protection.";
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      type boolean;
+      default true;
+    }
+    leaf ipsecProposalProfile {
+      description "Reference to IpsecProposalProfile MO.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute causes traffic disturbances.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    list remoteTrafficSelector {
+      min-elements 0;
+      max-elements 10;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Ordered list of traffic selectors to be used for Child SA negotiation.\n\nIf remoteTrafficSelector is not specified, any IP address is possible.\n\nFirst in list has highest priority.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnipsec:struct-TrafficSelector;
+    } // end 'list remoteTrafficSelector'
+    container localTrafficSelector {
+      description "Local traffic selector to be used for Child SA negotiation.\n\nIf localTrafficSelector is not specified, all virtual inner addresses of relevant IP version in inner Router will be used as local traffic selectors in Child SA negotiation.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmrtnipsec:struct-TrafficSelector;
+    } // end 'container localTrafficSelector'
+  } // end 'grouping moc-IpsecPolicy'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnipsec:IpsecTunnel {
+    list Ikev2Session {
+      key id;
+      max-elements 1;
+      description "Represents IKEv2 that must be used as control and key exchange protocol. It also gives some properties for IKE SA.\n\nRefers to Ikev2PolicyProfile MO that specifies cryptographic algorithms (encryption, integrity, PRF and Diffie-Hellman group), allowed lifetime and dead peer detection time for IKE SA.";
+      erienmyext:enm-type MOC;
+      uses moc-Ikev2Session-keys;
+      container attributes {
+        description "Attributes for Ikev2Session";
+        uses moc-Ikev2Session;
+      } // end 'container attributes'
+    } // end 'list Ikev2Session'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router {
+    list IpsecTunnel {
+      key id;
+      description "Represents IPsec VPN connection.\nPoints at endpoints in outer network,  MO type AddressIPv4 or AddressIPv6 for local endpoint, and MO type PeerIPv4 or PeerIPv6 for remote endpoint.\n\nDependencies:\nMax number IpsecTunnel MOs in node is limited to 32.";
+      erienmyext:enm-type MOC;
+      uses moc-IpsecTunnel-keys;
+      container attributes {
+        description "Attributes for IpsecTunnel";
+        uses moc-IpsecTunnel;
+      } // end 'container attributes'
+    } // end 'list IpsecTunnel'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport/erienmnrmrtnl3router:Router/erienmnrmrtnipsec:IpsecTunnel {
+    list IpsecPolicy {
+      key id;
+      description "Represents which traffic is allowed through IPsec VPN connection through traffic selector configuration.\nRefers to IpsecProposalProfile MO that defines which cryptographic algorithms are allowed and max lifetime of Child SA.\n\nOne Child SA pair is always established for each IpsecPolicy MO as negotiation result.\nHowever, depending on security gateway configuration and support, multiple Child SA pairs can be negotiated.\n\nDependencies:\nMax number IpsecPolicy MOs in node is limited to 64.\nIf there is AddressIPv4 MO with configurationMode IKE in Router MO, there can be only one IpsecPolicy MO for each IpsecTunnel MO encapsulated by InterfaceIPv4 MO. Same applies to corresponding IPv6 case.";
+      erienmyext:enm-type MOC;
+      uses moc-IpsecPolicy-keys;
+      container attributes {
+        description "Attributes for IpsecPolicy";
+        uses moc-IpsecPolicy;
+      } // end 'container attributes'
+    } // end 'list IpsecPolicy'
+  }
+}

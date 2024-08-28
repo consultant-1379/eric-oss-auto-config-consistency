@@ -1,0 +1,128 @@
+module ericsson-enm-LratBb {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-LratBb;
+  prefix erienmnrmlratbb;
+  yexte:ecim-name LratBb;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 9032;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef ddt-LratBb_BbProcessingResource_licPrbUnit {
+    type int32 {
+      range 1..600;
+    }
+  }
+  typedef ddt-LratBb_BbProcessingResource_dlBbCapacityMaxLimit {
+    type int64 {
+      range -1..65535;
+    }
+  }
+  typedef ddt-LratBb_BbProcessingResource_dlBbCapacityNet {
+    type int64 {
+      range -1..65535;
+    }
+  }
+  typedef ddt-LratBb_BbProcessingResource_licCapDistr {
+    type int32 {
+      range 0..100;
+    }
+  }
+  typedef ddt-LratBb_BbProcessingResource_ulBbCapacityNet {
+    type int64 {
+      range -1..65535;
+    }
+  }
+  typedef ddt-LratBb_BbProcessingResource_bbProcessingResourceId {
+    type string;
+  }
+  typedef ddt-LratBb_BbProcessingResource_ulBbCapacityMaxLimit {
+    type int64 {
+      range -1..65535;
+    }
+  }
+  grouping moc-BbProcessingResource-keys {
+    description "Key(s) for MOC BbProcessingResource";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name bbProcessingResourceId;
+      type erienmnrmlratbb:ddt-LratBb_BbProcessingResource_bbProcessingResourceId;
+    }
+  } // end 'grouping moc-BbProcessingResource-keys'
+  grouping moc-BbProcessingResource {
+    description "Represents the baseband processing resource in a DU or Baseband used for the eNB application in the RBS. MO is created automatically when the first EUtranCell is unlocked. In DU, attribute autoConfigurationAllowed must be set to TRUE in MO ManagedElementData, to enable the auto-configuration function. MO can be deleted manually.\n\nThe RDN of this MO is BbProcessingResource=1.";
+    leaf licPrbUnit {
+      description "Bin step size representing PRB license unit for the DL/UL distribution of PRB capacity usage.";
+      yexte:takes-effect Immediately;
+      type erienmnrmlratbb:ddt-LratBb_BbProcessingResource_licPrbUnit;
+      default 25;
+    }
+    leaf dlBbCapacityNet {
+      config false;
+      description "Granted DL baseband capacity.\nAvailable capacity of corresponding Baseband HWAC property per Baseband HW.";
+      notife:notifiable-state-data true;
+      type erienmnrmlratbb:ddt-LratBb_BbProcessingResource_dlBbCapacityNet;
+    }
+    leaf licCapDistr {
+      description "Part of the licensed capacity a baseband processing resource is allowed to use. Relevant for eNB in dual DU configuration, i.e. ENodeBFunction supported by 2 or 3 DU, each with a BbProcessingResource. Dual DU is not supported with Baseband Unit.\nDefault setup is ENodeBFunction::licCapDistrMethod=SYSTEM, and BbProcessingResource::licCapDistr=0. In runtime, licCapDistr then shows the distribution made automatically by the RBS.\nIf ENodeBFunction::licCapDistrMethod=OPERATOR, licCapDistr decides the allowed capacity for each BbProcessingResource.";
+      yexte:takes-effect Immediately;
+      yexte:dependencies "Can only be set if ENodeBFunction::licCapDistrMethod=OPERATOR. Then the sum for all (2 or 3) BbProcessingResource instances must be 100%.";
+      type erienmnrmlratbb:ddt-LratBb_BbProcessingResource_licCapDistr;
+      default 0;
+    }
+    leaf dlBbCapacityMaxLimit {
+      config false;
+      description "Max DL baseband capacity available on unlocked Baseband hardware.\nMaximum limit of DL capacity that can be granted by baseband HWAC. This level sets the limit at emergency unlock.";
+      notife:notifiable-state-data true;
+      type erienmnrmlratbb:ddt-LratBb_BbProcessingResource_dlBbCapacityMaxLimit;
+    }
+    leaf ulBbCapacityMaxLimit {
+      config false;
+      description "Max UL baseband capacity available on unlocked Baseband hardware.\nMaximum limit of UL capacity that can be granted by baseband HWAC. This level sets the limit at emergency unlock.";
+      notife:notifiable-state-data true;
+      type erienmnrmlratbb:ddt-LratBb_BbProcessingResource_ulBbCapacityMaxLimit;
+    }
+    leaf ulBbCapacityNet {
+      config false;
+      description "Granted UL baseband capacity.\nAvailable capacity of corresponding Baseband HWAC property per Baseband HW.";
+      notife:notifiable-state-data true;
+      type erienmnrmlratbb:ddt-LratBb_BbProcessingResource_ulBbCapacityNet;
+    }
+  } // end 'grouping moc-BbProcessingResource'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list BbProcessingResource {
+      key id;
+      max-elements 1;
+      description "Represents the baseband processing resource in a DU or Baseband used for the eNB application in the RBS. MO is created automatically when the first EUtranCell is unlocked. In DU, attribute autoConfigurationAllowed must be set to TRUE in MO ManagedElementData, to enable the auto-configuration function. MO can be deleted manually.\n\nThe RDN of this MO is BbProcessingResource=1.";
+      erienmyext:enm-type MOC;
+      uses moc-BbProcessingResource-keys;
+      container attributes {
+        description "Attributes for BbProcessingResource";
+        uses moc-BbProcessingResource;
+      } // end 'container attributes'
+    } // end 'list BbProcessingResource'
+  }
+}

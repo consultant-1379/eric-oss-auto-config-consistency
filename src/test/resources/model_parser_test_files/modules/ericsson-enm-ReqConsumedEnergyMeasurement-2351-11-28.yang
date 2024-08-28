@@ -1,0 +1,86 @@
+module ericsson-enm-ReqConsumedEnergyMeasurement {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqConsumedEnergyMeasurement;
+  prefix erienmnrmreqconsumedenergymeasurement;
+  yexte:ecim-name ReqConsumedEnergyMeasurement;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 0;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-RmeSupport {
+    prefix erienmnrmrmesupport;
+  }
+  typedef ddt-ReqConsumedEnergyMeasurement_ConsumedEnergyMeasurement_totalNumberOfUnits {
+    type int16 {
+      range 0..100;
+    }
+  }
+  typedef ddt-ReqConsumedEnergyMeasurement_ConsumedEnergyMeasurement_noOfContributingUnits {
+    type int16 {
+      range 0..100;
+    }
+  }
+  grouping moc-ConsumedEnergyMeasurement-keys {
+    description "Key(s) for MOC ConsumedEnergyMeasurement";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name consumedEnergyMeasurementId;
+      type string;
+    }
+  } // end 'grouping moc-ConsumedEnergyMeasurement-keys'
+  grouping moc-ConsumedEnergyMeasurement {
+    description "This MO displays the energy consumption by Radio and Baseband units in the node.\nThe RDN of this MO is ConsumedEnergyMeasurement=1.";
+    leaf totalNumberOfUnits {
+      config false;
+      description "Total number of Radio units and Baseband units in the node.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqconsumedenergymeasurement:ddt-ReqConsumedEnergyMeasurement_ConsumedEnergyMeasurement_totalNumberOfUnits;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Managed object instances that reserves this managed object instance.\nReferences to energy meters included in the PM counters.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf noOfContributingUnits {
+      config false;
+      description "Number of energy meters of Radio units and Baseband units.\nDivide noOfContributingUnits with totalNumberOfUnits to get the ratio of contributing Radio and Baseband units.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqconsumedenergymeasurement:ddt-ReqConsumedEnergyMeasurement_ConsumedEnergyMeasurement_noOfContributingUnits;
+    }
+  } // end 'grouping moc-ConsumedEnergyMeasurement'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmrmesupport:NodeSupport {
+    list ConsumedEnergyMeasurement {
+      key id;
+      max-elements 1;
+      description "This MO displays the energy consumption by Radio and Baseband units in the node.\nThe RDN of this MO is ConsumedEnergyMeasurement=1.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-ConsumedEnergyMeasurement-keys;
+      container attributes {
+        description "Attributes for ConsumedEnergyMeasurement";
+        uses moc-ConsumedEnergyMeasurement;
+      } // end 'container attributes'
+    } // end 'list ConsumedEnergyMeasurement'
+  }
+}

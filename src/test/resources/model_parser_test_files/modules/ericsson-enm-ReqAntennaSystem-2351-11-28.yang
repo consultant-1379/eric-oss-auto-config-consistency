@@ -1,0 +1,3264 @@
+module ericsson-enm-ReqAntennaSystem {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-ReqAntennaSystem;
+  prefix erienmnrmreqantennasystem;
+  yexte:ecim-name ReqAntennaSystem;
+  revision 2351-11-28 {
+    yexte:version 3;
+    yexte:release 9;
+    yexte:correction 2;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  import ericsson-enm-ReqFieldReplaceableUnit {
+    prefix erienmnrmreqfieldreplaceableunit;
+  }
+  import ericsson-enm-ReqEquipment {
+    prefix erienmnrmreqequipment;
+  }
+  typedef enum-AldState {
+    description "Current state of ALD. Controlled by logical state machine that is implemented into controller of this subunit.";
+    type enumeration {
+      enum IDLE {
+        value 0;
+      }
+      enum OPERATING {
+        value 1;
+      }
+      enum DOWNLOAD {
+        value 2;
+      }
+      enum MALD_SETUP {
+        value 3;
+      }
+      enum PINGER_RESTRICTED {
+        value 4;
+      }
+      enum PINGER_RESTRICTED_TRANSMIT {
+        value 5;
+      }
+      enum PINGER_BROADCAST_WAIT {
+        value 6;
+      }
+      enum LISTENER_RESTRICTED_MONITOR {
+        value 7;
+      }
+      enum LISTENER_RESTRICTED_PREPARATION {
+        value 8;
+      }
+      enum LISTENER_BROADCAST_WAIT {
+        value 9;
+      }
+      enum ALD_NOT_CONFIGURED {
+        value 10;
+      }
+    }
+  }
+  typedef enum-VerticalBeamWidthMode {
+    description "Vertical beam width mode of antenna RET.";
+    type enumeration {
+      enum NARROW {
+        description "Narrow vertical beam width of antenna RET.";
+        value 0;
+      }
+      enum WIDE {
+        description "Wide vertical beam width of antenna RET.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AdmState {
+    description "Administrative state of a resource.";
+    type enumeration {
+      enum LOCKED {
+        description "The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+      enum SHUTTINGDOWN {
+        description "Use of the resource is administratively permitted to existing instances of use only.\nWhile the system remains in the shutting down state the manager may at any time cause the managed object to revert to the locked state.";
+        value 2;
+      }
+    }
+  }
+  typedef enum-RetStates {
+    description "RET state.";
+    type enumeration {
+      enum IDLE {
+        value 3;
+      }
+      enum TILTING {
+        value 4;
+      }
+    }
+  }
+  typedef enum-OperState {
+    description "Operational states of a resource.";
+    type enumeration {
+      enum DISABLED {
+        description "The resource is  totally inoperable.";
+        value 0;
+      }
+      enum ENABLED {
+        description "The resource is partially or fully operable.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-TcpStatus {
+    description "Status of TCP.";
+    type enumeration {
+      enum UNKNOWN {
+        value 0;
+      }
+      enum STARTED {
+        value 1;
+      }
+      enum FINISHED {
+        value 2;
+      }
+      enum FAILED {
+        value 3;
+      }
+      enum STOPPED {
+        value 4;
+      }
+    }
+  }
+  typedef enum-TmaType {
+    description "Type of tower mounted amplifier.";
+    type enumeration {
+      enum TMA {
+        description "Tower mounted amplifier.";
+        value 0;
+      }
+      enum TMF {
+        description "Tower mounted amplifier with frequency shift.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-AvailStatus {
+    description "The availability status is used to qualify the operational state.\nIt indicates why the operational state has changed its value.";
+    type enumeration {
+      enum IN_TEST {
+        description "The resource is undergoing a test procedure.\nIf the administrative state is locked or  shutting down, normal users are prevented from using the resource.";
+        value 0;
+      }
+      enum FAILED {
+        description "The resource has an internal fault that prevents it from operating.";
+        value 1;
+      }
+      enum POWER_OFF {
+        description "The resource requires power to be applied and is not powered on.";
+        value 2;
+      }
+      enum OFF_LINE {
+        description "The resource requires a routine operation to be performed.\nThis routine operation is to place the resource online and make it available for use. The operation may be manual or automatic, or both.\nThe operational state is disabled.";
+        value 3;
+      }
+      enum OFF_DUTY {
+        description "The resource has been made inactive by an internal control process.";
+        value 4;
+      }
+      enum DEPENDENCY {
+        description "The resource cannot operate because some other resource on which it depends is unavailable.";
+        value 5;
+      }
+      enum DEGRADED {
+        description "The service available from the resource is degraded in some respect.";
+        value 6;
+      }
+      enum NOT_INSTALLED {
+        description "The resource represented by the managed object is not present, or is incomplete.";
+        value 7;
+      }
+      enum LOG_FULL {
+        description "Indicates a log full condition.\nThe semantics are defined in CCITT Rec. X.735 | ISO/IEC 10164-6.";
+        value 8;
+      }
+      enum DEPENDENCY_LOCKED {
+        description "The administrative state of a resource that this resource depends on is locked.\nAlternatively, the availability status of the other resource is dependency locked.";
+        value 9;
+      }
+      enum DEPENDENCY_FAILED {
+        description "The availability status of a resource that this resource depends on is failed or dependency failed.";
+        value 10;
+      }
+      enum DEPENDENCY_SHUTTINGDOWN {
+        description "The administrative state of a resource that this resource depends on is shutting down.\nAlternatively, the availability status of the other resource is dependency shutting down.";
+        value 11;
+      }
+      enum DEPENDENCY_RECOVERY {
+        description "Resource that this resource depends on is undergoing a recovery procedure.";
+        value 12;
+      }
+    }
+  }
+  typedef enum-BeamformingPortMapping {
+    description "This enum is used to select between co-polarized and cross-polarized beamforming antenna port mapping.";
+    type enumeration {
+      enum CROSS_POLARIZED {
+        value 0;
+      }
+      enum CO_POLARIZED {
+        value 1;
+      }
+    }
+  }
+  typedef enum-AutosetState {
+    description "Autoset status.";
+    type enumeration {
+      enum DEACTIVATED {
+        description "Autoset function deactivated.";
+        value 0;
+      }
+      enum ACTIVATED {
+        description "Autoset function activated.";
+        value 1;
+      }
+      enum SUCCESS {
+        description "Autoset function succeeded.";
+        value 2;
+      }
+      enum FAILED {
+        description "Autoset function failed.";
+        value 3;
+      }
+    }
+  }
+  typedef enum-DownloadState {
+    description "Whether ALD is in download state.";
+    type enumeration {
+      enum IDLE {
+        value 0;
+      }
+      enum STARTED {
+        value 1;
+      }
+      enum FINISHED {
+        value 2;
+      }
+      enum FAILED {
+        value 3;
+      }
+    }
+  }
+  typedef enum-SupportedOperatingMode {
+    description "The supported operating mode.";
+    type enumeration {
+      enum LTE_5MHZ {
+        description "LTE 5MHz carrier.";
+        value 0;
+      }
+      enum LTE_10MHZ {
+        description "LTE 10 MHz carrier.";
+        value 1;
+      }
+      enum WCDMA_1_CHANNEL {
+        description "WCDMA with 1 channel.";
+        value 2;
+      }
+      enum WCDMA_2_CHANNELS {
+        description "WCDMA with 2 channels.";
+        value 3;
+      }
+      enum LTE_MIXED_WITH_WCDMA_IN_10MHZ {
+        description "Mixed Mode, LTE and WCDMA within 10 MHz. LTE in channelNumber1, WCDMA in channelNumber2.";
+        value 4;
+      }
+    }
+  }
+  typedef enum-SupportedDeployment {
+    description "The supported deployment.";
+    type enumeration {
+      enum PSI_CONFIGURATION {
+        description "Supported with Psi coverage.";
+        value 0;
+      }
+      enum Y_CONFIGURATION {
+        description "Supported with Y coverage.";
+        value 1;
+      }
+    }
+  }
+  typedef enum-ConnectionState {
+    description "Current connection state.";
+    type enumeration {
+      enum NO_CONNECTION {
+        value 0;
+      }
+      enum OPERATING {
+        value 1;
+      }
+      enum MALD_SETUP {
+        value 2;
+      }
+      enum UPLOAD {
+        value 3;
+      }
+      enum DOWNLOAD {
+        value 4;
+      }
+      enum DOWNLOAD_FAILED {
+        value 5;
+      }
+      enum RESTRICTED {
+        value 6;
+      }
+      enum DOWNLOAD_NOTIFICATION {
+        value 7;
+      }
+      enum OFF_CONNECTION {
+        value 8;
+      }
+      enum PINGER {
+        value 9;
+      }
+      enum LISTENER {
+        value 10;
+      }
+    }
+  }
+  typedef enum-AntNearUnit {
+    description "The Ant type.";
+    type enumeration {
+      enum IUANT {
+        value 0;
+      }
+      enum ASC {
+        value 1;
+      }
+      enum ERET {
+        value 2;
+      }
+    }
+  }
+  typedef enum-RfBranchBandEnabled {
+    description "Specific band that RfBranch works on.";
+    type enumeration {
+      enum DISABLED {
+        description "Band is not used by RfBranch.";
+        value 0;
+      }
+      enum ENABLED {
+        description "Band is used by RfBranch.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_iuantInstallersId {
+    type string {
+      length 0..5;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_iuantAntennaSerialNumber {
+    type string {
+      length 0..17;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalRoll_calculated {
+    type int16 {
+      range -1799..1799;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_PrecisionData_longitudePrecision {
+    type uint32;
+  }
+  typedef ddt-ReqAntennaSystem_SensorData_latitude {
+    type int32;
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_iuantAntennaBearing {
+    type int32 {
+      range "-1000..-1000 | 0..3599";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_iuantInstallersId {
+    type string {
+      length 0..5;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_PrecisionData_latitudePrecision {
+    type uint32;
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_iuantAntennaModelNumber {
+    type string {
+      length 0..15;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AsdSubUnit_mechanicalRollTarget {
+    type int16 {
+      range "-1799..1799 | 9999..9999";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_maxTilt {
+    type int32 {
+      range "-1000..-1000 | -900..900";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaSerialNumber {
+    type string {
+      length 0..17;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalTilt_lowestCalculated {
+    type int16 {
+      range -1799..1799;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_SensorData_azimuth {
+    type int32;
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalRoll_highestCalculated {
+    type int16 {
+      range -1799..1799;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfDataStruct_dlAttenuation {
+    type int32 {
+      range 0..200;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalAzimuth_highestCalculated {
+    type uint16 {
+      range 0..3599;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaOperatingGain {
+    type int32 {
+      range "-1000..-1000 | 0..255";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AsdSubUnit_mechanicalTiltTarget {
+    type int16 {
+      range "-1799..1799 | 9999..9999";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaUnitGroup_positionInformation {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaSubunit_azimuthHalfPowerBeamwidth {
+    type int32 {
+      range "65..65 | 90..90";
+    }
+  }
+  typedef ddt-AntennaNearUnit_sendTmfConfigurationFile_server {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitGainRes {
+    type int32 {
+      range 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_dlTrafficDelayPerFqRange {
+    type int32 {
+      range -1..800000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaSubunit_maxTotalTilt {
+    type int32 {
+      range -900..900;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfDataStruct_dlTrafficDelay {
+    type int32 {
+      range 0..30000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalAzimuth_precision {
+    type uint16 {
+      range 0..3599;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantBaseStationId {
+    type string {
+      length 0..32;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfConfiguration_frequencyDistance {
+    type int32 {
+      range 0..200;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_GeolocationMonitorConfig_sensitivity {
+    type int32 {
+      range 1..10;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_dlTrafficDelay {
+    type int32 {
+      range 0..2000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_Coordinates_latitude {
+    type int32 {
+      range -90000000..90000000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_iuantBaseStationId {
+    type string {
+      length 0..32;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_GeolocationMonitorConfig_altitudeTolerance {
+    type int32 {
+      range "-1..-1 | 1..100";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalRoll_lowestCalculated {
+    type int16 {
+      range -1799..1799;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_SensorData_altitude {
+    type int32;
+  }
+  typedef ddt-ReqAntennaSystem_AsdSubUnit_mechanicalAzimuthTarget {
+    type uint16 {
+      range "0..3599 | 9999..9999";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_testRecord {
+    type string {
+      length 1..70;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_SensorData_longitude {
+    type int32;
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaModelNumber {
+    type string {
+      length 0..15;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_ulTrafficDelayPerFqRange {
+    type int32 {
+      range -1..800000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_ulTrafficDelay {
+    type int32 {
+      range -1..800000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_dlAttenuation {
+    type int32 {
+      range "-500..500 | 65535..65535";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_electricalAntennaTilt {
+    type int32 {
+      range "-999..-999 | -900..900";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_iuantAntennaOperatingBeamwidth {
+    type int32 {
+      range "-1000..-1000 | 0..360";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfDataStruct_ulTrafficDelay {
+    type int32 {
+      range 0..30000;
+    }
+  }
+  typedef ddt-AntennaNearUnit_sendTmfConfigurationFile_userName {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AuPort_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaInstalledMechanicalTilt {
+    type int32 {
+      range "-1000..-1000 | -900..900";
+    }
+  }
+  typedef ddt-EcimPasswordString {
+    description "Holds the password string.";
+    type string;
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitMaxGain {
+    type int32 {
+      range 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_GlsSubUnit_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfConfiguration_ifFilterBit {
+    type int32 {
+      range 0..1;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaSubunit_totalTilt {
+    type int32 {
+      range -900..900;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaNearUnit_softwareVersion {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-AntennaNearUnit_sendTmfConfigurationFile_path {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_dlAttenuation {
+    type int32 {
+      range 0..20;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_dlTrafficDelay {
+    type int32 {
+      range -1..800000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaSubunit_customComChBeamfrmWtsAmplitude {
+    type uint32 {
+      range 0..100;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_iuantAntennaOperatingGain {
+    type int32 {
+      range "-1000..-1000 | 0..255";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaNearUnit_iuantDeviceType {
+    type int32 {
+      range "1..1 | 2..2 | 17..17 | 35..35 | 37..37 | 49..49";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantSectorId {
+    type string {
+      length 0..32;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AsdSubUnit_userLabel {
+    type string {
+      length 1..128;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaSubunit_minTotalTilt {
+    type int32 {
+      range -900..900;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalTilt_highestCalculated {
+    type int16 {
+      range -1799..1799;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_minTilt {
+    type int32 {
+      range "-1000..-1000 | -900..900";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_ulAttenuation {
+    type int32 {
+      range -500..500;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_subunitNumber {
+    type int32 {
+      range 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_Coordinates_longitude {
+    type int32 {
+      range -180000000..180000000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_iuantBaseStationId {
+    type string {
+      length 0..32;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_iuantAntennaSerialNumber {
+    type string {
+      length 0..17;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_GlsSubUnit_altitude {
+    type int32 {
+      range -5000..100000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantInstallersId {
+    type string {
+      length 0..5;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_ulTrafficDelay {
+    type int32 {
+      range 0..2000;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitFreqRangeTx {
+    type int32 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_PrecisionData_altitudePrecision {
+    type uint32;
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_dlAttenuationPerFqRange {
+    type int32 {
+      range "-500..500 | 65535..65535";
+    }
+  }
+  typedef ddt-AntennaNearUnit_sendTmfConfigurationFile_password {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfConfiguration_channelNumber1 {
+    type int32 {
+      range 0..262143;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalAzimuth_lowestCalculated {
+    type uint16 {
+      range 0..3599;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfConfiguration_channelNumber2 {
+    type int32 {
+      range 0..262143;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfDataStruct_ifBandwidth {
+    type int32 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaBearing {
+    type int32 {
+      range "-1000..-1000 | 0..3599";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfConfiguration_operatingBand {
+    type int32 {
+      range 0..256;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_iuantAntennaModelNumber {
+    type string {
+      length 0..15;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalThresholds_lower {
+    type int16 {
+      range "0..1799 | 9999..9999";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_minTilt {
+    type int32 {
+      range "-1000..-1000 | -900..900";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalAzimuth_calculated {
+    type uint16 {
+      range 0..3599;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_GeolocationMonitorConfig_azimuthTolerance {
+    type int32 {
+      range "-1..-1 | 1..1800";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_GeolocationMonitorConfig_boundingRadius {
+    type int32 {
+      range "-1..-1 | 1..1000";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalRoll_precision {
+    type uint16 {
+      range 0..1799;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_iuantAntennaOperatingGain {
+    type int32 {
+      range "-1000..-1000 | 0..255";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaNearUnit_uniqueId {
+    type string {
+      length 0..19;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_iuantSectorId {
+    type string {
+      length 0..32;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_ulGain {
+    type int32;
+  }
+  typedef ddt-ReqAntennaSystem_RfBranch_ulAttenuationPerFqRange {
+    type int32 {
+      range -500..500;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalTilt_calculated {
+    type int16 {
+      range -1799..1799;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaNearUnit_productNumber {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaUnit_mechanicalAntennaTilt {
+    type int32 {
+      range -900..900;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitMinGain {
+    type int32 {
+      range 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_iuantInstallationDate {
+    type string {
+      length 0..6;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaSubunit_customComChBeamfrmWtsPhase {
+    type uint32 {
+      range 0..359;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfDataStruct_ulFeederFrequency {
+    type int32 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalThresholds_upper {
+    type int16 {
+      range "0..1799 | 9999..9999";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantInstallationDate {
+    type string {
+      length 0..6;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_GeolocationMonitorConfig_downtiltTolerance {
+    type int32 {
+      range "-1..-1 | 1..900";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitFreqRangeRx {
+    type int32 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_TmfDataStruct_ulAirFrequency {
+    type int32 {
+      range 0..65535;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_MechanicalTilt_precision {
+    type uint16 {
+      range 0..1799;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_AntennaNearUnit_hardwareVersion {
+    type string {
+      length 0..255;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_maxTilt {
+    type int32 {
+      range "-1000..-1000 | -900..900";
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RetSubUnit_iuantSectorId {
+    type string {
+      length 0..32;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_RaeSubUnit_iuantInstallationDate {
+    type string {
+      length 0..6;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_SensorData_downtilt {
+    type int32;
+  }
+  typedef ddt-ReqAntennaSystem_AntennaNearUnit_serialNumber {
+    type string {
+      length 0..17;
+    }
+  }
+  typedef ddt-ReqAntennaSystem_GeolocationMonitorConfig_verificationPeriod {
+    type int32 {
+      range 1..10080;
+    }
+  }
+  grouping struct-PrecisionData {
+    description "Precision for altitude, longitude and latitude parameters.";
+    leaf longitudePrecision {
+      description "Standard deviation of values from their arithmetic mean.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_PrecisionData_longitudePrecision;
+      default 0;
+    }
+    leaf altitudePrecision {
+      description "Standard deviation of values from their arithmetic mean.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_PrecisionData_altitudePrecision;
+      default 0;
+    }
+    leaf latitudePrecision {
+      description "Standard deviation of values from their arithmetic mean.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_PrecisionData_latitudePrecision;
+      default 0;
+    }
+  } // end 'grouping struct-PrecisionData'
+  grouping struct-Coordinates {
+    description "Latitude and longitude.";
+    leaf latitude {
+      description "Angular measurement in degrees that identifies a position on Earth north or south of equator. Ranges from 0 at the equator to +90 at North Pole and −90 at South Pole, as specified by WGS84.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_Coordinates_latitude;
+      default 0;
+    }
+    leaf longitude {
+      description "Angular measurement in degrees that identifies a position on Earth east or west of prime meridian. Ranges from 0 at prime meridian to +180 to the east and −180 to the west, as specified by WGS84.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_Coordinates_longitude;
+      default 0;
+    }
+  } // end 'grouping struct-Coordinates'
+  grouping struct-AisgVersion {
+    description "AISG version.";
+    leaf releaseVersion {
+      description "AISG release.";
+      type uint32;
+      mandatory true;
+    }
+    leaf majorVersion {
+      description "AISG feature introductions. Incremented every time a new feature is introduced as standard.";
+      type uint32;
+      mandatory true;
+    }
+    leaf minorVersion {
+      description "AISG technical updates. Incremented every time a technical change is introduced as standard.";
+      type uint32;
+      mandatory true;
+    }
+  } // end 'grouping struct-AisgVersion'
+  grouping struct-SensorData {
+    description "Sensor data.";
+    leaf downtilt {
+      description "Sensored mechanical tilt defined as inclination of antenna element axis in vertical plane. Positive or negative values denotes downtilt or uptilt.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_SensorData_downtilt;
+      default -1;
+    }
+    leaf altitude {
+      description "Altitude part of unit position in meters. Positive or negative values denotes height or depth. According to WGS 84 specification.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_SensorData_altitude;
+      default -1;
+    }
+    leaf latitude {
+      description "Latitude part of unit position. Positive or negative values denotes North or South. According to WGS 84 specification.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_SensorData_latitude;
+      default -1;
+    }
+    leaf azimuth {
+      description "Azimuth of antenna pattern in horizontal plane in antenna reference coordinate system.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_SensorData_azimuth;
+      default -1;
+    }
+    leaf longitude {
+      description "Longitude part of unit position. Positive or negative values denotes East or West. According to WGS 84 specification.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_SensorData_longitude;
+      default -1;
+    }
+  } // end 'grouping struct-SensorData'
+  grouping struct-TmfDataStruct {
+    description "TMF configuration data.";
+    leaf dlAttenuation {
+      description "Subunit internal attenuation in downlink.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfDataStruct_dlAttenuation;
+      mandatory true;
+    }
+    leaf ifBandwidth {
+      description "Intermediate filter bandwidth. It must match the bandwidth of the operator band.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfDataStruct_ifBandwidth;
+      mandatory true;
+    }
+    leaf dlTrafficDelay {
+      description "Subunit internal delay in downlink.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfDataStruct_dlTrafficDelay;
+      mandatory true;
+    }
+    leaf ulFeederFrequency {
+      description "Absolute frequency for the uplink feeder carrier (after frequency shifting).";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfDataStruct_ulFeederFrequency;
+      mandatory true;
+    }
+    leaf ulTrafficDelay {
+      description "Subunit internal delay in uplink.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfDataStruct_ulTrafficDelay;
+      mandatory true;
+    }
+    leaf ulAirFrequency {
+      description "Absolute air frequency for the uplink carrier received at the unit.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfDataStruct_ulAirFrequency;
+      mandatory true;
+    }
+  } // end 'grouping struct-TmfDataStruct'
+  grouping struct-MechanicalThresholds {
+    description "Acceptable deviations from mechanical angles target values.";
+    leaf lower {
+      description "Delta value. When subtracted from the target angle equals the lowest measurement permitted without triggering an alarm condition.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalThresholds_lower;
+      default 9999;
+    }
+    leaf upper {
+      description "Delta value. When added to the target angle equals the highest measurement permitted without triggering an alarm condition.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalThresholds_upper;
+      default 9999;
+    }
+  } // end 'grouping struct-MechanicalThresholds'
+  grouping struct-MechanicalRoll {
+    description "ASD type attribute.";
+    leaf precision {
+      description "Standard deviation of values from their arithmetic mean. Used to judge precision of calculated measurements.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalRoll_precision;
+      mandatory true;
+    }
+    leaf lowestCalculated {
+      description "Lowest calculated result in roll. Used to analyse effects of sway or other mechanical inputs.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalRoll_lowestCalculated;
+      mandatory true;
+    }
+    leaf calculated {
+      description "Calculated antenna roll.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalRoll_calculated;
+      mandatory true;
+    }
+    leaf highestCalculated {
+      description "Highest calculated result in roll. Used to analyse effects of sway or other mechanical inputs.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalRoll_highestCalculated;
+      mandatory true;
+    }
+  } // end 'grouping struct-MechanicalRoll'
+  grouping struct-AutosetStatus {
+    description "Autoset attributes.";
+    leaf targetMechanicalRoll {
+      description "State of the autoset for targetMechanicalRoll.";
+      type erienmnrmreqantennasystem:enum-AutosetState;
+      mandatory true;
+    }
+    leaf targetMechanicalTilt {
+      description "State of the autoset for targetMechanicalTilt.";
+      type erienmnrmreqantennasystem:enum-AutosetState;
+      mandatory true;
+    }
+    leaf targetMechanicalAzimuth {
+      description "State of the autoset for targetMechanicalAzimuth.";
+      type erienmnrmreqantennasystem:enum-AutosetState;
+      mandatory true;
+    }
+  } // end 'grouping struct-AutosetStatus'
+  grouping struct-MechanicalTilt {
+    description "ASD type attribute.";
+    leaf precision {
+      description "Standard deviation of values from their arithmetic mean. Used to judge the credibility of calculated measurements.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalTilt_precision;
+      mandatory true;
+    }
+    leaf lowestCalculated {
+      description "Lowest calculated result in tilt. Used to analyse effects of sway or other mechanical inputs.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalTilt_lowestCalculated;
+      mandatory true;
+    }
+    leaf calculated {
+      description "Calulcated antenna tilt.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalTilt_calculated;
+      mandatory true;
+    }
+    leaf highestCalculated {
+      description "Highest calculated result in tilt. Used to analyse effects of sway or other mechanical inputs.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalTilt_highestCalculated;
+      mandatory true;
+    }
+  } // end 'grouping struct-MechanicalTilt'
+  grouping struct-MechanicalAzimuth {
+    description "ASD type attribute.";
+    leaf precision {
+      description "Standard deviation of values from their arithmetic mean. Used to judge precision of calculated measurements.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalAzimuth_precision;
+      mandatory true;
+    }
+    leaf lowestCalculated {
+      description "Lowest calculated result in azimuth. Used to analyse effects of sway or other mechanical inputs.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalAzimuth_lowestCalculated;
+      mandatory true;
+    }
+    leaf calculated {
+      description "Calculated antenna azimuth.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalAzimuth_calculated;
+      mandatory true;
+    }
+    leaf highestCalculated {
+      description "Highest calculated result in azimuth. Used to analyse effects of sway or other mechanical inputs.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_MechanicalAzimuth_highestCalculated;
+      mandatory true;
+    }
+  } // end 'grouping struct-MechanicalAzimuth'
+  grouping struct-GeolocationMonitorConfig {
+    description "Configuration parameters of geolocation monitor.";
+    leaf verificationPeriod {
+      description "Time until next pooling of measurement data from hardware.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_GeolocationMonitorConfig_verificationPeriod;
+      default 720;
+    }
+    leaf boundingRadius {
+      description "Maximum distance between actual and target location.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_GeolocationMonitorConfig_boundingRadius;
+      default -1;
+    }
+    leaf altitudeTolerance {
+      description "Allowed divergence of measured altitude from target.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_GeolocationMonitorConfig_altitudeTolerance;
+      default -1;
+    }
+    leaf azimuthTolerance {
+      description "Allowed divergence of measured azimuth from target.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_GeolocationMonitorConfig_azimuthTolerance;
+      default -1;
+    }
+    leaf downtiltTolerance {
+      description "Allowed divergence of measured mechanical tilt from target.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_GeolocationMonitorConfig_downtiltTolerance;
+      default -1;
+    }
+    leaf sensitivity {
+      description "Number of out of range measurements that have to be gathered before raising alarm.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_GeolocationMonitorConfig_sensitivity;
+      default 3;
+    }
+  } // end 'grouping struct-GeolocationMonitorConfig'
+  grouping moc-AsdSubUnit-keys {
+    description "Key(s) for MOC AsdSubUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name asdSubUnitId;
+      type string;
+    }
+  } // end 'grouping moc-AsdSubUnit-keys'
+  grouping moc-AsdSubUnit {
+    description "This MO represents an Alignment Sensor Device (ASD).";
+    leaf userLabel {
+      erienmyext:no-notification;
+      description "Label for free use.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AsdSubUnit_userLabel;
+    }
+    leaf mechanicalRollTarget {
+      description "Target alignment of antenna roll.\nIf mechanicalRollTarget is 9999, target is not supported or value from device is not set yet.\nIf requested value is out of valid range defined by device manufacturer then attempt to save it will be rejected. Attribute restores previously known value or default one if none was present before on device.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AsdSubUnit_mechanicalRollTarget;
+      default 9999;
+    }
+    leaf mechanicalAzimuthTarget {
+      description "Target alignment of antenna azimuth.\nIf mechanicalAzimuthTarget is 9999, target is not supported or value from device is not set yet.\nIf requested value is out of valid range defined by device manufacturer then attempt to save it will be rejected. Attribute restores previously known value or default one if none was present before on device.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AsdSubUnit_mechanicalAzimuthTarget;
+      default 9999;
+    }
+    container mechanicalTiltThresholds {
+      description "Acceptable deviation from mechanicaTiltTarget.\nExceeding range by calculated mechanicalTilt triggers RBS Physical and Configured Position Mismatch alarm.\nIf requested value is out of valid range defined by device manufacturer then attempt to save it will be rejected. Attribute restores previously known value or default one if none was present before on device.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-MechanicalThresholds;
+    } // end 'container mechanicalTiltThresholds'
+    container autosetStatus {
+      description "Autoset status for target mechanical tilt, roll, and azimuth.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-AutosetStatus;
+    } // end 'container autosetStatus'
+    container mechanicalAzimuthThresholds {
+      description "Acceptable deviation from mechanicaAzimuthTarget.\nExceeding range by calculated mechanicalAzimuth triggers RBS Physical and Configured Position Mismatch alarm.\nIf requested value is out of valid range defined by device manufacturer then attempt to save it will be rejected. Attribute restores previously known value or default one if none was present before on device.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-MechanicalThresholds;
+    } // end 'container mechanicalAzimuthThresholds'
+    leaf subunitNumber {
+      config false;
+      description "Subunit identifier carried on L7 messages in which subunits are pointed with the help of application level identifiers.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    container mechanicalAzimuth {
+      description "Heading angle of ASD in horizontal plane.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-MechanicalAzimuth;
+    } // end 'container mechanicalAzimuth'
+    leaf mechanicalTiltTarget {
+      description "Target alignment of antenna tilt.\nIf mechanicalTiltTarget is 9999, target is not supported or value from device is not set yet.\nIf requested value is out of valid range defined by device manufacturer then attempt to save it will be rejected. Attribute restores previously known value or default one if none was present before on device";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AsdSubUnit_mechanicalTiltTarget;
+      default 9999;
+    }
+    container mechanicalRoll {
+      description "Roll angle of ASD in vertical plane between vertical and physical axes of antenna.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-MechanicalRoll;
+    } // end 'container mechanicalRoll'
+    container mechanicalTilt {
+      description "Tilt angle of ASD in vertical plane.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-MechanicalTilt;
+    } // end 'container mechanicalTilt'
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-OperState;
+    }
+    container mechanicalRollThresholds {
+      description "Acceptable deviation from mechanicaRollTarget.\nExceeding range by calculated mechanicalRoll triggers RBS Physical and Configured Position Mismatch alarm.\nIf requested value is out of valid range defined by device manufacturer then attempt to save it will be rejected. Attribute restores previously known value or default one if none was present before on device.\n";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-MechanicalThresholds;
+    } // end 'container mechanicalRollThresholds'
+    action getAlignmentData {
+      description "Updates values in mechanicalAzimuth, mechanicalRoll and mechanicalTilt structs.\nStructures are not updated if hardware does not support corresponding sensing functions. See getSupportedFunctions.";
+    }
+    action calibrate {
+      description "Calibrates ASD.";
+    }
+    action getSupportedFunctions {
+      description "Returns information of function availability provided by an ASD.";
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action deleteTargetThresholds {
+      description "Deletes target thresholds for chosen parameters.";
+      input {
+        leaf mechanicalAzimuth {
+          mandatory true;
+          description "Flag for deleting target thresholds for mechanical azimuth.";
+          type boolean;
+        }
+        leaf mechanicalRoll {
+          mandatory true;
+          description "Flag for deleting target thresholds for mechanical roll.";
+          type boolean;
+        }
+        leaf mechanicalTilt {
+          mandatory true;
+          description " Flag for deleting target thresholds for mechanical tilt.";
+          type boolean;
+        }
+      }
+    }
+    action autoset {
+      description "Activates autoset action for target tilt, roll or azimuth.";
+      input {
+        leaf mechanicalAzimuth {
+          mandatory true;
+          description "Flag for activating autoset on mechanical azimuth target.";
+          type boolean;
+        }
+        leaf mechanicalRoll {
+          mandatory true;
+          description "Flag for activating autoset on mechanical roll target.";
+          type boolean;
+        }
+        leaf mechanicalTilt {
+          mandatory true;
+          description "Flag for activating autoset on mechanical tilt target.";
+          type boolean;
+        }
+      }
+    }
+  } // end 'grouping moc-AsdSubUnit'
+  grouping moc-RetSubUnit-keys {
+    description "Key(s) for MOC RetSubUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name retSubUnitId;
+      type string;
+    }
+  } // end 'grouping moc-RetSubUnit-keys'
+  grouping moc-RetSubUnit {
+    description "This MO represents the device, either a single RET subunit or a subunit of the multi RET subunit providing for remote electrical tilting of the antenna unit where it is mounted.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_userLabel;
+    }
+    leaf verticalBeamWidthMode {
+      description "Vertical beam width mode of antenna RET.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type erienmnrmreqantennasystem:enum-VerticalBeamWidthMode;
+      default NARROW;
+    }
+    leaf iuantAntennaBearing {
+      description "Antenna bearing on the antenna subunit where the RET subunit is installed.\nAntenna bearing is expressed as bearing value x 10.\nThis attribute is part of IUANT protocol definition (see 3GPP TS 25.466) and has no operational impact.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_iuantAntennaBearing;
+      default -1000;
+    }
+    leaf iuantAntennaSerialNumber {
+      description "Unique hardware identifier of the antenna where the RET subunit operates.\nThis parameter is part of IUANT protocol specification (see 3GPP TS 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_iuantAntennaSerialNumber;
+    }
+    leaf minTilt {
+      description "Minimum electrical tilt supported by the RET subunit.\nThe electrical tilt is defined as the inclination of the maximum of the antenna main beam with respect to the direction orthogonal to the antenna element axis. It is a signed value. Positive value indicates downtilt, and negative value indicates uptilt.\n\nThis attribute is part of the IUANT protocol specification (see 3GPP TS 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_minTilt;
+      default -1000;
+    }
+    leaf-list iuantAntennaOperatingGain {
+      min-elements 0;
+      max-elements 4;
+      description "Antenna gain for each of four operating bands, starting with the lowest value.\nThis attribute is part of IUANT protocol definition (see 3GPP TS 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_iuantAntennaOperatingGain;
+      default -1000;
+      default -1000;
+      default -1000;
+      default -1000;
+    }
+    leaf iuantInstallationDate {
+      description "Installation date.\nThis parameter is part of the IUANT protocol specification (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_iuantInstallationDate;
+    }
+    leaf subunitNumber {
+      config false;
+      description "Subunit identifier carried on L7 messages in which subunits are pointed with the help of application level identifiers.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf maxTilt {
+      description "Maximum electrical tilt supported by the RET subunit.\nThe electrical tilt is defined as the inclination of the maximum of the antenna main beam with respect to the direction orthogonal to the antenna element axis. It is a signed value. Positive indicates downtilt, and negative indicates uptilt. \n\nThis attribute is part of the IUANT protocol specification (see 3GPP TS 25.466) and has no operational impact.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_maxTilt;
+      default -1000;
+    }
+    leaf iuantAntennaOperatingBand {
+      description "Operating band used by the antenna subunit connected to this RET subunit.\nThis attribute is part of the IUANT protocol specification and has no operational impact. Bit 0 in 0x03 is the least significant bit (For details on coding, see table B.2 of Annex B on 3GPP TS 25.466).\n";
+      type int64;
+      default -1000;
+    }
+    leaf iuantInstallersId {
+      description "ID of the responsible installer.\nThis attribute is part of the IUANT protocol specification (see 3GPP TS 25.466) and has no operational impact.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_iuantInstallersId;
+    }
+    leaf tiltChangeStatus {
+      config false;
+      description "Status of tilt operation.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-RetStates;
+    }
+    leaf iuantBaseStationId {
+      description "Base station ID.\nThis attribute is part of the IUANT protocol specification (see 3GPP TS 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_iuantBaseStationId;
+    }
+    leaf iuantSectorId {
+      description "RBS internal sector ID.\nThis attribute is part of the IUANT protocol specification (see 3GPP TS 25.466) and has no operational impact.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_iuantSectorId;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf calibrationStatus {
+      config false;
+      description "The status of ongoing calibration operation.\nIn case no calibration has been performed since last Baseband restart it shows state UNKNOWN.\n\nNOTE: The calibrationStatus is not used to verify or confirm if the RET subunit is calibrated or not. The RET subunit is calibrated unless an alarm indicates otherwise.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-TcpStatus;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmreqantennasystem:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.";
+      type erienmnrmreqantennasystem:enum-OperState;
+    }
+    leaf electricalAntennaTilt {
+      description "Electrically-controlled tilt of main beam maximum with respect to direction orthogonal to antenna element axis (see 3GPP TS 25.466). Value is signed; tilt down is positive, tilt up is negative.\nIf electricalAntennaTilt is -999 at MO creation, actual value in RETU is used as antenna tilt setting. ElectricalAntennaTilt is overwritten. \nDependencies: RetSubunit.minTilt =< RetSubunit.electricalAntennaTilt =< RetSubunit.maxTilt\nAND\nIf reservedBy attribute contains AntennaSubunit MO:\nAntennaSubunit.minTotalTilt =< (AntennaUnit.mechanicalAntennaTilt + RetSubunit.electricalAntennaTilt) =< AntennaSubunit.maxTotalTilt\nIf reservedBy attribute contains Transceiver MO:\nTransceiver.minTotalTilt =< (Transceiver.mechanicalAntennaTilt + RetSubunit.electricalAntennaTilt) =< Transceiver.maxTotalTilt\nThrows exception AttributeValueOutOfRangeException\nDisturbances: Change can affect traffic while the antenna beam is moving.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_electricalAntennaTilt;
+      default 0;
+    }
+    leaf iuantAntennaModelNumber {
+      description "Vendor-specific antenna model identifier.\nThis parameter is part of IUANT protocol specification (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RetSubUnit_iuantAntennaModelNumber;
+    }
+    action clearConfig {
+      description "Clears configuration file on RET device.";
+    }
+    action forceCalibration {
+      description "Force calibration of the antenna.\nExercises the antenna drive unit over its entire range of travel to ensure fault-free operation and synchronize the measured and actual beam tilt of the antenna.\n";
+    }
+    action resetAld {
+      description "The process of putting ALD in the same status as the status reached after a completed power-up.\nFollowing options can cause reset:\n- DC power-up.\n- DC power cycle.\n- Communication timeout.\n- Internally implemented ALD watchdog timeout.\n- Execution of layer 2 ResetALD command.";
+    }
+    action refreshIuantAttribute {
+      description "Refresh value of chosen Iuant attribute. Attribute is read from hardware and store in MO.";
+      input {
+        leaf-list attributeName {
+          min-elements 0;
+          max-elements 255;
+          description "Name of Iuant attribute to update. Attributes that can be updated are: minTilt, maxTilt and all attributes with the 'iuant' prefix. Using the keyword 'all' will refresh all Iuant attributes.";
+          type string;
+        }
+      }
+    }
+    action resetAllPorts {
+      description "Resets all ALD ports";
+    }
+    action sendAntennaConfigurationFile {
+      description "Sends vendor and antenna specific configuration data in an antenna configuration file to the RET subunit.\nThe antenna configuration file is fetched from an FTP server. The configuration data includes the relationship between the movement of the drive system and the beam tilt position of the addressed antenna.";
+      input {
+        leaf-list server {
+          min-elements 0;
+          max-elements 255;
+          description "The IP address or hostname of the FTP server.";
+          type string;
+        }
+        leaf-list path {
+          min-elements 0;
+          max-elements 255;
+          description "The file path to the antenna configuration file on the FTP server.";
+          type string;
+        }
+        leaf-list password {
+          min-elements 0;
+          max-elements 255;
+          description "Password used to logon to the FTP server.";
+          type string;
+        }
+        leaf-list userName {
+          min-elements 0;
+          max-elements 255;
+          description "User name used to logon to the FTP server.\n";
+          type string;
+        }
+      }
+    }
+  } // end 'grouping moc-RetSubUnit'
+  grouping moc-RfBranch-keys {
+    description "Key(s) for MOC RfBranch";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\nTo provision the RfBranch not to be used for Tx transmission, even though it might be Tx-capable, the RfBranchId value should follow the format: \"any_string\"_NO_TX\n\n";
+      mandatory true;
+      yexte:ecim-name rfBranchId;
+      type string;
+    }
+  } // end 'grouping moc-RfBranch-keys'
+  grouping moc-RfBranch {
+    description "This MO represents the connection from an antenna feeder port on the RU to one antenna feeder connector on one or several antenna units.\nThe MO represents all equipment between the radio and the antenna which isn't modelled by any other MO. That includes feeder, filters and non-supervised, non-controlled TMA.\n\n";
+    leaf userLabel {
+      description "Label for free use.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_userLabel;
+    }
+    leaf-list ulAttenuationPerFqRange {
+      min-elements 0;
+      max-elements 4;
+      description "Optionally replaces ulAttenuation for configurations with radio supporting single band for each RfPort.\nReplaces ulAttenuation for configurations with radio supporting multi band for each RfPort.\nConfigures UL attenuation between radio connector and antenna unit connector.\nAttenuation includes feeder, filters, and non-supervised, uncontrolled TMAs.\nAttenuation value is valid for full frequency range.\nAttribute is a sequence containing 4 entries.\nUse each entry to configure attenuation for the corresponding frequency range in ulFrequencyRanges of RfPort to which RfBranch refers.\nThe value range for each entry is -500 to -2, -1, 0-500 (-50 to 50 dB). Unused entries are set to -1.\nFor information on the different operating bands, refer to 3GPP TS 36.104.";
+      yexte:disturbances "Changing this attribute can affect traffic.";
+      yexte:takes-effect "Immediately if cell is unlocked, otherwise when cell is unlocked.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_ulAttenuationPerFqRange;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf-list ulTrafficDelayPerFqRange {
+      min-elements 0;
+      max-elements 4;
+      description "Optionally replaces ulTrafficDelay for configurations with radio supporting single band for each RfPort.\nReplaces ulTrafficDelay for configurations with radio supporting multi band for each RfPort.\nConfigures UL delay between radio connector and antenna unit connector.\nDelay includes feeder, filters, and non-supervised, uncontrolled TMAs.\nDelay value is valid for full frequency range.\nAttribute is a sequence containing 4 entries.\nUse each entry to configure delay for the corresponding frequency range in ulFrequencyRanges of RfPort to which RfBranch refers.\nThe value range for each entry is 0-800000 (0-800000 ns). Unused entries are set to -1.\nNOTE: If the range supported by individual radio units is smaller, it must be considered when configuring the antenna system.\nFor information on the different operating bands, refer to 3GPP TS 36.104.";
+      yexte:disturbances "Changing this attribute can affect traffic. ";
+      yexte:takes-effect "Immediately if cell is unlocked, otherwise when cell is unlocked.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_ulTrafficDelayPerFqRange;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf-list dlTrafficDelay {
+      min-elements 0;
+      max-elements 40;
+      description "Downlink traffic delay between the connector on the radio and the connector on the antenna unit. The delay includes feeder, filter, and non-supervised, uncontrolled Tower Mounted Amplifiers (TMAs).\nThe sequence contains 40 entries and each entry represents one 5-MHz interval. The first entry represents the traffic delay value of the lowest frequency interval in the operating band, and so on.\nThe number of intervals used depends on the operating band.\nFor information on the different operating bands, refer to 3GPP TS 36.104.\nThe value range for each entry is 0-800000 (0-800000 ns). Unused entries are set to -1.\nNOTE: If the range supported by the actual Radio Unit is smaller, it must be considered when configuring the antenna system.\nAttribute is optionally replaced by dlTrafficDelayPerFqRange for configurations with radio supporting single band per RfPort.\nAttribute is replaced by dlTrafficDelayPerFqRange for configurations with radio supporting multi band per RfPort.";
+      yexte:disturbances "Changing this attribute can affect traffic.";
+      yexte:takes-effect "If cell is locked, takes effect when cell is unlocked. If cell is unlocked, takes effect immediately.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_dlTrafficDelay;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf-list dlAttenuationPerFqRange {
+      min-elements 0;
+      max-elements 4;
+      description "Optionally replaces dlAttenuation for configurations with radio supporting single band for each RfPort.\nReplaces dlAttenuation for configurations with radio supporting multi band for each RfPort.\nConfigures DL attenuation between radio connector and antenna unit connector.\nAttenuation includes feeder, filters, and non-supervised, uncontrolled TMAs.\nAttenuation value is valid for full frequency range.\nAttribute is a sequence containing 4 entries.\nUse each entry to configure attenuation for the corresponding frequency range in dlFrequencyRanges of RfPort to which RfBranch refers.\nThe value range for each entry is -500 to -2, -1, 0-500 (-50 to 50 dB). Unused entries are set to -1. \nFor information on different operating bands, refer to 3GPP TS 36.104.";
+      yexte:disturbances "Changing this attribute can affect traffic.";
+      yexte:takes-effect "Immediately if cell is unlocked, otherwise when cell is unlocked.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_dlAttenuationPerFqRange;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf-list auPortRef {
+      min-elements 0;
+      max-elements 4;
+      description "Refers to the AuPort MO that represents the physical antenna feeder connector on the antenna unit, to which this RfBranch is connected.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list dlAttenuation {
+      min-elements 1;
+      max-elements 40;
+      description "Downlink attenuation between the connector on the radio and the connector on the antenna unit. The attenuation includes feeder, filters, and non-supervised, uncontrolled Tower Mounted Amplifiers (TMAs).\nThe sequence contains 40 entries and each entry represents one 5-MHz interval.\nThe first entry represents the attenuation value of the lowest frequency interval in the operating band, and so on.\nThe number of intervals depends on the operating band.\nFor information on different operating bands, refer to 3GPP TS 36.104.\nThe value range for each entry is -500 to -2, -1, 0-500 (-50 to 50 dB). Unused entries are set to -1.  \nAttribute is optionally replaced by dlAttenuationPerFqRange for configurations with radio supporting single band per RfPort.\nAttribute is replaced by dlAttenuationPerFqRange for configurations with radio supporting multi band per RfPort.";
+      yexte:disturbances "Changing this attribute can affect traffic.";
+      yexte:takes-effect "If cell is locked, takes effect when cell is unlocked. If cell is unlocked, takes effect immediately.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_dlAttenuation;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf rfPortRef {
+      description "Refers to the RfPort MO that represents the physical antenna feeder connector on the Radio Unit (RU)/Remote Radio Unit (RRU), to which this RfBranch is connected.";
+      yexte:takes-effect "At next unlock of the SectorEquipmentFunction";
+      yexte:precondition "Locked SectorEquipmentFunction";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf tmaRef {
+      description "Reference to a possible TMA that is connected to this RfBranch.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list ulAttenuation {
+      min-elements 1;
+      max-elements 40;
+      description "Uplink attenuation between connector on radio and connector on the antenna unit. Attenuation includes feeder, filters, and non-supervised, uncontrolled TMAs.\nSequence contains 40 entries and each entry represents one 5 MHz interval of NRSectorCarrier.earfcnUl attribute as DU works with EARFCN information.\nFirst entry represents attenuation value of lowest frequency interval in operating band, and so on.\nNumber of intervals depends on operating band.\nFor information on different operating bands, see 3GPP TS 36.104.\nValue range for each entry is -500 to -2, -1, 0-500 (-50 to 50 dB). Unused entries are set to -1.\nAttribute is optionally replaced by ulAttenuationPerFqRange for configurations with radios that support single-band for each RfPort.\nAttribute is replaced by ulAttenuationPerFqRange for configurations with radios that support multi-band for each RfPort.";
+      yexte:disturbances "Changing this attribute can affect traffic.";
+      yexte:takes-effect "If cell is locked, takes effect when cell is unlocked. If cell is unlocked, takes effect immediately.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_ulAttenuation;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list dlTrafficDelayPerFqRange {
+      min-elements 0;
+      max-elements 4;
+      description "Optionally replaces dlTrafficDelay for configurations with radio supporting single band for each RfPort.\nReplaces dlTrafficDelay for configurations with radio supporting multi band for each RfPort.\nConfigures DL delay between radio connector and antenna unit connector.\nDelay includes feeder, filters, and non-supervised, uncontrolled TMAs.\nDelay value is valid for full frequency range.\nAttribute is a sequence containing 4 entries.\nUse each entry to configure delay for the corresponding frequency range in dlFrequencyRanges of RfPort to which RfBranch refers.\nThe value range for each entry is 0-800000 (0-800000 ns). Unused entries are set to -1.\nNOTE: If the range supported by individual radio units is smaller, it must be considered when configuring the antenna system.\nFor information on the different operating bands, refer to 3GPP TS 36.104.";
+      yexte:disturbances "Changing this attribute can affect traffic.";
+      yexte:takes-effect "Immediately if cell is unlocked, otherwise when cell is unlocked.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_dlTrafficDelayPerFqRange;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+    leaf-list bandList {
+      min-elements 0;
+      max-elements 4;
+      description "Specific band that RfBranch works on.";
+      type erienmnrmreqantennasystem:enum-RfBranchBandEnabled;
+    }
+    leaf-list ulTrafficDelay {
+      min-elements 0;
+      max-elements 40;
+      description "Uplink traffic delay between the connector on the radio unit and the connector on the antenna unit. The delay includes feeder, filter, and non-supervised, uncontrolled Tower Mounted Amplifiers (TMAs).\nThe sequence contains 40 entries and each entry represents one 5-MHz interval. The first entry represents the traffic delay value of the lowest frequency interval in the operating band, and so on.\nThe number of intervals used depends on the operating band.\nFor information on the different operating bands, refer to 3GPP TS 36.104.\nThe value range for each entry is 0-800000 (0-800000 ns). Unused entries are set to -1.\nNOTE: If the range supported by actual Radio Unit is smaller, it must be considered when configuring the antenna system.\nAttribute is optionally replaced by ulTrafficDelayPerFqRange for configurations with radio supporting single band per RfPort.\nAttribute is replaced by ulTrafficDelayPerFqRange for configurations with radio supporting multi band per RfPort.";
+      yexte:disturbances "Changing this attribute can affect traffic. ";
+      yexte:takes-effect "If cell is locked, takes effect when cell is unlocked. If cell is unlocked, takes effect immediately.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RfBranch_ulTrafficDelay;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+      default -1;
+    }
+  } // end 'grouping moc-RfBranch'
+  grouping moc-AntennaSubunit-keys {
+    description "Key(s) for MOC AntennaSubunit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name antennaSubunitId;
+      type string;
+    }
+  } // end 'grouping moc-AntennaSubunit-keys'
+  grouping moc-AntennaSubunit {
+    description "This MO groups the antenna elements that, because of being controlled by the same RET radiate with the same tilt angle.";
+    leaf-list customComChBeamfrmWtsAmplitude {
+      min-elements 0;
+      max-elements 8;
+      description "Array of eight amplitudes for custom common channel beamforming weights.\nAt least one of the eight amplitudes have to be non-zero for custom beamforming weights to take effect.\nWeight amplitudes must be sorted according to the following sequence:\nAmplitudes for one polarization in a left to right order facing front of antenna unit, followed by amplitudes for the other polarization in a left to right order facing front of antenna unit.";
+      yexte:disturbances "Changed coverage may affect traffic.";
+      yexte:takes-effect "Next SectorEquipmentFunction unlock";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaSubunit_customComChBeamfrmWtsAmplitude;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+    }
+    leaf-list customComChBeamfrmWtsPhase {
+      min-elements 0;
+      max-elements 8;
+      description "Array of eight phases for custom common channel beamforming weights.\nWeight phases must be sorted in the same order as weight amplitudes.";
+      yexte:disturbances "Changed coverage may affect traffic.";
+      yexte:takes-effect "Next SectorEquipmentFunction unlock";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaSubunit_customComChBeamfrmWtsPhase;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+      default 0;
+    }
+    leaf retSubunitRef {
+      description "Reference to the RET subunit controlling the tilt of this antenna subunit.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf totalTilt {
+      config false;
+      description "Total antenna elevation including the installed tilt and the tilt applied by the Remote Electrical Tilt (RET).\nTotal tilt is defined as the inclination of the maximum of the antenna main beam with respect to the horizontal plane.\nTilt is a signed value. Positive indicates downtilt, and negative indicates uptilt, found by the following equation:\n\ntotalTilt = AntennaUnit.mechanicaAntennalTilt+RetSubunit.electricalTilt\n\nNOTE: If the antenna has no RET installed, this value does not account for the inclination that the antenna beam may have by default, with respect to the direction orthogonal to the antenna element axis.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaSubunit_totalTilt;
+    }
+    leaf minTotalTilt {
+      description "The minimum antenna elevation including the installed tilt and the tilt applied by the Remote Electrical Tilt (RET) described by the inclination of the maximum of the antenna main beam with respect to the horizontal plane.\nIt is a signed value. Positive indicates downtilt, and negative indicates uptilt. The limitation on total tilt is found by the following equation:\n\nTotalTilt = AntennaUnit.mechanicaAntennalTilt + RetSubunit.electricalTilt\n\nNOTE: If the antenna has no RET installed, the total tilt value does not necessarily account for the inclination that the antenna beam might have by default, with respect to the direction orthogonal to the antenna element axis.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaSubunit_minTotalTilt;
+      default -900;
+    }
+    leaf commonChBeamfrmPortMap {
+      description "Selects between co-polarized and cross-polarized beamforming antenna port mapping.\nValid both for pre-defined antenna weights and custom antenna weights configured by customComChBeamfrmWtsAmplitude and customComChBeamfrmWtsPhase.\nCROSS_POLARIZED is always used for NR.";
+      yexte:disturbances "Changed coverage may affect traffic.";
+      yexte:takes-effect "Next SectorEquipmentFunction unlock";
+      type erienmnrmreqantennasystem:enum-BeamformingPortMapping;
+      default CROSS_POLARIZED;
+    }
+    leaf azimuthHalfPowerBeamwidth {
+      description "Specifies the azimuth half power beamwidth for the columns in the antenna.\nFor information regarding antenna column azimuth half power beamwidth please refer to the manual from the antenna manufacturer.\n";
+      yexte:takes-effect "Next SectorEquipmentFunction unlock";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaSubunit_azimuthHalfPowerBeamwidth;
+      default 65;
+    }
+    leaf maxTotalTilt {
+      description "The maximum antenna elevation including the installed tilt and the tilt applied by the Remote Electrical Tilt (RET).\ndescribed by the inclination of the maximum of the antenna main beam with respect to the horizontal plane. It is a signed value. Positive indicates downtilt, and negative indicates uptilt. It sets a limitation on total tilt which is given by:\n\nTotalTilt = AntennaUnit.mechanicaAntennalTilt + RetSubunit.electricalTilt\n\nNOTE: If the antenna has no RET installed, this value does not account for the inclination that the antenna beam might have by default, with respect to the direction orthogonal to the antenna element axis.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaSubunit_maxTotalTilt;
+      default 900;
+    }
+    leaf raeSubunitRef {
+      status deprecated {
+        yexte:status-information "Since 19.Q1. Planned to be removed. Use AntennaUnit::raeSubunitRef instead.";
+      }
+      description "Reference to the RAE subunit.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-AntennaSubunit'
+  grouping moc-MulticastAntennaBranch-keys {
+    description "Key(s) for MOC MulticastAntennaBranch";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name multicastAntennaBranchId;
+      type string;
+    }
+  } // end 'grouping moc-MulticastAntennaBranch-keys'
+  grouping moc-MulticastAntennaBranch {
+    description "Represents all UL and DL antenna streams representing the same carrier branch within an RDS Multicast Coverage Area.";
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf-list transceiverRef {
+      min-elements 0;
+      description "Reference to the Transceiver MO instances being reserved.\n";
+      yexte:takes-effect "Next unlock of SectorEquipmentFunction.";
+      yexte:precondition "Locked SectorEquipmentFunction since 18.Q2.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-OperState;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-AvailStatus;
+    }
+  } // end 'grouping moc-MulticastAntennaBranch'
+  grouping moc-RaeSubUnit-keys {
+    description "Key(s) for MOC RaeSubUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name raeSubUnitId;
+      type string;
+    }
+  } // end 'grouping moc-RaeSubUnit-keys'
+  grouping moc-RaeSubUnit {
+    description "This MO represents a Remote eAntenna Extension device (RAE).";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_userLabel;
+    }
+    leaf geolocationMonitorActive {
+      description "Whether monitoring of geolocation parameters is enabled for this RAE unit.";
+      type boolean;
+      default false;
+    }
+    leaf-list iuantAntennaOperatingBeamwidth {
+      min-elements 1;
+      max-elements 4;
+      description "Beamwidth for each operating band in band order, beginning with lowest band.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_iuantAntennaOperatingBeamwidth;
+      default -1000;
+      default -1000;
+      default -1000;
+      default -1000;
+    }
+    leaf iuantAntennaSerialNumber {
+      description "Unique hardware identifier of antenna where RAE is installed.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_iuantAntennaSerialNumber;
+    }
+    leaf minTilt {
+      description "Minimum electrical tilt supported by antenna.\nThe electrical tilt is defined as the inclination of the maximum of the antenna main beam with respect to the direction orthogonal to the antenna element axis. Positive value indicates downtilt, and negative value indicates uptilt.\n\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_minTilt;
+      default -1000;
+    }
+    leaf-list iuantAntennaOperatingGain {
+      min-elements 1;
+      max-elements 4;
+      description "Antenna gain for each of four operating bands, starting with the lowest value.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_iuantAntennaOperatingGain;
+      default -1000;
+      default -1000;
+      default -1000;
+      default -1000;
+    }
+    container targetSensorData {
+      description "Target position, altitude, azimuth, and mechanical downtilt of unit.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-SensorData;
+    } // end 'container targetSensorData'
+    leaf iuantInstallationDate {
+      description "Installation date.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_iuantInstallationDate;
+    }
+    leaf testRecord {
+      description "Facility test record.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_testRecord;
+    }
+    leaf subunitNumber {
+      config false;
+      description "Subunit identifier carried on L7 messages in which subunits are pointed with the help of application level identifiers.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf maxTilt {
+      description "Maximum electrical tilt supported by antenna.\nThe electrical tilt is defined as the inclination of the maximum of the antenna main beam with respect to the direction orthogonal to the antenna element axis. Positive value indicates downtilt, and negative value indicates uptilt. \n\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_maxTilt;
+      default -1000;
+    }
+    leaf iuantAntennaOperatingBand {
+      description "Operating band used by the Antenna Subunit connected to this RAE subunit.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type int64;
+      default -1000;
+    }
+    leaf iuantInstallersId {
+      description "ID of the responsible installer.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_iuantInstallersId;
+    }
+    leaf iuantBaseStationId {
+      description "Base station ID.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_iuantBaseStationId;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf iuantSectorId {
+      description "RBS internal sector ID.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_iuantSectorId;
+    }
+    container sensorData {
+      description "Position, altitude, azimuth and mechanical downtilt of unit.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-SensorData;
+    } // end 'container sensorData'
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-OperState;
+    }
+    leaf iuantAntennaModelNumber {
+      description "Vendor-specific antenna model identifier.\nThis attribute is part of AISG-ES-RAE specification and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_RaeSubUnit_iuantAntennaModelNumber;
+    }
+    container geolocationMonitorConfig {
+      description "Configuration parameters of geolocation monitor.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-GeolocationMonitorConfig;
+    } // end 'container geolocationMonitorConfig'
+    action getSensorData {
+      description "Updates values in sensorData struct with data provided by GPS sensors. Fields are not updated if HW does not support the corresponding function. See getSupportedFunctions.";
+    }
+    action getNumberOfFiles {
+      description "Returns number of files stored on device.";
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action downloadAntennaPatternFile {
+      description "Copies Antenna Pattern File stored on a device into a specified FTP server.";
+      input {
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "File path to store file on FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to FTP server.";
+          type erienmnrmreqantennasystem:ddt-EcimPasswordString;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to FTP server.";
+          type string;
+        }
+      }
+    }
+    action downloadWeightingFactorFile {
+      description "Copies Weighting Factor File stored on a device into a specified FTP server.";
+      input {
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "File path to store file on FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to FTP server.";
+          type erienmnrmreqantennasystem:ddt-EcimPasswordString;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to FTP server.";
+          type string;
+        }
+      }
+    }
+    action sendWeightingFactorFile {
+      description "Sends vendor and antenna specific configuration data with a set of amplitude and phase settings for one RF port of a beam forming antenna.\nWeighting factors file is fetched from FTP server.";
+      input {
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "File path to file on FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to FTP server.";
+          type string;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to FTP server.";
+          type string;
+        }
+      }
+    }
+    action getNumberofFiles {
+      description "Returns number of files in subunit.";
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action setCurrentSensorDataAsTarget {
+      description "Copies actual position, altitude, azimuth, and mechanical downtilt of unit and sets them as target data for geolocation monitor.";
+    }
+    action sendAntennaPatternFile {
+      description "Sends antenna specific data with a mathematical function or graphical representation of the radiation properties of the antenna as a function of space coordinates.\nAntenna pattern file is fetched from FTP server.";
+      input {
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "File path to file on FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to FTP server.";
+          type string;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to FTP server.";
+          type string;
+        }
+      }
+    }
+    action readWeightingFactorFile {
+      description "Copies Weighting Factor File stored on a device into a specified FTP server.";
+      input {
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "File path to store file on FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to FTP server.";
+          type string;
+        }
+        leaf fileIndex {
+          description "Index of file to be downloaded, can be ommited to download all Weighting Factor from a device.";
+          type string;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to FTP server.";
+          type string;
+        }
+      }
+    }
+    action getWeightingFactor {
+      description "Returns sets of values provided in Weighting Factor File.";
+      input {
+        leaf field {
+          mandatory true;
+          description "For values from 0x01 to 0x0B will return antenna information data according to Annex A in AISG-ES-RAE v2.1.0.";
+          type string;
+        }
+        leaf additionalParameters {
+          description "Additional information for field number 0x0B specific in Table 8.4.8.3 in AISG-ES-RAE v2.1.0 is separated with semicolon. Otherwise filled with 0.\nExample: 30;65;1880;1920";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action getSupportedFunctions {
+      description "Returns information of function availability provided by a device.";
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action get2DWeightingFactorsXml {
+      description "Returns sets of values provided in 2D Weighting Factor File in form of XML file stored on FTP server.";
+      input {
+        leaf subId {
+          mandatory true;
+          description "For values from 0x01 to 0x1B will return antenna information data according to Annex H in AISG-ES-RAE v2.2.0.";
+          type string;
+        }
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "File path for a new file on FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to FTP server.";
+          type string;
+        }
+        leaf additionalParameters {
+          description "Optional, additional information for specific data described in Annex H in AISG-ES-RAE v2.2.0.";
+          type string;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to FTP server.";
+          type string;
+        }
+      }
+    }
+    action getFileInformation {
+      description "Returns names, sizes and types of files stored on a device.";
+      input {
+        leaf fileIndex {
+          description "Index of file. Typing 0 gives information about all files on device.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action resetFactoryWeightingFactors {
+      description "Restores Factory Weighting File to factory settings.";
+    }
+    action get2DWeightingFactors {
+      description "Returns sets of values provided in 2D Weighting Factor File.";
+      input {
+        leaf subId {
+          mandatory true;
+          description "For values from 0x01 to 0x1B will return antenna information data according to Chapter 8.4.10 in AISG-ES-RAE v2.2.0.";
+          type string;
+        }
+        leaf additionalParameters {
+          description "Optional, additional information for specific data described in Chapter 8.4.10 in AISG-ES-RAE v2.2.0.";
+          type string;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action readAntennaPatternFile {
+      description "Copies Antenna Pattern File stored on a device into a specified FTP server.";
+      input {
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "File path to store file on FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to FTP server.";
+          type string;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to FTP server.";
+          type string;
+        }
+      }
+    }
+    action getWeightingFactorXml {
+      description "Returns sets of values provided in Weighting Factor File in form of XML file stored on FTP server.";
+      input {
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "File path for a new file on FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to FTP server.";
+          type string;
+        }
+        leaf field {
+          mandatory true;
+          description "For values from 0x01 to 0x0B will return antenna information data according to Annex A in AISG-ES-RAE v2.1.0.";
+          type string;
+        }
+        leaf additionalParameters {
+          description "Additional information for field number 0x0B specific in Table 8.4.8.3 in AISG-ES-RAE v2.1.0 separated with semicolon. Otherwise fill with 0.\nExample: 30;65;1880;1920\n";
+          type string;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to FTP server.";
+          type string;
+        }
+      }
+    }
+  } // end 'grouping moc-RaeSubUnit'
+  grouping moc-GlsSubUnit-keys {
+    description "Key(s) for MOC GlsSubUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name glsSubUnitId;
+      type string;
+    }
+  } // end 'grouping moc-GlsSubUnit-keys'
+  grouping moc-GlsSubUnit {
+    description "This MO represents a Geographic Location Sensor (GLS).";
+    leaf subunitNumber {
+      config false;
+      description "Subunit identifier carried on L7 messages in which subunits are pointed with the help of application level identifiers.";
+      notife:notifiable-state-data true;
+      type int32;
+    }
+    leaf userLabel {
+      erienmyext:no-notification;
+      description "Label for free use.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_GlsSubUnit_userLabel;
+    }
+    leaf altitude {
+      description "Elevation of point or object from surface of WGS84 geoid.\nBest estimate of GLS in altitude dimension. \nIf GLS is operating as a position storage device and requested value is out of valid range defined by device manufacturer then attempt to save it will be rejected. Attribute restores previously known value or default one if none was present before on device.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_GlsSubUnit_altitude;
+      default 0;
+    }
+    container precision {
+      description "Standard deviation of values from their arithmetic mean in one of the three dimensions measured by GLS (latitude, longitude, altitude).";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-PrecisionData;
+    } // end 'container precision'
+    leaf-list reservedBy {
+      min-elements 0;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      notife:notifiable-state-data true;
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    container coordinates {
+      description "Coordinates representing the ‘best estimate’ of GLS in two dimensions (latitude and longitude).\nIf GLS is operating as a position storage device and requested value is out of valid range defined by device manufacturer then attempt to save it will be rejected. Attribute restores previously known value or default one if none was present before on device.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-Coordinates;
+    } // end 'container coordinates'
+    leaf-list availabilityStatus {
+      min-elements 0;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-AvailStatus;
+    }
+    leaf operationalState {
+      config false;
+      description "The operational state.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-OperState;
+    }
+    action getSupportedFunctions {
+      description "Returns information of function availability provided by a device.";
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action getSensorData {
+      description "Updates values in altitude, coordinates and precision structs with data provided by GPS sensors. Fields are not updated if hardware does not support corresponding function. See getSupportedFunctions.";
+    }
+  } // end 'grouping moc-GlsSubUnit'
+  grouping moc-AntennaUnitGroup-keys {
+    description "Key(s) for MOC AntennaUnitGroup";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name antennaUnitGroupId;
+      type string;
+    }
+  } // end 'grouping moc-AntennaUnitGroup-keys'
+  grouping moc-AntennaUnitGroup {
+    description "This MO is a container of references to the antenna and antenna near products (RET, TMA, RAE) serving a Sector.";
+    leaf positionInformation {
+      erienmyext:no-notification;
+      description "Information on where the antenna unit group is located.\nThis can be expressed in terms of a street address, building, floor, room, etc.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaUnitGroup_positionInformation;
+    }
+    leaf positionRef {
+      erienmyext:no-notification;
+      description "Reference to a HW group that the antenna unit group is located in. ";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-AntennaUnitGroup'
+  grouping moc-AntennaNearUnit-keys {
+    description "Key(s) for MOC AntennaNearUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n";
+      mandatory true;
+      yexte:ecim-name antennaNearUnitId;
+      type string;
+    }
+  } // end 'grouping moc-AntennaNearUnit-keys'
+  grouping moc-AntennaNearUnit {
+    description "This MO represents a hardware unit installed in the antenna system that can be controlled and supervised by the system.\n";
+    container configuredAisgVersion {
+      description "Version of AISG protocol that the device is currently running on and expecting commands from.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-AisgVersion;
+    } // end 'container configuredAisgVersion'
+    leaf serialNumber {
+      config false;
+      description "Unique number consisting of vendor code followed by a device serial number.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaNearUnit_serialNumber;
+    }
+    leaf connectionState {
+      erienmyext:no-notification;
+      config false;
+      description "Current connection state.";
+      type erienmnrmreqantennasystem:enum-ConnectionState;
+    }
+    leaf aldState {
+      erienmyext:no-notification;
+      config false;
+      description "Current state of ALD. Controlled by logical state machine that is implemented into controller of this subunit.";
+      type erienmnrmreqantennasystem:enum-AldState;
+    }
+    leaf anuType {
+      status deprecated {
+        yexte:status-information "Deprecated since L17A. Further support only to IUANT option";
+      }
+      description "Indicates if the antenna near unit is an IUANT or an Ericsson proprietary antenna unit.";
+      yexte:dependencies "If IUANT is set then the attribute iuantDeviceType needs to be set to a value specified in section 4.7 in 3GPP 25.462 as well.";
+      type erienmnrmreqantennasystem:enum-AntNearUnit;
+      default IUANT;
+    }
+    leaf onUnitUniqueId {
+      config false;
+      description "The unique ID reported by the physical antenna near unit.\nThe first two characters of the ID are the vendor code.\nThe value is extracted from the response message sent by the antenna near unit during connection establishment.\n3GPP TS 25.462 specifies the procedure in detail.\n";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf productNumber {
+      config false;
+      description "Uniquely identifies the model of Antenna Near Unit.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaNearUnit_productNumber;
+    }
+    leaf iuantDeviceType {
+      description "Type of IUANT-compliant antenna line device.\n\nTakes following values from sections 4.7 of 3GPP TS 25.462 and 7.1 of AISG ES-RAE, AISG ES-ASD, and AISG ES-GLS (after conversion from hexadecimal to decimal):\n\n- 1 indicates single-antenna RET device.\n- 2 indicates tower mounted amplifier.\n- 17 indicates multi-antenna RET device.\n- 35 indicates ASD.\n- 37 indicates GLS device.\n- 49 indicates RAE device.\n\nNOTE: 3GPP TS 25.462 defines device types by providing hexadecimal codes. The code must be converted to decimal. \nIf multi-antenna RET Device is indicated as 0x11 in 3GPP TS 25.462, the decimal equivalent, 17 must be used.";
+      yexte:takes-effect "At node restart.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaNearUnit_iuantDeviceType;
+      default 1;
+    }
+    leaf rfPortRef {
+      description "Refers to an instance of an RfPort from which this antenna near unit is controlled and supplied with power.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf downloadState {
+      erienmyext:no-notification;
+      config false;
+      description "Whether ALD is in download state. Download is also possible during execution of some other procedures.";
+      type erienmnrmreqantennasystem:enum-DownloadState;
+    }
+    leaf administrativeState {
+      description "The administrative state.\nIf set to SHUTTINGDOWN, the state will immediately be brought to LOCKED.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type erienmnrmreqantennasystem:enum-AdmState;
+      default UNLOCKED;
+    }
+    leaf selfTestStatus {
+      config false;
+      description "The status of ongoing selfTest operation.\nIn case no selfTest has been performed since last Baseband restart it shows state UNKNOWN. \n\nNOTE: The selfTestStatus is not used to verify or confirm if a selfTest has been performed or not. ";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:enum-TcpStatus;
+    }
+    leaf hardwareVersion {
+      config false;
+      description "The hardware version of the Antenna Near Unit.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaNearUnit_hardwareVersion;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmreqantennasystem:enum-AvailStatus;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational State.";
+      type erienmnrmreqantennasystem:enum-OperState;
+    }
+    list supportedAisgVersion {
+      min-elements 0;
+      max-elements 75;
+      key auto-generated-struct-key;
+      leaf auto-generated-struct-key {
+        type uint16;
+        description "This leaf has been injected to allow for struct instances in a sequence to be ordered.";
+        mandatory true;
+      }
+      description "Array of structures of supported AISG protocol versions by ALD. Read from ALD.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-AisgVersion;
+    } // end 'list supportedAisgVersion'
+    leaf softwareVersion {
+      config false;
+      description "The software version of the Antenna Near Unit.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaNearUnit_softwareVersion;
+    }
+    leaf uniqueId {
+      description "Subset of the unique identifier of the Antenna Near Unit. \nIt is used to support advanced antenna system configurations, such as cascaded RETs. Leave empty when the units are not cascaded.\n\nThe value stated is a subset of the uniqueID(concatenation of the vendor code and the antenna near unit serial number) \nwhich must contain enough significant characters/digits to be unique among the antenna near units (with iuantDeviceType single antenna RET or multiple antenna RET) connected to the RfPort. \nSee also 3GPP 25.462.\n\nSome vendors use specific modifications of the serial number on the device label to define the unique ID. \nContact the vendor of the antenna near unit (RET) to obtain the mapping between the serial number taken from the label and the unique ID.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaNearUnit_uniqueId;
+    }
+    action selfTest {
+      description "The Antenna Near Unit will execute an implementation-specific test procedure of its own performance (that is, of physical and processor functions).";
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    action downloadSoftware {
+      description "Fetches the Antenna Near Unit SW package from an FTP server and downloads the firmware file to the Antenna Near Unit.\nThe Antenna Near Unit will run on the new firmware when the action is completed.";
+      input {
+        leaf server {
+          mandatory true;
+          description "The IP address or hostname of the FTP server.\n";
+          type string;
+        }
+        leaf path {
+          mandatory true;
+          description "The file path to the software on the FTP server.";
+          type string;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to the FTP server.";
+          type string;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to the FTP server.";
+          type string;
+        }
+      }
+    }
+    action restartUnit {
+      description "Restarts the Antenna Near Unit.";
+    }
+    action sendTmfConfigurationFile {
+      description "Configures a TMF (TmaSubUnit with tmaType = TMF) based on a TMF configuration file which is fetched from an FTP server and pushed down to the TMF. The TMF will run with the new settings when the action is completed.";
+      input {
+        leaf server {
+          mandatory true;
+          description "IP address or hostname of the FTP server.";
+          type erienmnrmreqantennasystem:ddt-AntennaNearUnit_sendTmfConfigurationFile_server;
+        }
+        leaf path {
+          mandatory true;
+          description "File path to the TMF configuration file on the FTP server.";
+          type erienmnrmreqantennasystem:ddt-AntennaNearUnit_sendTmfConfigurationFile_path;
+        }
+        leaf password {
+          mandatory true;
+          description "Password used to logon to the FTP server.";
+          type erienmnrmreqantennasystem:ddt-AntennaNearUnit_sendTmfConfigurationFile_password;
+        }
+        leaf userName {
+          mandatory true;
+          description "User name used to logon to the FTP server. ";
+          type erienmnrmreqantennasystem:ddt-AntennaNearUnit_sendTmfConfigurationFile_userName;
+        }
+      }
+    }
+    action clearActiveAlarms {
+      description "When clearActiveAlarms command is successfully completed, ALD clears all stored alarm states and diagnostic information, including all test alarms.";
+    }
+    action generateTestAlarm {
+      description "Raises an alarm on ALD for testing purposes.";
+      input {
+        leaf errorCode {
+          mandatory true;
+          description "Iuant Error code to generate test alarm.";
+          type uint16;
+        }
+      }
+    }
+    action writeUserData {
+      description "The AntennaNearUnit shall store user data in non-volatile memory.\nThe data is stored in the user data area using the relative memory address offset given in the initiating message and starting with zero.";
+      input {
+        leaf userDataW {
+          mandatory true;
+          description "numerOfOctetsToWrite octets containing User Specific data to be written in the non-volatile memory area of the ANU.";
+          type string;
+        }
+        leaf memoryOffset {
+          mandatory true;
+          description "The memory offset to calculate the relative memory address to point the user data area where the required information will be stored.";
+          type uint32;
+        }
+        leaf numberOfOctetsToWrite {
+          mandatory true;
+          description "The number of octets to be written starting on that relative memory address. It must be less or equal than 68.";
+          type uint32;
+        }
+      }
+    }
+    action readUserData {
+      description "The Antenna Near Unit answers with user-specific data stored in the non-volatile memory reserved for such purpose.";
+      input {
+        leaf memoryOffset {
+          mandatory true;
+          description "The memory offset to calculate the relative memory address to point the user data area where the required information is stored.";
+          type uint32;
+        }
+        leaf numberOfOctetsToRead {
+          mandatory true;
+          description "The number of octets to be read from that relative memory address. It must be less or equal than 70.";
+          type uint32;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+  } // end 'grouping moc-AntennaNearUnit'
+  grouping moc-TmfConfiguration-keys {
+    description "Key(s) for MOC TmfConfiguration";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN. ";
+      mandatory true;
+      yexte:ecim-name tmfConfigurationId;
+      type string;
+    }
+  } // end 'grouping moc-TmfConfiguration-keys'
+  grouping moc-TmfConfiguration {
+    description "Used to configure TMF and TTMF. MO enables support of automatic configuration of TMF and TTMF.";
+    leaf antBtoRbsB {
+      description "If ANT port A,B and RBS port A,B are cross connected or not.\nfalse means direct connection.\ntrue means cross connection.";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type boolean;
+      default false;
+    }
+    leaf ifFilterBit {
+      status deprecated {
+        yexte:status-information "Since L16B. Has no functional behavior. Planned to be removed.";
+      }
+      description "Indicate what IF filter (5 or 10 MHz) is being used.\n0 means 5MHz IF filter.";
+      yexte:dependencies "The default value of this attribute depends on the operatingMode. \nLTE_5MHZ or WCDMA_1_channel the value is 0, LTE_10MHZ or WCDMA_2_channels the value is 1.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfConfiguration_ifFilterBit;
+      default 0;
+    }
+    leaf operatingMode {
+      description "Supported operating mode.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type erienmnrmreqantennasystem:enum-SupportedOperatingMode;
+    }
+    leaf dcToRetBlocked {
+      description "If DC to RET is blocked or not.\nfalse means DC to RET is not blocked.\ntrue means DC to RET is blocked if not connected.";
+      type boolean;
+      default true;
+    }
+    leaf dcMonitoringAntA {
+      description "If DC monitoring of ANT port A is needed or not.";
+      type boolean;
+      default false;
+    }
+    leaf dcMonitoringAntB {
+      description "If DC monitoring of ANT port B is needed or not.";
+      type boolean;
+      default false;
+    }
+    leaf operatingBand {
+      description "Supported band for TMF/TTMF.";
+      mandatory true;
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfConfiguration_operatingBand;
+    }
+    leaf dcMonitoringRbsB {
+      status deprecated {
+        yexte:status-information "Since L16B. Has no functional behavior. Planned to be removed.";
+      }
+      description "If DC monitoring of RBS port B is needed or not.";
+      yexte:dependencies "The default value of this attribute depends on the operatingMode. \nLTE_5MHZ or LTE_10MHZ the value is false,  WCDMA_1_channel or WCDMA_2_channels the value is true.";
+      type boolean;
+      default false;
+    }
+    leaf dcMonitoringRbsA {
+      description "If DC monitoring of RBS port A is needed or not.";
+      type boolean;
+      default false;
+    }
+    leaf deploymentType {
+      description "Supported deployment type.";
+      type erienmnrmreqantennasystem:enum-SupportedDeployment;
+      default PSI_CONFIGURATION;
+    }
+    leaf frequencyDistance {
+      description "Frequency distance between two carriers. If 0(default value), RBS automatically sets frequency distance according to TMF Rx frequency range and carrier bandwidth. ";
+      yexte:disturbances "Changing this attribute can cause loss of traffic.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfConfiguration_frequencyDistance;
+      default 0;
+    }
+    leaf channelNumber1 {
+      description "ARFCN for first uplink carrier.";
+      mandatory true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfConfiguration_channelNumber1;
+    }
+    leaf channelNumber2 {
+      description " ARFCN for second uplink carrier.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmfConfiguration_channelNumber2;
+      default 0;
+    }
+  } // end 'grouping moc-TmfConfiguration'
+  grouping moc-AuPort-keys {
+    description "Key(s) for MOC AuPort";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name auPortId;
+      type string;
+    }
+  } // end 'grouping moc-AuPort-keys'
+  grouping moc-AuPort {
+    description "This MO represents an antenna feeder port on the Antenna Unit where the antenna branch is connected.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AuPort_userLabel;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-AuPort'
+  grouping moc-TmaSubUnit-keys {
+    description "Key(s) for MOC TmaSubUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name tmaSubUnitId;
+      type string;
+    }
+  } // end 'grouping moc-TmaSubUnit-keys'
+  grouping moc-TmaSubUnit {
+    description "This MO represents a TMA subunit which provides low noise amplification of the uplink received by the reserving branch.";
+    leaf userLabel {
+      description "Label for free use.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_userLabel;
+    }
+    leaf-list iuantAntennaOperatingGain {
+      min-elements 0;
+      max-elements 4;
+      description "Antenna gain for each of four operating bands, starting with the lowest value.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaOperatingGain;
+      default -1000;
+      default -1000;
+      default -1000;
+      default -1000;
+    }
+    leaf iuantAntennaSerialNumber {
+      description "Unique hardware identifier for the antenna where the antenna near unit is installed.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      yexte:takes-effect Immediately;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaSerialNumber;
+    }
+    container tmfData {
+      description "TMF configuration data.";
+      erienmyext:enm-type STRUCT;
+      uses erienmnrmreqantennasystem:struct-TmfDataStruct;
+    } // end 'container tmfData'
+    leaf dlTrafficDelay {
+      description "Subunit internal traffic delay in downlink.\n";
+      yexte:takes-effect "Next cell unlock";
+      yexte:dependencies "Only valid when tmaType=TMA.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_dlTrafficDelay;
+    }
+    leaf-list iuantTmaSubunitFreqRangeTx {
+      min-elements 0;
+      max-elements 2;
+      config false;
+      description "Downlink frequency band across the TMA subunit.\nIt is a sequence of 2 values (16-bit unsigned) stating minimum and maximum frequencies for the TMA subunit transmission path.\n\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitFreqRangeTx;
+    }
+    leaf iuantTmaSubunitMinGain {
+      config false;
+      description "Minimum gain available on this TMA subunit.\n";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitMinGain;
+    }
+    leaf ulGain {
+      config false;
+      description "Internal uplink gain of the TMA subunit.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_ulGain;
+    }
+    leaf-list iuantTmaSubunitFreqRangeRx {
+      min-elements 0;
+      max-elements 2;
+      config false;
+      description "Uplink frequency band across the TMA subunit.\nIt is a sequence of 2 values (16-bit unsigned) stating minimum and maximum frequencies for the TMA subunit transmission path.\n\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitFreqRangeRx;
+    }
+    leaf iuantTmaSubunitMaxGain {
+      config false;
+      description "Maximum gain available on this TMA subunit.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitMaxGain;
+    }
+    leaf subunitNumber {
+      config false;
+      description "Subunit identifier carried on L7 messages.\nWhile an antenna near unit is identified by one High-Level Data Link Control (HDLC) address (L2), subunits are identified by application level (L7) identifiers.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_subunitNumber;
+    }
+    leaf iuantAntennaOperatingBand {
+      description "Operating band used by the Antenna Subunit connected to this TMA subunit.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact. Bit 0 in 0x03 is the least significant bit. ";
+      type int64;
+      default -1000;
+    }
+    leaf iuantInstallersId {
+      description "ID of the responsible installer.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantInstallersId;
+    }
+    leaf iuantBaseStationId {
+      description "Base station ID.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantBaseStationId;
+    }
+    leaf iuantAntennaInstalledMechanicalTilt {
+      description "Antenna tilt fixed on the installation.\nDefined as the inclination of the antenna element axis with respect to the vertical plane. It is a signed value. A positive value indicates downtilt, and a negative value indicates uptilt. Part of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.\n";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaInstalledMechanicalTilt;
+      default -1000;
+    }
+    leaf-list availabilityStatus {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "The availability status.\nIt contains details about operationalState.";
+      type erienmnrmreqantennasystem:enum-AvailStatus;
+    }
+    leaf ulTrafficDelay {
+      description "Subunit internal traffic delay in uplink.";
+      yexte:takes-effect "Next cell unlock";
+      yexte:dependencies "Only valid when tmaType=TMA.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_ulTrafficDelay;
+    }
+    leaf iuantTmaSubunitGainRes {
+      config false;
+      description "Gain resolution on the TMA subunit subunit expressed in gain value [dB] times 4.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      notife:notifiable-state-data true;
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantTmaSubunitGainRes;
+    }
+    leaf iuantAntennaBearing {
+      description "Antenna bearing expressed as bearing value x 10.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaBearing;
+      default -1000;
+    }
+    leaf iuantInstallationDate {
+      description "Installation date. \nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantInstallationDate;
+    }
+    leaf tmaType {
+      yexte:restricted;
+      description "Type of tower mounted amplifier.";
+      type erienmnrmreqantennasystem:enum-TmaType;
+      default TMA;
+    }
+    leaf dlAttenuation {
+      description "Subunit internal attenuation in downlink.\n";
+      yexte:takes-effect "Next cell unlock";
+      yexte:dependencies "Only valid when tmaType=TMA.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_dlAttenuation;
+    }
+    leaf iuantSectorId {
+      description "RBS internal sector ID.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantSectorId;
+    }
+    leaf-list reservedBy {
+      min-elements 0;
+      erienmyext:no-notification;
+      config false;
+      description "Contains a list of MO instances that reserve this MO instance.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf operationalState {
+      erienmyext:no-notification;
+      config false;
+      description "The operational state.\n";
+      type erienmnrmreqantennasystem:enum-OperState;
+    }
+    leaf iuantAntennaModelNumber {
+      description "Vendor-specific antenna model identifier.\nPart of the IUANT protocol definition (see 3GPP 25.466) and has no operational impact.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_TmaSubUnit_iuantAntennaModelNumber;
+    }
+    action resetAld {
+      description "The process of putting ALD in the same status as the status reached after a completed power-up.\nFollowing options can cause reset:\n- DC power-up.\n- DC power cycle.\n- Communication timeout.\n- Internally implemented ALD watchdog timeout.\n- Execution of layer 2 ResetALD command.";
+    }
+    action resetAllPorts {
+      description "Resets all ALD ports.";
+    }
+  } // end 'grouping moc-TmaSubUnit'
+  grouping moc-AntennaUnit-keys {
+    description "Key(s) for MOC AntennaUnit";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name antennaUnitId;
+      type string;
+    }
+  } // end 'grouping moc-AntennaUnit-keys'
+  grouping moc-AntennaUnit {
+    description "This MO represents an antenna unit that contains several antenna subunits installed with a common mechanical tilt.";
+    leaf mechanicalAntennaTilt {
+      description "The fixed antenna tilt of the installation, defined as the inclination of the antenna element axis with respect to the vertical plane.\nIt is a signed value. Positive indicates downtilt, and negative indicates uptilt.";
+      type erienmnrmreqantennasystem:ddt-ReqAntennaSystem_AntennaUnit_mechanicalAntennaTilt;
+      default 0;
+    }
+    leaf asdSubUnitRef {
+      description "Reference to the ASD subunit.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf raeSubunitRef {
+      description "Reference to the RAE subunit.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf glsSubUnitRef {
+      description "Reference to the GLS subunit.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-AntennaUnit'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqantennasystem:AntennaNearUnit {
+    list AsdSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents an Alignment Sensor Device (ASD).";
+      erienmyext:enm-type MOC;
+      uses moc-AsdSubUnit-keys;
+      container attributes {
+        description "Attributes for AsdSubUnit";
+        uses moc-AsdSubUnit;
+      } // end 'container attributes'
+    } // end 'list AsdSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup/erienmnrmreqantennasystem:AntennaNearUnit {
+    list AsdSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents an Alignment Sensor Device (ASD).";
+      erienmyext:enm-type MOC;
+      uses moc-AsdSubUnit-keys;
+      container attributes {
+        description "Attributes for AsdSubUnit";
+        uses moc-AsdSubUnit;
+      } // end 'container attributes'
+    } // end 'list AsdSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqantennasystem:AntennaNearUnit {
+    list RetSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents the device, either a single RET subunit or a subunit of the multi RET subunit providing for remote electrical tilting of the antenna unit where it is mounted.";
+      erienmyext:enm-type MOC;
+      uses moc-RetSubUnit-keys;
+      container attributes {
+        description "Attributes for RetSubUnit";
+        uses moc-RetSubUnit;
+      } // end 'container attributes'
+    } // end 'list RetSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup/erienmnrmreqantennasystem:AntennaNearUnit {
+    list RetSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents the device, either a single RET subunit or a subunit of the multi RET subunit providing for remote electrical tilting of the antenna unit where it is mounted.";
+      erienmyext:enm-type MOC;
+      uses moc-RetSubUnit-keys;
+      container attributes {
+        description "Attributes for RetSubUnit";
+        uses moc-RetSubUnit;
+      } // end 'container attributes'
+    } // end 'list RetSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup {
+    list RfBranch {
+      key id;
+      max-elements 24;
+      description "This MO represents the connection from an antenna feeder port on the RU to one antenna feeder connector on one or several antenna units.\nThe MO represents all equipment between the radio and the antenna which isn't modelled by any other MO. That includes feeder, filters and non-supervised, non-controlled TMA.\n\n";
+      erienmyext:enm-type MOC;
+      uses moc-RfBranch-keys;
+      container attributes {
+        description "Attributes for RfBranch";
+        uses moc-RfBranch;
+      } // end 'container attributes'
+    } // end 'list RfBranch'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup/erienmnrmreqantennasystem:AntennaUnit {
+    list AntennaSubunit {
+      key id;
+      max-elements 8;
+      description "This MO groups the antenna elements that, because of being controlled by the same RET radiate with the same tilt angle.";
+      erienmyext:enm-type MOC;
+      uses moc-AntennaSubunit-keys;
+      container attributes {
+        description "Attributes for AntennaSubunit";
+        uses moc-AntennaSubunit;
+      } // end 'container attributes'
+    } // end 'list AntennaSubunit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup {
+    list MulticastAntennaBranch {
+      key id;
+      description "Represents all UL and DL antenna streams representing the same carrier branch within an RDS Multicast Coverage Area.";
+      erienmyext:enm-type MOC;
+      uses moc-MulticastAntennaBranch-keys;
+      container attributes {
+        description "Attributes for MulticastAntennaBranch";
+        uses moc-MulticastAntennaBranch;
+      } // end 'container attributes'
+    } // end 'list MulticastAntennaBranch'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqantennasystem:AntennaNearUnit {
+    list RaeSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents a Remote eAntenna Extension device (RAE).";
+      erienmyext:enm-type MOC;
+      uses moc-RaeSubUnit-keys;
+      container attributes {
+        description "Attributes for RaeSubUnit";
+        uses moc-RaeSubUnit;
+      } // end 'container attributes'
+    } // end 'list RaeSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup/erienmnrmreqantennasystem:AntennaNearUnit {
+    list RaeSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents a Remote eAntenna Extension device (RAE).";
+      erienmyext:enm-type MOC;
+      uses moc-RaeSubUnit-keys;
+      container attributes {
+        description "Attributes for RaeSubUnit";
+        uses moc-RaeSubUnit;
+      } // end 'container attributes'
+    } // end 'list RaeSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqantennasystem:AntennaNearUnit {
+    list GlsSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents a Geographic Location Sensor (GLS).";
+      erienmyext:enm-type MOC;
+      uses moc-GlsSubUnit-keys;
+      container attributes {
+        description "Attributes for GlsSubUnit";
+        uses moc-GlsSubUnit;
+      } // end 'container attributes'
+    } // end 'list GlsSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup/erienmnrmreqantennasystem:AntennaNearUnit {
+    list GlsSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents a Geographic Location Sensor (GLS).";
+      erienmyext:enm-type MOC;
+      uses moc-GlsSubUnit-keys;
+      container attributes {
+        description "Attributes for GlsSubUnit";
+        uses moc-GlsSubUnit;
+      } // end 'container attributes'
+    } // end 'list GlsSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment {
+    list AntennaUnitGroup {
+      key id;
+      description "This MO is a container of references to the antenna and antenna near products (RET, TMA, RAE) serving a Sector.";
+      erienmyext:enm-type MOC;
+      uses moc-AntennaUnitGroup-keys;
+      container attributes {
+        description "Attributes for AntennaUnitGroup";
+        uses moc-AntennaUnitGroup;
+      } // end 'container attributes'
+    } // end 'list AntennaUnitGroup'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit {
+    list AntennaNearUnit {
+      key id;
+      max-elements 48;
+      description "This MO represents a hardware unit installed in the antenna system that can be controlled and supervised by the system.\n";
+      erienmyext:enm-type MOC;
+      uses moc-AntennaNearUnit-keys;
+      container attributes {
+        description "Attributes for AntennaNearUnit";
+        uses moc-AntennaNearUnit;
+      } // end 'container attributes'
+    } // end 'list AntennaNearUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup {
+    list AntennaNearUnit {
+      key id;
+      max-elements 48;
+      description "This MO represents a hardware unit installed in the antenna system that can be controlled and supervised by the system.\n";
+      erienmyext:enm-type MOC;
+      uses moc-AntennaNearUnit-keys;
+      container attributes {
+        description "Attributes for AntennaNearUnit";
+        uses moc-AntennaNearUnit;
+      } // end 'container attributes'
+    } // end 'list AntennaNearUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup {
+    list TmfConfiguration {
+      key id;
+      max-elements 1;
+      description "Used to configure TMF and TTMF. MO enables support of automatic configuration of TMF and TTMF.";
+      erienmyext:enm-type MOC;
+      uses moc-TmfConfiguration-keys;
+      container attributes {
+        description "Attributes for TmfConfiguration";
+        uses moc-TmfConfiguration;
+      } // end 'container attributes'
+    } // end 'list TmfConfiguration'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup/erienmnrmreqantennasystem:AntennaUnit/erienmnrmreqantennasystem:AntennaSubunit {
+    list AuPort {
+      key id;
+      max-elements 17;
+      description "This MO represents an antenna feeder port on the Antenna Unit where the antenna branch is connected.";
+      erienmyext:enm-type MOC;
+      uses moc-AuPort-keys;
+      container attributes {
+        description "Attributes for AuPort";
+        uses moc-AuPort;
+      } // end 'container attributes'
+    } // end 'list AuPort'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqfieldreplaceableunit:FieldReplaceableUnit/erienmnrmreqantennasystem:AntennaNearUnit {
+    list TmaSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents a TMA subunit which provides low noise amplification of the uplink received by the reserving branch.";
+      erienmyext:enm-type MOC;
+      uses moc-TmaSubUnit-keys;
+      container attributes {
+        description "Attributes for TmaSubUnit";
+        uses moc-TmaSubUnit;
+      } // end 'container attributes'
+    } // end 'list TmaSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup/erienmnrmreqantennasystem:AntennaNearUnit {
+    list TmaSubUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents a TMA subunit which provides low noise amplification of the uplink received by the reserving branch.";
+      erienmyext:enm-type MOC;
+      uses moc-TmaSubUnit-keys;
+      container attributes {
+        description "Attributes for TmaSubUnit";
+        uses moc-TmaSubUnit;
+      } // end 'container attributes'
+    } // end 'list TmaSubUnit'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmreqequipment:Equipment/erienmnrmreqantennasystem:AntennaUnitGroup {
+    list AntennaUnit {
+      key id;
+      max-elements 8;
+      description "This MO represents an antenna unit that contains several antenna subunits installed with a common mechanical tilt.";
+      erienmyext:enm-type MOC;
+      uses moc-AntennaUnit-keys;
+      container attributes {
+        description "Attributes for AntennaUnit";
+        uses moc-AntennaUnit;
+      } // end 'container attributes'
+    } // end 'list AntennaUnit'
+  }
+}

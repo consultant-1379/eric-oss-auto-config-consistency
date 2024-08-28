@@ -1,0 +1,558 @@
+module ericsson-enm-RcsSysM {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RcsSysM;
+  prefix erienmnrmrcssysm;
+  yexte:ecim-name RcsSysM;
+  revision 2351-11-28 {
+    yexte:version 2;
+    yexte:release 0;
+    yexte:correction 3;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-BasicAdmState {
+    description "Basic administrative states for a resource.";
+    type enumeration {
+      enum LOCKED {
+        description " The resource is administratively prohibited from performing services for its users.";
+        value 0;
+      }
+      enum UNLOCKED {
+        description "The resource is administratively permitted to perform services for its users.\nThis is independent of its inherent operability.";
+        value 1;
+      }
+    }
+  }
+  typedef ddt-RcsSysM_Cli_idleTimer {
+    type uint16 {
+      range 1..60;
+    }
+  }
+  typedef ddt-IpDNSAddress {
+    description "The IpDNSAddress type represents an IP address or a DNS domain name.\n\nA unicast IPv4 address is presented in three-digit decimal blocks. It is specified in dotted-quad decimal notation (i.e. three-digit decimal blocks) in accordance with RFC791, The blocks are separated by a dot. \n- The unicast IPV4  address is within range [1-126,128-223].[0-255].[0-255].[0-255], 7-15 characters.\n- The IP address range 127.0.0.0 – 127.255.255.255 is reserved for loopback\n- The IP address range 0– 0.255.255.255 are reserved\n- The IP address range 169.254.1.0 - 169.254.254.255 is used for link-local addresses.\n\nAn  IPv6 address is specified by 8 groups of 16 bit hexadecimal values separated by colons as described in RFC 4291. If multiple consecutive groups contain only zeros, the use of “::” indicates one or more groups of 16 bits of zeros, as described in RFC 4291, section 2.2 bullet 2. A link-local address will have prefix fe80::/10. The format of the embedded IPv4/IPv6 addresses is described in RFC 6052.\n- IPv6 minimum length = 3 and maximum length = 39.\n- Valid characters: 0123456789abcdefABCDEF:\n\nA domain name is specified in dot separated alphanumeric notation  as described in RFC 1034. The domain name consists of one or more parts, called labels, that are delimited by dots.\n- Domain Name's length: 253 characters\n- Label's length: 63 characters.\n- Valid characters: a-z, A-Z, 0,1,2,3,4,5,6,7,8,9,-\n- The Label’s first character is a letter.\n- Labels shall not start or end with a hyphen.\n- Labels shall not start with a numbers\n- Labels shall end with a number or a letter.";
+    type string {
+      length 1..253;
+    }
+  }
+  typedef ddt-RcsSysM_OamTrafficClass_dscp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-RcsSysM_OamAccessPoint_dscp {
+    type uint8 {
+      range 0..63;
+    }
+  }
+  typedef ddt-EcimPasswordString {
+    description "The password string.";
+    type string;
+  }
+  grouping moc-TopologySchema-keys {
+    description "Key(s) for MOC TopologySchema";
+    leaf id {
+      erienmyext:no-notification;
+      description "The key attribute of the MO.";
+      mandatory true;
+      yexte:ecim-name topologySchemaId;
+      type string;
+    }
+  } // end 'grouping moc-TopologySchema-keys'
+  grouping moc-TopologySchema {
+    description "Represents a Topology model fragment whose corresponding functionality is operational in the ME.";
+    leaf name {
+      config false;
+      description "Represents the name of the topology model schema artefact.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf version {
+      config false;
+      description "Represents the version information of the topology model schema artefact.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    action export {
+      description "Pushes the schema file out from the ME.\n\nThe URI shall contain both the file name and the destination address. The password is optional.";
+      input {
+        leaf password {
+          description "The password used to connect to the remote file location.";
+          type erienmnrmrcssysm:ddt-EcimPasswordString;
+        }
+        leaf uri {
+          mandatory true;
+          description "The URI used to identify the address to the remote location to which the file must be transferred.\n";
+          type string;
+        }
+      }
+    }
+  } // end 'grouping moc-TopologySchema'
+  grouping moc-Cli-keys {
+    description "Key(s) for MOC Cli";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cliId;
+      type string;
+    }
+  } // end 'grouping moc-Cli-keys'
+  grouping moc-Cli {
+    description "The common configuration attributes for CLI sessions.";
+    leaf idleTimer {
+      description "The amount of minutes after which an idle session is terminated.\n\nThe default value is 15 minutes.";
+      type erienmnrmrcssysm:ddt-RcsSysM_Cli_idleTimer;
+      default 15;
+    }
+  } // end 'grouping moc-Cli'
+  grouping moc-NetconfTls-keys {
+    description "Key(s) for MOC NetconfTls";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name netconfTlsId;
+      type string;
+    }
+  } // end 'grouping moc-NetconfTls-keys'
+  grouping moc-NetconfTls {
+    description "Represents the Netconf configuration management service over Transport Layer Security (TLS).";
+    leaf administrativeState {
+      description "The administrative state for the Netconf target.  \nWhen LOCKED, all on-going netconf connections are immediately terminated\n\nNOTE: Setting the administrativState to LOCKED for all Netconf and CLI interfaces disables O&M access to the ME. Refer to product specific troubleshooting instructions to resolve such a scenario.";
+      mandatory true;
+      type erienmnrmrcssysm:enum-BasicAdmState;
+    }
+    leaf port {
+      description "The OaM port.";
+      mandatory true;
+      type uint16;
+    }
+    leaf nodeCredential {
+      description "The credential used for the NETCONF service. \nSpecifies the DN of a NodeCredential MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustCategory {
+      description "The set of certificates trusted by the NETCONF service. \nSpecifies the DN of a TrustCategory MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-NetconfTls'
+  grouping moc-OamAccessPoint-keys {
+    description "Key(s) for MOC OamAccessPoint";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name oamAccessPointId;
+      type string;
+    }
+  } // end 'grouping moc-OamAccessPoint-keys'
+  grouping moc-OamAccessPoint {
+    description "An OaM Access Point instance for the ME.";
+    leaf sshPort {
+      status obsolete {
+        yexte:status-information "Deprecated since 16A. Use attribute CliSsh::port instead.";
+      }
+      description "Port for accessing the Ericsson Command Line interface service";
+      type uint16;
+    }
+    leaf ipv4address {
+      status obsolete {
+        yexte:status-information "Deprecated since 16A. Use attribute accessPoint instead.";
+      }
+      description "Refers to the IPv4 interface MO to which the OAM services shall bind. ";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf dscp {
+      status obsolete {
+        yexte:status-information "Deprecated since 16A. Use attribute OamTrafficClass:dscp instead.";
+      }
+      description "The Differentiated Services Code Point (DSCP) value for OAM services.\nOnly IP packets originated form the node are tagged with the DSCP value.\nThe DSCP value is used by Differentiated Services enabled hosts and routers to identify different service levels. When set, the DSCP value is mapped to a Per-Hop Behaviour (PHB) by forwarding devices along the path between the source and destination. A PHB dictates how each package is handled, that is, what type of service that is applied to the packet when it is forwarded.\n";
+      type erienmnrmrcssysm:ddt-RcsSysM_OamAccessPoint_dscp;
+      default 0;
+    }
+    leaf netconfPort {
+      status obsolete {
+        yexte:status-information "Deprecated since 16A. Use attribute NetconfSsh::port instead";
+      }
+      description "Port for accessing the NETCONF service";
+      type uint16;
+    }
+    leaf accessPoint {
+      description "The OaM access point.\n\nPoints to the MO containing the address. The MO must have an attribute named address containing the IP address in IPv4 or IPv6 format, with or without a network prefix length at the end.";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-OamAccessPoint'
+  grouping moc-Schema-keys {
+    description "Key(s) for MOC Schema";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n\nFrom a usability perspective, the value could e.g. be set to the corresponding model name.";
+      mandatory true;
+      yexte:ecim-name schemaId;
+      type string;
+    }
+  } // end 'grouping moc-Schema-keys'
+  grouping moc-Schema {
+    description "Represents a MIM model fragment whose corresponding functionality is operational in the ME.";
+    leaf identifier {
+      config false;
+      description "Represents the name of the data model fragment that the schema represents.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf baseModelVersion {
+      config false;
+      description "The full version information for the common information model fragment from which the data model fragment is derived.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf-list selectedModelOptions {
+      min-elements 0;
+      config false;
+      description "Contains the model features with unique names used in the MIM generation.\n\nThe MS can query the information from the model without the need to access the MIM file itself.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf version {
+      config false;
+      description "Represents the full version information for the data model fragment the schema represents.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    leaf baseModelIdentifier {
+      config false;
+      description "Represents the name of the common information model fragment that the data model fragment is derived from.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+    action export {
+      description "Pushes the schema file out from the ME.\n\nThe URI shall contain both the file name and the destination address. The password is optional.";
+      input {
+        leaf password {
+          description "The password used to connect to the remote file location.";
+          type erienmnrmrcssysm:ddt-EcimPasswordString;
+        }
+        leaf uri {
+          mandatory true;
+          description "The URI used to identify the address to the remote location to which the file must be transferred.\n";
+          type string;
+        }
+      }
+    }
+  } // end 'grouping moc-Schema'
+  grouping moc-SysM-keys {
+    description "Key(s) for MOC SysM";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.\n\nIt is set automatically when the MO instance is created.";
+      mandatory true;
+      yexte:ecim-name sysMId;
+      type string;
+    }
+  } // end 'grouping moc-SysM-keys'
+  grouping moc-SysM {
+    description "This is the System Management MO. \n\nIt is a parent to the MOs that represent the system level functions,  such as time handling and version handling, as well as file transfer capabilities and netconf configuration.\n";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+  } // end 'grouping moc-SysM'
+  grouping moc-CliTls-keys {
+    description "Key(s) for MOC CliTls";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cliTlsId;
+      type string;
+    }
+  } // end 'grouping moc-CliTls-keys'
+  grouping moc-CliTls {
+    description "Represents the CLI configuration management service over Transport Layer Security (TLS).";
+    leaf administrativeState {
+      description "The administrative state for the CLI target.\nWhen LOCKED, all on-going CLI connections are immediately terminated.\n\nNOTE: Setting the administrativState to LOCKED for all Netconf and CLI interfaces disables O&M access to the ME. Refer to product specific troubleshooting instructions to resolve such a scenario.";
+      mandatory true;
+      type erienmnrmrcssysm:enum-BasicAdmState;
+    }
+    leaf port {
+      description "The OaM port.";
+      mandatory true;
+      type uint16;
+    }
+    leaf nodeCredential {
+      description "The credential used for the CLI service. \nSpecifies the DN of a NodeCredential MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+    leaf trustCategory {
+      description "The set of certificates trusted by the CLI service. \nSpecifies the DN of a TrustCategory MO in Certificate Management.\n";
+      erienmyext:enm-type MOREF;
+      type string;
+    }
+  } // end 'grouping moc-CliTls'
+  grouping moc-OamTrafficClass-keys {
+    description "Key(s) for MOC OamTrafficClass";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name oamTrafficClassId;
+      type string;
+    }
+  } // end 'grouping moc-OamTrafficClass-keys'
+  grouping moc-OamTrafficClass {
+    description "Defines the traffic class and priority for IP packets.";
+    leaf dscp {
+      description "DSCP value for IP packets related to OaM services. \n\nOnly IP packets that originate from node are tagged with DSCP value. \nA change in DSCP settings for OaM traffic is only applied to new connections.";
+      mandatory true;
+      type erienmnrmrcssysm:ddt-RcsSysM_OamTrafficClass_dscp;
+    }
+    leaf name {
+      config false;
+      description "Name of the traffic class associated with this DSCP class.";
+      notife:notifiable-state-data true;
+      type string;
+    }
+  } // end 'grouping moc-OamTrafficClass'
+  grouping moc-NetconfSsh-keys {
+    description "Key(s) for MOC NetconfSsh";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name netconfSshId;
+      type string;
+    }
+  } // end 'grouping moc-NetconfSsh-keys'
+  grouping moc-NetconfSsh {
+    description "Represents the Netconf configuration management service over Secure Shell.";
+    leaf administrativeState {
+      description "The administrative state for the Netconf target.  \nWhen LOCKED, all on-going netconf connections are immediately terminated.\n\nNOTE: Setting the administrativState to LOCKED for all Netconf and CLI interfaces disables O&M access to the ME. Refer to product specific troubleshooting instructions to resolve such a scenario.\n\n\n";
+      mandatory true;
+      type erienmnrmrcssysm:enum-BasicAdmState;
+    }
+    leaf port {
+      description "The OaM port.";
+      type uint16;
+      default 830;
+    }
+  } // end 'grouping moc-NetconfSsh'
+  grouping moc-NtpServer-keys {
+    description "Key(s) for MOC NtpServer";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name ntpServerId;
+      type string;
+    }
+  } // end 'grouping moc-NtpServer-keys'
+  grouping moc-NtpServer {
+    description "DEPRECATED\nUse the NtpServer MOC in ECIM TimeM.\n\nThe NTP server configuration data.\n\nThis MOC presents a persistent NTP client mode network association with a specified remote server or local reference clock address. ";
+    leaf userLabel {
+      description "An additional descriptive text.";
+      type string;
+    }
+    leaf administrativeState {
+      description "Locks or unlocks the operation of the NTP client function.\n\nThis is a convenience function to permit some or all NtpServer instances to be temporarily locked without the need to delete the object\n";
+      mandatory true;
+      type erienmnrmrcssysm:enum-BasicAdmState;
+    }
+    leaf serverAddress {
+      description "The address of the NTP server with which a persistent client server mode association is made.\n\nThe serverAddress represents either a V4 or a V6 IP address, or a DNS domain name.\n";
+      mandatory true;
+      type erienmnrmrcssysm:ddt-IpDNSAddress;
+    }
+  } // end 'grouping moc-NtpServer'
+  grouping moc-CliSsh-keys {
+    description "Key(s) for MOC CliSsh";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name cliSshId;
+      type string;
+    }
+  } // end 'grouping moc-CliSsh-keys'
+  grouping moc-CliSsh {
+    description "Represents the CLI configuration management service over Secure Shell.";
+    leaf administrativeState {
+      description "The administrative state for the CLI target.\nWhen LOCKED, all on-going CLI connections are immediately terminated.\n\nNOTE: Setting the administrativState to LOCKED for all Netconf and CLI interfaces disables O&M access to the ME. Refer to product specific troubleshooting instructions to resolve such a scenario.";
+      mandatory true;
+      type erienmnrmrcssysm:enum-BasicAdmState;
+    }
+    leaf port {
+      description "The OaM port.";
+      mandatory true;
+      type uint16;
+    }
+  } // end 'grouping moc-CliSsh'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list TopologySchema {
+      key id;
+      description "Represents a Topology model fragment whose corresponding functionality is operational in the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-TopologySchema-keys;
+      container attributes {
+        description "Attributes for TopologySchema";
+        uses moc-TopologySchema;
+      } // end 'container attributes'
+    } // end 'list TopologySchema'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list Cli {
+      key id;
+      max-elements 1;
+      description "The common configuration attributes for CLI sessions.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Cli-keys;
+      container attributes {
+        description "Attributes for Cli";
+        uses moc-Cli;
+      } // end 'container attributes'
+    } // end 'list Cli'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list NetconfTls {
+      key id;
+      max-elements 1;
+      description "Represents the Netconf configuration management service over Transport Layer Security (TLS).";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-NetconfTls-keys;
+      container attributes {
+        description "Attributes for NetconfTls";
+        uses moc-NetconfTls;
+      } // end 'container attributes'
+    } // end 'list NetconfTls'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list OamAccessPoint {
+      key id;
+      description "An OaM Access Point instance for the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-OamAccessPoint-keys;
+      container attributes {
+        description "Attributes for OamAccessPoint";
+        uses moc-OamAccessPoint;
+      } // end 'container attributes'
+    } // end 'list OamAccessPoint'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list Schema {
+      key id;
+      description "Represents a MIM model fragment whose corresponding functionality is operational in the ME.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Schema-keys;
+      container attributes {
+        description "Attributes for Schema";
+        uses moc-Schema;
+      } // end 'container attributes'
+    } // end 'list Schema'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions {
+    list SysM {
+      key id;
+      max-elements 1;
+      description "This is the System Management MO. \n\nIt is a parent to the MOs that represent the system level functions,  such as time handling and version handling, as well as file transfer capabilities and netconf configuration.\n";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-SysM-keys;
+      container attributes {
+        description "Attributes for SysM";
+        uses moc-SysM;
+      } // end 'container attributes'
+    } // end 'list SysM'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list CliTls {
+      key id;
+      max-elements 1;
+      description "Represents the CLI configuration management service over Transport Layer Security (TLS).";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CliTls-keys;
+      container attributes {
+        description "Attributes for CliTls";
+        uses moc-CliTls;
+      } // end 'container attributes'
+    } // end 'list CliTls'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list OamTrafficClass {
+      key id;
+      description "Defines the traffic class and priority for IP packets.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-OamTrafficClass-keys;
+      container attributes {
+        description "Attributes for OamTrafficClass";
+        uses moc-OamTrafficClass;
+      } // end 'container attributes'
+    } // end 'list OamTrafficClass'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list NetconfSsh {
+      key id;
+      max-elements 1;
+      description "Represents the Netconf configuration management service over Secure Shell.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-NetconfSsh-keys;
+      container attributes {
+        description "Attributes for NetconfSsh";
+        uses moc-NetconfSsh;
+      } // end 'container attributes'
+    } // end 'list NetconfSsh'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list NtpServer {
+      key id;
+      description "DEPRECATED\nUse the NtpServer MOC in ECIM TimeM.\n\nThe NTP server configuration data.\n\nThis MOC presents a persistent NTP client mode network association with a specified remote server or local reference clock address. ";
+      status deprecated {
+        yexte:status-information "The NtpServer MOC has been moved to ECIM TimeM. Deprecated in 18.Q4";
+      }
+      erienmyext:enm-type MOC;
+      uses moc-NtpServer-keys;
+      container attributes {
+        description "Attributes for NtpServer";
+        uses moc-NtpServer;
+      } // end 'container attributes'
+    } // end 'list NtpServer'
+  }
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:SystemFunctions/erienmnrmrcssysm:SysM {
+    list CliSsh {
+      key id;
+      max-elements 1;
+      description "Represents the CLI configuration management service over Secure Shell.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-CliSsh-keys;
+      container attributes {
+        description "Attributes for CliSsh";
+        uses moc-CliSsh;
+      } // end 'container attributes'
+    } // end 'list CliSsh'
+  }
+}

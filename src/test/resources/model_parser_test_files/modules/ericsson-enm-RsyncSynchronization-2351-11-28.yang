@@ -1,0 +1,81 @@
+module ericsson-enm-RsyncSynchronization {
+  yang-version 1.1;
+  namespace urn:rdns:com:ericsson:ericsson-enm-RsyncSynchronization;
+  prefix erienmnrmrsyncsynchronization;
+  yexte:ecim-name RsyncSynchronization;
+  revision 2351-11-28 {
+    yexte:version 1;
+    yexte:release 3;
+    yexte:correction 3;
+  }
+  import ericsson-yang-extensions {
+    prefix yexte;
+  }
+  import ericsson-notifications {
+    prefix notife;
+  }
+  import ericsson-enm-yang-extensions {
+    prefix erienmyext;
+  }
+  organization "Ericsson AB";
+  contact "Ericsson first line support via email";
+  description "Copyright (c) 2021 Ericsson AB. All rights reserved.";
+  import ericsson-enm-ComTop {
+    prefix erienmnrmcomtop;
+  }
+  typedef enum-TelecomStandard {
+    description "Telecom standard of the synchronization networks.";
+    type enumeration {
+      enum OPTION_I {
+        description "Option I synchronization networks for ETSI (European standard).";
+        value 1;
+      }
+      enum OPTION_II {
+        description "Option II synchronization networks for ANSI (US standard).";
+        value 2;
+      }
+      enum OPTION_III {
+        description "Option III synchronization networks for TTC (Japanese standard).";
+        value 3;
+      }
+    }
+  }
+  grouping moc-Synchronization-keys {
+    description "Key(s) for MOC Synchronization";
+    leaf id {
+      erienmyext:no-notification;
+      description "The value component of the RDN.";
+      mandatory true;
+      yexte:ecim-name synchronizationId;
+      type string;
+    }
+  } // end 'grouping moc-Synchronization-keys'
+  grouping moc-Synchronization {
+    description "This MO class is the top class for synchronization management.";
+    leaf telecomStandard {
+      description "Specifies the regional telecom standard option to I, II, or III for ETSI (European Standard) , ANSI (US Standard) or TTC (Japanese Standard) respectively.\nThe attribute is not applicable, if RadioEquipmentClock::selectionProcessMode is set to QL_DISABLED.";
+      yexte:dependencies "If this attribute is changed, the attributes RadioEquipmentClockReference::adminQualityLevel and RadioEquipmentClock::minQualityLevel will change to the quality level value defined within the telecom option.";
+      type erienmnrmrsyncsynchronization:enum-TelecomStandard;
+      default OPTION_I;
+    }
+    leaf fixedPosition {
+      description "Specifies whether the node has a fixed position.\nIf the node does not move this attribute is set to true. A GNSS receiver may lock its position to enhance the receiver performance.\nIf the node may move, for example on a cruise ship, this attribute is set to false. A GNSS receiver needs to continuously track its position.\n";
+      type boolean;
+      default true;
+    }
+  } // end 'grouping moc-Synchronization'
+  augment /erienmnrmcomtop:ManagedElement/erienmnrmcomtop:Transport {
+    list Synchronization {
+      key id;
+      max-elements 1;
+      description "This MO class is the top class for synchronization management.";
+      yexte:is-system-created;
+      erienmyext:enm-type MOC;
+      uses moc-Synchronization-keys;
+      container attributes {
+        description "Attributes for Synchronization";
+        uses moc-Synchronization;
+      } // end 'container attributes'
+    } // end 'list Synchronization'
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "ACCESS_DENIED_TITLE": "Access denied",
+  "ROLE_DOES_NOT_ALLOW_ACCESS": "Your role does not allow you access to this application.",
+  "CONTACT_SYSTEM_ADMIN": "Contact the system administrator to change your access rights.",
+  "RETURN_TO_PORTAL": "Return to the Application Launcher"
+}
